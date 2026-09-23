@@ -1,30 +1,42 @@
 'use strict';
 /*
- * cut4-total-outage.js  — RT-5 (cut 4, chore/mime-exposure-review)
+ * cut4-total-outage.js  — RT-5 / RT-1 (the legacy CGM bridge removal, BF-61)
  *
- * Cut 4 deletes two CGM ingestion paths. The summaries describe that as losing
- * ingestion. GT4 executed the shims and measured something worse.
+ * The removal of the legacy Dexcom (share2nightscout-bridge) and MiniMed
+ * (mmconnect) bridges ships two migration shims. When a shim cannot migrate
+ * leftover BRIDGE_* or MMCONNECT_* settings it returns an error; bootevent.js
+ * pushes it to ctx.bootErrors, app.js serves the boot-error page for every
+ * route, and server.js skips websocket setup. The whole site stops.
  *
- * lib/server/mmconnect-connect-compat.js cannot infer a country from
- * MMCONNECT_SERVER, so an operator with MiniMed credentials and no
- * CONNECT_COUNTRY_CODE gets {migrated:false, error:...}. bootevent.js pushes
- * that to ctx.bootErrors; app.js then installs app.get('*', bootErrorView) and
- * returns, and server.js returns before websocket setup. The WHOLE SITE serves
- * the boot-error page. No API, no sockets, no charts.
+ * DECIDED 2026-09-23 (maintainer): that hard stop is intended. These settings
+ * are usually the site's primary data source, so a misconfigured one should
+ * show a page that says what to fix. So this gate no longer fails because a
+ * boot error exists. It fails unless, for every settings shape an operator can
+ * hold today:
  *
- * And an operator running BRIDGE_* and MMCONNECT_* together — which works today
- * as two independent boot stages — hits the same total outage, because cut 4
- * has one CONNECT_SOURCE and the second source has nowhere to go. That is a
- * capability removal, concurrent multi-source CGM ingestion, absent from every
- * summary of this cut.
+ *   - a shape that stops the site names a fix, names no release number and
+ *     exposes no credential; and
+ *   - applying the fix the message names, as written, lets the site boot with
+ *     a CGM source selected.
  *
- * What this means for a person: their Nightscout goes dark. Not degraded — dark.
- * Someone managing diabetes loses the display they check, and loses it at
- * upgrade time, which is not when anyone is braced for it.
+ * "As written" matters. CONNECT_* settings are read only for plugins in
+ * ENABLE (lib/server/env.js findExtendedSettings), so a message that says
+ * "set CONNECT_COUNTRY_CODE" but not "add connect to ENABLE" names a fix that
+ * does not boot. The 15.0.9-rc rehearsal measured exactly that on rh/cut4.
+ * The fix is derived from the message text below, so a message that stops
+ * naming a step makes the fixed shape stop too, and the gate goes red.
  *
- * This gate re-runs GT4's execution. It FAILS while any env shape a real
- * operator can hold today produces a bootError. It must be green before cut 4
- * ships, and the deprecation release in front of it is what makes it green.
+ * Where a message offers two fixes ("To keep X ... To use Y instead ..."), the
+ * gate applies the first. The branch's own tests/legacy-bridge-boot-errors.test.js
+ * applies both, through the real lib/server/env.js and setupConnect.
+ *
+ * The ENABLE rule is modelled here (resolve() below) because a gate reads git
+ * objects and cannot load env.js with its dependencies. The model is the
+ * property under test; the branch test is the check that it matches env.js.
+ *
+ * QUEUE_GATE_REF selects the tree. The default is the local branch that
+ * carries the removal with the decision-A fixes; a clone without it fails
+ * with "nothing was measured", which is the safe direction.
  *
  * Reads only: the shims are extracted from the git object database into a
  * scratch directory. No worktree and no shipping file is touched.
@@ -35,7 +47,8 @@ const os = require('os');
 const path = require('path');
 const { show, report } = require('./_gate');
 
-const REF = 'origin/chore/mime-exposure-review';
+const REF = process.env.QUEUE_GATE_REF || 'rh/cut1-retire-legacy';
+const NAME = `cut4-total-outage (RT-5, ${REF})`;
 const findings = [];
 
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'queue-cut4-'));
@@ -52,97 +65,122 @@ try {
   bridge = load('bridge-connect-compat.js');
   mmconnect = load('mmconnect-connect-compat.js');
 } catch (e) {
-  findings.push({ ok: false, text: `could not load cut 4's shims: ${e.message}` });
-  report('cut4-total-outage (RT-5)', findings);
+  findings.push({ ok: false, text: `could not load the shims: ${e.message}` });
+  report(NAME, findings);
 }
 
 if (!bridge || !mmconnect) {
-  findings.push({
-    ok: false,
-    text: `${REF} does not carry both migration shims; nothing was measured`,
-  });
-  report('cut4-total-outage (RT-5)', findings);
+  findings.push({ ok: false, text: `${REF} does not carry both migration shims; nothing was measured` });
+  report(NAME, findings);
 }
 
 const applyBridge = bridge.applyBridgeToConnectCompatibility;
 const applyMm = mmconnect.applyMmconnectToConnectCompatibility;
-
 if (typeof applyBridge !== 'function' || typeof applyMm !== 'function') {
   findings.push({ ok: false, text: 'the shims do not export the expected functions; nothing measured' });
-  report('cut4-total-outage (RT-5)', findings);
+  report(NAME, findings);
 }
 
-// The shims read env.extendedSettings.{bridge,mmconnect,connect}, NOT flat
-// process-env names. An earlier version of this gate passed flat names, got
-// {migrated:false} from every shape because no legacy settings were visible,
-// and reported four outages. That is a vacuous gate wearing a failing result:
-// every shape "failed" for a reason that had nothing to do with the property.
-// It is recorded here because it is the exact error the gate exists to prevent.
-//
-// And the discriminator is `error`, not `migrated`. A bare {migrated:false}
-// means "no legacy credentials to migrate", which is the correct answer for an
-// operator who has none. Only an `error` becomes a bootError.
+// PLUGIN_SOME_NAME=value is read as extendedSettings.plugin.someName, and only
+// for plugins listed in ENABLE. That is the rule the ENABLE gap comes from.
+function resolve(shape) {
+  const extendedSettings = {};
+  for (const plugin of shape.enable) {
+    const prefix = `${plugin.toUpperCase()}_`;
+    for (const [key, value] of Object.entries(shape.vars)) {
+      if (!key.startsWith(prefix)) continue;
+      const setting = key.slice(prefix.length).toLowerCase()
+        .replace(/_([a-z])/g, (m, c) => c.toUpperCase());
+      extendedSettings[plugin] = extendedSettings[plugin] || {};
+      extendedSettings[plugin][setting] = value;
+    }
+  }
+  return { extendedSettings };
+}
+
+// bootevent.js runs the bridge shim, then the mmconnect shim, on one env.
+function bootErrors(shape) {
+  const env = resolve(shape);
+  const errors = [];
+  for (const apply of [applyBridge, applyMm]) {
+    const result = apply(env) || {};
+    if (result.error) { errors.push(result.error); break; }
+  }
+  const source = env.extendedSettings.connect && env.extendedSettings.connect.source;
+  return { errors, source };
+}
+
+// Apply the first fix the message names. Each step is taken only when the
+// message says it.
+function applyNamedFix(shape, message) {
+  const first = message.split(/ To use /)[0];
+  const fixed = { enable: shape.enable.slice(), vars: { ...shape.vars } };
+  const steps = [];
+  const drop = (prefix, plugin) => {
+    Object.keys(fixed.vars).filter((k) => k.startsWith(prefix)).forEach((k) => delete fixed.vars[k]);
+    fixed.enable = fixed.enable.filter((p) => p !== plugin);
+  };
+  if (/connect to ENABLE/.test(first) && !fixed.enable.includes('connect')) { fixed.enable.push('connect'); steps.push('add connect to ENABLE'); }
+  if (/CONNECT_COUNTRY_CODE/.test(first)) { fixed.vars.CONNECT_COUNTRY_CODE = 'GB'; steps.push('set CONNECT_COUNTRY_CODE'); }
+  if (/remove the MMCONNECT_\* settings and mmconnect from ENABLE/.test(first)) { drop('MMCONNECT_', 'mmconnect'); steps.push('remove MMCONNECT_* and mmconnect'); }
+  if (/remove the BRIDGE_\* settings and bridge from ENABLE/.test(first)) { drop('BRIDGE_', 'bridge'); steps.push('remove BRIDGE_* and bridge'); }
+  return { fixed, steps };
+}
+
+const MINIMED = { MMCONNECT_USER_NAME: 'gate-user', MMCONNECT_PASSWORD: 'gate-pass', MMCONNECT_SERVER: 'EU' };
+const DEXCOM = { BRIDGE_USER_NAME: 'gate-user', BRIDGE_PASSWORD: 'gate-pass' };
+const GLOOKO = { CONNECT_SOURCE: 'glooko', CONNECT_GLOOKO_EMAIL: 'gate@example.invalid', CONNECT_GLOOKO_PASSWORD: 'gate-pass' };
+
 const SHAPES = [
-  {
-    name: 'MiniMed credentials, no CONNECT_COUNTRY_CODE (the common case: the '
-        + 'country cannot be inferred from MMCONNECT_SERVER)',
-    settings: { mmconnect: { userName: 'u', password: 'p', server: 'carelink.minimed.eu' } },
-  },
-  {
-    name: 'MiniMed credentials WITH CONNECT_COUNTRY_CODE (the documented upgrade)',
-    settings: { mmconnect: { userName: 'u', password: 'p' }, connect: { countryCode: 'us' } },
-  },
-  {
-    name: 'Dexcom BRIDGE_* only (this path has a named deprecation escape hatch today)',
-    settings: { bridge: { userName: 'u', password: 'p', server: 'US' } },
-  },
-  {
-    name: 'BRIDGE_* and MMCONNECT_* together -- two independent boot stages that '
-        + 'work today, and one CONNECT_SOURCE afterwards',
-    settings: {
-      bridge: { userName: 'u', password: 'p', server: 'US' },
-      mmconnect: { userName: 'u', password: 'p' },
-      connect: { countryCode: 'us' },
-    },
-  },
+  { name: 'MiniMed, no CONNECT_COUNTRY_CODE', enable: ['mmconnect'], vars: { ...MINIMED } },
+  { name: 'MiniMed with CONNECT_COUNTRY_CODE but connect not in ENABLE', enable: ['mmconnect'], vars: { ...MINIMED, CONNECT_COUNTRY_CODE: 'GB' } },
+  { name: 'MiniMed with country and connect in ENABLE', enable: ['mmconnect', 'connect'], vars: { ...MINIMED, CONNECT_COUNTRY_CODE: 'GB' } },
+  { name: 'Dexcom BRIDGE_* only', enable: ['bridge'], vars: { ...DEXCOM } },
+  { name: 'BRIDGE_* and MMCONNECT_* together (works on 15.0.9)', enable: ['bridge', 'mmconnect'], vars: { ...DEXCOM, ...MINIMED, CONNECT_COUNTRY_CODE: 'GB' } },
+  { name: 'BRIDGE_* alongside another CONNECT_SOURCE', enable: ['bridge', 'connect'], vars: { ...DEXCOM, ...GLOOKO } },
 ];
 
 for (const shape of SHAPES) {
-  // bootevent.js calls the bridge shim first, then the mmconnect shim, against
-  // the SAME env object. Running them in isolation would miss the interaction,
-  // which is the entire point of the fourth shape.
-  const env = { extendedSettings: JSON.parse(JSON.stringify(shape.settings)) };
-  const results = [];
-  try {
-    if (env.extendedSettings.bridge) results.push(applyBridge(env) || {});
-    if (env.extendedSettings.mmconnect) results.push(applyMm(env) || {});
-  } catch (e) {
+  let outcome;
+  try { outcome = bootErrors(shape); } catch (e) {
     findings.push({ ok: false, text: `${shape.name} -> shim THREW: ${e.message}` });
     continue;
   }
-
-  const errored = results.filter((r) => r && r.error);
+  if (outcome.errors.length === 0) {
+    findings.push({ ok: !!outcome.source, text: `${shape.name} -> boots, CONNECT source ${outcome.source || 'NONE'}` });
+    continue;
+  }
+  const message = outcome.errors[0];
+  const clean = !/15\.0\.9/.test(message) && !message.includes('gate-');
+  const { fixed, steps } = applyNamedFix(shape, message);
+  const after = bootErrors(fixed);
+  const ok = clean && steps.length > 0 && after.errors.length === 0 && !!after.source;
   findings.push({
-    ok: errored.length === 0,
-    text: errored.length === 0
-      ? `${shape.name} -> migrates cleanly (${results.map((r) => `migrated:${r.migrated}`).join(', ')})`
-      : `${shape.name} -> bootError: "${errored.map((r) => r.error).join(' | ').slice(0, 220)}". `
-        + 'bootevent pushes this to ctx.bootErrors, app.js serves the boot-error page '
-        + 'for "*", and server.js skips websocket setup. The entire site goes dark.',
+    ok,
+    text: `${shape.name} -> stops the site; named fix [${steps.join(', ') || 'NONE'}] `
+      + (after.errors.length === 0
+        ? `boots with CONNECT source ${after.source}`
+        : `STILL STOPS: "${after.errors[0].slice(0, 160)}"`)
+      + (clean ? '' : '; message names a release number or exposes a credential'),
   });
 }
 
-// Control. A shape with NO legacy credentials must come back benign; if this
-// ever reports an outage, the gate is mis-reading the shims rather than the
-// shims being hostile, and the four results above mean nothing.
-const cleanEnv = { extendedSettings: { connect: { source: 'dexcomshare' } } };
-const control = [applyBridge(cleanEnv), applyMm(cleanEnv)];
+// BF-62: DEXCOM_BRIDGE_USE_LEGACY is reported as ignored rather than dropped.
 findings.push({
-  ok: control.every((r) => r && !r.error),
-  text: 'CONTROL: an operator with no legacy credentials migrates without error '
-      + `(${control.map((r) => `migrated:${r.migrated}`).join(', ')})`,
+  ok: typeof bridge.legacyBridgeRequested === 'function'
+    && bridge.legacyBridgeRequested({ useLegacy: true }) === true
+    && /ignored/.test(bridge.LEGACY_OVERRIDE_IGNORED || ''),
+  text: 'BF-62: the bridge shim detects DEXCOM_BRIDGE_USE_LEGACY and carries a message saying it is ignored',
+});
+
+// Control. No legacy settings: nothing stops and nothing is selected. If this
+// reports a stop, the gate is misreading the shims.
+const control = bootErrors({ enable: ['careportal'], vars: {} });
+findings.push({
+  ok: control.errors.length === 0 && !control.source,
+  text: `CONTROL: no legacy settings -> ${control.errors.length ? 'STOPS' : 'boots'}, no CONNECT source selected`,
 });
 
 try { fs.rmSync(scratch, { recursive: true, force: true }); } catch (e) { /* scratch only */ }
 
-report('cut4-total-outage (RT-5)', findings);
+report(NAME, findings);

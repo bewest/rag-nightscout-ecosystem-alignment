@@ -1247,7 +1247,7 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** From cut 1 onward docker-build and docker-build-pr carry needs: [test, browser-test], so a browser-test failure blocks image publication. On dev, docker-build has needs: test only.
+**Notes.** 2026-09-23 (maintainer decision): the legacy CGM bridge removal (MiniMed mmconnect and Dexcom share2nightscout-bridge) is lifted from cut 4 onto cut 1. Built on local rh/cut1-retire-legacy (c043fb2d, from rh/cut1, not pushed): 8 cherry-picks plus the decision-A fixes (BF-61 named fix boots, no release number, BF-62 logged). Node suite 2121/0/1 on 22.23.2 and 24.20.0 x Mongo 7; npm audit --omit=dev 15 -> 9 (request and form-data highs clear). Connector pin stays 0.1.0-dev.1, which contains every cut 4 pin. Operator-visible: leftover MMCONNECT_* settings stop the site with a page naming the fix. See docs/60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md. From cut 1 onward docker-build and docker-build-pr carry needs: [test, browser-test], so a browser-test failure blocks image publication. On dev, docker-build has needs: test only.
 
 ### `RT-2` &mdash; Cut 2 - chore/build-runtime-separation
 
@@ -1370,7 +1370,7 @@ that costs.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null`
   - trial-merges into dev cleanly - FAILS as of 2026-09-22, see RT-REBASE
 - `[static]` `node tools/queue/gates/cut4-total-outage.js`
-  - Re-runs GT4's execution of both cut-4 shims in the order bootevent.js calls them, with four env shapes. FAILS while either shape produces a bootError. This is the gate that says whether an operator's site goes dark, and it must be green before this cut ships.
+  - Decision A (2026-09-23): runs both legacy shims in bootevent.js order over six env shapes with the ENABLE rule modelled. FAILS unless every shape that stops the site names a fix, names no release number, and boots once that fix is applied as written. Ref from QUEUE_GATE_REF, default rh/cut1-retire-legacy (where the removal now lives).
 - **NO GATE** &mdash; "No real Dexcom account or live database has been used and no live migration is claimed" - the cut's own evidence document. No gate can substitute for a real migration, and nothing in this repository may use real credentials (rule 0).
 - **NO GATE** &mdash; Cut 4 deletes bridgeUseLegacy and the log line naming it, so DEXCOM_BRIDGE_USE_LEGACY becomes accepted-and-ignored. Credentials are still migrated so ingestion continues; only the operator's expressed intent is discarded silently. Nothing checks for accepted-and-ignored settings.
 
@@ -1379,7 +1379,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - BF-61's hard stop is intended: MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Still owed under that decision: the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not say 15.0.9, and cut4-total-outage.js must be rewritten to pass when each stopping shape names a fix that boots. Also directed: deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies), partly in the current cycle where appropriate; with RT-4 dropped, the separate hold below is moot. HELD BACK on the adopted train, behind a deprecation release. If the Connect migration misbehaves the symptom is a user's glucose data stops arriving - a data-availability failure for someone managing diabetes.
+**Notes.** DECIDED 2026-09-23 (maintainer) - BF-61's hard stop is intended: MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Still owed under that decision: the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not say 15.0.9, and cut4-total-outage.js must be rewritten to pass when each stopping shape names a fix that boots. Also directed: deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies), partly in the current cycle where appropriate; with RT-4 dropped, the separate hold below is moot. 2026-09-23: the removal is lifted onto cut 1 (RT-1, local rh/cut1-retire-legacy c043fb2d), with the three owed fixes done there. cut4-total-outage.js is rewritten to decision A (QUEUE_GATE_REF, default rh/cut1-retire-legacy): green there, red on rh/cut4. Cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge into the lifted cut 1 conflicts only in legacy files and manifests. HELD BACK on the adopted train, behind a deprecation release. If the Connect migration misbehaves the symptom is a user's glucose data stops arriving - a data-availability failure for someone managing diabetes.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
