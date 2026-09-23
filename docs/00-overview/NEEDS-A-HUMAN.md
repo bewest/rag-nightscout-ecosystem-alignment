@@ -40,7 +40,6 @@ that it was reviewed.
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
-| `BFQ-97` | `needs-decision` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
@@ -50,6 +49,7 @@ that it was reviewed.
 | `BFQ-102` | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | &mdash; |
 | `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
 | `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
+| `BFQ-97` | `ready-to-push` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | &mdash; |
 | `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix do | &mdash; |
 | `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectI | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |

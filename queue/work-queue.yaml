@@ -7007,10 +7007,10 @@ items:
     title: BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
     parcel: register-open
     repo: nightscout-connect
-    branch: fix/profile-duplicate-stall
+    branch: fix/profile-sync-bounded-update
     base: official/dev@fbd4e55
-    worktree: externals/work/nc-profile-dup
-    state: needs-decision
+    worktree: externals/work/nc-profile-sync
+    state: ready-to-push
     ships_to_operators_today: false
     blast_radius: >
       Connector lib/outputs/internal.js safePersist and lib/outputs/nightscout.js
@@ -7045,6 +7045,19 @@ items:
       then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on
       fix/profile-duplicate-stall (not pushed). Workaround until then:
       CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
+      BUILT 2026-09-23 - fix/profile-sync-bounded-update, tip de3cee1 on f924de2 (so it
+      carries f6359b4 and the BF-98 warning), not pushed. 1d2ebc8 reads only the profiles
+      a poll needs (6.8 KB per steady poll against 3.4 MB); de3cee1 copies a changed
+      source profile when the sink can replace it in place, checked by a find by _id, so
+      sinks without BF-99 get no copies and one warning. Connector suite 308 -> 319 -> 334
+      on Node 20/22/24, also under four faked clocks (a wall-clock test dependency was
+      found by re-running at 20:19 UTC and fixed in the test). Lab (synthetic, 46-80 min,
+      10 sinks incl. 15.0.8, dev, 9b8cc2f9, 597e2899): no twins, edits arrive on BF-99
+      sinks, polls 4.7-5.3 min, entries/treatments/devicestatus counts match. Maintainer
+      decisions (plan section 1a): newest-1 bound, no backfill, source wins. Next: tag
+      0.1.0-dev.3 from it, then the pin PR. Evidence
+      docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md; PR
+      body reports/connector-pr-bodies/profile-sync-bounded-update.md.
 
   - id: BFQ-98
     title: BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it

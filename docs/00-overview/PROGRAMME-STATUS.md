@@ -159,7 +159,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 2 | 1 | 2 |  |  |  | **15** |
-| `register-open` | 16 |  | 5 | 8 | 1 | 1 | 5 | 5 |  | 2 | 1 | **44** |
+| `register-open` | 16 |  | 5 | 9 | 1 | 1 | 5 | 4 |  | 2 | 1 | **44** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
