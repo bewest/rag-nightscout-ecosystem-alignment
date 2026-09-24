@@ -53,19 +53,18 @@ that it was reviewed.
 | `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
-### SAFETY reviewer &mdash; 2 items
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-103` | `in-flight-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | #8760 |
-| `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
-
 ### SECURITY reviewer &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+
+### SAFETY reviewer &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 
@@ -81,7 +80,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
-| **#8760** | `BFQ-103` | `bf/split-drag-time` | BF-103 - a split drag stores the old time, so IOB and COB ig | SAFETY reviewer |
 
 <!-- END GENERATED: open-prs -->
 

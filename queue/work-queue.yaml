@@ -7054,7 +7054,7 @@ items:
     branch: bf/split-drag-time
     base: origin/dev@4011193e
     worktree: externals/work/crm-bf-split-drag
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8760]
     ships_to_operators_today: true
     blast_radius: >
@@ -7087,6 +7087,7 @@ items:
       - docs/60-research/remedial/bf103-fix-2026-09-23.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-09-24 - #8760 MERGED into dev as ddd9b600 (01:43Z), CI and CodeQL green.
       2026-09-23 - VERIFIED BY HAND on #8760 8d797ba4 (the maintainer, manual lab port 15204,
       Chrome, mouse): Move carbs and Move insulin land at the new time with no console errors
       and survive a reload; plain move, cancel and both edge limits unchanged; a plain move of

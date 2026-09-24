@@ -449,7 +449,6 @@ or treatment you have edited there. If you see an old copy beside the one you ed
 delete it. If you are unsure which settings or entries are correct, check with your care team.
 <!-- PENDING: #8758 merge -->
 
-<!-- PENDING: #8760 merge -->
 ### Moving a treatment on the chart now moves its insulin and carbs too
 
 If you split a treatment by dragging it on the chart into the "Move carbs" or "Move insulin"
@@ -466,7 +465,6 @@ changed by this fix.
 **If you rely on Nightscout's IOB, COB or Bolus Wizard** and have split treatments by dragging
 them before, look at those treatments after upgrading and check with your care team about any
 you are unsure of. This is not medical advice.
-<!-- PENDING: #8760 merge -->
 
 ### Searches, reports and filters return the right records
 
@@ -646,14 +644,6 @@ software library updates.
   the warning off: Nightscout skips readings dated in the future when it decides whether your
   data is stale.) This is not medical advice; talk to your care team about what you rely on
   Nightscout for.
-<!-- REMOVE WHEN #8760 merges; kept until then -->
-- **Splitting a treatment by dragging it keeps the old time for insulin and carbs on board.**
-  If you drag a treatment on the chart into the "Move carbs" or "Move insulin" area to split
-  it, the chart shows the moved part at its new time, but Nightscout keeps using the **old** time
-  when it works out insulin on board (IOB) and carbs on board (COB). This is the same on 15.0.8.
-  Until it is fixed, avoid splitting a treatment by dragging it into those areas. This is not
-  medical advice; talk to your care team about any treatment record you are unsure of.
-<!-- /REMOVE WHEN -->
 - **While `TRUST_PROXY` is unset, the failed-login delay can be avoided**, as on earlier
   releases. Nightscout says so in its log at startup. Set `TRUST_PROXY`, or restrict access at
   your proxy or hosting provider.
