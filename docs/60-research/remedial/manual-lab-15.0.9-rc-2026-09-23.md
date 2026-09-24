@@ -20,8 +20,9 @@ The maintainer ran every check below in Chrome, with an agent seeding each scena
 | 8 | Bolus Wizard quick picks (BF-69 #8756, BF-35 #8735) | `quickpick` | pass |
 | 9 | Empty site (#8732) | `empty` | pass |
 | 10 | COB from device status (`34e9b2da`), pills and cold load (#8732, #8729) | `cob` | pass; the fallback to treatment COB after 10 min was not observed |
+| 11 | BF-103 fix, PR #8760 `8d797ba4` (later the same day) | `drag-8760` | pass: split drops land at the new time, and a plain move repairs a damaged record |
 
-One new defect: **BF-103**, which is on 15.0.8 too.
+One new defect: **BF-103**, which is on 15.0.8 too. Its fix, PR #8760, was checked by hand the same day (#11).
 
 ## Setup
 
@@ -124,6 +125,21 @@ The wizard's IOB read 0.00 with no insulin given.
 | repeated reloads, including at phone width | the chart never loaded blank (#8729) |
 
 This checked what the pill displays. It is not a review of `34e9b2da` (BF-57).
+
+### 11. BF-103 fix on PR #8760
+
+A separate instance, `drag-8760` on port 15204 (database `lab_drag_8760`), ran worktree `externals/work/crm-lab-8760` at `8d797ba4`: `dev` `4011193e` plus the fix. Its served bundle contained the fix's `splitRecord` and the unfixed instance's did not. It was seeded like `drag`, plus one pre-damaged record **G**, inserted directly with the shape a split writes on 15.0.8 and the rc: `created_at` 40 min before seeding, and `mills` / `date` (string) 150 min before, plus `mgdl` / `scaled` 110. The server was restarted after the insert.
+
+| check | result |
+|---|---|
+| "Move carbs" on a carbs + insulin treatment | the carbs land at the new time; no console errors; the insulin stays |
+| "Move insulin" | the insulin lands at the new time; the carbs stay |
+| reload | both moved halves stay at their new times |
+| plain move, cancel, right-edge limit, left-edge Remove | unchanged from #1 |
+| plain move of G | `mills`, `mgdl` and `scaled` gone from the stored record; `date` is now `1790206532224`, a number equal to the new `created_at` (23:35:32.224Z) |
+| stored split records | none carries `mills`, `mgdl` or `scaled` |
+
+Not shown live: COB counting G at its new time. That time was past absorption when read, so the live COB could not distinguish the two cases. The stored record now has the shape the BF-103 control counted in full (no `mills`, so the server derives it from `created_at`). One seeded treatment was deleted by hand during the run through the left-edge Remove zone; that was a user action, not a fault.
 
 ## Observations that are not defects
 

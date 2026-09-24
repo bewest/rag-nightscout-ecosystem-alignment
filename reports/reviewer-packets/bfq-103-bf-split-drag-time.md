@@ -74,29 +74,38 @@ SAFETY - the move changes when carbs or insulin count for IOB and COB
 
 ## Notes carried on the item
 
-2026-09-23 - OPEN upstream as #8760 (head 8d797ba4, verified with ls-remote).
-BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into
-15.0.9: browser probe red on dev and green on the branch for split, plain move
-of a damaged record (both stored shapes), split of a damaged record and a v3
-record (e.g. COB 0 vs 25 on dev, equal on the branch); dependency-d3 21/3 on
-dev, 24/0 on the branch; suite 2440/0/3 dev, 2453/0/3 branch on Node 20 and 22
-(after npm run bundle); 9 of 9 break-its caught by the browser probe (7 by
-unit tests); merge-tree clean with #8754 8211f8e2 and #8758 6d120fa2. The
-split copy drops page-added mills, endmills, mgdl, scaled, cuttedby, cutting
-and a Date-typed date; a move clears them on the stored record and sets a
-disagreeing stored date to the new time (API v3 and AAPS use date). A raw v1
-PUT still leaves a stale mills (server-side, not in scope). Server-side
-options measured, not built: ddata preferring created_at retimes other
-collections too; stripping on websocket dbAdd leaves existing records stale.
-Read-only repair query in the evidence section 8. Evidence
-docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body reports/phase0-pr-
-bodies/bf-split-drag-time.md. DECIDED 2026-09-23 (maintainer): into 15.0.9 if
-bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a
-known issue (advice: avoid splitting by drag; edit-the-time is unmeasured).
-Branch being built by session -36b (worktree externals/work/crm-bf-split-
-drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59.
-Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is
-on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
+2026-09-23 - VERIFIED BY HAND on #8760 8d797ba4 (the maintainer, manual lab
+port 15204, Chrome, mouse): Move carbs and Move insulin land at the new time
+with no console errors and survive a reload; plain move, cancel and both edge
+limits unchanged; a plain move of a pre-damaged record (stale mills, date
+string, mgdl, scaled) cleared mills, mgdl and scaled and set date to the new
+created_at as a number. Stored split records carry none of the page fields.
+Not shown live: COB for the repaired record (its new time was past
+absorption). Record: docs/60-research/remedial/manual-
+lab-15.0.9-rc-2026-09-23.md. 2026-09-23 - OPEN upstream as #8760 (head
+8d797ba4, verified with ls-remote). BUILT 2026-09-23, CLEAN by the plan
+section 1a conditions, so it goes into 15.0.9: browser probe red on dev and
+green on the branch for split, plain move of a damaged record (both stored
+shapes), split of a damaged record and a v3 record (e.g. COB 0 vs 25 on dev,
+equal on the branch); dependency-d3 21/3 on dev, 24/0 on the branch; suite
+2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run bundle); 9 of 9
+break-its caught by the browser probe (7 by unit tests); merge-tree clean with
+#8754 8211f8e2 and #8758 6d120fa2. The split copy drops page-added mills,
+endmills, mgdl, scaled, cuttedby, cutting and a Date-typed date; a move clears
+them on the stored record and sets a disagreeing stored date to the new time
+(API v3 and AAPS use date). A raw v1 PUT still leaves a stale mills (server-
+side, not in scope). Server-side options measured, not built: ddata preferring
+created_at retimes other collections too; stripping on websocket dbAdd leaves
+existing records stale. Read-only repair query in the evidence section 8.
+Evidence docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body
+reports/phase0-pr-bodies/bf-split-drag-time.md. DECIDED 2026-09-23
+(maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section
+1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag; edit-
+the-time is unmeasured). Branch being built by session -36b (worktree
+externals/work/crm-bf-split-drag). Filed 2026-09-23 by -6d (register
+0c022da5); queue item added by -59. Graded medium to high in the register. Not
+a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the
+maintainer's.
 
 ---
 

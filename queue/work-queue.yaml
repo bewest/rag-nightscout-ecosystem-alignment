@@ -7087,6 +7087,13 @@ items:
       - docs/60-research/remedial/bf103-fix-2026-09-23.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-09-23 - VERIFIED BY HAND on #8760 8d797ba4 (the maintainer, manual lab port 15204,
+      Chrome, mouse): Move carbs and Move insulin land at the new time with no console errors
+      and survive a reload; plain move, cancel and both edge limits unchanged; a plain move of
+      a pre-damaged record (stale mills, date string, mgdl, scaled) cleared mills, mgdl and
+      scaled and set date to the new created_at as a number. Stored split records carry none
+      of the page fields. Not shown live: COB for the repaired record (its new time was past
+      absorption). Record: docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md.
       2026-09-23 - OPEN upstream as #8760 (head 8d797ba4, verified with ls-remote).
       BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into 15.0.9:
       browser probe red on dev and green on the branch for split, plain move of a damaged
