@@ -219,8 +219,8 @@ routine while it is sorted out.**
 
 ### Asking for a number of records (`count`)
 
-<!-- PENDING: count-compat merge. This section describes bf/count-client-compat (RT-COUNT-COMPAT,
-     decided 2026-09-24), which is not yet a PR, and dev has none of it. Until it merges, dev answers
+<!-- PENDING: #8761 merge. This section describes #8761 (bf/count-client-compat, RT-COUNT-COMPAT,
+     decided 2026-09-24), including its second commit (the two settings), and dev has none of it. Until it merges, dev answers
      count=0 with an empty list and "1?..." with 400. Decided: tolerate the two shapes real clients
      send (oref0, GluPredKit) and keep 15.0.9 a patch; see the semver policy, section 3.2. -->
 
@@ -248,6 +248,13 @@ The "deprecation warning" is two extra headers on the answer (`Deprecation: true
 `Warning` that says what to send instead), plus one line in the server log the first time it
 happens. Nothing changes for the app today. A future major release may refuse these two forms,
 so app authors should send a plain whole number of 1 or more.
+
+Each form has a setting, and both are on unless you change them:
+- `API_V1_COUNT_LEADING_NUMBER` covers the OpenAPS form. Set to `false`, it is refused with an error.
+- `API_V1_COUNT_ZERO_WINDOW` covers the GluPredKit form. Set to `false`, every read with `count=0` gets an empty list.
+
+Leave `API_V1_COUNT_LEADING_NUMBER` on if an OpenAPS rig uploads to your site. A future release is
+expected to change both defaults to `false`.
 
 ### Filter conditions
 

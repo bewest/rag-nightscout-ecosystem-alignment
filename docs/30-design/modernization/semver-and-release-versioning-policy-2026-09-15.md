@@ -432,8 +432,7 @@ side, the measured cost is load (a day of treatments per loop) and reverted Nigh
 not double-counted therapy.
 
 **Decided 2026-09-24: tolerate the shapes real clients send, and keep 15.0.9 a patch.**
-*(Maintainer. Implemented on `bf/count-client-compat` `b4ead206`, on `dev` `ddd9b600`; not yet a
-pull request.)* On v1 reads only:
+*(Maintainer. Implemented in #8761, `bf/count-client-compat`, on `dev` `ddd9b600`.)* On v1 reads only:
 
 - **A whole number followed by `?`** is read as that number, as 15.0.8's `parseInt` read it.
   Only that shape is tolerated: `abc`, `-3`, `2.5`, `1e2` and `0x10` are still refused, with or
@@ -450,7 +449,11 @@ pull request.)* On v1 reads only:
   sends it.
 
 Both tolerated shapes are answered with `Deprecation: true` and a `299` `Warning`, and are
-logged once per process. Deletes are unchanged. Measured with the consumer-replay lab on the
+logged once per process. Each has its own setting, `API_V1_COUNT_LEADING_NUMBER` and
+`API_V1_COUNT_ZERO_WINDOW`. Both default to `true`, and a future release is expected to flip them
+to `false`. That follows this programme's compatibility-flag rule: a flag that keeps today's
+behaviour, with a planned flip, where real deployments rely on it. With a setting `false`, that
+shape gets #8748's answer. Deletes are unchanged. Measured with the consumer-replay lab on the
 branch: oref0 gets 200 in both auth modes and uploads 1 treatment per loop, not 57; GluPredKit
 gets 1 profile, 137 treatments and 576 entries, the same as 15.0.8. By this section's test, no
 input a real client sends is narrowed, so the change is a patch.
