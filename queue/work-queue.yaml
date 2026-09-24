@@ -7051,14 +7051,17 @@ items:
     title: BF-103 - a split drag stores the old time, so IOB and COB ignore the move
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/split-drag-time
     base: origin/dev@4011193e
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    worktree: externals/work/crm-bf-split-drag
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
-      lib/client/renderer.js, the treatment-drag split zones ("Move carbs",
-      "Move insulin"), and how lib/data/ddata.js keys a stored mills.
+      One commit 8d797ba4 on dev 4011193e: new lib/client/treatmenttime.js, wired into
+      lib/client/renderer.js (Move, Move carbs, Move insulin) and
+      lib/report_plugins/treatments.js (Reports editor save); tests/treatmenttime.test.js
+      (13) and tests/dependency-d3.test.js updated to the new emitted messages. ddata.js's
+      read rule and the server write path are unchanged.
     review: SAFETY - the move changes when carbs or insulin count for IOB and COB
     operator_visible: >
       If you drag a treatment on the chart into the "Move carbs" or "Move
@@ -7080,8 +7083,23 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md
+      - docs/60-research/remedial/bf103-fix-2026-09-23.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into 15.0.9:
+      browser probe red on dev and green on the branch for split, plain move of a damaged
+      record (both stored shapes), split of a damaged record and a v3 record (e.g. COB 0 vs
+      25 on dev, equal on the branch); dependency-d3 21/3 on dev, 24/0 on the branch; suite
+      2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run bundle); 9 of 9
+      break-its caught by the browser probe (7 by unit tests); merge-tree clean with #8754
+      8211f8e2 and #8758 6d120fa2. The split copy drops page-added mills, endmills, mgdl,
+      scaled, cuttedby, cutting and a Date-typed date; a move clears them on the stored record
+      and sets a disagreeing stored date to the new time (API v3 and AAPS use date). A raw v1
+      PUT still leaves a stale mills (server-side, not in scope). Server-side options measured,
+      not built: ddata preferring created_at retimes other collections too; stripping on
+      websocket dbAdd leaves existing records stale. Read-only repair query in the evidence
+      section 8. Evidence docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body
+      reports/phase0-pr-bodies/bf-split-drag-time.md.
       DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean
       (plan section 1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag;
       edit-the-time is unmeasured). Branch being built by session -36b

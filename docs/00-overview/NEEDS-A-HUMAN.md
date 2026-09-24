@@ -53,18 +53,19 @@ that it was reviewed.
 | `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
+### SAFETY reviewer &mdash; 2 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-103` | `ready-to-push` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | &mdash; |
+| `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
+
 ### SECURITY reviewer &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-
-### SAFETY reviewer &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 

@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 76 | 24 | 11 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 76 | 23 | 12 |
 | **Modernization** | `release-train` | 15 | 1 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **111** | **34** | **16** |
+| | **total** | **111** | **33** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -121,7 +121,7 @@ cover more than one `BF-`:
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
-| `BFQ-103` | `not-started` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
+| `BFQ-103` | `ready-to-push` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -158,7 +158,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 |  | 4 | 1 |  |  |  | **15** |
-| `register-open` | 17 |  | 5 |  | 4 | 2 | 10 | 4 |  | 2 | 1 | **45** |
+| `register-open` | 16 |  | 5 | 1 | 4 | 2 | 10 | 4 |  | 2 | 1 | **45** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 1 | 1 |  |  |  |  | **2** |
