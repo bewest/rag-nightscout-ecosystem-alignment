@@ -57,12 +57,12 @@ the oref0 side
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
 - The branch is local (not pushed), so no gate can read it from a remote.
-  Evidence is the count suite (49/49) and the full suite on Node 20 / mongo
-  7 only (2466/0/3), with two break-it controls, and the consumer-replay
-  lab's P1 and P2 re-run on the branch in both auth modes. Not yet run -
-  Node 22 / 24 and mongo 4.4, and a combined run with #8754 and #8758; a
-  real OpenAPS rig or GluPredKit install (the lab replays their requests,
-  not the programs).
+  Evidence is the count suite (49/49) and the full suite in six cells (Node
+  20 / 22 / 24 x mongo 4.4 / 7, 2466/0/3 each), with two break-it controls,
+  and the consumer-replay lab's P1 and P2 re-run on the branch in both auth
+  modes. Not yet run - a combined run with #8754 and #8758; a real OpenAPS
+  rig or GluPredKit install (the lab replays their requests, not the
+  programs).
 
 ## Evidence
 
@@ -77,41 +77,41 @@ checking). count=0 inside a two-sided date window becomes a limit of
 2147483647, the largest 32-bit limit; outside one it is dropped so the
 endpoint default applies (activity has no default, so it reads unbounded
 there, as it already does with no count). Deletes are unchanged. Count suite
-49/49; full suite Node 20.20.0 / mongo 7 2466/0/3 (dev 2453 + 13). Break-it -
-tolerance off: 18 new tests fail; window rule alone off: the 2 entries window
-tests fail (the other collections hold fewer than their default). -6a's replay
-lab as slot d, readable and denied - P1 oref0 200 in hashed and token modes,
-the cull keeps 1 of 57; P2 GluPredKit 1 / 137 / 576, equal to 15.0.8 and the
-count=100000 control. Only Node 20 / mongo 7 run so far; the combined run owes
-the other cells. DECIDED 2026-09-24 (maintainer, -59) - tolerate the shapes
-real clients send and keep 15.0.9 a patch. oref0's "N?..." reads N (only
-digits followed by ?; abc, -3, 2.5, 1e2, 0x10 stay 400, with or without a ?).
-count=0 on a read was re-decided the same day, after 15.0.8's code showed it
-had meant NO limit (a truthy "0" reached .limit(0)) and the entries default of
-10 would cut GluPredKit's 576 to 10 without an error: no limit when the find
-bounds one date field from both sides, the endpoint default otherwise. Both
-answered with Deprecation: true and a 299 Warning, logged once per process,
-without the value (oref0's contains its credential). 2026-09-23 - REPLAY
-VERDICTS (-6a lab; docs/60-research/remedial/consumer-
-impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both
-auth modes under readable and denied; the plain count=1 control is 200
-everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57
-treatments per loop instead of 1. NO DUPLICATES: 137 records after each of
-three posts, because the created_at+eventType upsert is idempotent. A
-Nightscout-side edit to a rig treatment from the last 24 h is overwritten on
-the next loop; that replace also happens on 15.0.8, but only 15.0.9 makes the
-rig re-post every loop. GluPredKit: count=0 returns [] for profile, treatments
-and entries on dev and the candidate (15.0.8: 1 / 137 / 576 in a 50 h window);
-the count=100000 control is full on all three. Filed 2026-09-23 from the -6a
-consumer-impact survey, on the maintainer instruction to document it as a
-compatibility and semver item, not a backfix. oref0 (dev d219baf9, master
-88cf032a) sends count as "1?<credential>" from latest-openaps-treatment;
-15.0.8 parseInt read 1, 15.0.9 answers 400. GluPredKit sends count=0 as "no
-limit"; 15.0.9 answers []. Under the semver policy rule (section 3.2) both
-make the narrowing major as written. Options, in outline - ship as a declared
-correction naming both clients; tolerate the shapes real clients send and keep
-15.0.9 a patch; or number the release as a major. The release notes count
-section carries a hidden OPEN BEFORE THE TAG note.
+49/49; full suite 2466/0/3 on Node 20.20.0, 22.23.2 and 24.20.0 x mongo 4.4
+and 7 (dev 2453 + 13). Break-it - tolerance off: 18 new tests fail; window
+rule alone off: the 2 entries window tests fail (the other collections hold
+fewer than their default). -6a's replay lab as slot d, readable and denied -
+P1 oref0 200 in hashed and token modes, the cull keeps 1 of 57; P2 GluPredKit
+1 / 137 / 576, equal to 15.0.8 and the count=100000 control. DECIDED
+2026-09-24 (maintainer, -59) - tolerate the shapes real clients send and keep
+15.0.9 a patch. oref0's "N?..." reads N (only digits followed by ?; abc, -3,
+2.5, 1e2, 0x10 stay 400, with or without a ?). count=0 on a read was re-
+decided the same day, after 15.0.8's code showed it had meant NO limit (a
+truthy "0" reached .limit(0)) and the entries default of 10 would cut
+GluPredKit's 576 to 10 without an error: no limit when the find bounds one
+date field from both sides, the endpoint default otherwise. Both answered with
+Deprecation: true and a 299 Warning, logged once per process, without the
+value (oref0's contains its credential). 2026-09-23 - REPLAY VERDICTS (-6a
+lab; docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). oref0:
+15.0.8 200, dev and candidate 400 in both auth modes under readable and
+denied; the plain count=1 control is 200 everywhere. Through oref0's own
+jq/date pipeline the rig re-uploads 57 treatments per loop instead of 1. NO
+DUPLICATES: 137 records after each of three posts, because the
+created_at+eventType upsert is idempotent. A Nightscout-side edit to a rig
+treatment from the last 24 h is overwritten on the next loop; that replace
+also happens on 15.0.8, but only 15.0.9 makes the rig re-post every loop.
+GluPredKit: count=0 returns [] for profile, treatments and entries on dev and
+the candidate (15.0.8: 1 / 137 / 576 in a 50 h window); the count=100000
+control is full on all three. Filed 2026-09-23 from the -6a consumer-impact
+survey, on the maintainer instruction to document it as a compatibility and
+semver item, not a backfix. oref0 (dev d219baf9, master 88cf032a) sends count
+as "1?<credential>" from latest-openaps-treatment; 15.0.8 parseInt read 1,
+15.0.9 answers 400. GluPredKit sends count=0 as "no limit"; 15.0.9 answers [].
+Under the semver policy rule (section 3.2) both make the narrowing major as
+written. Options, in outline - ship as a declared correction naming both
+clients; tolerate the shapes real clients send and keep 15.0.9 a patch; or
+number the release as a major. The release notes count section carries a
+hidden OPEN BEFORE THE TAG note.
 
 ---
 

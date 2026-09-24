@@ -48,12 +48,12 @@ Two differences from 15.0.8 remain, both on shapes no client in the census sends
 
 ## Verifying it
 
-Against MongoDB 7 with `--ulimit nofile=64000:64000`, Node 20.20.0:
+With `--ulimit nofile=64000:64000` on every MongoDB container:
 
 | check | result |
 |---|---|
 | `tests/api.count-parameter.test.js` | 49 passing |
-| full suite (`npm test`) | 2466 passing, 0 failing, 3 pending (`dev` `ddd9b600`: 2453; +13 net new tests) |
+| full suite (`npm test`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4 and 7 | 2466 passing, 0 failing, 3 pending in all six cells (`dev` `ddd9b600`: 2453; +13 net new tests) |
 | break-it: the rewrite call removed | 18 of the new tests fail |
 | break-it: only the date-window rule removed | the 2 entries window tests fail. The other collections are seeded with fewer documents than their default, so they cannot tell the window from the default. |
 
@@ -67,4 +67,4 @@ The consumer-replay lab from the 15.0.9 survey replays each client's own request
 
 The `count=100000` control returns the full window on all three builds.
 
-Not yet run: Node 22 and 24, MongoDB 4.4, a combined run with #8754 and #8758, and a real OpenAPS rig or GluPredKit install (the lab replays their requests, not the programs).
+Not yet run: a combined run with #8754 and #8758, and a real OpenAPS rig or GluPredKit install (the lab replays their requests, not the programs).
