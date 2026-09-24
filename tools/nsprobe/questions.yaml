@@ -1,0 +1,184 @@
+# The questions nsprobe asks of an outside data holder's corpus.
+#
+# Each entry names the claim in this repository it tests (`claim`), the
+# probe or pipeline step that answers it (`answered_by`), what our own
+# corpus shows (`ours`, from reports/nsprobe/baseline/ or
+# reports/schema-census/), and what a result would change (`changes`).
+#
+# `ours` is anchored to the baseline in reports/nsprobe/baseline/ (generated
+# 2026-09-23 at commit 234253d1 from the 2026-04-01 snapshot: 11 sites) or to
+# reports/schema-census/ (both snapshots). Re-run `make nsprobe-baseline`
+# rather than copying a number from here into another document.
+#
+# answered_by values:
+#   probe:<id>       tools/nsprobe/probes.py, via `nsprobe run`
+#   census:<file>    nsschema pipeline, via `nsprobe census`
+#   warehouse:<id>   tools/nsprobe/warehouse.py, via `nsprobe warehouse`
+#   task:<id>        an analysis task in AGENTS.md (the holder's own code)
+
+questions:
+  - id: Q00
+    question: Which clients wrote the corpus, by the same rule on every data set?
+    claim: tools/nsprobe/family.py (classification rules and their sources)
+    answered_by: [probe:families, warehouse:platform]
+    ours: 9 Loop sites, 1 Trio, 1 with no closed loop; no AAPS, iAPS or oref0-rig devicestatus.
+    changes: >-
+      Every other answer is grouped by family, so a disagreement between
+      this classifier and the holder's own platform detection is reported
+      first. Insulin-Kinetics platform_detect.py and oref-digital-twin
+      variant/signals.py use different rules; see AGENTS.md task T1.
+
+  - id: Q01
+    question: Is the devicestatus openaps.* subtree one shape across AAPS, Trio, iAPS and oref0 rigs?
+    claim: >-
+      docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md §10
+      ("whether openaps.* is Trio-specific"); PROPOSAL-replay-fidelity-changes-2026-09-11.md
+      (all openaps.* frequencies come from one site)
+    answered_by: [probe:openaps_shape, census:devicestatus.census.json]
+    ours: One site (Trio) writes openaps.*; every openaps path frequency in the spec rests on it.
+    changes: >-
+      specs/openapi/aid-devicestatus-2025.yaml x-aid-controllers markers and
+      the devicestatus census tiers; which openaps paths become common vs vendor.
+
+  - id: Q02
+    question: How common are the oref-family devicestatus quirks?
+    claim: specs/quirks/devicestatus.yaml QUIRK-DEVICESTATUS-002..005
+    answered_by: [census:quirks.json, probe:openaps_shape]
+    ours: Each rests on 1 site (nested pump.status, battery.string, 0xDEADBEEF reservoir, fractional lastTemp.duration).
+    changes: The quirk's expect.min_sites, and whether reader_guidance generalises.
+
+  - id: Q03
+    question: What eventType values occur, and which clients write each?
+    claim: specs/quirks/treatments.yaml QUIRK-TREATMENTS-005; reports/schema-census/treatments.reconcile.json enum_unverifiable
+    answered_by: [probe:event_types, census:treatments.reconcile.json]
+    ours: 14 distinct values observed, 6 publishable (seen on 3+ sites); 2 sites write values outside every enum.
+    changes: The eventType enum in aid-treatments-2025.yaml and its enum_unverifiable status.
+
+  - id: Q04
+    question: How are automatic boluses (SMBs) marked, and does "automatic and under 5 U" find them?
+    claim: tools/ns2parquet/normalize.py _is_smb and tools/ns2parquet/grid.py bolus_smb (two copies of the rule)
+    answered_by: [probe:smb_marking, warehouse:bolus_typing, warehouse:external_insulin]
+    ours: >-
+      Trio marks SMBs with eventType "SMB" alone; the size rule catches none
+      of them (9,977 on one site). Loop's automatic boluses all match the
+      size rule. No AAPS treatments in the corpus.
+    changes: >-
+      The SMB rule in ns2parquet, the bolus_smb grid column, and the
+      treatments sync spec (GAP-TREAT-002). Also whether isBasalInsulin
+      separates basal insulin from other External Insulin.
+
+  - id: Q05
+    question: How are temp basals written (absolute, rate, percent; duration vs durationInMilliseconds)?
+    claim: tools/ns2parquet/normalize.py temp-basal handling; tools/oref_inv_003_replication/reports/synthesis_report.md (ODC percent bug)
+    answered_by: [probe:temp_basal]
+    ours: >-
+      Loop writes absolute, rate, duration and temp together on every temp
+      basal (10 sites), with fractional duration on 99% of them; Trio's one
+      site uses a different field set (folded in the baseline because one
+      site cannot publish a combination).
+    changes: The treatments temp-basal schema and ns2parquet's rate reconstruction.
+
+  - id: Q06
+    question: How common is mmol/L, and does "algorithm ISF < 15 means mmol/L" agree with profile units?
+    claim: specs/quirks/profile.yaml QUIRK-PROFILE-003; tools/ns2parquet/normalize.py (ISF < 15 heuristic)
+    answered_by: [probe:units, census:profile.census.json]
+    ours: >-
+      Four spellings of units across 11 sites. On the one site with algorithm
+      ISF (Trio, mg/dL profile), 26 of 61,368 values are under 15, which the
+      rule would wrongly convert.
+    changes: The unit-conversion rule in ns2parquet and conformance/unit-conversions/conversions.yaml.
+
+  - id: Q07
+    question: Do utcOffset and the ISO timestamp agree, and how often is either missing or wrong?
+    claim: nightscout-typed-schema-evidence-2026-09-10.md §3.3 (candidate_required_write); tools/ns2parquet/normalize.py utc_offset
+    answered_by: [probe:time]
+    ours: >-
+      utcOffset agrees with the ISO offset wherever both exist, except on
+      entries from xDrip-family uploaders: one xDrip site writes a UTC ISO
+      string with a non-zero utcOffset (16,177 entries), as do all 51
+      xDrip4iOS entries.
+    changes: Whether utcOffset can be a required write field, and how readers should treat an ISO string without a zone.
+
+  - id: Q08
+    question: How many duplicates does _id-only deduplication miss, and from which uploader pairs?
+    claim: conformance/assertions/sync-deduplication.yaml; cross-controller-dedup.yaml; tools/ns2parquet/normalize.py (dedup on _id)
+    answered_by: [probe:duplicates, warehouse:dedup]
+    ours: >-
+      Two sites carry the same reading from two Share-family uploaders
+      within 5 seconds (59,827 entries, about 9% of all entries). Treatments
+      and devicestatus duplicates are rarer; see baseline duplicates.json.
+    changes: >-
+      A new quirk entry for cross-uploader duplicates, the v3 dedup-key
+      conformance vectors, and ns2parquet's dedup rule.
+
+  - id: Q09
+    question: Is fractional entries.date or direction NONE specific to some clients?
+    claim: specs/quirks/entries.yaml QUIRK-ENTRIES-001, -002
+    answered_by: [probe:time, census:quirks.json]
+    ours: Fractional date on 10 sites (Loop, Trio, Share); direction NONE on 5.
+    changes: Reader guidance for entries.date, and whether NONE joins the direction enum.
+
+  - id: Q10
+    question: Which declared-but-unobserved paths appear in non-Loop data?
+    claim: specs/sync/primitives.yaml (50 declared fields never measured); reports/schema-census/*.reconcile.json unobserved
+    answered_by: [census:*.reconcile.json]
+    ours: 11 unobserved treatments paths, 12 devicestatus, 4 entries, 3 profile.
+    changes: Primitive grades in specs/sync/primitives.yaml move from declared to measured.
+
+  - id: Q11
+    question: Are the oref0 dosing inputs recorded anywhere (maxIob, microBolusAllowed, iob.lastTemp, the IOB split)?
+    claim: specs/nsschema/dosing-input-sources.yaml (16 absent, 12 medium-confidence); PROPOSAL-replay-fidelity-changes-2026-09-11.md
+    answered_by: [census:dosing-inputs.json, probe:openaps_shape, warehouse:iob]
+    ours: maxIob is recorded by no oref0 derivative in the corpus; openaps.iob is an object on the one Trio site.
+    changes: The kind/confidence of each input, and what the replay-fidelity proposal asks uploaders to add.
+
+  - id: Q12
+    question: Do non-Dash pumps, xDrip, LibreLink or cal entries change pump.* or entries shapes?
+    claim: nightscout-typed-schema-evidence-2026-09-10.md §10
+    answered_by: [probe:families, census:devicestatus.census.json, census:entries.census.json]
+    ours: 10 of 11 sites use an Insulet Dash pump; no cal entries.
+    changes: Pump subtree tiers and the entries type enum.
+
+  - id: Q13
+    question: Is the API v3 envelope present in real data, visible through v1, and consistent between the two?
+    claim: >-
+      nightscout-typed-schema-evidence-2026-09-10.md §1.2 (v1 does not return the v3 envelope,
+      read from code); conformance/assertions/sync-identity-reqs.yaml (v1 and v3 give the same identifier)
+    answered_by: [probe:v3_envelope, census:*.reconcile.json v3_metadata_absent]
+    ours: The corpus was fetched through v1 only; the envelope fields are unmeasured.
+    changes: The v3_metadata_absent list, and a quirk or vector for /history and isValid=false.
+
+  - id: Q14
+    question: Over years, which fields appeared or disappeared?
+    claim: nightscout-typed-schema-evidence-2026-09-10.md §1.2 (two snapshots 25 days apart)
+    answered_by: [probe:longitudinal]
+    ours: See baseline longitudinal.json (quarters with 3+ contributing sites only).
+    changes: Which paths are deprecated vs current, and version-gated reader guidance.
+
+  - id: Q15
+    question: On a larger oref cohort, do the OREF-INV-003 findings hold with logged rather than approximated IOB features?
+    claim: >-
+      tools/oref_inv_003_replication/reports/synthesis_report.md (F3 basaliob rank, F10 CR×hour
+      stability, EXP-2491 transfer); tools/oref_inv_003_replication/data_bridge.py FEATURE_QUALITY
+    answered_by: [warehouse:feature_coverage, warehouse:iob, task:T4]
+    ours: 5 of 32 features approximated (basaliob, bolusiob, activity, Dev, BGI); cross-algorithm claims rest on 8 AAPS patients.
+    changes: Whether the approximations in pk_bridge.py are adequate, and the status of F3, F10 and EXP-2491.
+
+  - id: Q16
+    question: Which apps write heart rate and steps to Nightscout, under which keys, at what cadence?
+    claim: >-
+      specs/nsschema/activity.model.json (code-derived, never measured);
+      specs/openapi/aid-heartrate-2025.yaml (a v3 collection that 15.0.9 does not serve)
+    answered_by: [probe:activity, warehouse:steps]
+    ours: No site in the corpus has an activity collection.
+    changes: >-
+      A measured activity model; whether the server's reader keys
+      (heartrate, steps, activitylevel) or xDrip's (bpm, steps) are the real
+      vocabulary.
+
+  - id: Q17
+    question: Where do step counts from AAPS forks actually live?
+    claim: externals/Insulin-Kinetics platform_detect.py ("the AAPS uploader carries step data"); mainline AndroidAPS stores HeartRate/StepsCount locally only
+    answered_by: [probe:activity, warehouse:steps, task:T2]
+    ours: No step or heart-rate path in any collection.
+    changes: A schema entry for whichever collection and path carries them.

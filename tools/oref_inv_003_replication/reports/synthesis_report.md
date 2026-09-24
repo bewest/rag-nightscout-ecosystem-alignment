@@ -91,10 +91,10 @@ Phase 9 corrective arc (data fix → PK features → DIA optimization).
 **Agreement**: strongly_agrees
 **Prior work**: EXP-2401
 
-### F3: Inconclusive: iob_basaliob is #2 for hypo ❓
+### F3: Partially Agrees: iob_basaliob is #2 for hypo 🟡
 
-**Evidence**: Tested in EXP-2401, EXP-2411
-**Agreement**: inconclusive
+**Evidence**: Tested in EXP-2401, EXP-2411; resolved in "F3 Resolution" below
+**Agreement**: partially_agrees (#9 for AAPS patients only, with PK features; population gap)
 **Prior work**: EXP-2411
 
 ### F4: Partially Agrees: hour is #2 for hyper 🟡
@@ -155,12 +155,15 @@ All models use LightGBM with consistent hyperparameters across experiments. Eval
 
 This synthesis report compares the findings of OREF-INV-003 ("What Drives Outcomes in oref Closed-Loop Insulin Delivery") with our independent replication, contrast, and augmentation analysis.
 
-Of 10 core findings (F1–F10):
+Of 10 core findings (F1–F10, F5 counted once):
 
 - **4** strongly agree ✅✅
 - **3** agree ✅
-- **2** partially agree 🟡
-- **1** inconclusive ❓
+- **3** partially agree 🟡
+- **0** inconclusive
+
+The scorecard at the top splits F5 into F5a and F5b, both strongly agree, which gives
+5 / 3 / 3.
 
 **Novel contributions from our augmentation work:**
 

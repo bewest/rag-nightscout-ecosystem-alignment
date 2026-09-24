@@ -527,15 +527,19 @@ public class StepCounter extends Model {
 
 ### Mapping to Nightscout
 
-Activity data can be uploaded to `/api/v1/activity`:
+`NightscoutUploader` posts activity to `/api/v1/activity` (v1 only; API v3 does not
+serve `activity`). Each reading is its own document, told apart by `type`:
 
 ```json
-{
-    "created_at": "2026-01-16T12:00:00.000Z",
-    "steps": 5000,
-    "heartRate": 72
-}
+{"type": "hr-bpm",      "timeStamp": 1768564800000, "created_at": "2026-01-16T12:00:00.000Z", "bpm": 72, "accuracy": 2}
+{"type": "steps-total", "timeStamp": 1768564800000, "created_at": "2026-01-16T12:00:00.000Z", "steps": 5000}
 ```
+
+`accuracy` is written only when it is not 1. The step document carries the
+`StepCounter.metric` value under the key `steps`. The cgm-remote-monitor client
+reads `heartrate`, `steps` and `activitylevel` from activity documents
+(`lib/data/dataloader.js`), so xDrip's `bpm` is not the key it looks for.
+Motion documents (`type: "motion-class"`) are also uploaded.
 
 ---
 

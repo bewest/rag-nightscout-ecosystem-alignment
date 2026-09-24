@@ -762,6 +762,27 @@ schema-impact-smoke:
 	@node tools/nsschema/replay.js --max-docs 3000 \
 		--out reports/schema-census/impact-smoke.json
 
+## nsprobe-test: the external-data probe kit, on synthetic data only
+.PHONY: nsprobe-test nsprobe-baseline
+nsprobe-test:
+	@$(PY) -m pytest tools/nsprobe/test_nsprobe.py -q
+
+## nsprobe-baseline: run the probes over this repo's 2026-04-01 snapshot and
+## refresh reports/nsprobe/baseline/ (the numbers a data holder compares with).
+## The pseudonymised copy and its site key go to NSPROBE_WORK, never the repo.
+NSPROBE_WORK ?= $(or $(TMPDIR),/tmp)/nsprobe-baseline
+nsprobe-baseline:
+	@rm -rf $(NSPROBE_WORK) && mkdir -p $(NSPROBE_WORK)/src
+	@for d in externals/ns-data/patients/*/; do \
+		ln -s "$(CURDIR)/$${d}raw" $(NSPROBE_WORK)/src/$$(basename $$d); done
+	@PYTHONPATH=tools $(PY) -m nsprobe layout --src $(NSPROBE_WORK)/src \
+		--dest $(NSPROBE_WORK)/corpus --key $(NSPROBE_WORK)/private/key.json >/dev/null
+	@PYTHONPATH=tools $(PY) -m nsprobe run --root $(NSPROBE_WORK)/corpus \
+		--out $(NSPROBE_WORK)/out --contributor alignment-11 2>/dev/null
+	@rm -f reports/nsprobe/baseline/*.json && mkdir -p reports/nsprobe/baseline
+	@cp $(NSPROBE_WORK)/out/nsprobe/*.json reports/nsprobe/baseline/
+	@PYTHONPATH=tools $(PY) -m nsprobe check reports/nsprobe/baseline
+
 ## schema-verify: fail if a committed generated artifact drifted from its model
 schema-verify:
 	@$(NSSCHEMA).verify_generated

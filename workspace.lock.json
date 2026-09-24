@@ -339,6 +339,51 @@
       "description": "oref digital twin simulator",
       "frozen_at": "2026-09-23T22:12:04.456838",
       "frozen_from": "main"
+    },
+    {
+      "alias": "insulin-kinetics",
+      "name": "Insulin-Kinetics",
+      "url": "https://github.com/tim2000s/Insulin-Kinetics",
+      "ref": "eb7032b8d691f5a2e09763c9fd4bfec3e4f9c410",
+      "description": "Insulin peak and duration estimation from closed-loop data (reads a flattened oref warehouse)",
+      "frozen_at": "2026-09-23T22:26:36.848011",
+      "frozen_from": "master"
+    },
+    {
+      "alias": "dynamic-isf-calculations",
+      "name": "dynamic-isf-calculations",
+      "url": "https://github.com/tim2000s/dynamic-isf-calculations",
+      "ref": "b8d0b2488ffcec381af03b2f3113fa99fe8571b2",
+      "description": "Dynamic ISF v1/v2 replay over Trio, AAPS and OpenAPS histories",
+      "frozen_at": "2026-09-23T22:26:36.849611",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "smoothing-investigations",
+      "name": "Smoothing-Investigations",
+      "url": "https://github.com/tim2000s/Smoothing-Investigations",
+      "ref": "520426e7c490a5daac9e47389d97c955ee98716f",
+      "description": "CGM smoother backtests (AAPS Average, Exponential, UKF)",
+      "frozen_at": "2026-09-23T22:26:36.851243",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "exercise-eval",
+      "name": "exercise-eval",
+      "url": "https://github.com/tim2000s/exercise-eval",
+      "ref": "3e9eaabaffa6a650fb41f8f7210bfa084b384315",
+      "description": "Browser exercise-session evaluation from Nightscout and Health Connect data",
+      "frozen_at": "2026-09-23T22:26:36.852695",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "clinical-advice-analysis",
+      "name": "clinical-advice-analysis",
+      "url": "https://github.com/tim2000s/clinical-advice-analysis",
+      "ref": "870c66fc7bdd8dfecd5be28d73fdef0a66614e01",
+      "description": "LLM pump-settings advice study; Nightscout fetch and duplicate-entry analysis",
+      "frozen_at": "2026-09-23T22:26:36.854216",
+      "frozen_from": "main"
     }
   ]
 }
