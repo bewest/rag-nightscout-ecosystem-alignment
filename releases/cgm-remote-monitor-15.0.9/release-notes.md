@@ -3,6 +3,12 @@
 **DRAFT — not yet released. Prepared for maintainer review; the wording may change.**
 **The version number is settled: 15.0.9.**
 
+<!-- PENDING: #8754 merge. PR #8754 (bf2/auth-hardening) is open, and dev has none of it. Besides the
+     sections wrapped in "PENDING: #8754 merge" markers below, these list items depend on it and must
+     go if it does not ship: "Before you upgrade" items 2 and 3; "Security fixes" items 6 and 7; the
+     TRUST_PROXY and plain-text token items under "What you must do", "What to check afterwards"
+     and "Known issues". Checked against origin/dev ddd9b600, 2026-09-23. -->
+
 *For people who run a Nightscout site for themselves or a family member. Nightscout is not a
 medical device, and nothing in these notes is medical advice or advice about insulin doses.
 Where a change could affect decisions about your therapy, talk it through with your care team.*
@@ -127,7 +133,9 @@ security advisories are published.
    information, alarms or notifications. If your site uses the standard setting, where anyone
    with the address can read it (`AUTH_DEFAULT_ROLES=readable`), nothing changes.
 2. **Silencing alarms through the live-update connection now requires the permission meant for
-   it.**
+   it.** Among the built-in roles only `admin` has it, on the standard setting too. An app that
+   silences Nightscout alarms with an access token needs a user with the `admin` role; with any
+   other role the app's silence does nothing, and the app is not told.
 3. **The older API (version 1) accepts only a fixed, documented list of filter conditions**
    and refuses anything else with an error. See
    [Corrections](#corrections-requests-answered-differently) for what this means for tools.
@@ -160,6 +168,7 @@ this release is the one that makes the live-update connection respect it. If you
 `TREATMENTS_AUTH=off`, read the new warning and decide whether you still want it. If you have
 ever edited a user on the admin page, read the token section below.
 
+<!-- PENDING: #8754 merge -->
 ### The new `TRUST_PROXY` setting
 
 Nightscout counts failed logins per visitor address. Today it takes that address from labels
@@ -193,6 +202,7 @@ configuration guide with more detail.
 
 No release has been chosen in which the default will change; until one is, unset is a permanent,
 supported choice.
+<!-- PENDING: #8754 merge -->
 
 ---
 
@@ -211,15 +221,18 @@ routine while it is sorted out.**
 
 <!-- OPEN BEFORE THE TAG (2026-09-23): this section describes the rule on dev, and two real clients
      meet it in ways that may make it a compatibility break. See the semver policy, section 3.2,
-     "Evidence added 2026-09-23". An end-to-end replay is running. Do not publish these notes until
-     the maintainer has decided the count rule.
+     "Evidence added 2026-09-23". Reproduced end to end on 15.0.8, dev and the candidate (see
+     docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). Do not publish these notes
+     until the maintainer has decided the count rule.
      - oref0 (OpenAPS) sends count as "1?<credential>" on its latest-treatment lookup; 15.0.8 read it
        as 1, and this release answers 400.
      - GluPredKit sends count=0 to mean "no limit"; this release answers with an empty list.
      If the rule ships as it stands, add to this section, in plain words: which clients are affected,
-     what they will see, and that OpenAPS users should update oref0 once it has a fix. The OpenAPS
-     wording must be settled with the replay's result on whether duplicate treatments are stored,
-     because that affects insulin and carbs on board. If the rule changes, rewrite the table to match. -->
+     what they will see, and that OpenAPS users should update oref0 once it has a fix. The replay
+     found NO duplicate treatments (the upsert is idempotent), so insulin and carbs on board are not
+     counted twice; the rig re-uploads a day of treatments on every loop, and an edit made in
+     Nightscout to one of them is overwritten on the next loop. If the rule changes, rewrite the table
+     to match. -->
 
 Apps add `count` to a request to say how many records they want back, for example "the last 10
 readings". On 15.0.8, a request for **zero** records could send back your **entire** history,
@@ -228,7 +241,7 @@ in this release:
 
 | The request | 15.0.9 answers |
 |---|---|
-| a read with `count=0` | an **empty list**: no records, and no error. It never returns your whole history. |
+| a read with `count=0` | an **empty list**: no records, and no error. It never returns your whole history. (On 15.0.8, device status reports gave the last 10 for `count=0`; they now give none.) |
 | a read with an ordinary count such as `10` or `288` | as before |
 | a read with no `count` | the usual default (for glucose readings, the last 10), as before |
 | a read with a count that is not a plain whole number: `abc`, `-3`, `2.5`, `1e2`, `0x10`, or a number too large to handle exactly | an error, "Bad count" (HTTP 400) |
@@ -250,6 +263,7 @@ error or a silently empty answer. A survey of 14 Nightscout apps found none that
 condition. One condition that used to work is now refused: `$expr` on the profiles address. An
 undocumented `pipeline` option on the counting addresses is also refused.
 
+<!-- PENDING: #8754 merge -->
 ### Fields stored on users and roles
 
 When a user or role is created or saved, Nightscout now stores only these fields:
@@ -261,6 +275,7 @@ When a user or role is created or saved, Nightscout now stores only these fields
 user or role is saved, and is not stored when one is created. No open-source tool that stores
 other fields was found. If you use a tool that manages users on your site, check it still works
 after the upgrade.
+<!-- PENDING: #8754 merge -->
 
 ---
 
@@ -500,6 +515,7 @@ For a filter asking whether a value is present, only `true`, `false`, `1` and `0
 understood. Other spellings, such as `null` or leaving the value empty, still mean "has the
 value".
 
+<!-- PENDING: #8754 merge -->
 ### Editing a user on the admin page keeps its notes and creation date
 
 On earlier releases, opening a user on the admin page and saving it — for example to give it another
@@ -507,6 +523,8 @@ role — wiped that user's notes and replaced the date it was created with the d
 with no warning. Both are now kept, for users and for roles. You can still clear the notes on
 purpose by emptying the notes box and saving. Notes and dates already lost to earlier edits
 cannot be recovered.
+<!-- PENDING: #8754 merge -->
+
 
 ### Pages that would not load
 
@@ -587,7 +605,9 @@ left waiting; a misspelled plugin name in `ENABLE` now gets a suggestion in the 
 "Nightscout is having trouble" start-up page no longer fails on one kind of error message that
 no current version produces; deployment with npm 12 no longer fails; the library that reads web
 addresses and form posts is updated to a version that clears three published security notices
-against it, with no difference for any request a known app sends; updated translations and many
+against it; a filter listing more than 20 values (for example, "these 30 records") now works,
+where 15.0.8 refused it with an error, so a tool that deletes records by such a list now deletes
+them; updated translations and many
 software library updates.
 
 ---
@@ -672,6 +692,7 @@ software library updates.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
 
+<!-- PENDING: #8754 merge -->
 ### Access tokens stored in plain text
 
 An **access token** is the password-like string that lets a person or an app use your
@@ -713,6 +734,8 @@ retire. If you can look inside your database, a user is affected if its record i
 paste a token or your `API_SECRET` into an issue, forum post, screenshot or chat** — those
 values are the credential itself. Treat any database backup or export as containing working
 credentials.
+<!-- PENDING: #8754 merge -->
+
 
 ## About the version number
 
