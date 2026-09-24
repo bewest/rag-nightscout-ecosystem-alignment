@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-23 against cgm-remote-monitor `origin/dev` `4011193e` and nightscout-connect
+2026-09-23 against cgm-remote-monitor `origin/dev` `ddd9b600` and nightscout-connect
 `official/dev` `977da8a`; tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -83,12 +83,14 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Twenty-three cgm-remote-monitor pull requests from this work are merged into `dev` and none is
+Twenty-four cgm-remote-monitor pull requests from this work are merged into `dev` and none is
 released: the thirteen backfix PRs (twelve from this programme, plus #8741 from an external
-contributor), and ten of the twelve 15.0.9 additions (#8748, #8749, #8750, #8751, #8752, #8753, #8755,
-#8756, #8757, #8759). Two are open: #8754 (login security fixes and `TRUST_PROXY`, waiting on the
-security review by the maintainer and Andy) and #8758 (records keep their own `_id`). Tested together
-before merging: `rc/15.0.9-combined-36b`, 3015/0/3 on every Node and MongoDB pair.
+contributor), and eleven of the thirteen 15.0.9 additions (#8748, #8749, #8750, #8751, #8752, #8753,
+#8755, #8756, #8757, #8759, #8760). Two are open: #8754 (login security fixes and `TRUST_PROXY`, waiting on the
+security review by the maintainer and Andy) and #8758 (records keep their own `_id`).
+`rc/15.0.9-combined-36b` (3015/0/3 on every Node and MongoDB pair) tested every 15.0.9 unit except
+#8760, which merged after it. A combined run of `dev` `ddd9b600` with #8754 and #8758 is next, and
+one more follows the pin to exact `0.1.0`, before the tag (maintainer, 2026-09-23; `RT-0`).
 
 The connector half, in `nightscout-connect`, measured 2026-09-23 against connector `dev` `977da8a`:
 every programme fix is merged there (PRs #64 with #61, #66 and #67; #68; #77; #78; #79), `dev`
@@ -112,15 +114,15 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 58 first-parent merges
-(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-23); `master` is 343 commits
+The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 59 first-parent merges
+(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-23); `master` is 345 commits
 behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
 include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is open at `4011193e`, green on every CI check, and has
-no approving review. Still before the tag: #8754 and #8758, connector `0.1.0` and its pin, the release
-notes, and that review. What 15.0.9 contains and whether it is ready:
+still exposed to all of them. Release PR #8598 is open at `ddd9b600`, green on every CI check, and has
+no approving review. Still before the tag: #8754 and #8758, the combined runs, connector `0.1.0` and
+its pin, the release notes, and that review. What 15.0.9 contains and whether it is ready:
 [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
 (a 2026-09-22 snapshot; the combined rc record is
 [`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md)).
@@ -180,6 +182,6 @@ gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `ddd9b600` and this repository at `c1a5e719`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

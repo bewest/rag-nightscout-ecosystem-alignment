@@ -121,12 +121,22 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757, #8749,
-#8748, #8755, #8756, #8753 and #8751; open: #8754 (security review: maintainer
-and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f,
-3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-
-run is owed unless #8754 or #8758 changes head. Manual checks passed on
-ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
+2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103). Open: #8754
+(head ef3404fd: three dev merges on 0a74ef4e, its own changes line-identical
+to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is clean (tree
+2ce67b27) and differs from the verified combined rc d087588f in exactly
+#8760's five files, so no combined run covers today's candidate. DECIDED
+2026-09-23 (maintainer, relayed via -59) - run the combined suite now on dev
+ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on evidence,
+and once more after the pin to exact 0.1.0, before the tag. The first run is
+rc/15.0.9-combined-59 (session -59). #8598 carries the manual-check comment
+and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still has zero
+reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757,
+#8749, #8748, #8755, #8756, #8753 and #8751; open: #8754 (security review:
+maintainer and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b
+d087588f, 3015/0/3 on all six Node x MongoDB cells) tested exactly this set,
+so no re-run is owed unless #8754 or #8758 changes head. Manual checks passed
+on ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
 AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes
 lib/api3/alarmSocket.js and is not on 4011193e; every other client file those
 checks use is identical). Still before the tag - connector v0.1.0 and a pin to
@@ -164,4 +174,4 @@ P0-TAG.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `4011193e`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*

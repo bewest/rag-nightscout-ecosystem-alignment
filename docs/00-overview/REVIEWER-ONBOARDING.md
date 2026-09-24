@@ -2,7 +2,7 @@
 
 *Contributor-facing. Written for somebody who has never seen this repository and
 is considering reviewing work in it. Prose revised 2026-09-23 against
-cgm-remote-monitor `origin/dev` `4011193e` and `origin/master` `92d08342` (tag
+cgm-remote-monitor `origin/dev` `ddd9b600` and `origin/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -88,11 +88,11 @@ that is the thing to be suspicious of.
 **5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
 repaired on a branch that has not been merged; `merged` means merged into
 `origin/dev` and not released; `released` means in a tagged release operators run.
-No programme fix is released: `origin/master` is 343 commits behind `dev`
+No programme fix is released: `origin/master` is 345 commits behind `dev`
 (2026-09-23) and the shipping tag is 15.0.8. The register's open count is therefore
 not "the defects still shipping". As computed from the register's §1 on 2026-09-23,
-**71 defects reach every self-hoster on 15.0.8**: of the 72 in §1, 26 are open (one of
-them, BF-80, exists only on `dev`), 38 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+**71 defects reach every self-hoster on 15.0.8**: of the 72 in §1, 23 are open (one of
+them, BF-80, exists only on `dev`), 41 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
 
 ---
 
@@ -104,7 +104,7 @@ Three entry points, easiest first:
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
    each item awaiting review. Two 15.0.9 pull requests are open: #8758 (records keep
    their own `_id` across API v1, v3 and the websocket; a large change to core data
-   paths, where careful review is most useful) and #8754 (below). Twenty-three others
+   paths, where careful review is most useful) and #8754 (below). Twenty-four others
    are merged into `dev`, none released. The connector's fixes are merged into
    `nightscout-connect` `dev` and published as prerelease `0.1.0-dev.3`; its full
    release is `P0-TAG`.
@@ -180,6 +180,6 @@ they read. The standard these documents are held to is
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `ddd9b600` and this repository at `c1a5e719`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

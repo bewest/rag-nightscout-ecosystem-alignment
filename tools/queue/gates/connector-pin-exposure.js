@@ -89,7 +89,12 @@ function pinnedRevision(url) {
   const tag = /refs\/tags\/(v[\d.]+)\.tar\.gz/.exec(url);
   if (tag) return tag[1];
   const sha = /archive\/([0-9a-f]{7,40})\.tar\.gz/.exec(url);
-  return sha ? sha[1] : null;
+  if (sha) return sha[1];
+  // An exact npm version (e.g. "0.1.0-dev.3"). The connector's publish workflow
+  // publishes only from a tag v<version>, so the tag names the published tree.
+  // A range (^, ~, *) is not exact and stays unparsed.
+  const npm = /^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/.exec(url);
+  return npm ? `v${npm[1]}` : null;
 }
 
 const findings = [];

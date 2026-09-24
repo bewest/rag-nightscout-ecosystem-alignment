@@ -106,7 +106,7 @@ The units are integrated on a scratch `rc/backfix-2` branch pinned to `dev` by S
 
 ### Into 15.0.9 (before the tag)
 
-State on 2026-09-23 against `dev` `4011193e`. The queue holds the authoritative state; this is the list.
+State on 2026-09-23 against `dev` `ddd9b600`. The queue holds the authoritative state; this is the list.
 
 | PR | branch | content | state |
 |---|---|---|---|
@@ -120,17 +120,20 @@ State on 2026-09-23 against `dev` `4011193e`. The queue holds the authoritative 
 | #8756 | `bf3/quickpick-rebuild` | the Bolus Wizard quick-pick list is rebuilt when the drawer opens (BF-69) | merged |
 | #8753 | `bf2/ops` | compose `ulimits` (BF-10), the boot error page (BF-63 renderer half), Alexa default, `isPluginEnabled` | merged |
 | #8751 | `bf2/backports` | the two modernization-only security fixes (BF-104, BF-105) | merged |
+| #8760 | `bf/split-drag-time` | a treatment moved by drag, whole or split, keeps its new time for IOB and COB (BF-103) | merged |
 | #8754 | `bf2/auth-hardening` | BF-17, BF-30, `TRUST_PROXY` (with hop counts and `true`), BF-47's admin-page fix; withheld-style body | **open**: security review, maintainer and Andy |
 | #8758 | `bf/object-id-crud` | records keep their own `_id` across v1, v3 and the websocket (BF-99 to BF-102) | **open**: review |
 | — | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started |
 
 "merged" means merged into `dev`, not released.
 
-**Tested together.** `rc/15.0.9-combined-36b` `d087588f` merged every PR above except the final pin, in PR
-order, each merge clean: 3015/0/3 on Node 20, 22 and 24 with MongoDB 4.4 and 7, the create/read/update/delete
+**Tested together.** `rc/15.0.9-combined-36b` `d087588f` merged every PR above except #8760 and the final pin,
+in PR order, each merge clean: 3015/0/3 on Node 20, 22 and 24 with MongoDB 4.4 and 7, the create/read/update/delete
 matrix 336/336, and a Nightscout-to-Nightscout lab run on `0.1.0-dev.3` with no duplicates or gaps
-([record](rc-15.0.9-combined-2026-09-23.md)). No re-run is owed unless #8754 or #8758 changes head; one is owed
-after the pin to exact `0.1.0`.
+([record](rc-15.0.9-combined-2026-09-23.md)). `dev` `ddd9b600` with #8754 (`ef3404fd`) and #8758 (`6d120fa2`)
+merges clean and differs from that tree in exactly #8760's five files. Decided 2026-09-23 (maintainer): run
+the combined suite on that set now, so #8754 and #8758 can merge on evidence, and once more after the pin to
+exact `0.1.0`, before the tag. The first run is `rc/15.0.9-combined-59`.
 
 **Checked by hand** on the combined rc `ec70aab0` (2026-09-23): the treatment drag (RT-D3) with mouse in mg/dL and
 mmol/L and with touch, the same as 15.0.8; alarms under `AUTH_DEFAULT_ROLES=denied` and with

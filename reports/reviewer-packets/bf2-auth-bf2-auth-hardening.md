@@ -93,10 +93,14 @@ default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 ## Notes carried on the item
 
-2026-09-23 - #8754's head is 0a74ef4e (pushed by the maintainer, description
-updated): the API v3 trust proxy line is dropped as inert, like v1's in
-22953b77; suite 2481/0/3 on Node 20 and 22. Correction to 0a74ef4e's commit
-message (pushed, so not rewritten; a PR comment is drafted):
+2026-09-23 - #8754's head is ef3404fd: 0ca46d92, 8211f8e2 and ef3404fd merge
+dev (up to ddd9b600) into 0a74ef4e. Measured: `git diff origin/dev ef3404fd`
+changes the same 21 files with the same added and removed lines as 0a74ef4e's
+own diff, so the PR's content is unchanged. The combined re-run on this head
+is RT-0's. 2026-09-23 - #8754's head is 0a74ef4e (pushed by the maintainer,
+description updated): the API v3 trust proxy line is dropped as inert, like
+v1's in 22953b77; suite 2481/0/3 on Node 20 and 22. Correction to 0a74ef4e's
+commit message (pushed, so not rewritten; a PR comment is drafted):
 lib/api3/security.js:34 DOES read app.get('trust proxy fn') for the v3 token
 throttle key. -1f measured the inherited fn === the parent's for unset, false,
 10.0.0.0/8, 1 and true, with the legacy marker surviving and the resolved IP
@@ -155,4 +159,4 @@ branch must say so in its boot message and PR body.
 - [ ] `make queue-status ID=BF2-AUTH` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `4011193e`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*

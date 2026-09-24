@@ -63,6 +63,13 @@ const CLAMPS = [
 const findings = [];
 
 function donorModules() {
+  // Prefer the official checkout's install: it tracks dev's dependencies. The
+  // first worktree in directory order can be an old release's install that
+  // lacks a module dev's suite requires, which fails the control at load time.
+  const own = path.join(CRM, 'node_modules');
+  if (fs.existsSync(path.join(own, 'd3')) && fs.existsSync(path.join(own, '.bin', 'mocha'))) {
+    return own;
+  }
   const work = path.join(REPO_ROOT, 'externals', 'work');
   if (!fs.existsSync(work)) return null;
   for (const name of fs.readdirSync(work)) {
@@ -90,7 +97,12 @@ const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'queue-d3-'));
 function runSuite() {
   const result = spawnSync(path.join(modules, '.bin', 'mocha'),
                            ['--timeout', '15000', SUITE],
-                           { cwd: scratch, encoding: 'utf8' });
+                           // dev's suite refuses to run unless NODE_ENV=test (a guard
+                           // against deleteMany on a real database); without it mocha
+                           // reports 0 passing, 0 failing and the control reads as a
+                           // broken harness.
+                           { cwd: scratch, encoding: 'utf8',
+                             env: Object.assign({}, process.env, { NODE_ENV: 'test' }) });
   const out = (result.stdout || '') + (result.stderr || '');
   const passing = Number((out.match(/(\d+) passing/) || [])[1] || 0);
   const failing = Number((out.match(/(\d+) failing/) || [])[1] || 0);

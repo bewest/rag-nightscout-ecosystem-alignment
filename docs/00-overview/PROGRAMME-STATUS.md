@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
-Prose revised 2026-09-23 against cgm-remote-monitor `origin/dev` `4011193e` and
+Prose revised 2026-09-23 against cgm-remote-monitor `origin/dev` `ddd9b600` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -28,12 +28,12 @@ current and the prose is stale.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. Twenty-three pull requests
+**Remedial** — finding and fixing defects that already ship. Twenty-four pull requests
 from this work are merged into cgm-remote-monitor `dev`: this programme's #8733, #8734,
 #8735, #8736, #8737, #8738, #8739, #8740 and #8743 (2026-09-17 to 2026-09-20), the three
 advisory fixes #8744, #8745 and #8746 (2026-09-21), #8741 from an external contributor
-(2026-09-20), and ten of the twelve 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
-2026-09-23). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
+(2026-09-20), and eleven of the thirteen 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
+#8760, 2026-09-23). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
 the security review) and #8758 (records keep their own `_id`). Every programme connector fix is
 in `nightscout-connect` `dev` `977da8a` and in prerelease `0.1.0-dev.3`, which Nightscout `dev`
 now installs (#8759); the full `0.1.0` (`P0-TAG`) and a last pin to it remain. The
@@ -47,15 +47,15 @@ then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed w
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
 been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-09-23 against `origin/dev` `4011193e`:
+the train has shipped. Measured 2026-09-23 against `origin/dev` `ddd9b600`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 168 | 8 |
-| 2 | `chore/build-runtime-separation` | 168 | 14 |
-| 3 | `chore/compose-mongodb6` | 168 | 16 |
-| 4 | `chore/mime-exposure-review` | 168 | 21 |
-| 5 | `chore/nightscout-modernization` | 44 | 8 |
+| 1 | `chore/retire-jsdom` | 170 | 9 |
+| 2 | `chore/build-runtime-separation` | 170 | 15 |
+| 3 | `chore/compose-mongodb6` | 170 | 17 |
+| 4 | `chore/mime-exposure-review` | 170 | 22 |
+| 5 | `chore/nightscout-modernization` | 46 | 9 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 origin/chore/<branch>..origin/dev` and `git merge-tree --write-tree --name-only
@@ -78,11 +78,11 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `origin/master` is 343 commits behind `dev`
+run, and no programme fix is released: `origin/master` is 345 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count origin/master..origin/dev`,
 2026-09-23) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this;
-release PR #8598 is open at `4011193e`, green on every CI check, and has no approving
+release PR #8598 is open at `ddd9b600`, green on every CI check, and has no approving
 review.
 
 For somebody running Nightscout today:
@@ -156,7 +156,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
+| `phase0` | 1 |  | 3 | 1 | 3 |  | 12 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 |  | 4 | 1 |  |  |  | **15** |
 | `register-open` | 16 |  | 5 |  | 4 | 2 | 11 | 4 |  | 2 | 1 | **45** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
@@ -229,7 +229,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598, at `4011193e`, no approving review). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: #8754, #8758, connector `0.1.0` and its pin, the release notes. |
+| `RT-0` | Release 15.0.9 (PR #8598, at `ddd9b600`, no approving review). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: #8754, #8758, connector `0.1.0` and its pin, the release notes. |
 | `P0-TAG` | When to cut `nightscout-connect` 0.1.0. Connector `dev` `977da8a` declares `0.1.0` and carries every fix; prerelease `0.1.0-dev.3` is on npm and is what Nightscout `dev` installs (#8759). | A pin to exact `0.1.0` follows it; 15.0.9 must not ship on a prerelease pin. |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
@@ -271,6 +271,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `ddd9b600` and this repository at `c1a5e719`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->
