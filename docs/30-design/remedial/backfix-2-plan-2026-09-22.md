@@ -133,7 +133,9 @@ matrix 336/336, and a Nightscout-to-Nightscout lab run on `0.1.0-dev.3` with no 
 ([record](rc-15.0.9-combined-2026-09-23.md)). `dev` `ddd9b600` with #8754 (`ef3404fd`) and #8758 (`6d120fa2`)
 merges clean and differs from that tree in exactly #8760's five files. Decided 2026-09-23 (maintainer): run
 the combined suite on that set now, so #8754 and #8758 can merge on evidence, and once more after the pin to
-exact `0.1.0`, before the tag. The first run is `rc/15.0.9-combined-59`.
+exact `0.1.0`, before the tag. The first run, `rc/15.0.9-combined-59` (tree `2ce67b27`), passes 3028/0/3 on every
+Node and MongoDB cell, with the create/read/update/delete matrix in each
+([record](rc-15.0.9-combined-59-2026-09-23.md)).
 
 **Checked by hand** on the combined rc `ec70aab0` (2026-09-23): the treatment drag (RT-D3) with mouse in mg/dL and
 mmol/L and with touch, the same as 15.0.8; alarms under `AUTH_DEFAULT_ROLES=denied` and with

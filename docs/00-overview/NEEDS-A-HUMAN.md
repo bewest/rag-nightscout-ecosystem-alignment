@@ -89,8 +89,9 @@ contributor), and eleven of the thirteen 15.0.9 additions (#8748, #8749, #8750, 
 #8755, #8756, #8757, #8759, #8760). Two are open: #8754 (login security fixes and `TRUST_PROXY`, waiting on the
 security review by the maintainer and Andy) and #8758 (records keep their own `_id`).
 `rc/15.0.9-combined-36b` (3015/0/3 on every Node and MongoDB pair) tested every 15.0.9 unit except
-#8760, which merged after it. A combined run of `dev` `ddd9b600` with #8754 and #8758 is next, and
-one more follows the pin to exact `0.1.0`, before the tag (maintainer, 2026-09-23; `RT-0`).
+#8760, which merged after it. `rc/15.0.9-combined-59`, which is `dev` `ddd9b600` with #8754 and #8758,
+passes 3028/0/3 on every Node and MongoDB pair. One more run follows the pin to exact `0.1.0`, before
+the tag (maintainer, 2026-09-23; `RT-0`).
 
 The connector half, in `nightscout-connect`, measured 2026-09-23 against connector `dev` `977da8a`:
 every programme fix is merged there (PRs #64 with #61, #66 and #67; #68; #77; #78; #79), `dev`
@@ -121,8 +122,8 @@ include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
 still exposed to all of them. Release PR #8598 is open at `ddd9b600`, green on every CI check, and has
-no approving review. Still before the tag: #8754 and #8758, the combined runs, connector `0.1.0` and
-its pin, the release notes, and that review. What 15.0.9 contains and whether it is ready:
+no approving review. Still before the tag: #8754 and #8758 (tested together on current `dev`),
+connector `0.1.0` and its pin with one more combined run, the release notes, and that review. What 15.0.9 contains and whether it is ready:
 [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
 (a 2026-09-22 snapshot; the combined rc record is
 [`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md)).

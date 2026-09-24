@@ -121,33 +121,40 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103). Open: #8754
-(head ef3404fd: three dev merges on 0a74ef4e, its own changes line-identical
-to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is clean (tree
-2ce67b27) and differs from the verified combined rc d087588f in exactly
-#8760's five files, so no combined run covers today's candidate. DECIDED
-2026-09-23 (maintainer, relayed via -59) - run the combined suite now on dev
-ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on evidence,
-and once more after the pin to exact 0.1.0, before the tag. The first run is
-rc/15.0.9-combined-59 (session -59). #8598 carries the manual-check comment
-and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still has zero
-reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757,
-#8749, #8748, #8755, #8756, #8753 and #8751; open: #8754 (security review:
-maintainer and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b
-d087588f, 3015/0/3 on all six Node x MongoDB cells) tested exactly this set,
-so no re-run is owed unless #8754 or #8758 changes head. Manual checks passed
-on ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
-AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes
-lib/api3/alarmSocket.js and is not on 4011193e; every other client file those
-checks use is identical). Still before the tag - connector v0.1.0 and a pin to
-exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 -
-COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0 (local only)
-on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs - #8748
-d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752 adf5120c,
-#8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14 (containment
-checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB 4.4.24/7.0.43,
-nofile 64000); break-its red for the original reason; connector control dev.2
-23/23, v0.0.13 18/5. Record:
+2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) =
+ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge
+509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev,
+2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB
+4.4 and 7, with the CRUD-by-_id matrix in each cell
+(docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and
+#8758 can merge on evidence. Still owed before the tag: one run after the pin
+to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103).
+Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes
+line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is
+clean (tree 2ce67b27) and differs from the verified combined rc d087588f in
+exactly #8760's five files, so no combined run covers today's candidate.
+DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now
+on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on
+evidence, and once more after the pin to exact 0.1.0, before the tag. The
+first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual-
+check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still
+has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752,
+#8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754
+(security review: maintainer and Andy) and #8758. The combined rc
+(rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells)
+tested exactly this set, so no re-run is owed unless #8754 or #8758 changes
+head. Manual checks passed on ec70aab0 (-6d): RT-D3, alarms under
+AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0
+also carried #8754, which changes lib/api3/alarmSocket.js and is not on
+4011193e; every other client file those checks use is identical). Still before
+the tag - connector v0.1.0 and a pin to exact 0.1.0 (with a re-run), release
+notes, #8598 review. 2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f):
+rc/15.0.9-additions-e 1b1977e0 (local only) on dev 74fc6619 contains the live
+heads of all nine 15.0.9 PRs - #8748 d19043b2, #8749 46b20b38, #8750 aabce4b1,
+#8751 b5038500, #8752 adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755
+92544d8f, #8756 83cfff14 (containment checked). 2534/0/3 on all 12 cells (Node
+20/22/24 x MongoDB 4.4.24/7.0.43, nofile 64000); break-its red for the
+original reason; connector control dev.2 23/23, v0.0.13 18/5. Record:
 docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the
 tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews,
 release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries
