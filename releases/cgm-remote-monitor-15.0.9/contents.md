@@ -1,21 +1,17 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-23 against `official/dev` `74fc6619`,
-`official/master` `92d08342` (= tag `15.0.8`, the shipping release) and the local candidate
-branch `rc/15.0.9-additions-c` `b9c9828b`.
+Nothing here is tagged or released. Measured 2026-09-24 against `official/dev` `153e5658`
+(merge of #8762) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+`externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `74fc6619`, plus eight additions** decided by the maintainer
-on 2026-09-22 and 2026-09-23 ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
-§1, §1a). The additions are not yet merged to `dev`: four are open PRs, four are local branches.
-Their figures come from the candidate integration branch, recorded in
-[`rc-15.0.9-additions-c-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md).
-**Every addition figure below is a candidate rc, pre-merge figure**: the merge commits into
-`dev` do not exist yet, and the SHAs a release will carry will differ.
+15.0.9 is **everything on `dev` at `153e5658`, plus two open PRs**, #8754 and #8758, that the
+maintainer has decided ship in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
+§1, §1a). Every PR merged to `dev` is `merged`; none is `released`. The two open PRs are `open`.
 
 ## Identity
 
@@ -23,65 +19,73 @@ Their figures come from the candidate integration branch, recorded in
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `74fc6619` (merge of #8746, 2026-09-21) |
-| Commits on `dev` | 308 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **48** — `git rev-list --first-parent --count official/master..official/dev` (every first-parent commit in the range is a PR merge) |
-| Diff on `dev` | 200 files, +14381/−1262 — `git diff --shortstat official/master official/dev` |
-| Candidate rc | `rc/15.0.9-additions-c` `b9c9828b`, local, not pushed: `74fc6619` plus 8 `--no-ff` merges, one per addition |
-| Candidate rc size over `dev` | 34 commits (26 plus the 8 merges), 38 files, +2248/−137 — `git rev-list --count 74fc6619..b9c9828b`; `git diff --shortstat 74fc6619 b9c9828b` |
-| Candidate rc size over 15.0.8 | 342 commits, 219 files, +16611/−1381 — `git rev-list --count official/master..b9c9828b`; `git diff --shortstat official/master b9c9828b` |
-| `package.json` version | `15.0.9` on `dev` and on the candidate rc |
-| Release PR | #8598 (`dev` → `master`): open, `REVIEW_REQUIRED` — `gh pr view 8598 --json state,reviewDecision` |
+| `dev` head | `153e5658` (merge of #8762, 2026-09-24) |
+| Commits on `dev` | 350 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **61** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 212 files, +16002/−1300 — `git diff --shortstat official/master official/dev` |
+| `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
+| Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
+| Open additions | #8754 (head `e32f7a1c` on GitHub; `b5f61f19` pending the maintainer's push), #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
+| Release PR | #8598 (`dev` → `master`, head `153e5658`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
-
-The 48 `dev` merges are `merged`, none is `released`. The eight additions are neither.
 
 ## What 15.0.9 contains
 
-### Additions not yet on `dev` (candidate rc, pre-merge)
+### Open additions (not merged)
 
-Order is the merge order on the candidate rc. `tip` is the branch tip that was merged; the
-open PRs' heads match it (`gh pr view <n> --json headRefOid`). Commits are
-`git rev-list --count 74fc6619..<branch>`.
+Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
+`git diff --shortstat official/dev...<head>`. #8754 at `e32f7a1c` has `dev` `153e5658` merged in;
+#8758's merge base with `dev` is `1f9a9d10` (#8750).
 
-| # | branch | tip | commits | PR | register | what |
+| PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| 1 | `docs/mongodb-floor` | `aabce4b1` | 1 | #8750 (open) | — | README: MongoDB 4.4 **deprecated**, still tested, to be dropped in a later release; replaces #8516's "not supported" |
-| 2 | `bf/qs-6.16` | `46b20b38` | 1 | #8749 (open) | BF-87 | `overrides.qs` and `overrides.request.qs` 6.15.1 → 6.16.0; clears GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g |
-| 3 | `bf/count-zero-empty` | `d19043b2` | 3 | #8748 (open) | — (RT-COUNT0) | **amends #8738**: v1 reads with `count=0` answer `[]`; saves and updates ignore `count`; DELETE keeps #8738's refusal (below) |
-| 4 | `bf2/backports` | `b5038500` | 2 | #8751 (open) | — | two `cherry-pick -x` security fixes from #8605 (`31c354d8`, `d3ac8026`): alarm-socket credential logging; per-collection read grant on two shared routes. Withheld-style PR body |
-| 5 | `bf2/ops` | `e6a50e9a` | 4 | not opened | BF-10, BF-63 (renderer half) | `docker-compose.yml` `mongo` `ulimits nofile 64000`; Alexa default for unhandled request types; `isPluginEnabled` miss; `booterror.js` null-`err` guard |
-| 6 | `bf2/auth-hardening` | `29e6430e` | 13 | not opened | BF-17, BF-30, BF-47, BF-88 | `bf/auth` + `bf/throttle` + `client-ip.js` backport (`06c83f2f`, `395f3207`, port `8b975b41`); new setting `TRUST_PROXY`; subject/role field allow-list |
-| 7 | `bf2/subject-edit-keeps-fields` | `7103f657` | 1 on #6 | not opened | BF-47 (admin-page loss) | `save()` keeps stored `notes` and `created_at` when the request leaves them out |
-| 8 | `bf/connect-pin-0.1.0` | `338deb7f` | 1 | not opened | BF-34, BF-08, BF-42, BF-43, BF-85, BF-89, BF-91 (connector) | `nightscout-connect` exact pin; **the committed tip pins `0.1.0-dev.1`**; the release pins `0.1.0` <!-- PENDING: connector v0.1.0 tag --> |
+| #8754 | `bf2/auth-hardening` | `e32f7a1c` on GitHub; `b5f61f19` pending | 24 at `e32f7a1c`, 26 at `b5f61f19` | 21 files, +1985/−100 at `e32f7a1c`; 21 files, +2033/−100 at `b5f61f19` | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting (below). Reviewers: the maintainer and Andy (security review) |
+| #8758 | `bf/object-id-crud` | `6d120fa2` | 13 | 24 files, +3163/−73 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
 
-`bf/qs-6.16`, `bf2/auth-hardening` and `bf/connect-pin-0.1.0` each edit `package.json` and
-`package-lock.json`, in disjoint hunks. On the candidate rc `package.json` has `qs` 6.16.0 (both
-overrides), `nightscout-connect` `0.1.0-dev.1`, `proxy-addr` `^2.0.7`, `forwarded-for` `^1.1.0`
-(`git show b9c9828b:package.json`). `lib/api/index.js` is the one library file edited by two
-additions (#3 and #6); the rc record measures the overlap as textual adjacency only.
+**#8754 at `b5f61f19`.** The GitHub head `e32f7a1c` is a merge of `dev` `153e5658` into `607d51b0`,
+and contains `f6f361b1` (the delay's position) and `607d51b0` (the proxy guide,
+`docs/proposals/trusted-proxy-migration.md`). `b5f61f19` is `e32f7a1c` plus `9c6cde72` (forwarded
+addresses with a port) and `b5f61f19` (the proxy guide recommends `TRUST_PROXY=1` on Azure App
+Service), 3 files, +58/−10 — `git diff --shortstat e32f7a1c b5f61f19`. The maintainer pushes it.
+What the PR carries at `b5f61f19`:
 
-**The connector pin.** npm `next` is `0.1.0-dev.2` (`npm view nightscout-connect dist-tags`),
-published from connector `v0.1.0-dev.2` = `official/dev` `fbd4e55`, which is `v0.1.0-dev.1`
-(`1946beb`) plus connector PRs #77 (BF-89, `dea2bec`) and #78 (BF-91, `894b132`). No `v0.1.0` tag
-exists (`git -C externals/nightscout-connect tag`). The worktree of #8 has an uncommitted
-`0.1.0-dev.2` edit; the candidate rc merged the committed `0.1.0-dev.1` tip, so **the rc is not
-evidence for `0.1.0-dev.2` or `0.1.0`** <!-- PENDING: connector v0.1.0 tag -->. The swap is
-queue `P0-PIN`/`P0-LOCK`, after `P0-TAG`.
+- **BF-17.** A subject save no longer writes `accessToken`/`accessTokenDigest`/`digest`. Existing
+  rows keep them until the subject is next saved; clearing a row does not retire the token. The
+  gate `node tools/queue/gates/bf17-remediation-note.js` guards the notes' rotation text (17 checked,
+  0 failing on 2026-09-24), and `tools/queue/gates/bf17-rename-row-control.sh` is its control (exits 1).
+- **BF-30, the failed-login delay.** The wait comes before the credential check, as in earlier
+  releases. Failures are counted per client address and also per credential. The list is bounded
+  and swept on a schedule (`lib/authorization/delaylist.js`).
+- **`TRUST_PROXY` (BF-30, BF-88).** Unset resolves the client address as `dev` does
+  (`forwarded-for`, pinned by `8b975b41`), and a boot message says the delay does not protect
+  against guessing. `false` = direct connection only; a comma-separated list of IPs/CIDRs = the
+  trusted boundary; a whole number = that many hops; `true` = every hop (Express's meaning,
+  `81623f9b`). The subnet aliases `loopback`, `linklocal`, `uniquelocal` are refused at boot
+  (`lib/server/client-ip.js` `compileTrust`). Setting it behind a TLS-terminating proxy that is not
+  trusted causes an https redirect loop. Explicit `TRUST_PROXY` settings accept forwarded addresses
+  that carry a port (the form Azure App Service is reported to send); unset is unchanged
+  (`9c6cde72`).
+- **BF-47.** Subject and role `create()`/`save()` write only an allow-list of fields (declared
+  correction, below); a save that omits `notes` or `created_at` keeps the stored values (`7103f657`).
+- Every read of the auth collections stopped printing its query options to stdout (`ce82f0cd`).
+
+**#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
+changed profile only on a sink that has #8758.
 
 ### Merged to `dev`
 
-#### Programme backfix PRs (12), plus #8741
-
+Merge SHAs and dates: `git log --first-parent --format='%h %ad %s' --date=short official/master..official/dev`.
 Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
-which is the home of every defect fact; this table does not restate them.
+which is the home of every defect fact; these tables do not restate them.
+
+#### Programme backfix PRs (22), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
 | #8733 | `77d153d2` | 2026-09-17 | — (queue P0-T01) | remove the two quadratic scans over the treatment window (`processDurations`, `calcdelta`); NaN-`mills` dedup restored as the one deliberate behaviour change |
 | #8737 | `025f1310` | 2026-09-18 | BF-02, BF-03, BF-11, BF-32, BF-40, BF-68 | schema-driven query coercion (158 coercions, 5 collections); `$exists` operand read as a boolean for `true`/`false`/`1`/`0` only; digits-only `$type` operand kept numeric |
-| #8738 | `d3358e91` | 2026-09-18 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 | count endpoint uses each collection's `query_for`; count-path log removed; v3 paging tiebreak; v3 dotted `?fields=`; v1 `?count=` and v3 `?limit=` validation (new `lib/server/count.js`). Its v1 `count=0` rule is amended by #8748 below |
+| #8738 | `d3358e91` | 2026-09-18 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 | count endpoint uses each collection's `query_for`; count-path log removed; v3 paging tiebreak; v3 dotted `?fields=`; v1 `?count=` and v3 `?limit=` validation (new `lib/server/count.js`). Its v1 count rule is amended by #8748 and #8761 |
 | #8734 | `fdd08706` | 2026-09-18 | BF-36 | client merge of a delete plus an unmatched update no longer throws and freezes the page |
 | #8743 | `1a36f023` | 2026-09-18 | BF-04, BF-70 | v1 query-operator allowlist (new `lib/server/query-operator-allowlist.js`); URL-supplied aggregation pipeline refused; refused filters answer 400 naming the operator |
 | #8740 | `49f562d8` | 2026-09-20 | BF-06, BF-07 (partly) | cache clone cost; BF-07 remains `partly merged` |
@@ -91,7 +95,32 @@ which is the home of every defect fact; this table does not restate them.
 | #8744 | `a9acd313` | 2026-09-21 | BF-79 | main-namespace `loadRetro` gated on read authorization (GHSA-gjhc-pc29-r3m6) |
 | #8745 | `2b22c0ce` | 2026-09-21 | BF-75, BF-76 | `/alarm` namespace delivers only to a read-entitled room; access-token `ack` requires the ack permission (GHSA-8849-qjp5-vrrj). BF-76's unbounded `silenceTime` is left open deliberately |
 | #8746 | `74fc6619` | 2026-09-21 | BF-77 | "readable by world" admin notice raised on role membership, so `TREATMENTS_AUTH=off` (`readable careportal`) now warns |
+| #8748 | `42c5e21e` | 2026-09-23 | — (RT-COUNT0) | **amends #8738**: v1 reads with `count=0` answer `[]`; saves and updates ignore `count`; DELETE with `0` or a malformed count is refused and deletes nothing. The read rule is amended again by #8761 |
+| #8749 | `9fd4600e` | 2026-09-23 | BF-87 | `overrides.qs` and `overrides.request.qs` 6.15.1 → 6.16.0; clears GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g |
+| #8751 | `4011193e` | 2026-09-23 | — | two security fixes backported from #8605: alarm-subscription credential logging (`9c50788e`); per-collection read grant on two shared storage routes (`b5038500`). Withheld-style PR body |
+| #8753 | `3a38c6f2` | 2026-09-23 | BF-10, BF-63 (renderer half) | `docker-compose.yml` `mongo` `ulimits nofile 64000`; Alexa answers unhandled request types; `isPluginEnabled` miss; `booterror.js` null-`err` guard |
+| #8755 | `728351e3` | 2026-09-23 | — | an alarm reaching a page with no reading no longer throws in its handler (the page still does not sound it; known issue) |
+| #8756 | `c11888ed` | 2026-09-23 | BF-69 | Bolus Wizard quick-pick chooser rebuilt when the drawer opens; ships with #8735 |
+| #8757 | `d0d6b433` | 2026-09-23 | — (RT-4) | the MiniMed deprecation warning names the `CONNECT_*` settings that replace `MMCONNECT_*` |
+| #8760 | `ddd9b600` | 2026-09-24 | BF-103 | a treatment moved or split by drag in the web UI stores the new time in `mills` and `date`, so IOB and COB follow it |
+| #8761 | `f1591069` | 2026-09-24 | — (RT-COUNT-COMPAT) | v1 reads tolerate the count shapes oref0 (`N?…`) and GluPredKit (`count=0` in a date window) send, with a deprecation warning; each tolerance has its own setting, on by default (`b4ead206`, `516f971a`) |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
+
+#### Connector pin
+
+| PR | Merge | Date | Pin |
+|---|---|---|---|
+| #8752 | `f0954a6a` | 2026-09-23 | `nightscout-connect` exactly `0.1.0-dev.2` from npm |
+| #8759 | `feafa533` | 2026-09-23 | exactly `0.1.0-dev.3` |
+| #8762 | `153e5658` | 2026-09-24 | exactly `0.1.0`; this is the pin 15.0.9 ships |
+
+Connector 0.1.0 was released 2026-09-24: tag `v0.1.0` on connector `main` `4dde1ec` (the merge of
+connector #70), published to npm `latest` with provenance, `gitHead` `4dde1ec`
+(`npm view nightscout-connect dist-tags`; `git -C externals/nightscout-connect rev-parse v0.1.0^{commit}`).
+Its code equals `v0.1.0-dev.3` `977da8a`; `git diff 977da8a 4dde1ec` touches only `docs/releasing.md`.
+It carries BF-42, BF-85, BF-08/BF-34, BF-89, BF-91, BF-97 and BF-98 (connector #64 with #61/#66/#67,
+#68, #77, #78, #79). #79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) have
+connector suite coverage only, no lab soak.
 
 #### Other fixes (external and upstream contributors)
 
@@ -99,7 +128,7 @@ which is the home of every defect fact; this table does not restate them.
 |---|---|---|---|
 | #8732 | `59430336` | 2026-09-21 | profile and pill behaviour on sites with incomplete data (fixes #7324; also touches insulin age — reconciled with #8739 in merge `838537d8`) |
 | #8729 | `1abc1aad` | 2026-09-20 | guard `chart.update()` against a 0-height container measurement |
-| #8726 | `a8888f0d` | 2026-09-09 | routine log volume off by default; adds `DEBUG_LOGGING` and `CONNECT_DEBUG`; moves the connector pin to `234d47c` (fixes #8714). The pin is replaced by `bf/connect-pin-0.1.0` below |
+| #8726 | `a8888f0d` | 2026-09-09 | routine log volume off by default; adds `DEBUG_LOGGING` and `CONNECT_DEBUG`; moved the connector pin to `234d47c` (fixes #8714). The pin is now #8762's |
 | #8702 | `ca35f2a3` | 2026-09-06 | preserve valid unnamed profiles in conversion and editor |
 | #8701 | `5a09befd` | 2026-09-06 | preprocess schedules imported by profile switches |
 | #8699 | `6fbff0ec` | 2026-09-06 | clock view: worried emoji for low and falling readings |
@@ -117,13 +146,13 @@ which is the home of every defect fact; this table does not restate them.
 
 | PR | Merge | What |
 |---|---|---|
-| #8573 | `e7c0cd6f` | **D3 5.16 → 7.9.0** with chart-interaction tests — see [Open items](#open-items-a-releaser-must-settle), item 3 |
+| #8573 | `e7c0cd6f` | **D3 5.16 → 7.9.0** with chart-interaction tests; the drag check is by hand and in a browser (RT-D3, below) |
 | #8529 | `9205ea30` | UUID (retain patched UUID 11) |
 | #8544 | `97d1aa1b` | jsdom and analyzer `ws` (dev dependencies) |
 | #8550 | `7e71fb62` | Babel toolchain |
 | #8565 | `eedc9439` | Axios |
 | #8566 | `c5fd8054` | Socket.IO transports |
-| #8571 | `6fb8db1c` | Express and body-parser |
+| #8571 | `6fb8db1c` | Express and body-parser. Express 4.22.1 → 4.22.2: 4.22.2's `lib/utils.js` query parser passes `arrayLimit: 1000` to qs, 4.22.1's passes none (qs default 20), so a query-string list of more than 20 values parses as a list (read-derived from both packages) |
 | #8575 | `f7c7812c` | ip-address 10.7.0 |
 | #8576 | `4b62921b` | fast-uri 3.1.7 |
 | #8577 | `4b665293` | socket.io-parser 4.2.7 |
@@ -133,7 +162,7 @@ which is the home of every defect fact; this table does not restate them.
 | #8582 | `1156aafd` | PostCSS 8.5.28 |
 | #8586 | `d6e90d00` | brace-expansion (all compatible majors) |
 
-All merged 2026-09-05.
+All merged 2026-09-05. #8749 (qs) is in the backfix table above.
 
 #### Translations
 
@@ -144,20 +173,28 @@ All merged 2026-09-05.
 | PR | Merge | Date | What |
 |---|---|---|---|
 | #8597 | `5c26c9d2` | 2026-09-04 | start the 15.0.9 cycle (`package.json` → `15.0.9`) |
-| #8516 | `85fed44b` | 2026-09-04 | README: MongoDB 4.4 no longer supported — amended by #8750 below |
+| #8516 | `85fed44b` | 2026-09-04 | README: MongoDB 4.4 no longer supported — amended by #8750 |
+| #8750 | `1f9a9d10` | 2026-09-23 | README: MongoDB 4.4 **deprecated**, still tested, to be dropped in a later release |
 | #7338 | `57d1cac9` | 2026-09-06 | js-beautify option in docs |
 
 ## Version number: 15.0.9
 
 Decided 2026-09-22 (queue `RT-VERSION`; backfix-2 plan §1). The release is **15.0.9**, the number
-`dev`'s `package.json` already carries. #8738 (as amended by #8748), #8743 and `bf2/auth-hardening`'s
-subject/role field allow-list ship as **declared corrections** in the release notes, with no
-compatibility flag. The facts the classification rests on, for the record:
+`dev`'s `package.json` already carries. #8738 (as amended by #8748 and #8761), #8743 and #8754's
+subject/role field allow-list ship as **declared corrections** in the release notes.
+
+Decided 2026-09-24 (maintainer, relayed via -59; queue `RT-COUNT-COMPAT`): tolerate the count shapes
+real clients send and keep 15.0.9 a patch. #8761 implements it: `API_V1_COUNT_LEADING_NUMBER` and
+`API_V1_COUNT_ZERO_WINDOW`, each on by default (`lib/server/env.js`), expected to default to `false`
+in a future release.
+
+The facts the classification rests on, for the record:
 
 - Under
   [`gt4-semver-classification-2026-09-15.md`](../../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
   the `dev` content is at least a minor (`DEBUG_LOGGING`, `CONNECT_DEBUG`, routine debug logging
-  off by default, new `lib/api2/loop-notification-errors.js`); the additions add `TRUST_PROXY`.
+  off by default, new `lib/api2/loop-notification-errors.js`, the two `API_V1_COUNT_*` settings);
+  #8754 adds `TRUST_PROXY`.
 - #8738 and #8743 grade themselves major in their own bodies; so does #8739 (per-request locale
   on the Alexa and Google Home endpoints removed with no replacement). The auth-hardening
   allow-list was graded major in queue item P0-C before the maintainer ruled (2026-09-23) that
@@ -171,9 +208,9 @@ compatibility flag. The facts the classification rests on, for the record:
 
 | Item | State | Consequence |
 |---|---|---|
-| BF-69 — Bolus Wizard quick-pick chooser built once from an empty sandbox | fixed on a local branch (backfix 3); destination release not decided | the chooser can offer only "(none)"; the notes carry it as a known issue |
 | BF-86 / BF-67 — thresholds in the wrong units | open | carried as a known issue in the notes |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
+| A page with no reading does not sound server alarms | open; #8755 removes only the handler error | carried as a known issue |
 | `TRUST_PROXY` planned flip | none planned (flag registry, backfix-2 plan §4) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 | Crowdin PR #8730 | open (`gh pr view 8730 --json state`) | translations after #8603 are not included |
 
@@ -182,37 +219,39 @@ does not copy them.
 
 ## Open items a releaser must settle
 
-1. **Connector tag.** `bf/connect-pin-0.1.0` moves from `0.1.0-dev.1` to `0.1.0` when `v0.1.0` is
-   tagged and published (`P0-TAG`, then `P0-PIN`, `P0-LOCK`). The notes describe 0.1.0 and mark
-   every dependent sentence `PENDING: connector v0.1.0 tag`. After the swap, re-run the suite and
-   `TEST=debug-logging` against the new lockfile; the candidate rc does not cover it.
-2. **The four unopened additions** (`bf2/ops`, `bf2/auth-hardening`, `bf2/subject-edit-keeps-fields`,
-   `bf/connect-pin-0.1.0`) need PRs; whether `bf2/subject-edit-keeps-fields` is its own PR or the
-   final commit of the auth-hardening PR is open (the rc record recommends folding it in). The
-   auth-hardening PR body's posting style (full or withheld) is the maintainer's decision, since
-   BF-17 and BF-30 are live on 15.0.8.
-3. **D3 5.16 → 7.9 (#8573).** Decided (RT-D3, 2026-09-23): a manual browser check plus an
-   automated browser test. The automated run exists
-   ([browser evidence](../../docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md));
-   the manual check is still owed. `TEST=dependency-d3` passes (24) with both treatment-drag
-   clamps in `lib/client/renderer.js` deleted, so the suite does not exercise that boundary.
-4. **`/alarm` client path under `AUTH_DEFAULT_ROLES=denied`**: authenticate at the prompt, fire an
-   alarm, confirm it arrives. No test covers this client path.
-5. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (71 lines, 12 commits by
-   upstream contributors) against the stated rule that the changelog is generated at release
-   time. See [`../README.md`](../README.md#open-item-changelog-on-dev).
-6. **Test-script coverage.** Several test files (e.g. `tests/query.operands.test.js`,
-   `tests/api.count-where.test.js`, `tests/boluscalc.quickpick.test.js`, and from the additions
-   `tests/client-ip.test.js`, `tests/authdelay.test.js`, `tests/authsubjects.test.js`,
-   `tests/booterror.test.js`, `tests/storage-read-permissions.test.js`) match neither
-   `npm run test:unit` nor `test:integration`; only `npm test` / `test-ci` (what `main.yml`
-   runs) reaches them. A green `test:unit` is not evidence for those fixes.
-7. **Missing end-to-end test**: a numeric filter on `count/devicestatus/where` returning rows
-   from a live database. The #8737 + #8738 composition is measured at the constructed
-   `$match` only.
-8. **Untested line.** `bf2/auth-hardening`'s `app.set('trust proxy', …)` in `lib/api/index.js`
-   has no test; removing it leaves the full suite at 2508/0/3 on the candidate rc, because the
-   mounted sub-app inherits `lib/server/app.js`'s setting (rc record, "the overlap").
+1. **#8754.** The maintainer pushes `b5f61f19`; security review by the maintainer and Andy; then a
+   combined run on `dev` + `b5f61f19` + #8758, because no combined run covers `e32f7a1c` or
+   `b5f61f19`; then merge.
+2. **#8758** (`6d120fa2`): review and merge.
+3. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8754 merge` and
+   `PENDING: #8758 merge` stay or go with those PRs.
+4. **#8598 review.** The release PR has zero reviews and review is required.
+5. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
+   `git show official/dev:CHANGELOG.md`; 12 commits, `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
+   against the stated rule that the changelog is generated at release time. See
+   [`../README.md`](../README.md#open-item-changelog-on-dev).
+6. **The tag**, by the maintainer.
+
+## Known test gaps
+
+Not blockers by decision; recorded so a green suite is not read as covering them.
+
+- **Test-script coverage.** 63 of the 187 `tests/*.test.js` files on `dev` `153e5658` match neither
+  `npm run test:unit` nor `test:integration` (compare the files against the two globs in
+  `git show official/dev:package.json`). Among them: `query.operands`, `boluscalc.quickpick`,
+  `boluscalc.quickpick-rebuild`, `booterror`, `client.alarm-no-reading`, `treatmenttime`,
+  `debug-logging`, `dependency-d3`. #8754 adds three more (`authdelay`, `authsubjects`,
+  `client-ip`). Only `npm test` / `test-ci` (what `main.yml` runs) reaches them. A green
+  `test:unit` is not evidence for those fixes.
+- **D3 drag clamps.** `TEST=dependency-d3` passes with both treatment-drag clamps in
+  `lib/client/renderer.js` deleted, so the suite does not exercise that boundary. RT-D3 was
+  answered 2026-09-24 (maintainer, session -6a): the drag check passed by hand and in automation
+  ([browser evidence](../../docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md));
+  the suite gap is queue `RT-D3-SUITE`.
+- **`/alarm` under `AUTH_DEFAULT_ROLES=denied`.** No automated test drives the client path. Checked
+  by hand 2026-09-23 on the combined rc `ec70aab0` (queue `ADV-ALARM`).
+- **`count/devicestatus/where`.** No end-to-end test runs a numeric filter on it against a live
+  database; the #8737 + #8738 composition is measured at the constructed `$match` only.
 
 ## Operator-visible behaviour changes (source for the release notes)
 
@@ -223,22 +262,21 @@ the user-facing form. Facts the notes must not lose:
   72 h) for everyone. The notification still requires `IAGE_ENABLE_ALERTS` (default off) and
   fires only when `age === IAGE_URGENT` and `minFractions <= 20` — once, with no catch-up.
   Past the threshold the level had been understated as WARN the whole time.
-- **`?count=` for real clients (#8761, bf/count-client-compat `b4ead206` + `516f971a`; RT-COUNT-COMPAT,
-  decided 2026-09-24).** Amends the next bullet on v1 GET/HEAD: `N?<anything>` reads `N` (oref0);
-  `count=0` with a `find` bounding one date field from both sides reads a limit of 2147483647
-  (GluPredKit), and without one reads as no count. Both set `Deprecation: true` and a 299
-  `Warning`, logged once per process without the value. `API_V1_COUNT_LEADING_NUMBER` and
-  `API_V1_COUNT_ZERO_WINDOW` (default `true`) turn each off, giving #8748's answer. DELETE is unchanged. Until it merges, dev
-  behaves as the next bullet says.
-- **`?count=` (#8738 amended by #8748).** On v1: `count=0` / `00` on a read answers `200 []`;
+- **`?count=` (#8738, amended by #8748 and #8761).** On v1 GET/HEAD (`lib/api/index.js`
+  `validateCount`, `lib/server/count.js`): `N?<anything>` reads `N` (oref0); `count=0` with a `find`
+  bounding one date field from both sides reads a limit of 2147483647 (GluPredKit), and without one
+  reads as no count (the endpoint default). Both set `Deprecation: true` and a 299 `Warning`, logged
+  once per process without the value. `API_V1_COUNT_LEADING_NUMBER=false` refuses `N?…` with
+  `400 Bad count`; `API_V1_COUNT_ZERO_WINDOW=false` answers every `count=0` read with `200 []`.
   `abc`, `1e2`, `-3`, `0x10`, `2.5` and integers above `Number.MAX_SAFE_INTEGER` answer
-  `400 Bad count`; POST and PUT ignore `count`; DELETE with `0` or a malformed count answers 400
-  and deletes nothing; DELETE with a valid count is accepted and does not limit the delete.
-  Measured live on the candidate rc (rc record, "Count rules, live"). Routes that never apply
-  `count` (`/entries/current`, `/count/:storage/where`, `/echo`, `/status`, `/food`) answer
-  `count=0` normally. `/experiments` is mounted before the validator. v3 `?limit=` keeps #8738's
-  rule: `0`, non-digits and values above `API3_MAX_LIMIT` answer 400 (`lib/api3/generic/collection.js`
-  `parseLimit`). On 15.0.8, `?count=0` returned the whole collection on the database path.
+  `400 Bad count`, with or without a following `?`. POST and PUT ignore `count`. DELETE with `0` or
+  a malformed count (including `N?…`) answers 400 and deletes nothing; DELETE with a valid count is
+  accepted and does not limit the delete. Routes that never apply `count` (`/entries/current`,
+  `/count/:storage/where`, `/echo`, `/status`, `/food`) answer `count=0` normally. `/experiments` is
+  mounted before the validator. v3 `?limit=` keeps #8738's rule: `0`, non-digits and values above
+  `API3_MAX_LIMIT` answer 400 (`lib/api3/generic/collection.js` `parseLimit`). On 15.0.8,
+  `?count=0` returned the whole collection on the database path, and devicestatus answered it
+  with 10 (`git show official/master:lib/api/devicestatus/index.js`, `numCount <= 0` → 10).
 - **Filters (#8737).** "Earlier results may have under- or over-reported delivered therapy"
   must survive into the notes. `$exists` reads only `true`/`false`/`1`/`0`; `null`, `no`,
   `off`, empty and others still mean "has the field".
@@ -246,42 +284,39 @@ the user-facing form. Facts the notes must not lose:
   500. `$expr` on `/api/v1/profiles/` and the `pipeline` parameter on `/api/v1/count/…` are
   refused. A census of 14 client projects found no use of a refused operator. Declared
   correction.
-- **Subject/role allow-list (`bf2/auth-hardening`, BF-47).** `create()` and `save()` write only
+- **Filters with more than 20 values (#8571).** Parse as a list on 15.0.9, where 15.0.8 refused
+  them, so a tool deleting by such a list now deletes (read-derived; the notes carry it under
+  "Other fixes").
+- **Subject/role allow-list (#8754, BF-47).** `create()` and `save()` write only
   `name`, `roles`, `notes`, `created_at` (subjects) and `name`, `permissions`, `notes`,
   `created_at` (roles). Other stored fields are dropped on the next save. Declared correction
   (maintainer, 2026-09-23). A corpus check found no open-source client storing other subject
   fields.
-- **Subject edit (`bf2/subject-edit-keeps-fields`).** A save that omits `notes` or `created_at`
-  keeps the stored values; `notes: ""` clears; `roles` is not filled in from storage, so removing
-  the last role still works.
-- **BF-17 (`bf2/auth-hardening`).** A save no longer writes `accessToken`/`accessTokenDigest`/
-  `digest`. Existing rows keep them until the subject is next saved; clearing a row does not
-  retire the token. Rotation text is P0-C-REMEDIATE's; the gate
-  `node tools/queue/gates/bf17-remediation-note.js` guards the notes (17/0), and
-  `tools/queue/gates/bf17-rename-row-control.sh` is its control (exits 1).
-- **BF-30 and `TRUST_PROXY` (`bf2/auth-hardening`).** The delay sleeps only on the failure path;
-  the list is swept and capped. Unset `TRUST_PROXY` resolves the client address as `dev` does
-  (`forwarded-for`), and a boot message says the delay does not protect against guessing.
-  `false` = direct-only; a list of IPs/CIDRs = trusted boundary. `true`, hop counts and named
-  ranges are refused at boot. Setting it behind a TLS-terminating proxy that is not listed
-  causes an https redirect loop.
-- **Docker Compose (BF-10).** `mongo` service gains `ulimits nofile 64000`; on `dev`'s file
-  mongod aborted with `Too many open files` (bf2/ops PR body). Not re-measured on the rc.
-- **Legacy ingestion (RT-4).** No separate deprecation release. `MMCONNECT_*` (mmconnect) is
+- **Subject edit (#8754, `7103f657`).** A save that omits `notes` or `created_at` keeps the stored
+  values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
+  still works.
+- **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
+  [Open additions](#open-additions-not-merged).
+- **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
+  aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
+- **Legacy ingestion (RT-4, #8757).** No separate deprecation release. `MMCONNECT_*` (mmconnect) is
   reported not to work (maintainer, operational knowledge, not measured) and is to be retired;
-  `BRIDGE_*` Dexcom settings are served by nightscout-connect by default since 15.0.8
-  (`lib/server/bootevent.js` `migrateBridgeToConnect`), with `DEXCOM_BRIDGE_USE_LEGACY=true` as
-  the escape hatch. The removal release is not numbered.
-- **MongoDB 4.4 (#8750).** Deprecated, still in the CI matrix (`mongodb-version: [4.4, 5.0, 6.0]`)
-  and passing on the candidate rc (4.4.24). The removal release is not numbered.
-- **Connector (#8726 logging; `bf/connect-pin-0.1.0`).** Credential and payload logging ends for
-  upgraders from v0.0.13 (BF-42), already at `dev`'s `234d47c`; `overrides['nightscout-connect'].axios`
-  1.20.0 satisfies the connector's `^1.18.1` (BF-43 is master-only). With 0.1.0
-  <!-- PENDING: connector v0.1.0 tag -->: BF-85 CareLink `sg: 0` filtered at ingestion
+  its warning names the `CONNECT_*` replacements. `BRIDGE_*` Dexcom settings are served by
+  nightscout-connect by default since 15.0.8 (`lib/server/bootevent.js` `migrateBridgeToConnect`),
+  with `DEXCOM_BRIDGE_USE_LEGACY=true` as the escape hatch. The removal release is not numbered.
+- **MongoDB 4.4 (#8750).** Deprecated, still in the CI matrix (`mongodb-version: [4.4, 5.0, 6.0]`
+  in `.github/workflows/main.yml`) and passing in the latest combined run. The removal release is
+  not numbered.
+- **Connector (#8726 logging; #8762 pin to 0.1.0).** Credential and payload logging ends for
+  upgraders from v0.0.13 (BF-42); `overrides['nightscout-connect'].axios` 1.20.0 satisfies the
+  connector's `^1.18.1` (BF-43 is master-only). BF-85 CareLink `sg: 0` filtered at ingestion
   (read-derived, not reproduced); BF-34/BF-08 backoff merge order, delay cap and jitter; listener
-  release on stop; BF-89 reader subject created with `roles` (end-to-end run in `dea2bec`'s
-  message; a subject created by an earlier connector is reused without roles); BF-91 `capture`
-  mode only. New optional `CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`, default 0.
+  release on stop; BF-89 reader subject created with `roles` (a subject created by an earlier
+  connector is reused without roles, and the connector logs how to fix it); BF-91 `capture` mode
+  only; profile fetch bounded to new or changed profiles, and update-on-change only against a
+  sink with #8758. New optional `CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`, default 0.
+- **Treatment drag (#8760, BF-103).** Moving or splitting a treatment by drag in the web UI stores
+  the new time; a raw v1 PUT still leaves a stale `mills` (register BF-103).
 - **Live-update security (#8744, #8745), backports (#8751).** Mechanism only in public text;
   advisory write-ups are withheld until release.
 - **World-readable notice (#8746).** Sites with `TREATMENTS_AUTH=off` now see the admin notice.
@@ -292,16 +327,16 @@ the user-facing form. Facts the notes must not lose:
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- Additions: the candidate rc record,
-  [`rc-15.0.9-additions-c-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md):
-  `npm test` 2386 → 2508 passing, 0 failing, 3 pending, additive per step and by test title,
-  and 2508/0/3 on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43; break-its for
-  every unit on the final tree. Not measured there: MongoDB 5.0/6.0, the connector at
-  `0.1.0-dev.2` or `0.1.0`, the BF-10 compose abort, and break-its outside Node 20 / MongoDB 7.
-- Queue items P0-A…P0-K, P0-T01, P0-TAG, P0-PIN, P0-LOCK, ADV-RETRO, ADV-ALARM and ADV-CONFIG
-  hold the gates. Do not treat a local `test:unit` pass as coverage (open item 6).
+- Latest combined run:
+  [`rc-15.0.9-combined-010-2026-09-24.md`](../../docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md):
+  `dev` `f1591069` + the exact `0.1.0` pin + #8754 `ef3404fd` + #8758 `6d120fa2`, tree `4114f45a`,
+  3046 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4 and 7.
+  `dev` `153e5658` + #8754 `280eccbe` + #8758 `6d120fa2` gives the same tree. It does not cover
+  #8754 at `e32f7a1c` or `b5f61f19` (the delay's position, the proxy guide, forwarded addresses
+  with a port), MongoDB 5.0/6.0, a browser or lab check, or a repeat of the break-its.
+- Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
+  a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-09-23. Requires maintainer review before release. Nothing tagged or published.
-Addition figures are candidate rc, pre-merge.*
+*Draft, 2026-09-24. Requires maintainer review before release. Nothing tagged or published.*

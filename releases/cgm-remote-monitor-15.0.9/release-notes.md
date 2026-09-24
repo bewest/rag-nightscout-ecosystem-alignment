@@ -7,7 +7,8 @@
      sections wrapped in "PENDING: #8754 merge" markers below, these list items depend on it and must
      go if it does not ship: "Before you upgrade" items 2 and 3; "Security fixes" items 6 and 7; the
      TRUST_PROXY and plain-text token items under "What you must do", "What to check afterwards"
-     and "Known issues". Checked against origin/dev ddd9b600, 2026-09-23. -->
+     and "Known issues"; and the user-field mentions in "Before you upgrade" item 5 and "About the
+     version number". Checked against official/dev 153e5658, 2026-09-24. -->
 
 *For people who run a Nightscout site for themselves or a family member. Nightscout is not a
 medical device, and nothing in these notes is medical advice or advice about insulin doses.
@@ -219,10 +220,10 @@ routine while it is sorted out.**
 
 ### Asking for a number of records (`count`)
 
-<!-- PENDING: #8761 merge. This section describes #8761 (bf/count-client-compat, RT-COUNT-COMPAT,
-     decided 2026-09-24), including its second commit (the two settings), and dev has none of it. Until it merges, dev answers
-     count=0 with an empty list and "1?..." with 400. Decided: tolerate the two shapes real clients
-     send (oref0, GluPredKit) and keep 15.0.9 a patch; see the semver policy, section 3.2. -->
+<!-- #8761 (bf/count-client-compat), merged 2026-09-24 as f1591069. Decided 2026-09-24 (maintainer,
+     relayed via -59; RT-COUNT-COMPAT): tolerate the two shapes real clients send (oref0, GluPredKit)
+     and keep 15.0.9 a patch; see the semver policy, section 3.2. Checked against official/dev
+     153e5658: lib/api/index.js validateCount, lib/server/count.js, lib/server/env.js, README. -->
 
 Apps add `count` to a request to say how many records they want back, for example "the last 10
 readings". On 15.0.8, a request for **zero** records could send back your **entire** history,
@@ -751,6 +752,6 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*DRAFT, 2026-09-23. Requires maintainer review before publishing. Nightscout is not a medical
+*DRAFT, 2026-09-24. Requires maintainer review before publishing. Nightscout is not a medical
 device, and nothing in these notes is medical advice or guidance about insulin dosing. Where a
 change here could affect decisions about your therapy, discuss it with your care team.*
