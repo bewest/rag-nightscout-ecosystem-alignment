@@ -1,6 +1,6 @@
 **Nightscout: modernization review and proposed next steps**
 
-> **Snapshot — discussion synthesis as of 2026-09-09, measured against `origin/dev a8888f0d` and modernization PR #8605 at `ee2a0b9e`. Status: superseded as a status record (dev has moved to `74fc6619`, 308 commits over `origin/master` 15.0.8, nothing released); the framework and testing proposals remain open proposals. Current facts: [post-Phase-0 roadmap](../../30-design/post-phase0-roadmap-2026-09-15.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-09, against `origin/dev` `a8888f0d` and modernization PR #8605 at `ee2a0b9e`. Superseded as a status record; the framework and testing proposals remain open proposals. Current picture: [PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md); release train: [versioning policy §8.3](../../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train); defect facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 Date: 9 September 2026. Status: draft for maintainer discussion.
 

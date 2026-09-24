@@ -1,6 +1,6 @@
 # GHSA-5mrq-gpqw-q5v5 and GHSA-mjp4-84fw-gj4v — verification against v15.0.7, v15.0.8 and `dev`
 
-> **Snapshot — research as of 2026-09-21, measured against `v15.0.7`, `v15.0.8` (`92d08342`) and `origin/dev 59430336`. Status: both advisories (GHSA-5mrq, GHSA-mjp4) closed in the released v15.0.8; the two new findings are open — §6.1 = BF-73, §6.2 = BF-74. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-21, against `v15.0.7`, `v15.0.8` (`92d08342`) and `origin/dev` `59430336`. Current: both advisories (GHSA-5mrq, GHSA-mjp4) are closed in the released v15.0.8, and the two new findings are open (§6.1 = BF-73, §6.2 = BF-74); the advisory metadata corrections are queue item `ADV-XSS-META`. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 *2026-09-21. Both advisories are **closed in v15.0.8**, root cause and sink,
 measured with a positive control on v15.0.7 for every negative result. One

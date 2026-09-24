@@ -1,6 +1,6 @@
 # RT-D3 treatment drag and alarm delivery under `denied`: browser evidence
 
-> **Snapshot: measurements taken 2026-09-22 (US local; the run clock read 2026-09-23 01:10 to 01:22 UTC) against `origin/master 92d08342` (tag 15.0.8) and `origin/dev 74fc6619`. Nothing measured here is released. This is evidence for two human sign-offs. It is not a decision, and the final sign-off on each belongs to a human reviewer. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-54, BF-57, BF-75) and the `RT-D3` entry in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).**
+> **Snapshot, 2026-09-22 (US local; run clock 2026-09-23 01:10 to 01:22 UTC), against `origin/master` `92d08342` (tag 15.0.8) and `origin/dev` `74fc6619`. Historical: this is the automated evidence for RT-D3, answered 2026-09-24 (the drag check passed by hand and in automation), and for alarm delivery under `AUTH_DEFAULT_ROLES=denied`; both were checked by hand in [manual lab checks on the 15.0.9 rc](../remedial/manual-lab-15.0.9-rc-2026-09-23.md). Nothing measured here is released. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-54, BF-57, BF-75) and the `RT-D3` entry in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).**
 
 Audience: contributors and the maintainer. Contributor-facing and technical. Not medical advice.
 

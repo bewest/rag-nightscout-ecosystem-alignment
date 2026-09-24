@@ -1,6 +1,6 @@
 # BF-09 — what socket dedup does with a zero, and whether treating zero as real would bring back the AAPS temp-basal display problem
 
-> **Snapshot — measured 2026-09-23 against `origin/dev` `74fc6619` and tag `15.0.8` (`92d08342`, identical output), Node 20.20.0, MongoDB 7. Status: measurement only, for the maintainer's decision. No fix branch. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-23, against `origin/dev` `74fc6619` and tag `15.0.8` (`92d08342`; identical output), Node 20.20.0, MongoDB 7. Current: the measurement awaiting the maintainer's decision on BF-09 (queue `BFQ-09`, `unsettled`). No fix branch. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 ## 1. The code
 

@@ -2,12 +2,13 @@
 
 *Contributor- and maintainer-facing.*
 
-**Snapshot — describes 2026-09-21, `origin/dev` `59430336`.** Status: **superseded for 15.0.9**
-by [release readiness for 15.0.9](release-readiness-15.0.9-2026-09-22.md) (measured against
-`origin/dev` `74fc6619`); current decisions: the adopted release train in
-[the versioning policy §8.3](semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train),
-item state in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (`RT-*`), and the open
-train defect BF-64 in the [backfix register](../remedial/nightscout-backfix-register.md).
+**Snapshot, 2026-09-21, against `origin/dev` `59430336`. Superseded:** for 15.0.9 by
+[release readiness for 15.0.9](release-readiness-15.0.9-2026-09-22.md), itself a snapshot; the
+current picture is [PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md). Current decisions: the
+adopted release train in
+[the versioning policy §8.3](semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train);
+item state in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (`RT-*`); train defect BF-64 in
+the [backfix register](../remedial/nightscout-backfix-register.md).
 
 Companion to
 [the adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md), which sequences

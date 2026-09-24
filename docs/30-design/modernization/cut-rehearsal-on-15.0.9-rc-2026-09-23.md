@@ -1,9 +1,10 @@
 # Cut rehearsal on the 15.0.9 candidate, 2026-09-23
 
-*Contributor-facing, with operator-facing lines marked **Operators:**. Snapshot:
-measured 2026-09-22/23 (US Pacific) on local branches that have not been pushed.
-This is a rehearsal: the real propagation is redone on `dev` after 15.0.9 is
-tagged, and every count here must be re-measured then. Draft for maintainer
+*Contributor-facing, with operator-facing lines marked **Operators:**. Snapshot,
+2026-09-22/23 (US Pacific), on local branches (not pushed) built on `rc/15.0.9-additions-c`
+`b9c9828b`. Current: the latest cut rehearsal. The real propagation is redone on `dev`
+after 15.0.9 is tagged, and every count here must be re-measured then; item state is in
+`queue/work-queue.yaml` (`RT-1`, `RT-2`, `RT-3`, `RT-5`, `RT-REBASE`). Draft for maintainer
 review; it makes no recommendation between the two release shapes.*
 
 Base: `rc/15.0.9-additions-c` **`b9c9828b`** (= `origin/dev` `74fc6619` + eight
@@ -312,7 +313,8 @@ resolves only commit or tag pins; checked by hand instead: connector `0.1.0-dev.
 declares `axios ^1.18.1` and installs axios 1.20.0. The repin loses nothing:
 `234d47c8` (dev) and `b77e5bb7` (cuts 4–5) are both ancestors of `1946beb`.
 **Future change**: when `0.1.0` is tagged the pin moves from `0.1.0-dev.1` to
-`0.1.0` on every cut; npm `next` is already `0.1.0-dev.2`.
+`0.1.0` on every cut; npm `next` is already `0.1.0-dev.2`. [2026-09-24: `0.1.0` is
+released and `dev` pins it exactly (#8762); the cuts still pin `0.1.0-dev.1`.]
 
 ### 4.3 Node floor consistency
 

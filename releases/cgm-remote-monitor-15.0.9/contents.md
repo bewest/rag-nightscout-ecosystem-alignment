@@ -119,8 +119,10 @@ connector #70), published to npm `latest` with provenance, `gitHead` `4dde1ec`
 (`npm view nightscout-connect dist-tags`; `git -C externals/nightscout-connect rev-parse v0.1.0^{commit}`).
 Its code equals `v0.1.0-dev.3` `977da8a`; `git diff 977da8a 4dde1ec` touches only `docs/releasing.md`.
 It carries BF-42, BF-85, BF-08/BF-34, BF-89, BF-91, BF-97 and BF-98 (connector #64 with #61/#66/#67,
-#68, #77, #78, #79). #79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) have
-connector suite coverage only, no lab soak.
+#68, #77, #78, #79). #79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) were
+lab-run on 2026-09-23 for 80 min (46 min against 15.0.9-candidate sinks), on code identical to 0.1.0's
+([connector-profile-sync-bounded-update](../../docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md));
+no multi-hour soak and no source outage.
 
 #### Other fixes (external and upstream contributors)
 

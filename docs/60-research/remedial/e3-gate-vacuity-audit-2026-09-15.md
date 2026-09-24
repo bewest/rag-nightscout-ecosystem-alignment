@@ -1,6 +1,6 @@
 # E3 — gate vacuity audit of the work queue
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (repository head `08753474`). Status: point-in-time audit; gate and item counts below are as of that date and have since changed. Contributor-facing. Current facts: [work queue](../../../queue/work-queue.yaml) (`make queue-status`, `make queue-vacuity`).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (repository head `08753474`). Historical: a point-in-time audit; its gate and item counts have moved. Contributor-facing. Current facts: [work queue](../../../queue/work-queue.yaml) (`make queue-status`, `make queue-vacuity`).**
 
 **Scope (written for maintainer review).** It changes `queue/work-queue.yaml`,
 adds `queue/gate-controls.yaml` and three instruments under `tools/queue/`, and

@@ -1,7 +1,6 @@
 # E2 — the MiniMed / CareLink path: does the old one really not work?
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: current — BF-41, BF-44 and BF-45 are open; nothing here is released (`origin/master` = 15.0.8, still pinning connector v0.0.13). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
-> **[Correction 2026-09-22: the maintainer states (2026-09-21, operational knowledge, not measured here) that mmconnect / minimed-connect-to-nightscout has been broken for some time, and that legacy Dexcom Share is intended to map to nightscout-connect. The "cut 4 deletes two working ingestion paths" premise must carry that caveat; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d`. Historical: the reproductions stand; several conclusions have moved.** BF-41 is closed (it does not reproduce through the real sandbox, [BF-41](../remedial/bf41-future-reading-2026-09-23.md)); BF-85's connector fix is in nightscout-connect `0.1.0`, which `dev` pins exactly (#8762), while `origin/master` (15.0.8) still pins `v0.0.13`. The legacy MiniMed and Dexcom bridge removal moved onto cut 1 (maintainer, 2026-09-23; [cut 1 legacy bridge lift](cut1-legacy-bridge-lift-2026-09-23.md)); the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom `BRIDGE_*` settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-44, BF-45, BF-61, BF-85).**
 
 **Status: DRAFT. Contributor-facing.** Prepared for maintainer review; nothing here is a
 release decision. Every claim is labelled **reproduced** (executed on this machine) or
@@ -176,9 +175,8 @@ setting does nothing.
 **The maintainer's "the old medtronic does not work" is not provable from source as a single
 mechanism.** What is established:
 
-[Correction 2026-09-22: the maintainer's statement is operational knowledge (2026-09-21: broken for
-some time), not a source claim; this section tests only what source and stubs can show, and does
-not contradict it.]
+[2026-09-22: the maintainer's statement (2026-09-21: broken for some time) is operational knowledge;
+this section tests only what source and stubs can show, and does not contradict it.]
 
 | candidate | verdict | basis |
 |---|---|---|
@@ -441,9 +439,8 @@ the two paths compute different `sysTime` values, so the `sysTime`+`type` upsert
 `lib/server/entries.js:130` does **not** absorb the duplicates. Two traces, offset by the pump's
 UTC offset.
 
-[Correction 2026-09-22: BF-45's severity assumes the legacy mmconnect path still ingests data. The
-maintainer states it has been broken for some time (operational knowledge, not measured here); if so,
-the double-trace case may not arise in practice. BF-45 has not been re-graded.]
+[2026-09-22: the maintainer states mmconnect has not worked for some time (not measured here), so the
+double-trace case may not arise in practice; the register grades BF-45 low.]
 
 ### 6b. On parcel 4/5: the shim exists, and it is well behaved
 
@@ -486,8 +483,7 @@ which is exactly the residue list in §4, arrived at independently.
 
 1. **Does a real CareLink login still succeed for the retired package?** The whole "short
    deprecation window" argument rests on it. Needs one live patient-role account, EU and US.
-   [Correction 2026-09-22: the maintainer reports it has been broken for some time — operational
-   knowledge, still not measured here.]
+   [2026-09-22: the maintainer reports it has been broken for some time; not measured here.]
 2. **Do real CareLink payloads carry zone designators, and do they carry `lastConduitDateTime`?**
    This single property decides whether §5's future-dated readings are latent or active, and it is
    the difference between the retirement fixing the stale-alarm hazard and causing it.

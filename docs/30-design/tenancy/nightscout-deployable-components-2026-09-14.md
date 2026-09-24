@@ -1,7 +1,7 @@
 # Deployable components: entrypoints, program structure, and what an operator actually runs
 
-*Contributor-facing.* **Living design — the only statement of the deployable-component
-decomposition.** Written 2026-09-14; its recommendation was adopted as **D5** (four hosted
+*Contributor-facing.* **Snapshot, written 2026-09-14. Current: the only statement of the
+deployable-component decomposition.** Its recommendation was adopted as **D5** (four hosted
 entrypoints plus `single`) and **D6** (the change feed), and is extended by **D7** (`ns-admin`,
 the platform-admin plane) and **D16** (three listeners by audience) — [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Task state lives in [`queue/QUEUE.md`](../../../queue/QUEUE.md). Measurements carry their own dates

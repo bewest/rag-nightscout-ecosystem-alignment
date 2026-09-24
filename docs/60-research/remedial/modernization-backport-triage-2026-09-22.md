@@ -1,6 +1,7 @@
 # Modernization-only security commits: which fix a defect on dev
 
-*Contributor-facing. Queue item `BF2-BACKPORT`; plan
+*Contributor-facing. Snapshot, 2026-09-22. Historical: the two backports this triage selected are
+merged into `dev` as #8751 (BF-104, BF-105), not released. Queue item `BF2-BACKPORT`; plan
 [backfix-2-plan-2026-09-22](../../30-design/remedial/backfix-2-plan-2026-09-22.md) §2.1.
 Measured 2026-09-22 against `origin/dev` `74fc6619` (15.0.9), the modernization branch
 `origin/chore/nightscout-modernization` `b1bdaca0`, and the shipping release

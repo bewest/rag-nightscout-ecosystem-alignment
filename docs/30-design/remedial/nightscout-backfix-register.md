@@ -198,7 +198,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 
 | id | defect | where | severity | status |
 |---|---|---|---|---|
-| **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the mode the caller sends is silently ignored and the write always merges. **Census corrected 2026-09-15**: nine call sites, **eight** send `{mode:'replace'}` and **one** — `lib/server/entries.js:168` — sends `{mode:'merge'}` deliberately, above a comment saying the two are *not* interchangeable. "Every caller wants replace" was wrong and made "always replace" look like a safe fix; it would make `entries` start deleting stored fields | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` (:286, :292) vs `lib/api3/storage/mongoCollection/modify.js:253-255` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
+| **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the mode the caller sends is silently ignored and the write always merges. Nine call sites: **eight** send `{mode:'replace'}` and **one** — `lib/server/entries.js:168` — sends `{mode:'merge'}` deliberately, above a comment saying the two are *not* interchangeable, so "always replace" is not a safe fix: it would make `entries` start deleting stored fields | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` (:286, :292) vs `lib/api3/storage/mongoCollection/modify.js:253-255` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
 | **BF-22** | `updateOne` with a dotted field stores a nested object on MongoDB and a literal dotted key on PostgreSQL | `lib/api3/storage/pgCollection/index.js` + `lib/api3/generic/patch/operation.js:85` | **medium** — client-reachable via v3 `PATCH`; the PostgreSQL key is unreachable by any path lookup | open |
 | **BF-23** | A duplicate-key error reaches the caller as the backend's own error class | both adapters | low — no shipping caller branches on it | open |
 | **BF-25** | A credential carried in the request **body** is invisible to the tenant claim check, so tenant A's token authorises A's roles against tenant B's bound data | `lib/server/tenant-middleware.js` `presentedCredential` + `lib/authorization/index.js:40-50` | **high** — cross-tenant read *and write* with any client on default config | open |
@@ -207,7 +207,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-27** | `config()` returns one module-scope `env` object, and `setAPISecret()` deletes `API_SECRET` from `process.env` once read — so a second `config()` hands back an enclave that was never armed, and (before the rebind) disarmed the first caller's | `lib/server/env.js` module scope + `setAPISecret` | low — **not reachable in production**: one call site, `lib/server/server.js:33`. 62 test files call it | open |
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
-| **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/sql.js:27` (**corrected 2026-09-15** — the `utils.js` this row used to cite contains no `scalarize` at all) | low — no shipping caller passes a `Date` | open |
+| **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/sql.js:27` | low — no shipping caller passes a `Date` | open |
 | **BF-53** | **The documented test commands do not run the tests under review.** `npm run test:unit` (44 files) and `npm run test:integration` (89) together reach **107 of the 159** files in `tests/`, and `npm test -- tests/x.test.js` **appends** to the script's own glob rather than replacing it, so it runs the whole tree plus the named file twice | `package.json` scripts `test:unit` / `test:integration`, on `origin/dev` `a8888f0d` | **medium** — false confidence in review: `bf/food` returned 361 passing / 0 failing while never loading `tests/boluscalc.quickpick.test.js`, the only test for **BF-35**. Same for BF-36, BF-37 and the `dataloader` change on `bf/cache` | open — measured by expanding both brace lists with `shopt -s nullglob`. **Not a CI gap**: `main.yml` runs `test-ci`, which is `./tests/*.test.js`, all 159. Use `npm test` for these branches |
 | **BF-54** | The two treatment-drag coordinate clamps — which bound a user-initiated rewrite of a treatment's `created_at` — have **no coverage**: both can be deleted with the D3 interaction suite fully green | `lib/client/renderer.js:766` and `:772-773` on `origin/dev` `74fc6619`. `v15.0.8` has the same clamps at `:764` and `:770-771`, written against `d3.event` because the D3 6 migration is not in it | **medium** — no defect in shipping behaviour; what is defective is the absence of any check that would notice if the clamps stopped working. A treatment's timestamp is what IOB and COB key off | open — **reproduced by deliberate breakage**: clamps removed, `tests/dependency-d3.test.js` still 24 passing / 0 failing. Instrumentation shows 25 drag invocations, all strictly inside the bounds, so the boundary is never reached. These are the exact lines the D3 6 event migration rewrote. A browser probe does catch it: deleting the clamps turns 2 of 19 of its checks red, and it finds 15.0.8 and dev identical on every drag measured ([browser evidence](../../60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md), 2026-09-22; the probe itself is untracked, so no gate runs it) |
 | **BF-55** | Merging any of cuts 1-4 into `dev` **destroys the only test coverage for a bug fix shipping in 15.0.9**: cut 1 deletes `tests/clock-client.test.js` while `dev` adds 56 lines to it, and the Playwright replacement covers none of that behaviour. The production fix auto-merges silently; only its test disappears | `tests/clock-client.test.js` (deleted on `chore/retire-jsdom`, modified on `dev` by `06372e1d`) vs `tests/browser/clock-client.test.js` | **high** — the clock view is a screen someone reads at a glance to decide whether to act, and the fix is the low-and-falling concern face | open — measured: `merge-tree` reports `CONFLICT (modify/delete)`; `grep -ciE 'concern\|falling'` is **0** against the replacement with **3** on `dev`'s file as positive control. Taking either side is wrong: the deletion is right, the 56 lines must be ported |
@@ -257,7 +257,7 @@ this as a side effect. Recorded anyway because `findFiltered` is a published int
 caller passing `limit: 0` re-opens it, and `toSafeInt(o.limit, 0)` makes `0` the fallback for
 unparseable input. A defensive `if (limit > 0)` in `findFiltered` would also do it.
 
-**Status after BF-14 was fixed (2026-09-15), stated narrowly.** `.limit(0)` is no longer reachable
+**With BF-14's fix (merged via PR #8738), stated narrowly.** `.limit(0)` is not reachable
 through the v1 API, through the six v1 storage `list()` helpers, or through v3's `?limit=`
 (BF-33). The driver-7 batch behaviour itself was **not** re-measured: `origin/dev` pins
 `mongodb ^5.9.2` and has no `mongo-read-options.js`, so it cannot be observed there.
@@ -312,39 +312,25 @@ last. Two harnesses, two fixtures, one defect.
 
 *Sizing holds the grade down, and it is a deadline rather than a reprieve*: the emitted manifest
 flags no ambiguous field on `entries`, the only collection T2.5 implements. `NSCLIENT_ID` is
-flagged on `devicestatus`, `profile` and `treatments` — so the exposure arrives **with T2.6**.
-(**T2.6 did not exist as a defined task until 2026-09-15**: five documents, this entry among them,
-scheduled work against an id no plan defined. It is now defined — *deliberately unscheduled* — in
-the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) Phase 2, so the deadline
-points at something.)
+flagged on `devicestatus`, `profile` and `treatments` — so the exposure arrives **with T2.6**,
+which is defined, deliberately unscheduled, in the
+[execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) Phase 2.
 
 *Fix* — **PRESCRIBED, NEVER RUN. Read this as a proposal, not a solution.** See
 [the ordering design](../tenancy/nightscout-seam-ordering-translation.md) §3. Restricting sortable fields to
 declared single-typed ones makes the adapter's existing assumption checkable; the alternative is a
-type-bucketed sort key, which is real work and still does not handle arrays. **Two of the fixes
-this register has prescribed were wrong when someone ran them** (BF-30's, and BF-21's "implement
-replace" — see below), so an unrun prescription on a high-severity entry is a liability, not
-progress.
+type-bucketed sort key, which is real work and still does not handle arrays.
 
-> Two corrections to how this fix has been cited elsewhere:
->
-> - The ordering design's §3 is headed *"Sub-problem B — cross-type ordering · **open, and harder
->   than it looks**"*, and what it carries is a **recommendation (option O2) conditional on a corpus
->   measurement**, not a settled decision. It has been cited as "a documented design decision"; it
->   is not one yet.
-> - O2 is **client-visible**: a v3 request sorting on an undeclared field stops being answered. That
->   is a behaviour change a migrating tenant must be told about, not a silent internal fix.
+- The ordering design's §3 (*"Sub-problem B — cross-type ordering · open, and harder than it
+  looks"*) carries a **recommendation (option O2) conditional on a corpus measurement**, not a
+  settled decision.
+- O2 is **client-visible**: a v3 request sorting on an undeclared field stops being answered. That
+  is a behaviour change a migrating tenant must be told about, not a silent internal fix.
 
 *Evidence*: [T2.5 backend verification](../../60-research/tenancy/t25-postgres-backend-verification-2026-09-15.md) §6,
 `tools/qc/pg-backend-arm.js`; and [ordering design](../tenancy/nightscout-seam-ordering-translation.md) §3.1b.
 
 ### BF-20 · a `Date`-valued filter bound silently inverts
-
-**Location corrected 2026-09-15**: `scalarize()` is at `lib/api3/storage/pgCollection/sql.js:27`.
-This entry cited `pgCollection/utils.js`, which contains no `scalarize` at all — grep returns
-nothing. Same class of stale reference as BF-05's `:84` and BF-09's `535-568`; all three are now
-corrected, and the pattern is worth naming: **a line reference in this register is the field that
-rots first**, because nothing recomputes it.
 
 `scalarize()` converts a JavaScript `Date` to an ISO string before it reaches the adapter. A
 `gte <Date>` bound against an ISO-string `created_at` therefore matches **nothing on MongoDB**
@@ -371,55 +357,33 @@ bulkUpsert(ops, {mode:'merge'})      mongod: stale survives  postgres: stale sur
 bulkUpsert(ops, {mode:'replace'})    mongod: stale removed   postgres: stale SURVIVES
 ```
 
-> ### Caller census, dormancy reason and fix — all three corrected 2026-09-15
->
-> **This entry has been mis-cited in three directions in one day**, and the corrections point
-> different ways, so read all three.
->
-> **(1) The caller list.** Measured by reading each of the nine `bulkUpsert` call sites in `lib/`
-> on `crm-seam` `81a1f6ce` — *reading them, not grepping them*, which matters because this
-> codebase's leading-comma style puts the options argument on the **continuation line**, so a
-> `grep -rn bulkUpsert` hit shows only the opening line:
->
-> | mode passed | sites |
-> |---|---|
-> | `{mode:'replace'}` | `treatments.js:31`, `:120`; `activity.js:61`, `:102`; `food.js:64`, `:122`; `profile.js:101`; `authorization/storage.js:143` — **eight** |
-> | `{mode:'merge'}` | `entries.js:168` — **one**, deliberately |
-> | no options | **zero** |
->
-> A recent audit reported "four pass no options at all" and built an argument on the silence of
-> those four. **That census was taken from grep output and is wrong** — all four
-> (`storage.js:143`, `treatments.js:31`, `activity.js:102`, `profile.js:101`) pass
-> `{ mode: 'replace' }` on the next line. This entry's original "every shipping caller passes
-> replace explicitly" was **closer to right**, and wrong only in the one case below.
->
-> **(2) "Every caller" was still wrong, and the exception is the dangerous one.**
-> `lib/server/entries.js:168` passes `{ mode: 'merge', ordered: true }` **deliberately**, above a
-> comment saying the two modes are *not* interchangeable because that path was `updateOne`+`$set`
-> and a wholesale replace would delete stored fields. This matters because "every caller wants
-> replace" makes **"just always replace"** look like a safe fix — and it would make the
-> highest-write-volume collection in Nightscout start deleting stored fields.
->
-> **(3) The dormancy reason was false.** This entry said `entries` "has no `bulkUpsert` caller".
-> It has one, at `:168`. The true reason this is dormant is **thinner and worth stating plainly**:
-> `lib/storage/postgres/generated/` holds `entries.sql` alone, so `entries` is the only collection
-> with a PostgreSQL schema — and its single caller happens to request the one mode the PostgreSQL
-> adapter hardcodes. **The backends agree by coincidence, not because the caller is absent.**
->
-> **(4) `ordered: true` is silently dropped too**, by the same missing parameter. It agrees today
-> only because the PostgreSQL loop happens to be sequential — agreement by accident, not by
-> contract.
->
-> **(5) The code comment says exactly the right thing and the code beneath it does the opposite.**
-> `pgCollection/index.js:275-279`: *"`mode` carries the same difference it does on the other
-> backend and **must not be defaulted away**"* — followed at `:286` by `bulkUpsert (ops)` with no
-> options parameter and at `:292` by `write(asAst(op.filter), op.doc, 'merge')`, a literal.
->
-> **Scope, wider than this entry records**: the silent merge reaches `profile` (basal rates,
-> insulin sensitivity, carb ratios) and `authorization/storage.js` (subjects and roles), not only
-> `activity` and `treatments`. **Not separately reproduced** on those collections — the mechanism
-> is the one measured below. It widens the blast radius without changing the mechanism, which is
-> why it amends this entry rather than taking an id of its own.
+**Caller census.** Measured by reading each of the nine `bulkUpsert` call sites in `lib/` on
+`crm-seam` `81a1f6ce` (read, not grepped: this codebase's leading-comma style puts the options
+argument on the continuation line, so a `grep -rn bulkUpsert` hit shows only the opening line):
+
+| mode passed | sites |
+|---|---|
+| `{mode:'replace'}` | `treatments.js:31`, `:120`; `activity.js:61`, `:102`; `food.js:64`, `:122`; `profile.js:101`; `authorization/storage.js:143` — **eight** |
+| `{mode:'merge'}` | `entries.js:168` — **one**, deliberately |
+| no options | **zero** |
+
+- **The exception is the dangerous one.** `lib/server/entries.js:168` passes
+  `{ mode: 'merge', ordered: true }` deliberately, above a comment saying the two modes are *not*
+  interchangeable because that path was `updateOne`+`$set` and a wholesale replace would delete
+  stored fields. "Always replace" is therefore not a safe fix: it would make the
+  highest-write-volume collection start deleting stored fields.
+- **Why it is dormant.** `lib/storage/postgres/generated/` holds `entries.sql` alone, so `entries`
+  is the only collection with a PostgreSQL schema, and its single caller happens to request the one
+  mode the PostgreSQL adapter hardcodes. The backends agree by coincidence.
+- **`ordered: true` is silently dropped too**, by the same missing parameter. It agrees today only
+  because the PostgreSQL loop happens to be sequential.
+- **The code comment says the right thing and the code beneath it does the opposite.**
+  `pgCollection/index.js:275-279`: *"`mode` carries the same difference it does on the other
+  backend and **must not be defaulted away**"* — followed at `:286` by `bulkUpsert (ops)` with no
+  options parameter and at `:292` by `write(asAst(op.filter), op.doc, 'merge')`, a literal.
+- **Scope**: the silent merge reaches `profile` (basal rates, insulin sensitivity, carb ratios) and
+  `authorization/storage.js` (subjects and roles), not only `activity` and `treatments`. Not
+  separately reproduced on those collections; the mechanism is the one measured above.
 
 **Eight of the nine shipping callers pass `{ mode: 'replace' }` explicitly** and the argument
 reaches nothing.
@@ -429,15 +393,14 @@ food, profile or subject document stays in the PostgreSQL row for good. Nothing 
 logs, and the two backends drift further apart with every write.
 
 *Not yet live, and the deadline is known*: **the exposure arrives with T2.6**, the same deadline as
-BF-19. (T2.6 is now a defined — and deliberately unscheduled — task in the execution plan's Phase
-2; until 2026-09-15 five documents scheduled against an id no plan defined.)
+BF-19 (a defined, deliberately unscheduled task in the execution plan's Phase 2).
 
-*Fix* — **PRESCRIBED, NEVER RUN, and smaller than this entry made it sound.** Give the PostgreSQL
-`bulkUpsert` the same `(ops, options)` signature and **thread the existing mode through**, or make
-it refuse a mode it cannot honour. **Replace is already implemented**: `write(ast, doc, 'replace')`
-emits `$N::jsonb || jsonb_build_object('_id', doc -> '_id')` and `replaceOne` already uses it. The
-entry previously said "implement `replace`", which made this look like new work; it is a parameter
-and a literal. **Its smallness is an argument for doing it before a migration, not after.**
+*Fix* — **PRESCRIBED, NEVER RUN.** Give the PostgreSQL `bulkUpsert` the same `(ops, options)`
+signature and **thread the existing mode through**, or make it refuse a mode it cannot honour.
+**Replace is already implemented**: `write(ast, doc, 'replace')` emits
+`$N::jsonb || jsonb_build_object('_id', doc -> '_id')` and `replaceOne` already uses it, so the
+change is a parameter and a literal. **Its smallness is an argument for doing it before a
+migration, not after.**
 Silently downgrading a replace to a merge is the one option that should not survive review.
 
 > **A canary is worth more than the fix here**, because the fix is easy to apply and easy to apply
@@ -519,14 +482,12 @@ not something shipping to self-hosters.
 *The most dangerous part is the comment*, because it tells the next reader this case is already
 handled. Fix the sentence even if the code takes longer.
 
-*Regression test to write when fixing* — **STILL NOT WRITTEN as of 2026-09-15, on a high-severity
-open entry**: start the real authorization stack with two tenants' subjects and assert A's token
-cannot read B's entries. The agent established the two halves separately — middleware pass-through
-measured live, process-wide subject resolution read from source — and that end-to-end test is the
-gap. It is named here as the gap and has been for a day; naming it again is not progress, so it
-needs an owner.
+*Regression test to write when fixing* — **not written**: start the real authorization stack with
+two tenants' subjects and assert A's token cannot read B's entries. The two halves were established
+separately — middleware pass-through measured live, process-wide subject resolution read from
+source — and that end-to-end test is the gap.
 
-> **D14 does not close this, and the plan's wording has overstated it.** Per-tenant JWT signing
+> **D14 does not close this.** Per-tenant JWT signing
 > closes the *signed-token* vector completely and demonstrably. **BF-25's actual vector is an
 > opaque access token in the request BODY**, which carries no signature for a per-tenant key to
 > fail: `presentedCredential` (`tenant-middleware.js:104-129`) deliberately does not read
@@ -541,12 +502,11 @@ needs an owner.
 
 ### BF-24 · `TRUST_PROXY=false` defeats the forwarded-host guard
 
-> **Priority raised 2026-09-15.** BF-24 now **gates a deliverable**, not just a misconfiguration.
-> Path-prefix multitenancy over websockets is only achievable by having the reverse proxy assert
-> the tenant in a header derived from its own location block (T3.5 in the execution plan) — which
-> is precisely the mechanism this defect makes bypassable. The maintainer's decision is to **land
-> BF-24 before publishing the nginx recipe**, rather than ship a documented configuration that is
-> known to be defeatable.
+> **BF-24 gates a deliverable.** Path-prefix multitenancy over websockets is only achievable by
+> having the reverse proxy assert the tenant in a header derived from its own location block (T3.5
+> in the execution plan) — which is precisely the mechanism this defect makes bypassable. Decided
+> 2026-09-15 (maintainer): **land BF-24 before publishing the nginx recipe**, rather than ship a
+> documented configuration that is known to be defeatable.
 
 `fromEnv` refuses a `TENANT_HOST_HEADER` other than `host` with
 `if (trust.legacyForwardedHeaders) throw`. That marker is only set on the **compatibility** trust
@@ -562,14 +522,8 @@ The client picks its tenant with a header, on another tenant's hostname. The pai
 contradictory — trust nothing, then read a forwarded header — which is precisely what the guard
 exists to catch.
 
-*Fix* — **NONE IS PRESCRIBED, and that is the finding. Flagged 2026-09-15.** This entry gates a
-deliverable — the maintainer's decision to land it before the `nginx` recipe is published — and it
-contains no *Fix* line at all. An entry that blocks a deliverable and prescribes nothing cannot be
-picked up; whoever picks it up will invent a fix, and this register has had two invented fixes turn
-out to be wrong. The shape is probably "refuse the pairing at boot rather than at request time",
-because a configuration that is contradictory is contradictory before any request arrives — but
-that is a sentence written by someone who has not tried it, and it is offered as a starting point,
-not a prescription.
+*Fix* — **none prescribed.** A starting point, not tried: refuse the pairing at boot rather than at
+request time, because a contradictory configuration is contradictory before any request arrives.
 
 *Evidence*: same report, H3.
 
@@ -657,7 +611,7 @@ would use is itself unsettled: see the measured correction in
 
 ### BF-69 · the quick-pick chooser is built once, from nothing, and never rebuilt — **FIXED 2026-09-23** on a local branch
 
-**Found the way this register keeps saying defects should be found: somebody opened a browser.**
+Found 2026-09-17 by the maintainer in a browser.
 
 The Bolus Wizard's quick-pick dropdown offers only `(none)`. The food records are present —
 `client.sbx.data.food` holds them, and *Add food from database* lists them correctly, because
@@ -683,12 +637,8 @@ Measured 2026-09-17, dev-mode instances, identical 8-record seed, driven through
 `git grep loadFoodQuickpicks` finds the definition and **one** call site, at construction. So the
 chooser is built from zero records before any data has arrived, and nothing rebuilds it.
 
-**Candidate fix, verified rather than prescribed.** Calling `loadFoodQuickpicks()` from
-`boluscalc.prepare()` — which `toggleDrawer` already runs on every open — was applied to a scratch
-worktree off the RC. The chooser then offered `review-qp-visible (30 g)` and
-`review-qp-strfalse (40 g)`: the two quick picks `bf/food` intends, and no page errors.
-
-> **SEQUENCING CONSTRAINT — this fix must not ship before `bf/food` (#8735).**
+> **SEQUENCING CONSTRAINT — this fix must not ship before `bf/food` (#8735).** Met: #8735 has been
+> in `dev` since 2026-09-20.
 >
 > The same one-line change was applied to `a8888f0d` **without** `bf/food` and measured: the
 > chooser then offered **eight** entries — every plain food plus the quick pick the user
@@ -704,13 +654,14 @@ be used at all; foods have to be added one at a time from the database instead. 
 wrong number — the feature simply does not work. None of this is medical advice; if you rely on
 quick picks for meal dosing, raise it with your care team as well as your settings.
 
-**Fixed 2026-09-23 on local branch `bf3/quickpick-rebuild` `83cfff14`** (one commit on `74fc6619`,
-which carries #8735; not pushed; [evidence](../../60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)).
+**Merged 2026-09-23** via PR #8756 (merge `c11888ed`; branch `bf3/quickpick-rebuild` `83cfff14`, one
+commit on `74fc6619`, which carries #8735; [evidence](../../60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)).
 The chooser is rebuilt in `prepare()`, when the drawer opens, and nowhere else: an option's value is
 an index into the quick-pick array, so rebuilding on a data update while a pick is selected would
 move the index under the selection, which is BF-35's failure class. The `change` handler is bound
-once at construction; the one-line candidate above leaves the binding inside `loadFoodQuickpicks`
-and stacks one more handler per open (4 after 3 opens, measured). Suite 2394/0/3 on Node 20 and 22,
+once at construction; a one-line version that only calls `loadFoodQuickpicks()` from `prepare()`
+leaves the binding inside `loadFoodQuickpicks` and stacks one more handler per open (4 after 3
+opens, measured). Suite 2394/0/3 on Node 20 and 22,
 exactly +8. In a browser each pick enters its own carbs (45, 70, 20 g), hidden picks are not
 offered, and BF-35's probes still pass. The Bolus Wizard is shown only when `SHOW_PLUGINS` lists
 `boluscalc`, and only to a viewer who may create treatments. A food changed after a page has loaded
@@ -735,12 +686,12 @@ injected two-day window excludes every document rather than bounding it. The end
 running `query.js` directly. Independently reconfirmed as a general class by the
 [three-arm validation](../../60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md) §3 class B.
 
-*Fix, shipped*: `bf/reads` `4772b983` (PR #8738). `aggregate()` now calls **`api.query_for(opts)`** — the same
+*Fix, merged via PR #8738*: `bf/reads` `4772b983`. `aggregate()` now calls **`api.query_for(opts)`** — the same
 function the matching list endpoint uses — rather than passing `queryOpts` as a second copy that
 has to be kept in step. No fallback to `find_options(opts)`: a collection that registers
 `aggregate` without a `query_for` should fail loudly, because a silent fallback is the defect.
 
-*Reproduced live and two things learned.* `GET /api/v1/count/entries/where` returned `200 []` with
+*Reproduced live.* `GET /api/v1/count/entries/where` returned `200 []` with
 20 entries stored. **`count/treatments/where` was affected too**, and worse: the defaults put the
 window on `date` rather than on `created_at`, so the filter lands on the wrong field entirely.
 And on **entries only**, a request that names its own bound (`?find[date][$gte]=`) was already
@@ -750,7 +701,7 @@ and commonest shape. [Report](../../60-research/remedial/bf01-13-14-15-read-defe
 
 ### BF-02 · `insulin` and `carbs` bounds truncated
 
-**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737), emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
+**Merged 2026-09-18** via PR #8737 (merge `025f1310`); repaired by plan T0.5 on `bf/coercion` `f829ea11`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
 
 `treatments.js` coerces query values through a hand-maintained per-collection `walker`:
 
@@ -1452,7 +1403,7 @@ should be re-run on a raised limit before it is read as a regression.
 
 ### BF-11 · `treatments.duration` and `rate` filters match nothing
 
-**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737), emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
+**Merged 2026-09-18** via PR #8737 (merge `025f1310`); repaired by plan T0.5 on `bf/coercion` `f829ea11`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
 
 Measured against a real `mongod`: `find[duration][$gte]=30` returned **0 rows** before and **2 of 2** after.
 

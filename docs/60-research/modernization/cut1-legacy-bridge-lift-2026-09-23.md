@@ -1,6 +1,6 @@
 # Lifting the legacy CGM bridge removal onto cut 1
 
-> **Snapshot — measured 2026-09-23 on local branch `rh/cut1-retire-legacy` (tip `c043fb2d`, from `rh/cut1` `c77797e0`), not pushed. Node 22.23.2 and 24.20.0, MongoDB 7.0.43. Contributor-facing, except §8, which is for operators. Current decisions: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-61, BF-62, BF-64; queue items RT-1 and RT-5.**
+> **Snapshot, 2026-09-23, on local branch `rh/cut1-retire-legacy` (tip `c043fb2d`, from `rh/cut1` `c77797e0`; not pushed), Node 22.23.2 and 24.20.0, MongoDB 7.0.43. Current: the latest word on the legacy bridge removal; cut 1 is not yet rebased onto `dev`, so the branch is a rehearsal. Contributor-facing, except §8, which is for operators. Current decisions: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-61, BF-62, BF-64; item state in queue items RT-1 and RT-5.**
 
 ## 1. What was decided
 
@@ -38,7 +38,8 @@ webpack and ESLint.
 three connector commits: `9fa2c3c1`, `5349d479` and `c962a13f`. In `externals/nightscout-connect`,
 `git merge-base --is-ancestor` shows all three are contained in both `v0.1.0-dev.1` and
 `v0.1.0-dev.2`, so keeping `0.1.0-dev.1` does not move the pin backwards. Moving it to
-`0.1.0-dev.2`, which dev pins since #8752, is a separate one-line change.
+`0.1.0-dev.2`, which dev pins since #8752, is a separate one-line change. [2026-09-24: `dev` now pins
+exactly `0.1.0` (#8762), which also contains all three commits.]
 
 Checks after the lift:
 

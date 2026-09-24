@@ -139,9 +139,11 @@ The maintainer released it on 2026-09-24: #70 merged into `main`, `main` was tag
 publish was approved. Nightscout `dev` pins it exactly (#8762), and the combined run with that pin is
 green.
 
-The profile-sync commits from #79 were not soaked in the lab before the release: the bounded fetch
-(`1d2ebc8`) and update-on-change (`de3cee1`). The lab's profile arm ran on `f924de2`, so those two
-commits are covered by the connector's own suite only.
+#79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) were lab-run on
+2026-09-23, on code identical to what shipped. The runs were 80 min, and 46 min against sinks
+running the 15.0.9 candidate
+([record](../60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md)). That is
+shorter than the 4 h 23 min dev.2 soak, and no source outage was repeated.
 
 ### `BFQ-47` — decided, and in review
 

@@ -1,6 +1,6 @@
 # BF-17 and BF-30 — two authentication defects in shipping `cgm-remote-monitor`
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/auth`, commits `a26ba416`, `64db1f35`). Status: BF-17 and BF-30 fixed on branch `bf/auth`, not merged — both defects still open on dev and 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (branch `bf/auth`, commits `a26ba416`, `64db1f35`). Superseded for the fix: both commits are carried by `bf2/auth-hardening`, open as PR #8754 (security review: the maintainer and Andy), together with the `TRUST_PROXY` setting; neither defect is fixed on `dev` or 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-17, BF-30) and queue item `BF2-AUTH`.**
 
 **Date**: 2026-09-15
 **Branch**: `bf/auth` in `externals/work/crm-bf-auth`, based on `origin/dev` (`a8888f0d`)

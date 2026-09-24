@@ -2,12 +2,11 @@
 
 *Contributor-facing, technical throughout.*
 
-> **Snapshot — describes 2026-09-17, measured against cgm-remote-monitor `origin/dev` `a8888f0d`.**
-> Status: **completed.** All ten `dev-candidate` PRs in scope merged into `dev` between 2026-09-17
-> and 2026-09-20 (#8733; #8734, #8737, #8738; #8735, #8736, #8739, #8740; #8741, #8729). **None is
-> released**: as of 2026-09-22 `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind
-> `origin/dev` `74fc6619`. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)
-> (the P0-* and BFQ-* items, and `RT-0` for the release) and the
+> **Snapshot, 2026-09-17, against cgm-remote-monitor `origin/dev` `a8888f0d`. Historical:** the
+> review is complete. All ten `dev-candidate` PRs in scope are merged into `dev` (2026-09-17 to
+> 2026-09-20: #8733; #8734, #8737, #8738; #8735, #8736, #8739, #8740; #8741, #8729) and none is
+> released; the shipping release is 15.0.8. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)
+> (the `P0-*` and `BFQ-*` items, and `RT-0` for the release) and the
 > [backfix register](./nightscout-backfix-register.md). The preserved probes are in
 > `tools/review/probes/`.
 

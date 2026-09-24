@@ -4,17 +4,14 @@
 `nightscout/cgm-remote-monitor` and `nightscout/nightscout-connect`.
 *Contributor-facing.*
 
-> **Snapshot — describes 2026-09-15, measured against cgm-remote-monitor `origin/dev` `a8888f0d`.**
-> Status: **superseded.** The branch shapes changed the same evening (the `bf/coercion`/`bf/reads`
-> stack was dissolved and both branches re-cut — see
-> [Phase 0 sequencing](./phase0-pr-sequencing-2026-09-15.md) §3a), and seven of the nine branches
-> have since merged into `dev` (#8734–#8740). **None is released**: as of 2026-09-22
-> `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind `origin/dev` `74fc6619`, and the
-> release PR #8598 is open awaiting review. `bf/auth` and `bf/connect-pin` did not land. The
-> connector `v0.0.14` tag was retired: its fixes are in connector `dev` `1946beb`, the connector line
-> is `0.1.0`, and prerelease `0.1.0-dev.1` is on npm (queue `P0-TAG`). Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items
-> `P0-*` and `RT-0`; defect facts in the [backfix register](./nightscout-backfix-register.md).
-> SHAs, test counts and pins below are as of the snapshot date.
+> **Snapshot, 2026-09-15, against cgm-remote-monitor `origin/dev` `a8888f0d`. Superseded:** the
+> branch shapes changed the same evening ([Phase 0 sequencing](./phase0-pr-sequencing-2026-09-15.md)
+> §3a). `bf/merge`, `bf/food`, `bf/parms`, `bf/coercion`, `bf/reads`, `bf/alarms` and `bf/cache` are
+> merged into `dev` (#8734–#8740); `bf/auth` and the BF-30 throttle became #8754 (open); the connector
+> pin is #8762 (exactly `0.1.0`, released 2026-09-24). Nothing past 15.0.8 is released, and release PR
+> #8598 awaits review. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items
+> `P0-*`, `BF2-AUTH` and `RT-0`; defect facts in the [backfix register](./nightscout-backfix-register.md).
+> SHAs, test counts and pins below are as of 2026-09-15.
 
 This is the one document to read before you start typing. It is written so you can read it once and
 then act. Where a number appears, the sentence says how it was measured. Where the reasoning is

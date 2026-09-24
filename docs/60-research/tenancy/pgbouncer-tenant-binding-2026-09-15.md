@@ -86,7 +86,7 @@ probe and 250 in the concurrent one** (§4). The property is measurable, and it 
 
 **Three defects were found on the way, none of them in the binding.** They are in §6 and proposed as
 BF-27, BF-28 and BF-29. BF-28 is the serious one.
-[Correction 2026-09-22: these three proposed ids were never filed under these numbers; register BF-27, BF-28 and BF-29 name unrelated defects (BF-28/29 merged to dev via PR #8739 — not these). The pooler defects here are open on the seam branch and unregistered. The ids are kept below as local labels only.]
+[2026-09-22: these ids were never filed; register BF-27, BF-28 and BF-29 are unrelated defects. The three pooler defects are open on the seam branch and unregistered, and the ids below are local labels only.]
 
 ---
 

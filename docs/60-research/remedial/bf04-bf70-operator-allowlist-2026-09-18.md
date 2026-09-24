@@ -1,6 +1,6 @@
 # BF-04 extracted, and BF-70 found underneath it — API v1's query and pipeline surface
 
-> **Snapshot — research as of 2026-09-18, measured against `origin/dev a8888f0d` (branch tip `52b7b640`, merged up at `9745cae2`). Status: findings merged to dev in PR #8743 (BF-04, BF-70), unreleased — both still live on 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-18, against `origin/dev` `a8888f0d` (branch tip `52b7b640`, merged up at `9745cae2`). Historical: the fixes are merged into `dev` as PR #8743 (BF-04, BF-70), not released; both defects are still live on 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 Date: 2026-09-18. Branch: `bf/operators`, three commits on `origin/dev` `a8888f0d`, tip
 `52b7b640`. Worktree `externals/work/crm-bf-operators`.
@@ -293,7 +293,7 @@ both guards still run.
   **What v3 does share with v1 is `re` → `$regex` over a client-supplied string** — the same
   exposure as advisory PoC C, reached through a documented operator rather than by injection. The
   `parseRegEx` decision on v1 and the `re` decision on v3 should be taken together.
-  [Correction 2026-09-22: advisory PoC C is not data extraction; its effect is cost — BF-72, unauthenticated denial of service, live on 15.0.8 and `dev`, no fix yet. Mechanism only in this repository.]
+  [2026-09-22: advisory PoC C's effect is cost, not data extraction: BF-72, live on 15.0.8 and `dev`, no fix. Mechanism only here.]
 
   **The field-name position is worth remembering even though it is inert.** It is inert because of
   what MongoDB rejects, not because Nightscout validates it, so it would become live if anyone ever

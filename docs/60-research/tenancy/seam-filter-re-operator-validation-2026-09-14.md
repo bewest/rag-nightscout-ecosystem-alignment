@@ -232,7 +232,7 @@ Two things follow, and the second is a correction to a premise the plan carries:
    tier — it is live for anything that evaluates a filter **in the Node process**, which is this
    harness and any future in-process filtering, and not for mongod as measured.
 
-[Correction 2026-09-22: the flat mongod columns hold only for the textbook family measured here, which PCRE2 optimises. They do not show that mongod's `$regex` is safe. Register **BF-72** (reproduced; open, live on 15.0.8 and on dev, no fix yet) is an unauthenticated denial of service on the shipping v1 API: a caller-supplied `$regex` with no anchoring, length or complexity bound can cost minutes of database CPU for one request. Mechanism only here; the working probe is held outside version control.]
+[2026-09-22: the flat mongod columns hold only for the textbook family measured here, which PCRE2 optimises; they do not show that mongod's `$regex` is safe. Register **BF-72** (open, live on 15.0.8 and `dev`, no fix): a caller-supplied unbounded `$regex` on the shipping v1 API can cost minutes of database CPU, without credentials on a default install. Mechanism only here.]
 
 What remains a genuine database exposure is the other half of the same problem, which nothing
 here measures: **an unanchored regex is a full collection scan**, and that cost scales with the

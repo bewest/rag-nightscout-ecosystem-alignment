@@ -1,12 +1,16 @@
 # Release readiness — cgm-remote-monitor 15.0.9, and the road after it
 
 *Contributor-facing; written for the maintainer deciding the release and for
-reviewers of PR #8598. Measured 2026-09-22 against `origin/dev` `74fc6619`,
-`origin/master` `92d08342` (tag `15.0.8`), nightscout-connect `official/dev`
-`1946beb` (= `v0.1.0-dev.1`). Meets [DEFINITION-OF-DONE](../../00-overview/DEFINITION-OF-DONE.md).
-Supersedes [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readiness-2026-09-14.md)
-for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md)
-for ordering.*
+reviewers of PR #8598. Snapshot, 2026-09-22, against `origin/dev` `74fc6619`,
+`origin/master` `92d08342` (tag `15.0.8`) and nightscout-connect `official/dev`
+`1946beb` (= `v0.1.0-dev.1`). Superseded: most of §3 and §5.2 has since happened
+(version decided as 15.0.9, RT-D3 answered, connector `0.1.0` released and pinned by #8762,
+backfix 2 folded into 15.0.9). What is still before the tag is in queue item `RT-0` in
+[`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and in
+[PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md); the latest combined run is
+[rc-15.0.9-combined-010](../remedial/rc-15.0.9-combined-010-2026-09-24.md). It replaced
+[the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readiness-2026-09-14.md)
+for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md) for ordering.*
 
 ## 1. Verdict
 
@@ -55,6 +59,9 @@ In summary:
 ## 3. What has to happen before release
 
 ### 3.1 Decisions (the maintainer's)
+
+[2026-09-24: all three are decided. The version is 15.0.9 (RT-VERSION); RT-D3 is answered (the drag
+check passed by hand and in automation); MongoDB 4.4 is deprecated and still tested (#8750).]
 
 | id | decision | recommendation |
 |---|---|---|
@@ -110,8 +117,10 @@ ones a reader should know by name:
 - **BF-85.** For CareLink via nightscout-connect, a "no reading" marker is stored
   as glucose 0. While it is the newest value, the high/low alarms aren't
   evaluated. Read-derived, not run. The connector fix (`8406edf`) is in upstream
-  connector `dev` and 0.1.0-dev.1, not in the pin 15.0.9 ships today (§5.2).
-- **BF-41.** A reading dated in the future silences the stale-data alarm.
+  connector `dev` and 0.1.0-dev.1, not in the pin 15.0.9 ships today (§5.2). [2026-09-24: `dev` now pins
+  `0.1.0`, which carries it.]
+- **BF-41.** A reading dated in the future silences the stale-data alarm. [2026-09-23: closed; it does not
+  reproduce through the real sandbox, see [BF-41](../../60-research/remedial/bf41-future-reading-2026-09-23.md).]
 - **BF-44, BF-45** (now low). MiniMed ingestion divergences that assumed a working
   mmconnect. The maintainer confirms it does not work, so neither causes a data
   problem in practice; cut 4 removes the dead path.
@@ -177,7 +186,8 @@ superseded: its only unique commit is its own release commit. PR #70 (`dev` → 
   exact console output. With `v0.0.13` swapped in, exactly those five cases fail and the other
   18 pass.
 
-**What remains** (queue `P0-TAG`, `P0-PIN`, `P0-LOCK`):
+**What remains** (queue `P0-TAG`, `P0-PIN`, `P0-LOCK`): [2026-09-24: all three are done. `v0.1.0` is on
+connector `main` `4dde1ec` and npm `latest`; `dev` pins it exactly (#8762); no 0.0.14 exists.]
 
 1. Tag and publish **0.1.0** from connector `dev`. The publish workflow runs on a `v*` tag and
    needs a `c-r-m-dev` reviewer.

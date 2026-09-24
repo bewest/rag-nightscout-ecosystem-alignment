@@ -1,6 +1,6 @@
 # BF-52 — an age reminder whose 20-minute window passed without a check was never sent
 
-> **Snapshot — measured 2026-09-23 against `origin/dev` `74fc6619`, fix on local branch `bf3/age-push-once` `896629f8` (not pushed). Node 20.20.0 and 22.23.2, MongoDB 7. Contributor-facing, except §6, which is user-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-23, against `origin/dev` `74fc6619`; fix on local branch `bf3/age-push-once` `896629f8` (not pushed). Node 20.20.0 and 22.23.2, MongoDB 7. Current: the fix is prepared and deferred out of 15.0.9 by the maintainer (2026-09-23), to ship later paired with BFQ-92; item state is in queue `BFQ-52`. Contributor-facing, except §6, which is user-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 ## 1. The defect, as measured
 

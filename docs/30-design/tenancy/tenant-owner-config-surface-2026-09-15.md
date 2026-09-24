@@ -1,7 +1,7 @@
 # The tenant-owner configuration surface — T3.0's missing schema
 
-*Contributor-facing.* **Living design — the only statement of the tenant-owner configuration
-surface (T3.0's research deliverable).** A specification, not landed work: nothing in it is
+*Contributor-facing.* **Snapshot, 2026-09-15. Current: the only statement of the tenant-owner
+configuration surface (T3.0's research deliverable).** A specification, not landed work: nothing in it is
 implemented, and the DDL in §A has **not** been executed against PostgreSQL (§G.1). Sections marked
 **DECISION** need the maintainer's yes before code is written; sections marked **CONSEQUENCE**
 follow from D13/D14/D15. Decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). Item state:

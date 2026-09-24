@@ -1,6 +1,6 @@
 # BF-103: a split treatment drag stores the old time, so IOB and COB ignore the move
 
-> **Snapshot: measured 2026-09-23 against tag `15.0.8` (`92d08342`) and the 15.0.9 combined release candidate (`ec70aab0` = `origin/dev` `1f9a9d10` plus the nine pending PRs). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-103.**
+> **Snapshot, 2026-09-23, against tag `15.0.8` (`92d08342`) and the 15.0.9 combined release candidate (`ec70aab0` = `origin/dev` `1f9a9d10` plus the nine pending PRs). Historical: the defect record; the fix is [bf103-fix](bf103-fix-2026-09-23.md), merged into `dev` as #8760 (2026-09-24), not released. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-103.**
 
 Audience: contributors and the maintainer. Contributor-facing and technical. Not medical advice.
 

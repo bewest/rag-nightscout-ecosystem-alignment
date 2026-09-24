@@ -1,7 +1,6 @@
 # E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: current for the Dexcom path; nothing here is released (`origin/master` = 15.0.8). BF-34 is fixed on branch `fix/connect-timer-jitter`, not merged; `dev` still pins connector `234d47c` (checked 2026-09-22). BF-44/BF-45 open. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
-> **[Correction 2026-09-22: the maintainer states (2026-09-21, operational knowledge, not measured here) that legacy Dexcom Share is intended to map to nightscout-connect, and that mmconnect has been broken for some time. The "cut 4 deletes two working ingestion paths" framing must carry that caveat; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d`. Historical: the measurements stand, but the connector and retirement facts have moved.** BF-34's fix (`fix/connect-timer-jitter`, connector #68) is in nightscout-connect `0.1.0`, which `dev` pins exactly (#8762); nothing past 15.0.8 is released. The maintainer decided on 2026-09-23 to move the legacy Dexcom and MiniMed bridge removal onto cut 1 ([cut 1 legacy bridge lift](cut1-legacy-bridge-lift-2026-09-23.md)); the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom `BRIDGE_*` settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-34, BF-44, BF-45, BF-61).**
 
 **DRAFT. Contributor-facing.** Prepared for maintainer review. Nothing in this document has been
 run against a real Dexcom account, real credentials, or any vendor endpoint. Every measurement
@@ -340,9 +339,8 @@ told about. "Nothing is lost" is true of *data* and not true of *settings*.
 8. **The current state of the legacy path against live Dexcom.** The maintainer's "the old medtronic
    does not work" is a statement about MiniMed. No equivalent statement about Dexcom is on the
    record, and nothing here can produce one.
-   [Correction 2026-09-22: the maintainer has since stated (2026-09-21, operational knowledge, not
-   measured here) that legacy Dexcom Share is intended to map to nightscout-connect. The live state
-   of the legacy Dexcom path is still unmeasured.]
+   [2026-09-22: the maintainer states (2026-09-21, not measured here) that legacy Dexcom Share is
+   intended to map to nightscout-connect; the live legacy path is still unmeasured.]
 
 ---
 
@@ -361,9 +359,8 @@ comes back on, and CGM values stop appearing in logs.
 - The *code* improvement is not what the retirement decision turns on, because the code is already
   in use. What parcels 4/5 remove is the **fallback**, and the fallback is the only thing standing
   between the seven "worse" items above and an operator whose data stops.
-  [Correction 2026-09-22: per the maintainer (2026-09-21, not measured here) legacy Dexcom Share is
-  intended to map to nightscout-connect, so removing the fallback is the intended direction; the
-  "worse" items remain the residues a deprecation notice or fix must cover.]
+  [2026-09-22: per the maintainer (2026-09-21), removing the fallback is the intended direction; the
+  "worse" items are what a notice or fix must cover.]
 - Connect is **not** uniformly more consistent. On a server-invalidated session it is
   categorically worse than the thing it replaces, and on the currently pinned commit it can go dark
   for three days on any sustained vendor problem.

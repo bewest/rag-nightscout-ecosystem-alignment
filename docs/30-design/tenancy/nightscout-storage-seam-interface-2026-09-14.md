@@ -1,6 +1,6 @@
 # T1.1 — the storage seam: interface definition and call-site classification
 
-*Contributor-facing.* **Living design — the only statement of the storage seam's interface.**
+*Contributor-facing.* **Snapshot, 2026-09-14 (§8–§10 later). Current: the only statement of the storage seam's interface.**
 Task T1.1 of the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md); decisions it rests on: D3, D4, D8, D9 — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 §1–§7 were measured 2026-09-14 against `origin/chore/nightscout-modernization` @ `0a4109f6`;
 §8–§10 describe what was built on the `seam/*` branch chain (tip `seam/t1-2-storage-interface`

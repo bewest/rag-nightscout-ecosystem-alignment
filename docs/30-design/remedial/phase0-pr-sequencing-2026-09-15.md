@@ -1,18 +1,14 @@
 # Phase 0: how to land ten branches as pull requests
 
-> **Snapshot — describes 2026-09-15/16, measured against cgm-remote-monitor `origin/dev`
-> `a8888f0d`.** Status: **largely completed.** Seven of the nine `cgm-remote-monitor` branches
-> merged into `dev`: `bf/merge` #8734, `bf/food` #8735, `bf/parms` #8736, `bf/coercion` #8737,
-> `bf/reads` #8738, `bf/alarms` #8739, `bf/cache` #8740. **None is released**: as of 2026-09-22
-> `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind `origin/dev` `74fc6619`
-> (`git rev-list --count official/master..official/dev`). Not landed: `bf/auth` (queue P0-C) and
-> the BF-30 throttle split out of it (P0-J); `bf/connect-pin` (P0-PIN, blocked); connector
-> `fix/connect-timer-jitter` merged as nightscout-connect PR #68 (P0-F). The local `v0.0.14` tag is
-> retired: its content is in connector `dev` through PRs #64 and #68 (2026-09-22), and the
-> connector line is `0.1.0` (P0-TAG).
-> Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items `P0-*`, and the
-> [backfix register](./nightscout-backfix-register.md). Branch SHAs, pins and counts below are as of
-> the snapshot date.
+> **Snapshot, 2026-09-15/16, against cgm-remote-monitor `origin/dev` `a8888f0d`. Historical:** the
+> plan was carried out. Merged into `dev`: `bf/merge` #8734, `bf/food` #8735, `bf/parms` #8736,
+> `bf/coercion` #8737, `bf/reads` #8738, `bf/alarms` #8739, `bf/cache` #8740. `bf/auth` (P0-C) and
+> the BF-30 throttle (P0-J) are carried by #8754 `bf2/auth-hardening`, open. `bf/connect-pin` was
+> replaced by #8762, which pins `nightscout-connect` exactly `0.1.0`. Connector
+> `fix/connect-timer-jitter` merged as nightscout-connect #68 and is in `0.1.0`; no 0.0.14 exists.
+> Nothing past 15.0.8 is released. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)
+> items `P0-*`, `BF2-AUTH` and `RT-0`, and the [backfix register](./nightscout-backfix-register.md).
+> Branch SHAs, pins and counts below are as of 2026-09-15/16.
 
 *Contributor-facing.*
 

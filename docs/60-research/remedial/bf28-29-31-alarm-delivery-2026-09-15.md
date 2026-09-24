@@ -1,7 +1,7 @@
 # Three alarm-delivery defects, fixed: one alarm that could never fire, one that could be off
 # without anyone being told, and one request that re-languages the server
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/alarms`). Status: findings merged to dev in PR #8739 (BF-28, BF-29, BF-31), unreleased. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (branch `bf/alarms`). Historical: the fixes are merged into `dev` as PR #8739 (BF-28, BF-29, BF-31), not released. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 **Date**: 2026-09-15
 **Under test**: `cgm-remote-monitor` @ `a8888f0d` (`origin/dev`), worktree

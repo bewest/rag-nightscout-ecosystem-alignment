@@ -1,11 +1,12 @@
 # 15.0.9 close-out and backfix 2: branch and PR plan
 
-*Contributor-facing. Living document: it is updated as each unit lands and the
-queue (`queue/work-queue.yaml`) is authoritative for item state. Measured
-2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619`, `origin/master`
-`92d08342` (tag 15.0.8), `origin/chore/nightscout-modernization` `b1bdaca0`, and
-nightscout-connect `official/dev` `1946beb`. Re-run the command beside any count
-before relying on it. §3 and §5 were re-measured on 2026-09-23 against `origin/dev` `4011193e`.*
+*Contributor-facing. Snapshot, 2026-09-22, against cgm-remote-monitor `origin/dev` `74fc6619`,
+`origin/master` `92d08342` (tag 15.0.8), `origin/chore/nightscout-modernization` `b1bdaca0` and
+nightscout-connect `official/dev` `1946beb`; §3 and §5 re-measured 2026-09-23 against `origin/dev`
+`4011193e`/`ddd9b600`. Superseded for state: the decisions in §1 and §1a stand, but the PR table and
+the human steps are out of date. Item state is in `queue/work-queue.yaml` (`RT-0`, `BF2-AUTH`,
+`BFQ-102`), what waits on a person is in [NEEDS-A-HUMAN](../../00-overview/NEEDS-A-HUMAN.md), and the
+latest combined run is [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md).*
 
 BF-72 appears here by mechanism only. It is live on the shipping release, has no
 fix, and this repository is public; the reproducing material is kept outside
@@ -27,10 +28,10 @@ These amend §1 where they overlap. Item state stays in the queue.
 | id | decision | consequence |
 |---|---|---|
 | RT-COUNT0 | **`?count=0` answers an empty list.** Malformed counts (`abc`, `-3`, `2.5`, `1e2`, `0x10`, values above `Number.MAX_SAFE_INTEGER`) still answer HTTP 400. Saves and updates ignore `count`. **Deletes keep dev's rule** (amended 2026-09-23, same day): a count that is not a whole number of 1 or more, `0` included, is refused and nothing is deleted, because `count` never limits a delete and "delete zero" must not become "delete everything". | Amends #8738 before 15.0.9 is tagged. §1's "#8738 ships as-is" no longer holds; #8743 still does. |
-| P0-TAG / P0-PIN | **0.1.0 is pinned in 15.0.9, after the prerelease has been tested for longer.** BF-89 (the Nightscout source sends `role` for `roles`) is fixed in connector dev before the full release. | Tagging waits for the testing and for `P0-CONNECT-ROLE`. `bf/connect-pin-0.1.0` stays on `0.1.0-dev.1` until then. |
+| P0-TAG / P0-PIN | **0.1.0 is pinned in 15.0.9, after the prerelease has been tested for longer.** BF-89 (the Nightscout source sends `role` for `roles`) is fixed in connector dev before the full release. | Tagging waits for the testing and for `P0-CONNECT-ROLE`. `bf/connect-pin-0.1.0` stays on `0.1.0-dev.1` until then. [2026-09-24: `v0.1.0` is released and `dev` pins it exactly (#8762).] |
 | RT-4 | **No separate deprecation release.** | The legacy-ingestion notice goes in 15.0.9's release notes. |
 | MongoDB 4.4 | **Deprecated in 15.0.9, dropped later.** | The release notes say it is deprecated. |
-| RT-D3 | **A manual check plus an automated browser test.** | First automated run: [browser evidence](../../60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md). The manual check is still owed. |
+| RT-D3 | **A manual check plus an automated browser test.** | First automated run: [browser evidence](../../60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md). The manual check is still owed. [2026-09-24: RT-D3 is answered; the drag check passed by hand and in automation.] |
 | cut numbering | **Each cut is renumbered when it is rebased.** | RT-VERSION's collision gate stays red until then. |
 | BFQ-72 | Disposition decided. | Held outside version control, as in §1. |
 | ADV-CONFIG | **BF-78 is documented and warned about at boot.** | No behaviour change. |
@@ -123,7 +124,7 @@ State on 2026-09-23 against `dev` `ddd9b600`. The queue holds the authoritative 
 | #8760 | `bf/split-drag-time` | a treatment moved by drag, whole or split, keeps its new time for IOB and COB (BF-103) | merged |
 | #8754 | `bf2/auth-hardening` | BF-17, BF-30, `TRUST_PROXY` (with hop counts and `true`), BF-47's admin-page fix; withheld-style body | **open**: security review, maintainer and Andy |
 | #8758 | `bf/object-id-crud` | records keep their own `_id` across v1, v3 and the websocket (BF-99 to BF-102) | **open**: review |
-| — | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started |
+| #8762 | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started [2026-09-24: merged; combined run [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md). #8761 (RT-COUNT-COMPAT) also merged 2026-09-24.] |
 
 "merged" means merged into `dev`, not released.
 
@@ -212,9 +213,9 @@ Re-ordered 2026-09-23, after ten of the twelve 15.0.9 PRs merged. State is in th
 1. **Review and merge #8754** (security review: the maintainer and Andy) and **#8758**. Neither conflicts with
    anything; merge #8758 last. Check `dev`'s CI after each.
 2. **Connector 0.1.0:** when `0.1.0-dev.3` has had the testing the maintainer wants (P0-TAG), tag `v0.1.0` on
-   connector `dev` and approve the `npm-publish` environment.
+   connector `dev` and approve the `npm-publish` environment. [2026-09-24: done; `v0.1.0` is on connector `main` `4dde1ec`.]
 3. **Nightscout pin:** open the PR moving `dev` from `0.1.0-dev.3` to exact `0.1.0`, and re-run the combined rc
-   with it (P0-PIN).
+   with it (P0-PIN). [2026-09-24: done; #8762 merged, combined run [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md).]
 4. **Release:** finish the 15.0.9 release notes; get #8598 approved by at least one reviewer who is not the author;
    merge it; tag 15.0.9.
 5. **Advisories:** the metadata corrections can be applied at any time (`advisories/apply-metadata.sh --apply`);

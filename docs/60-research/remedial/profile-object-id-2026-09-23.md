@@ -1,6 +1,9 @@
 # A profile posted with its own `_id` is stored with a string `_id`
 
-*Contributor-facing. Measured 2026-09-23 against `origin/dev` `1f9a9d10` (15.0.9; dev moved from
+*Contributor-facing. Snapshot, 2026-09-23. Superseded for the fix: `bf/profile-object-id` will not be
+opened; BF-99 is fixed by PR #8758 (`bf/object-id-crud`, open), see
+[crud-by-id-matrix](crud-by-id-matrix-2026-09-23.md); item state is in `queue/work-queue.yaml` (`BFQ-99`,
+`BFQ-102`). The measurements stand. Measured 2026-09-23 against `origin/dev` `1f9a9d10` (15.0.9; dev moved from
 `74fc6619` to `1f9a9d10` on 2026-09-23 when #8752 and #8750 merged, neither touches profiles) and
 the shipping release `15.0.8` `92d08342`. Storage: `mongo:7` in Docker. Node 20.20.0 and 22.23.2
 via `n exec`. Synthetic profiles only. Every "reproduced" row below was run; rows marked

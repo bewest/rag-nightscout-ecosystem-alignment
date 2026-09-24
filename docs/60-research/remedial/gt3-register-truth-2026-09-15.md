@@ -1,6 +1,6 @@
 # GT3 — register truth and a contradiction sweep across the planning documents
 
-> **Snapshot — audit as of 2026-09-15, measured against register head `70baa879` (contradiction table at `75c38a17`) and `origin/dev a8888f0d`. Status: point-in-time — every count and line number below is as of that date and has since changed (e.g. BF-04 is now merged to dev in PR #8743, and `queue/` now exists). Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+> **Snapshot, 2026-09-15, against register head `70baa879` (contradiction table at `75c38a17`) and `origin/dev` `a8888f0d`. Historical: a point-in-time audit; every count and line number has moved. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
 
 Date: 2026-09-15. **Read-only audit. No document was edited by this task** — a later agent applies
 the fixes. Head at start `9fc55eaa`; the register was edited by another session **during** this

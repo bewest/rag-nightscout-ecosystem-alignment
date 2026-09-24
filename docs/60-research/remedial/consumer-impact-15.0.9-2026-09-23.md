@@ -1,17 +1,16 @@
 # What 15.0.9 changes for the apps that talk to Nightscout
 
-*Contributor-facing. Snapshot, 2026-09-23. Measured against cgm-remote-monitor `origin/master`
+*Contributor-facing. Snapshot, 2026-09-23, against cgm-remote-monitor `origin/master`
 `92d08342` (tag `15.0.8`, what operators run), `origin/dev` `ddd9b600`, and the 15.0.9 candidate:
 `dev` merged with #8754 (`ef3404fd`) and #8758 (`6d120fa2`), tree `2ce67b27` (local commit
-`1067e668`). Current state of each item: `queue/work-queue.yaml`. Defect facts:
+`1067e668`). Current as the consumer survey, except §2.1 and §2.2: those were decided 2026-09-24
+(maintainer, `RT-COUNT-COMPAT`) and merged into `dev` as #8761, not released. A leading whole number
+is read as 15.0.8 did, so oref0's `1?…` reads 1; a read with `count=0` returns everything in the
+window when the find bounds a date field from both sides, and the endpoint default otherwise, with a
+deprecation warning; each tolerance has its own setting, on by default. The fix reproduces 15.0.8 for
+both clients in this lab. Current state of each item: `queue/work-queue.yaml`. Defect facts:
 [backfix register](../../30-design/remedial/nightscout-backfix-register.md). Nothing here is
 medical advice.*
-
-**Status 2026-09-24:** §2.1 and §2.2 are decided (`RT-COUNT-COMPAT`). A leading whole number is read
-as 15.0.8 did, so oref0's `1?…` reads 1. A read with `count=0` returns everything in the window when
-the find bounds a date field from both sides, and the endpoint default otherwise, with a deprecation
-warning. The fix is on `bf/count-client-compat` (`b4ead206`, not yet merged), and it reproduces 15.0.8
-for both clients in this lab. The queue item holds the current state.
 
 **Method, and what kind of evidence each claim is.**
 

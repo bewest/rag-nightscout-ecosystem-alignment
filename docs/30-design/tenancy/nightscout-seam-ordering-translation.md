@@ -1,7 +1,7 @@
 # Design — how ordering crosses the storage seam
 
-*Contributor-facing.* **Living design — the only statement of how ordering crosses the storage
-seam.** Proposal, for whoever owns the adapter. Written 2026-09-15 against `seam/t1-2-storage-interface`
+*Contributor-facing.* **Snapshot, written 2026-09-15. Current: the only statement of how ordering
+crosses the storage seam.** Proposal, for whoever owns the adapter. Written against `seam/t1-2-storage-interface`
 (`externals/work/crm-seam` @ `81a1f6ce`); not implemented beyond what §5 marks done. Decisions it
 assumes: D3, D4, D8 — [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Evidence: [ordering and pagination](../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.md) ·

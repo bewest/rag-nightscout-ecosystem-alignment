@@ -1,6 +1,6 @@
 # Manual browser checks on the 15.0.9 combined rc
 
-> **Snapshot: checked by hand on 2026-09-23 (US afternoon; the server clocks read 19:00 to 22:45 UTC) against `ec70aab0`, the head of `rc/15.0.9-combined-36b` at the time: `origin/dev` `1f9a9d10` plus the nine pending PRs #8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757 and #8758. 15.0.8 (`92d08342`) was checked for comparison where noted. Nothing here is released. Current facts: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (RT-D3, ADV-ALARM, RT-0, BFQ-103) and the [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-23 (US afternoon; server clocks 19:00 to 22:45 UTC), checked by hand against `ec70aab0`, the head of `rc/15.0.9-combined-36b` at the time: `origin/dev` `1f9a9d10` plus the nine pending PRs #8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757 and #8758; 15.0.8 (`92d08342`) for comparison where noted. Current: the latest hand checks, and the basis on which RT-D3 was answered 2026-09-24; the queue gate `client-unchanged-since-hand-check` keeps them valid while the client files they used are unchanged. Nothing here is released. Current facts: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (RT-D3, ADV-ALARM, RT-0, BFQ-103) and the [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 Audience: contributors and the maintainer. Contributor-facing and technical. Not medical advice.
 

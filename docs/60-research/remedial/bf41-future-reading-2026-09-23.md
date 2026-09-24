@@ -1,6 +1,6 @@
 # BF-41 — a future-dated reading does not silence the stale-data alarm through the real sandbox
 
-> **Snapshot — measured 2026-09-23 against `origin/dev` `74fc6619` and tag `15.0.8` (`92d08342`), Node 20.20.0. Status: the defect as registered does not reproduce. No fix was built, because building the decided fix would only loosen an alarm. Branch `bf3/future-reading-stale` exists locally at `74fc6619` with no commits. Contributor-facing, except §7, which is user-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-23, against `origin/dev` `74fc6619` and tag `15.0.8` (`92d08342`), Node 20.20.0. Current: BF-41 as registered does not reproduce, and it is closed (queue `BFQ-41`). No fix was built, because building the decided fix would only loosen an alarm; branch `bf3/future-reading-stale` exists locally at `74fc6619` with no commits. Contributor-facing, except §7, which is user-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 ## 1. The claim, and why it was not measured before
 

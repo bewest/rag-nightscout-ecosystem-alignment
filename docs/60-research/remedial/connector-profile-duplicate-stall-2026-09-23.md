@@ -4,9 +4,11 @@
 > (two commits on `fbd4e55` = tag `v0.1.0-dev.2`): `f6359b4` (profile fix) and `f924de2` (reader-subject warning).
 > Nightscout `74fc6619` in every lab image, MongoDB 7, Node 22 in the images. Contributor-facing.
 >
-> Evidence for the maintainer's decision (2026-09-23: fix in the connector, then tag dev.3, then 0.1.0). It is not
-> the decision. The defect is §5.1 of the [dev.2 soak](connector-0.1.0-dev.2-soak-2026-09-23.md); the warning
-> addresses §5.2 of the same report (BF-98). Register and queue state are not changed here.
+> Historical: evidence for the maintainer's decision of 2026-09-23 (fix in the connector, then tag dev.3, then 0.1.0),
+> which has been carried out. Both commits merged as connector #79 and are in nightscout-connect `0.1.0`, released
+> 2026-09-24 and pinned exactly by Nightscout `dev` (#8762). The defect is §5.1 of the
+> [dev.2 soak](connector-0.1.0-dev.2-soak-2026-09-23.md) (BF-97); the warning addresses §5.2 (BF-98). Current
+> facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).
 
 Every figure is **reproduced** (run in the lab or the suite) unless marked **read-derived**. All lab data was
 synthetic, from the lab writer.

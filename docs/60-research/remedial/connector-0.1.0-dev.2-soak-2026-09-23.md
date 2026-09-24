@@ -5,11 +5,12 @@
 > `0.1.0-dev.1` (= `1946beb`), `234d47c` (the pin in `74fc6619`) and `0.0.13` (the pin in 15.0.8).
 > MongoDB 7.0.43, Node 22.22.0 in the images. Contributor-facing.
 >
-> This is evidence for the maintainer's decision on tagging nightscout-connect v0.1.0 and pinning it into 15.0.9.
-> It is not the decision. Current defect facts live in the
+> Historical: the evidence for tagging nightscout-connect v0.1.0 and pinning it into 15.0.9. Both have happened:
+> `0.1.0` was released 2026-09-24 and `dev` pins it exactly (#8762). The two defects found in §5.1 and §5.2 are
+> registered as BF-97 and BF-98, and their fixes (connector #79) are in `0.1.0`
+> ([profile duplicate stall](connector-profile-duplicate-stall-2026-09-23.md)). Current defect facts live in the
 > [backfix register](../../30-design/remedial/nightscout-backfix-register.md), and item state in
-> [`queue/work-queue.yaml`](../../../queue/work-queue.yaml). The two new defects in §5.1 and §5.2 are not yet
-> registered.
+> [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).
 
 The exit criterion was a seeded Nightscout source in the lab, with a second lab Nightscout syncing from it. That ran
 for **4 h 23 min**, with sinks for 4 h 05 min–4 h 23 min and eight controls alongside for 3 h 48 min–4 h 22 min.

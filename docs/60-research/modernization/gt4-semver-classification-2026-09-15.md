@@ -1,6 +1,6 @@
 # GT4: semver classification of every changeset in flight
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` and `origin/master 92d08342` (15.0.8). Status: partly superseded — most Phase 0 branches classified here have since merged to dev (#8733–#8746, all unreleased; `bf/auth` and the connect pin are fixed on branch, not merged); the classification method, policy (§7) and cut analysis stand. Counts such as §4's are point-in-time. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), `queue/work-queue.yaml`.**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` and `origin/master` `92d08342` (15.0.8). Superseded in part: the later classification is the [versioning policy](../../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md), and 15.0.9's number was decided as 15.0.9 (RT-VERSION). Most Phase 0 branches classified here are merged into `dev` (#8733–#8746, unreleased); `bf/auth` is carried by #8754 (open) and the connector pin by #8762 (merged). The method, §7 and the cut analysis stand; counts such as §4's are point-in-time. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), `queue/work-queue.yaml`.**
 
 Date: 2026-09-15. Status: **draft evidence for maintainer decision.** Contributor-facing.
 Companion to [release readiness](../../30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
@@ -599,11 +599,7 @@ cut 5 as the adopted plan proposes, the dependency release is minor overall.
 Cut 4 is the clearest major candidate, and the measurement found three
 things worse than "two ingestion paths are deleted".
 
-[Correction 2026-09-22: "deletes two *working* ingestion paths" needs a caveat. The maintainer
-states (2026-09-21, operational knowledge, not measured here) that mmconnect /
-minimed-connect-to-nightscout has been broken for some time, and that legacy Dexcom Share is
-intended to map to nightscout-connect. The boot-outage mechanisms in (a) and (b) below are measured
-and stand regardless; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]
+[2026-09-22: the paths are not both working: the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom `BRIDGE_*` settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register. The boot-outage mechanisms in (a) and (b) below are measured and stand; the removal moved onto cut 1 on 2026-09-23.]
 
 **(a) Every MMCONNECT operator's entire site stops working, not just MiniMed ingestion.**
 I executed the shipping shim from the branch:
@@ -936,11 +932,9 @@ highest id at the moment it writes.
 
 ### 9.1 `find[field][$exists]=false` is inverted by `bf/coercion` on the five previously-walked fields
 
-[Correction 2026-09-22: this is BF-40. The merged form of the coercion work, #8737 (merged to dev
-2026-09-18, unreleased), **does fix it**: `$exists` operands go through `BOOLEAN_OPERANDS` /
-`readBooleanOperand` in `lib/server/query.js` (present on `official/dev`, checked 2026-09-22). The
-inversion below describes the `bf/coercion` branch as measured on 2026-09-15; the defect remains
-live on 15.0.8 in its broad form until released.]
+[2026-09-22: this is BF-40, fixed by #8737 (merged to dev 2026-09-18, unreleased) through
+`BOOLEAN_OPERANDS` / `readBooleanOperand` in `lib/server/query.js`; below is the `bf/coercion` branch
+as measured 2026-09-15. 15.0.8 still has the defect.]
 
 **Where:** `externals/work/crm-bf-coercion/lib/server/query-coercion.js:90` (`isValueLeaf`)
 with `lib/server/query.js:288`.
@@ -996,8 +990,7 @@ Executed: an operator with `MMCONNECT_USER_NAME`/`MMCONNECT_PASSWORD` and no
 `ctx.bootErrors`; `app.js` then serves the boot-error view for `*` and `server.js` skips
 websocket setup. The whole deployment is down, not just MiniMed ingestion. The same happens
 to any operator running `BRIDGE_*` and `MMCONNECT_*` together, which works today.
-[Correction 2026-09-22: "works today" assumes the legacy mmconnect path still ingests; the
-maintainer states it has been broken for some time (operational knowledge, not measured here).]
+[2026-09-22: the maintainer states mmconnect has not worked for some time; not measured here.]
 
 The shim itself states the country cannot be inferred, so **no MMCONNECT operator can
 upgrade without manual reconfiguration**. There is no release in which they are warned

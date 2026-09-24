@@ -1,6 +1,6 @@
 # Release-assets critique — what is missing, and what is still vacuous
 
-> **Snapshot — review as of 2026-09-16, measured against `origin/dev a8888f0d`. Status: partly superseded — queue and vacuity counts are point-in-time (74 items then; `make queue-status` reports 89 on 2026-09-22); the §2.1 P0-C missing-file idiom is still present in `queue/work-queue.yaml` (checked 2026-09-22); other gate findings not re-checked. Nothing here is released. Current facts: `queue/work-queue.yaml` and the [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-16, against `origin/dev` `a8888f0d`. Historical: a point-in-time review; its queue and vacuity counts (74 items then) have moved, and only the §2.1 P0-C missing-file idiom was re-checked (still present in `queue/work-queue.yaml` on 2026-09-22). Nothing here is released. Current facts: `queue/work-queue.yaml` (`make queue-status`, `make queue-vacuity`) and the [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 **Status: DRAFT. Contributor-facing.** An adversarial completeness and non-vacuity review of the
 work this workflow produced. Nothing here was pushed, merged, tagged or published. No branch SHA
@@ -342,10 +342,7 @@ of them; `find` over the whole tree returns zero copies of `r5-connect-session.j
 Why this is the most serious finding in the review. The
 entire value of the `[R]` label is that a reproduction can be re-run by the next person. These 19
 scripts are the evidentiary basis for **deleting the legacy CGM ingestion path** — a change whose
-failure mode is a person's glucose data quietly stopping. [Correction 2026-09-22: the maintainer
-states (2026-09-21, operational knowledge, not measured here) that mmconnect has been broken for
-some time and that legacy Dexcom Share is intended to map to nightscout-connect, so the deletion is
-not of two known-working paths; BF-44/BF-45 have not been re-graded. The durability point stands.] They are in a session-scoped temp
+failure mode is a person's glucose data quietly stopping. [2026-09-22: the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom `BRIDGE_*` settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register; the durability point stands.] They are in a session-scoped temp
 directory, on one machine, outside version control, with no retention guarantee. The moment that
 directory is cleared, 63 `[R]` claims in E1 and every reproduction in E2 become indistinguishable
 from assertions, and a future reviewer asked to check them has only the report's word.

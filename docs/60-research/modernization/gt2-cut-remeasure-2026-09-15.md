@@ -1,6 +1,6 @@
 # GT2: re-measuring the five modernization cuts against today's `dev`
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: superseded for all ahead/behind counts — they are point-in-time (on 2026-09-22 `chore/retire-jsdom` is 133 behind `origin/dev 74fc6619`); the method and §7 findings stand. Nothing here is released. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) and `queue/work-queue.yaml` gates.**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d`. Superseded for every ahead/behind and conflict count: current counts are in [PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md) and the `RT-REBASE` gate in `queue/work-queue.yaml`; the latest rehearsal is [cut rehearsal on the 15.0.9 rc](../../30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md). The method and §7 findings stand. Nothing here is released.**
 
 Date: 2026-09-15. Audience: contributors and the maintainer. Status: measurement report.
 Companion to and **partial correction of**
@@ -481,11 +481,7 @@ resulting `newTime` stays inside the chart window. Both currently pass with the 
 - "Production code is a small fraction of the diff" holds at every cut point (§3c).
 - Cut 1 is the smallest production change in the stack — by more than the document claims.
 - Cut 4 remains the one to slow down on; nothing measured here touches that judgement.
-  [Correction 2026-09-22: the "cut 4 deletes two working ingestion paths" premise needs a caveat —
-  the maintainer states (2026-09-21, operational knowledge, not measured here) that mmconnect /
-  minimed-connect-to-nightscout has been broken for some time and that legacy Dexcom Share is
-  intended to map to nightscout-connect. BF-44/BF-45 were graded assuming mmconnect is live and have
-  not been re-graded.]
+  [2026-09-22: the paths are not both working: the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom `BRIDGE_*` settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register; the removal moved onto cut 1 on 2026-09-23.]
 - The governance finding (one author, zero human reviews) is untouched by this re-measurement.
 
 ## 10. Reproducing

@@ -1,6 +1,6 @@
 # E4 — closing the gap between the work queue and the backfix register
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (control-surface HEAD `08753474`). Status: point-in-time reconciliation; register and manifest counts below are as of that date and have since changed. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (control-surface head `08753474`). Historical: a point-in-time reconciliation; its register and manifest counts have moved. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml) (`make queue-coverage`).**
 
 **Written for maintainer review.** Contributor-facing and technical throughout, except the
 `operator_visible` field of each queue item, which is written for people managing their own or a
@@ -324,7 +324,7 @@ module by path, no writes to any worktree (rules 0 and 5).
 - **BF-40** needs a **real MongoDB**. A JavaScript-side oracle gets it wrong: `mingo` applies
   JavaScript truthiness, MongoDB applies `value != 0`, and that difference *is* the entry. A gate
   reproducing it against `mingo` would agree with BF-32 and be wrong.
-  [Correction 2026-09-22: BF-40 (`$exists`) is fixed by PR #8737 via `BOOLEAN_OPERANDS`/`readBooleanOperand` in `lib/server/query.js`, merged to dev 2026-09-18, unreleased.]
+  [2026-09-22: BF-40 is fixed by #8737 (`BOOLEAN_OPERANDS`/`readBooleanOperand` in `lib/server/query.js`), merged to dev 2026-09-18, unreleased.]
 - **BF-44** is reproduced in the register but is **not** re-run as a gate, because the arm and
   control roles **invert with the server's own timezone** — the divergence is (pump offset − *server*
   offset) when the payload carries no zone designator. A gate that did not pin `TZ` would report

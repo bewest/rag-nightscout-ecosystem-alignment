@@ -1,6 +1,6 @@
 # BF-69: the Bolus Wizard quick-pick chooser is built once, from nothing — reproduction, fix and browser evidence
 
-> **Snapshot: measured 2026-09-22 (US local; run clock 2026-09-23 UTC) against `origin/master 92d08342` (tag 15.0.8), `origin/dev 74fc6619` (which carries #8735, the BF-35 fix), and local branch `bf3/quickpick-rebuild` at `83cfff14` (one commit on `74fc6619`). Nothing here is pushed or released. This is evidence for a maintainer review, not a decision. Current facts about the defect live in the [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-69, BF-35, BF-16) and item `BFQ-69` in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).**
+> **Snapshot, 2026-09-22 (US local; run clock 2026-09-23 UTC), against `origin/master` `92d08342` (tag 15.0.8), `origin/dev` `74fc6619` (which carries #8735, the BF-35 fix) and local branch `bf3/quickpick-rebuild` at `83cfff14`. Historical: the fix is merged into `dev` as #8756, not released; 15.0.8 still has BF-69. Current facts about the defect live in the [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-69, BF-35, BF-16) and item `BFQ-69` in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).**
 
 Audience: contributors and the maintainer, except §1, which is written for operators and users.
 

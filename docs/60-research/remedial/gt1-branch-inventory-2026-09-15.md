@@ -1,6 +1,6 @@
 # GT1 — branch, worktree and commit inventory
 
-> **Snapshot — inventory as of 2026-09-15, measured against `origin/dev a8888f0d` (main repo HEAD `9fc55eaa`→`8c379476`). Status: point-in-time; branch, push and test states have since changed — most `bf/*` branches are now merged to dev (unreleased); `bf/auth` and `fix/connect-timer-jitter` remain fixed-on-branch. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (main repo head `9fc55eaa`→`8c379476`). Historical: a point-in-time inventory. Most `bf/*` branches are merged into `dev` (unreleased); `bf/auth` is carried by #8754 (open); `fix/connect-timer-jitter` merged as connector #68 and is in nightscout-connect `0.1.0`. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
 
 **Measured 2026-09-15, 17:05–17:55 local, by running git against the checkouts.** Nothing in this
 document was taken from another document without re-measuring it. Main repo HEAD when this started

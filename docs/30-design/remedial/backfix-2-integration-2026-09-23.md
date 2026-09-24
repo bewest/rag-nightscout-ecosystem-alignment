@@ -1,9 +1,10 @@
 # Backfix 2 integration record, 2026-09-23
 
-*Contributor-facing. Snapshot: measured 2026-09-23 on a local scratch branch
-that has not been pushed. cgm-remote-monitor `origin/dev` `74fc6619` (unmoved at
-fetch), `origin/chore/nightscout-modernization` `b1bdaca0`. Plan and order:
-[backfix-2 plan](backfix-2-plan-2026-09-22.md). Item state lives in the queue.*
+*Contributor-facing. Snapshot, 2026-09-23, on local scratch branch `rc/backfix-2` (not pushed),
+against cgm-remote-monitor `origin/dev` `74fc6619` and `origin/chore/nightscout-modernization`
+`b1bdaca0`. Superseded: the latest combined run is
+[rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md); item state is in
+`queue/work-queue.yaml` (`RT-0`, `BF2-AUTH`). Plan: [backfix-2 plan](backfix-2-plan-2026-09-22.md).*
 
 Two of the three units fix defects that are live on the shipping release
 (15.0.8). This record describes mechanisms only.

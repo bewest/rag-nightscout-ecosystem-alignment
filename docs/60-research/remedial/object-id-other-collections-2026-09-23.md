@@ -1,6 +1,9 @@
 # A 24-hex `_id` stored as a string: devicestatus, food, activity, treatments, entries and API v3
 
-*Contributor-facing. Measured 2026-09-23 against `origin/dev` `1f9a9d10` (15.0.9), the release
+*Contributor-facing. Snapshot, 2026-09-23. Superseded for the fix: BF-99 to BF-102 are fixed together
+by PR #8758 (`bf/object-id-crud`, open); the continuation is
+[crud-by-id-matrix](crud-by-id-matrix-2026-09-23.md), and item state is in `queue/work-queue.yaml`
+(`BFQ-102`). The measurements stand. Measured 2026-09-23 against `origin/dev` `1f9a9d10` (15.0.9), the release
 tag `15.0.6` `9cd304f7`, and `chore/nightscout-modernization` `b1bdaca0`. Storage: `mongo:7` in
 Docker. Node 20.20.0 and 22.23.2 via `n exec` (15.0.6 on Node 16.20.2; modernization on 22.23.2
 and 24.20.0). Synthetic records only. Every row marked "reproduced" or "measured" was run; rows

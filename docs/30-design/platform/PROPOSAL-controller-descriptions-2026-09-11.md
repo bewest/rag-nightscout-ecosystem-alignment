@@ -1,7 +1,7 @@
 # Proposal: let Nightscout describe the controllers it already recognises
 
-*Contributor-facing.* **Living design — the only statement of the controller-description
-proposal.** Written 2026-09-11; a proposal to the named projects, not adopted by any of them.
+*Contributor-facing.* **Snapshot, written 2026-09-11. Current: the only statement of the
+controller-description proposal.** A proposal to the named projects, not adopted by any of them.
 Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
 **D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). **One page of

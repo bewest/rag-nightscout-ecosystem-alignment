@@ -1,6 +1,6 @@
 # T0.5 — schema-driven query type coercion
 
-> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/coercion`, commit `88d1f8a4`). Status: findings merged to dev in PR #8737 (BF-02, BF-03 devicestatus+profile, BF-11, BF-32; also BF-40), unreleased. BF-12 closed as invalid. Contributor-facing; §7 quotes a user-facing release note. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` (branch `bf/coercion`, commit `88d1f8a4`). Historical: the fixes are merged into `dev` as PR #8737 (BF-02, BF-03 devicestatus+profile, BF-11, BF-32; also BF-40), not released; BF-12 is closed as invalid. Contributor-facing; §7 quotes a user-facing release note. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 *2026-09-15. Closes BF-02 and BF-11, closes BF-03 in part, closes BF-12 as
 not-a-defect, and opens BF-32.*
