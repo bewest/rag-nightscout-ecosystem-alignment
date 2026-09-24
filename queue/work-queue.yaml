@@ -6491,6 +6491,17 @@ items:
       No automated test drives hashauth against a live socket. A human must
       load a `denied` instance, authenticate at the prompt, force an alarm and
       confirm it arrives. That is the one path the new cases do not cover.
+      DONE 2026-09-23 by hand (the maintainer, manual lab on the combined rc
+      ec70aab0; each page in its own browser profile). On AUTH_DEFAULT_ROLES=denied,
+      pages that logged in at the prompt with the API secret or a readable token,
+      or opened with ?token=, received the warning and urgent alarms; a
+      status-only page did not. The same held with AUTHENTICATION_PROMPT_ON_LOAD=true.
+      A readable token's silence stayed on its own page (no notifications:*:ack);
+      the API secret's silence reached every page (server logged ack received).
+      A remembered secret survived a reload. The automated probe
+      (alarm-denied-browser.js) re-run on the same tree gave 10 checked, 0 failing.
+      Caveat: ec70aab0 also carries #8754, which touches lib/api3/alarmSocket.js
+      and is not on dev 4011193e.
     operator_visible: >
       Nightscout sends alarms and treatment notifications over its live-update
       connection (the channel your browser or app keeps open). That connection
