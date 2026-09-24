@@ -1,0 +1,263 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "families",
+ "questions": [
+  "Q00",
+  "Q12"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "writer_family_by_collection": {
+   "devicestatus": {
+    "loop": {
+     "sites": 10,
+     "documents": 437710,
+     "share": 0.851147
+    },
+    "other": {
+     "sites": 1,
+     "documents": 15181,
+     "share": 0.02952
+    },
+    "trio": {
+     "sites": 1,
+     "documents": 61368,
+     "share": 0.119333
+    }
+   },
+   "entries": {
+    "librelink": {
+     "sites": 1,
+     "documents": 13096,
+     "share": 0.020153
+    },
+    "loop": {
+     "sites": 1,
+     "documents": 75,
+     "share": 0.000115
+    },
+    "other": {
+     "sites": 5,
+     "documents": 254,
+     "share": 0.000391
+    },
+    "redacted": {
+     "sites": 3,
+     "documents": 244429,
+     "share": 0.376137
+    },
+    "share": {
+     "sites": 7,
+     "documents": 308038,
+     "share": 0.474021
+    },
+    "trio": {
+     "sites": 1,
+     "documents": 18856,
+     "share": 0.029016
+    },
+    "xdrip": {
+     "sites": 2,
+     "documents": 65041,
+     "share": 0.100088
+    },
+    "xdrip4ios": {
+     "sites": 1,
+     "documents": 51,
+     "share": 7.8e-05
+    }
+   },
+   "profile": {
+    "loop": {
+     "sites": 10,
+     "documents": 100,
+     "share": 0.990099
+    },
+    "unknown": {
+     "sites": 1,
+     "documents": 1,
+     "share": 0.009901
+    }
+   },
+   "treatments": {
+    "loop": {
+     "sites": 10,
+     "documents": 229075,
+     "share": 0.824931
+    },
+    "other": {
+     "sites": 3,
+     "documents": 49,
+     "share": 0.000176
+    },
+    "trio": {
+     "sites": 1,
+     "documents": 48130,
+     "share": 0.173323
+    },
+    "xdrip4ios": {
+     "sites": 1,
+     "documents": 436,
+     "share": 0.00157
+    }
+   }
+  },
+  "signals": {
+   "devicestatus:loop": {
+    "shape:loop": {
+     "sites": 10,
+     "documents": 437710
+    }
+   },
+   "devicestatus:other": {
+    "device:unmatched": {
+     "sites": 1,
+     "documents": 15181
+    }
+   },
+   "devicestatus:trio": {
+    "device:trio": {
+     "sites": 1,
+     "documents": 61368
+    }
+   },
+   "entries:librelink": {
+    "device:librelink": {
+     "sites": 1,
+     "documents": 13096
+    }
+   },
+   "entries:loop": {
+    "device:loop": {
+     "sites": 1,
+     "documents": 75
+    }
+   },
+   "entries:other": {
+    "device:unmatched": {
+     "sites": 5,
+     "documents": 254
+    }
+   },
+   "entries:redacted": {
+    "device:redacted": {
+     "sites": 3,
+     "documents": 244429
+    }
+   },
+   "entries:share": {
+    "device:share": {
+     "sites": 7,
+     "documents": 308038
+    }
+   },
+   "entries:trio": {
+    "device:trio": {
+     "sites": 1,
+     "documents": 18856
+    }
+   },
+   "entries:xdrip": {
+    "device:xdrip": {
+     "sites": 1,
+     "documents": 16177
+    },
+    "shape:raw-filtered": {
+     "sites": 1,
+     "documents": 48864
+    }
+   },
+   "entries:xdrip4ios": {
+    "device:xdrip4ios": {
+     "sites": 1,
+     "documents": 51
+    }
+   },
+   "profile:loop": {
+    "enteredBy:loop": {
+     "sites": 10,
+     "documents": 100
+    }
+   },
+   "profile:unknown": {
+    "none": {
+     "sites": 1,
+     "documents": 1
+    }
+   },
+   "treatments:loop": {
+    "enteredBy:loop": {
+     "sites": 10,
+     "documents": 229075
+    }
+   },
+   "treatments:other": {
+    "enteredBy:unmatched": {
+     "sites": 3,
+     "documents": 49
+    }
+   },
+   "treatments:trio": {
+    "enteredBy:trio": {
+     "sites": 1,
+     "documents": 48130
+    }
+   },
+   "treatments:xdrip4ios": {
+    "enteredBy:xdrip4ios": {
+     "sites": 1,
+     "documents": 436
+    }
+   }
+  },
+  "site_dominant_family": {
+   "loop": 9,
+   "none": 1,
+   "trio": 1
+  },
+  "pump_vocabulary": {
+   "manufacturer": {
+    "Insulet": {
+     "sites": 10,
+     "documents": 429358
+    }
+   },
+   "model": {
+    "Dash": {
+     "sites": 10,
+     "documents": 429358
+    }
+   }
+  }
+ }
+}

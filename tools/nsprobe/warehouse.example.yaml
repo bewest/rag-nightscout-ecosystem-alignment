@@ -6,6 +6,10 @@
 # warehouse actually in hand; a column that does not exist makes only the
 # probe that needs it report "skipped" or "error".
 #
+# PostgreSQL folds unquoted names to lower case. A column created with quotes
+# and capitals (dynamic-isf-calculations' oref_v* tables have "sug_ISF" and
+# "sug_TDD") must be written here with its quotes: '"sug_ISF"'.
+#
 # The connection string is read from the environment variable named here.
 # Never put a DSN, host or password in this file.
 dsn_env: NSPROBE_DSN

@@ -1,0 +1,77 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "temp_basal",
+ "questions": [
+  "Q05"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "field_presence": {
+   "loop": {
+    "absolute+rate+duration+temp": {
+     "sites": 10,
+     "documents": 125620
+    }
+   },
+   "trio": {
+    "_other": {
+     "values": 1,
+     "documents": 27695,
+     "note": "values written by fewer than 3 sites, or not vocabulary"
+    }
+   }
+  },
+  "flags": {
+   "loop": {
+    "duration-fractional": {
+     "sites": 10,
+     "documents": 124357
+    },
+    "duration=0": {
+     "sites": 6,
+     "documents": 11
+    },
+    "total": {
+     "sites": 10,
+     "documents": 125620
+    }
+   },
+   "trio": {
+    "total": {
+     "sites": 1,
+     "documents": 27695
+    }
+   }
+  }
+ }
+}

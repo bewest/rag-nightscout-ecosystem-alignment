@@ -1,7 +1,7 @@
 # External data validation: a brief for Nightscout data holders
 
 **Status:** living document. Baseline numbers are from `reports/nsprobe/baseline/`, generated
-2026-09-23 at commit `234253d1` from this repository's 2026-04-01 snapshot (11 sites).
+2026-09-23 at commit `207cad1b` from this repository's 2026-04-01 snapshot (11 sites).
 Regenerate with `make nsprobe-baseline` rather than copying a number from here.
 
 **Audience:** researchers who hold their own collection of Nightscout sites or OpenAPS/oref

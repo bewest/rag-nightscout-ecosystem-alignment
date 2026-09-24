@@ -1,0 +1,129 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "event_types",
+ "questions": [
+  "Q03"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "all": {
+   "Temp Basal": {
+    "sites": 10,
+    "documents": 153315
+   },
+   "Temporary Override": {
+    "sites": 9,
+    "documents": 2075
+   },
+   "Correction Bolus": {
+    "sites": 10,
+    "documents": 95224
+   },
+   "Carb Correction": {
+    "sites": 10,
+    "documents": 12180
+   },
+   "Sensor Start": {
+    "sites": 10,
+    "documents": 864
+   },
+   "Site Change": {
+    "sites": 10,
+    "documents": 637
+   },
+   "_other": {
+    "values": 8,
+    "documents": 13395,
+    "note": "values written by fewer than 3 sites, or not vocabulary"
+   }
+  },
+  "by_writer_family": {
+   "loop": {
+    "Temp Basal": {
+     "sites": 10,
+     "documents": 125620
+    },
+    "Temporary Override": {
+     "sites": 9,
+     "documents": 2028
+    },
+    "Correction Bolus": {
+     "sites": 10,
+     "documents": 95224
+    },
+    "Carb Correction": {
+     "sites": 10,
+     "documents": 4757
+    },
+    "Sensor Start": {
+     "sites": 10,
+     "documents": 846
+    },
+    "Site Change": {
+     "sites": 10,
+     "documents": 578
+    },
+    "_other": {
+     "values": 1,
+     "documents": 22,
+     "note": "values written by fewer than 3 sites, or not vocabulary"
+    }
+   },
+   "other": {
+    "Temporary Override": {
+     "sites": 3,
+     "documents": 47
+    },
+    "_other": {
+     "values": 1,
+     "documents": 2,
+     "note": "values written by fewer than 3 sites, or not vocabulary"
+    }
+   },
+   "trio": {
+    "_other": {
+     "values": 9,
+     "documents": 48130,
+     "note": "values written by fewer than 3 sites, or not vocabulary"
+    }
+   },
+   "xdrip4ios": {
+    "_other": {
+     "values": 3,
+     "documents": 436,
+     "note": "values written by fewer than 3 sites, or not vocabulary"
+    }
+   }
+  }
+ }
+}

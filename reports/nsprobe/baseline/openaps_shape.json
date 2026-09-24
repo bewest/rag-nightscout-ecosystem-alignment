@@ -1,0 +1,74 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "openaps_shape",
+ "questions": [
+  "Q01",
+  "Q02",
+  "Q11"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "openaps_docs_by_family": {
+   "trio": {
+    "openaps_docs": {
+     "sites": 1,
+     "documents": 61368
+    }
+   }
+  },
+  "paths_by_family": {
+   "trio": {
+    "_other": {
+     "values": 89,
+     "documents": 5155238,
+     "note": "values written by fewer than 3 sites, or not vocabulary",
+     "share": 84.005312
+    }
+   }
+  },
+  "iob_container_type_by_family": {
+   "trio": {
+    "absent": {
+     "sites": 1,
+     "documents": 6,
+     "share": 9.8e-05
+    },
+    "object": {
+     "sites": 1,
+     "documents": 61362,
+     "share": 0.999902
+    }
+   }
+  }
+ }
+}

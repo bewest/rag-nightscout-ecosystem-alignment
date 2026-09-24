@@ -1,0 +1,413 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "time",
+ "questions": [
+  "Q07",
+  "Q09"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "by_collection_and_writer": {
+   "devicestatus:loop": {
+    "created_at:Z": {
+     "sites": 10,
+     "documents": 437710,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 10,
+     "documents": 437710,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 10,
+     "documents": 437710,
+     "share": 1.0
+    }
+   },
+   "devicestatus:other": {
+    "created_at:Z": {
+     "sites": 1,
+     "documents": 15181,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 15181,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 15181,
+     "share": 1.0
+    }
+   },
+   "devicestatus:trio": {
+    "created_at:Z": {
+     "sites": 1,
+     "documents": 61368,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 61368,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 61368,
+     "share": 1.0
+    }
+   },
+   "entries:librelink": {
+    "dateString:Z": {
+     "sites": 1,
+     "documents": 13096,
+     "share": 1.0
+    },
+    "direction:NONE": {
+     "sites": 1,
+     "documents": 1,
+     "share": 7.6e-05
+    },
+    "total": {
+     "sites": 1,
+     "documents": 13096,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 13096,
+     "share": 1.0
+    },
+    "|dateString-date|:0": {
+     "sites": 1,
+     "documents": 13096,
+     "share": 1.0
+    }
+   },
+   "entries:loop": {
+    "date:fractional": {
+     "sites": 1,
+     "documents": 75,
+     "share": 1.0
+    },
+    "dateString:Z": {
+     "sites": 1,
+     "documents": 75,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 75,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 75,
+     "share": 1.0
+    },
+    "|dateString-date|:<1s": {
+     "sites": 1,
+     "documents": 75,
+     "share": 1.0
+    }
+   },
+   "entries:other": {
+    "date:fractional": {
+     "sites": 5,
+     "documents": 80,
+     "share": 0.314961
+    },
+    "dateString:Z": {
+     "sites": 5,
+     "documents": 254,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 5,
+     "documents": 254,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 5,
+     "documents": 254,
+     "share": 1.0
+    },
+    "|dateString-date|:0": {
+     "sites": 2,
+     "documents": 174,
+     "share": 0.685039
+    },
+    "|dateString-date|:<1s": {
+     "sites": 5,
+     "documents": 80,
+     "share": 0.314961
+    }
+   },
+   "entries:redacted": {
+    "date:fractional": {
+     "sites": 2,
+     "documents": 96985,
+     "share": 0.396782
+    },
+    "dateString:Z": {
+     "sites": 3,
+     "documents": 244429,
+     "share": 1.0
+    },
+    "direction:NONE": {
+     "sites": 3,
+     "documents": 698,
+     "share": 0.002856
+    },
+    "total": {
+     "sites": 3,
+     "documents": 244429,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 3,
+     "documents": 244429,
+     "share": 1.0
+    },
+    "|dateString-date|:0": {
+     "sites": 3,
+     "documents": 147371,
+     "share": 0.602919
+    },
+    "|dateString-date|:<1s": {
+     "sites": 2,
+     "documents": 97058,
+     "share": 0.397081
+    }
+   },
+   "entries:share": {
+    "date:fractional": {
+     "sites": 7,
+     "documents": 234917,
+     "share": 0.762623
+    },
+    "dateString:Z": {
+     "sites": 7,
+     "documents": 308038,
+     "share": 1.0
+    },
+    "direction:NONE": {
+     "sites": 1,
+     "documents": 95,
+     "share": 0.000308
+    },
+    "total": {
+     "sites": 7,
+     "documents": 308038,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 7,
+     "documents": 308038,
+     "share": 1.0
+    },
+    "|dateString-date|:0": {
+     "sites": 2,
+     "documents": 72955,
+     "share": 0.236838
+    },
+    "|dateString-date|:<1s": {
+     "sites": 7,
+     "documents": 235083,
+     "share": 0.763162
+    }
+   },
+   "entries:trio": {
+    "date:fractional": {
+     "sites": 1,
+     "documents": 18841,
+     "share": 0.999204
+    },
+    "dateString:Z": {
+     "sites": 1,
+     "documents": 18856,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 18856,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 18856,
+     "share": 1.0
+    },
+    "|dateString-date|:<1s": {
+     "sites": 1,
+     "documents": 18856,
+     "share": 1.0
+    }
+   },
+   "entries:xdrip": {
+    "date:fractional": {
+     "sites": 1,
+     "documents": 48841,
+     "share": 0.750926
+    },
+    "dateString:Z": {
+     "sites": 2,
+     "documents": 65041,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 2,
+     "documents": 65041,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 48864,
+     "share": 0.75128
+    },
+    "utcOffset:iso-is-UTC": {
+     "sites": 1,
+     "documents": 16177,
+     "share": 0.24872
+    },
+    "|dateString-date|:0": {
+     "sites": 2,
+     "documents": 16200,
+     "share": 0.249074
+    },
+    "|dateString-date|:<1s": {
+     "sites": 1,
+     "documents": 48841,
+     "share": 0.750926
+    }
+   },
+   "entries:xdrip4ios": {
+    "dateString:Z": {
+     "sites": 1,
+     "documents": 51,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 51,
+     "share": 1.0
+    },
+    "utcOffset:iso-is-UTC": {
+     "sites": 1,
+     "documents": 51,
+     "share": 1.0
+    },
+    "|dateString-date|:0": {
+     "sites": 1,
+     "documents": 51,
+     "share": 1.0
+    }
+   },
+   "treatments:loop": {
+    "created_at:Z": {
+     "sites": 10,
+     "documents": 229075,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 10,
+     "documents": 229075,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 10,
+     "documents": 229075,
+     "share": 1.0
+    },
+    "|created_at-date|:0": {
+     "sites": 1,
+     "documents": 1,
+     "share": 4e-06
+    }
+   },
+   "treatments:other": {
+    "created_at:Z": {
+     "sites": 3,
+     "documents": 49,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 3,
+     "documents": 49,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 3,
+     "documents": 49,
+     "share": 1.0
+    }
+   },
+   "treatments:trio": {
+    "created_at:Z": {
+     "sites": 1,
+     "documents": 48130,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 48130,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 48130,
+     "share": 1.0
+    }
+   },
+   "treatments:xdrip4ios": {
+    "created_at:Z": {
+     "sites": 1,
+     "documents": 436,
+     "share": 1.0
+    },
+    "total": {
+     "sites": 1,
+     "documents": 436,
+     "share": 1.0
+    },
+    "utcOffset:agrees-with-iso": {
+     "sites": 1,
+     "documents": 436,
+     "share": 1.0
+    }
+   }
+  }
+ }
+}

@@ -271,3 +271,9 @@ def test_activity_search_ignores_insulin_activity():
                   "uploader": {"heartRate": 70}})
     found = {p for coll in a.anywhere.d.values() for p in coll}
     assert found == {"uploader.heartRate"}
+
+
+def test_feature_quality_read_without_importing_data_bridge():
+    from nsprobe import warehouse
+    fq = warehouse._feature_quality()
+    assert len(fq) == 32 and fq["iob_basaliob"] == "approximated"

@@ -1,0 +1,208 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "duplicates",
+ "questions": [
+  "Q08"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "by_api_and_collection": {
+   "v1:devicestatus": {
+    "same_created_at+device_repeated": {
+     "sites": 11,
+     "documents": 28127,
+     "share": 0.054694
+    },
+    "same_id_repeated": {
+     "sites": 11,
+     "documents": 0,
+     "share": 0.0
+    },
+    "total": {
+     "sites": 11,
+     "documents": 514259,
+     "share": 1.0
+    }
+   },
+   "v1:entries": {
+    "same_id_repeated": {
+     "sites": 11,
+     "documents": 0,
+     "share": 0.0
+    },
+    "same_sgv:cross-device:<=150s:librelink+xdrip": {
+     "sites": 1,
+     "documents": 1589,
+     "share": 0.002448
+    },
+    "same_sgv:cross-device:<=150s:share+share": {
+     "sites": 1,
+     "documents": 1,
+     "share": 2e-06
+    },
+    "same_sgv:cross-device:<=150s:share+trio": {
+     "sites": 1,
+     "documents": 15,
+     "share": 2.3e-05
+    },
+    "same_sgv:cross-device:<=5s:librelink+xdrip": {
+     "sites": 1,
+     "documents": 1,
+     "share": 2e-06
+    },
+    "same_sgv:cross-device:<=5s:loop+xdrip": {
+     "sites": 1,
+     "documents": 74,
+     "share": 0.000114
+    },
+    "same_sgv:cross-device:<=5s:other+share": {
+     "sites": 1,
+     "documents": 54,
+     "share": 8.3e-05
+    },
+    "same_sgv:cross-device:<=5s:share+share": {
+     "sites": 2,
+     "documents": 59827,
+     "share": 0.092188
+    },
+    "same_sgv:cross-device:<=5s:share+trio": {
+     "sites": 1,
+     "documents": 82,
+     "share": 0.000126
+    },
+    "same_sgv:cross-device:<=5s:share+xdrip": {
+     "sites": 1,
+     "documents": 26,
+     "share": 4e-05
+    },
+    "same_sgv:cross-device:<=60s:librelink+xdrip": {
+     "sites": 1,
+     "documents": 895,
+     "share": 0.001379
+    },
+    "same_sgv:cross-device:<=60s:share+share": {
+     "sites": 1,
+     "documents": 1483,
+     "share": 0.002285
+    },
+    "same_sgv:cross-device:<=60s:share+trio": {
+     "sites": 1,
+     "documents": 5,
+     "share": 8e-06
+    },
+    "same_sgv:same-device:<=150s:librelink+librelink": {
+     "sites": 1,
+     "documents": 30,
+     "share": 4.6e-05
+    },
+    "same_sgv:same-device:<=150s:redacted+redacted": {
+     "sites": 1,
+     "documents": 127,
+     "share": 0.000196
+    },
+    "same_sgv:same-device:<=5s:redacted+redacted": {
+     "sites": 2,
+     "documents": 70617,
+     "share": 0.108814
+    },
+    "same_sgv:same-device:<=5s:share+share": {
+     "sites": 4,
+     "documents": 76,
+     "share": 0.000117
+    },
+    "same_sgv:same-device:<=5s:trio+trio": {
+     "sites": 1,
+     "documents": 7,
+     "share": 1.1e-05
+    },
+    "same_sgv:same-device:<=60s:librelink+librelink": {
+     "sites": 1,
+     "documents": 39,
+     "share": 6e-05
+    },
+    "same_sgv:same-device:<=60s:redacted+redacted": {
+     "sites": 2,
+     "documents": 24722,
+     "share": 0.038094
+    },
+    "same_sgv:same-device:<=60s:trio+trio": {
+     "sites": 1,
+     "documents": 1,
+     "share": 2e-06
+    },
+    "site_median_same_device_interval:<=240s": {
+     "sites": 1,
+     "documents": 1,
+     "share": 2e-06
+    },
+    "site_median_same_device_interval:<=360s": {
+     "sites": 10,
+     "documents": 10,
+     "share": 1.5e-05
+    },
+    "total": {
+     "sites": 11,
+     "documents": 648970,
+     "share": 1.0
+    }
+   },
+   "v1:treatments": {
+    "same_event_within_60s:loop+loop": {
+     "sites": 7,
+     "documents": 132,
+     "share": 0.000475
+    },
+    "same_event_within_60s:trio+trio": {
+     "sites": 1,
+     "documents": 36,
+     "share": 0.00013
+    },
+    "same_id_repeated": {
+     "sites": 11,
+     "documents": 0,
+     "share": 0.0
+    },
+    "same_syncIdentifier_different_doc": {
+     "sites": 1,
+     "documents": 9,
+     "share": 3.2e-05
+    },
+    "total": {
+     "sites": 11,
+     "documents": 277690,
+     "share": 1.0
+    }
+   }
+  }
+ }
+}

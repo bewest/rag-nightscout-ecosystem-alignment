@@ -1,0 +1,81 @@
+{
+ "format": "nsprobe-result/1",
+ "probe": "v3_envelope",
+ "questions": [
+  "Q13"
+ ],
+ "contributor": "alignment-11",
+ "generated": "2026-09-23",
+ "tool": {
+  "commit": "207cad1b3c98",
+  "dirty": false
+ },
+ "run": {
+  "sites": 11,
+  "apis": [
+   "v1"
+  ],
+  "documents_by_collection": {
+   "devicestatus": 514259,
+   "entries": 649840,
+   "profile": 101,
+   "treatments": 277690
+  },
+  "sites_by_collection": {
+   "entries": 11,
+   "treatments": 11,
+   "devicestatus": 11,
+   "profile": 11,
+   "activity": 0,
+   "food": 0,
+   "settings": 0
+  },
+  "max_docs_per_source": null
+ },
+ "privacy": {
+  "min_sites": 3
+ },
+ "result": {
+  "envelope_fields": {
+   "v1:devicestatus": {
+    "total": {
+     "sites": 11,
+     "documents": 514259,
+     "share": 1.0
+    }
+   },
+   "v1:entries": {
+    "total": {
+     "sites": 11,
+     "documents": 649840,
+     "share": 1.0
+    }
+   },
+   "v1:profile": {
+    "has:srvModified": {
+     "sites": 1,
+     "documents": 1,
+     "share": 0.009901
+    },
+    "total": {
+     "sites": 11,
+     "documents": 101,
+     "share": 1.0
+    }
+   },
+   "v1:treatments": {
+    "has:identifier": {
+     "sites": 1,
+     "documents": 11,
+     "share": 4e-05
+    },
+    "total": {
+     "sites": 11,
+     "documents": 277690,
+     "share": 1.0
+    }
+   }
+  },
+  "v1_v3_identifier_overlap": {}
+ }
+}

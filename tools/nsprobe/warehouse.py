@@ -50,6 +50,11 @@ def _columns(conn, table):
     return {r[0] for r in rows}
 
 
+def _has(cols, name):
+    """Is config column ``name`` (possibly written with its quotes) in ``cols``?"""
+    return bool(name) and name.strip('"').lower() in {c.lower() for c in cols}
+
+
 def platform_votes(conn, cfg):
     """Per user, the three platform votes Insulin-Kinetics' platform_detect uses."""
     d, t = cfg["decisions"], cfg["treatments"]
@@ -65,7 +70,7 @@ def platform_votes(conn, cfg):
     cols = _columns(conn, d["table"])
     for key, col, fam in (("bolusiob", d.get("bolusiob"), "trio"),
                           ("steps", d.get("steps"), "aaps")):
-        if not col or col not in cols:
+        if not _has(cols, col):
             continue
         for user, n in _q(conn, f"SELECT {u}, count({col}) FROM {d['table']} GROUP BY 1"):
             votes[user][key] = fam if n else "none"
@@ -116,7 +121,7 @@ def probe_iob(conn, cfg, plat):
     d = cfg["decisions"]
     cols = _columns(conn, d["table"])
     need = [d.get(k) for k in ("iob", "basaliob", "bolusiob")]
-    if not all(c in cols for c in need):
+    if not all(_has(cols, c) for c in need):
         return {"skipped": "iob/basaliob/bolusiob columns not all present"}
     out = defaultdict(Counter)
     for user, total, has_bolus, mismatch in _q(conn, f"""
@@ -135,7 +140,7 @@ def probe_iob(conn, cfg, plat):
 def probe_steps(conn, cfg, plat):
     d = cfg["decisions"]
     col = d.get("steps")
-    if not col or col not in _columns(conn, d["table"]):
+    if not _has(_columns(conn, d["table"]), col):
         return {"skipped": "no steps column"}
     out = defaultdict(Counter)
     for user, total, present, zero in _q(conn, f"""
@@ -182,16 +187,29 @@ def probe_external_insulin(conn, cfg, plat):
             for p in per_p if per_p[p] >= privacy.MIN_SITES}
 
 
+def _feature_quality():
+    """FEATURE_QUALITY from data_bridge.py, read as a literal so the warehouse
+    track does not need data_bridge's pandas/numpy imports."""
+    import ast
+    src = Path(__file__).resolve().parents[1] / "oref_inv_003_replication" / "data_bridge.py"
+    for node in ast.parse(src.read_text()).body:
+        target = getattr(node, "target", None) or (node.targets[0] if isinstance(node, ast.Assign) else None)
+        if isinstance(target, ast.Name) and target.id == "FEATURE_QUALITY":
+            return ast.literal_eval(node.value)
+    raise LookupError(f"FEATURE_QUALITY not found in {src}")
+
+
 def probe_feature_coverage(conn, cfg, plat):
     """Which OREF-INV-003 features a warehouse logs directly, and how often."""
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    from oref_inv_003_replication.data_bridge import FEATURE_QUALITY
+    FEATURE_QUALITY = _feature_quality()
     d = cfg["decisions"]
-    cols = _columns(conn, d["table"])
-    present = [f for f in FEATURE_QUALITY if f in cols]
+    # Warehouses mix quoted mixed-case ("sug_ISF") and folded lower-case
+    # (sug_isf) column names, so match case-insensitively and quote.
+    by_lower = {c.lower(): c for c in _columns(conn, d["table"])}
+    present = [f for f in FEATURE_QUALITY if f.lower() in by_lower]
     if not present:
         return {"skipped": "no OREF-INV-003 feature columns in the decisions table"}
-    sel = ", ".join(f"count({c})" for c in present)
+    sel = ", ".join(f'count("{by_lower[f.lower()]}")' for f in present)
     by_p = defaultdict(Counter)
     for row in _q(conn, f"SELECT {d['user']}, count(*), {sel} FROM {d['table']} GROUP BY 1"):
         user, total, counts = row[0], row[1], row[2:]
