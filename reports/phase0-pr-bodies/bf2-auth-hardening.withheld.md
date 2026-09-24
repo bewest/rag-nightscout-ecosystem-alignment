@@ -37,7 +37,7 @@ While `TRUST_PROXY` is unset, Nightscout logs a `SECURITY:` line at startup sayi
 
 - New and changed tests in `client-ip`, `authdelay`, `authsubjects` and `env`. Each was checked by breaking the code it covers; every break fails on the original symptom.
 - `authdelay` sends the correct secret, and a request with no credential, from the same address as the failures, and expects both to wait; against a check-first order both fail, answered in 3-5 ms.
-- Full suite at this tip, Node 24.15.0, MongoDB 7 with a raised open-file limit: **2567 passing**, 3 pending, 0 failing.
+- Full suite at `f6f361b1` (the last code change; the commit after it changes docs only), Node 24.15.0, MongoDB 7 with a raised open-file limit: **2567 passing**, 3 pending, 0 failing.
 - A local lab put Nightscout behind real proxies (nginx appending and replacing, two nginx hops, Caddy, Traefik, HAProxy, a TLS terminator, and a PROXY-protocol load balancer in front of two nginx hops) and read back the address Nightscout recorded. With the hop count set to the trusted proxy, every topology resolved the real client and ignored forwarded headers the caller sent; one hop too few gave a proxy's address, one too many believed the caller. Unset resolved exactly as `dev`.
 - None of `client-ip`, `authdelay` or `authsubjects` is in `test:unit` or `test:integration`; use `npm test`, as CI does.
 - Merges cleanly into `dev`, and with #8748, #8749, #8750 and #8751. Integrated with all of them and the other 15.0.9 changes before the hop-count commit, the suite passed on Node 20, 22 and 24 against MongoDB 4.4 and 7.0; that combined run still has to be repeated with this tip.
