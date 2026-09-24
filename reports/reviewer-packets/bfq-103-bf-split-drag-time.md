@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-103
+# Review packet — BFQ-103 (PR #8760)
 
 **BF-103 - a split drag stores the old time, so IOB and COB ignore the move**
 
@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/split-drag-time` |
 | base | `origin/dev@4011193e` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-103` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-103` is the measurement |
 | semver | `patch` |
 | register entries | `BF-103` |
 | operator exposure | **reaches an operator on today's release** |
@@ -74,6 +74,7 @@ SAFETY - the move changes when carbs or insulin count for IOB and COB
 
 ## Notes carried on the item
 
+2026-09-23 - OPEN upstream as #8760 (head 8d797ba4, verified with ls-remote).
 BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into
 15.0.9: browser probe red on dev and green on the branch for split, plain move
 of a damaged record (both stored shapes), split of a damaged record and a v3

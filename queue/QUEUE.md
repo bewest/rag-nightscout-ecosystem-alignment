@@ -44,9 +44,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-103 |
+| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 15 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 3 | BFQ-47, BF2-AUTH, BFQ-102 |
+| `in-flight-upstream` | 4 | BFQ-47, BF2-AUTH, BFQ-103, BFQ-102 |
 | `merged-upstream` | 28 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-4, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-97, BFQ-98 |
 | `needs-decision` | 8 | P0-TAG, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
@@ -1571,7 +1571,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
-| `BFQ-103` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | `ready-to-push` | `bf/split-drag-time` | patch | 0 run + 1 no-gate |
+| `BFQ-103` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | `in-flight-upstream` | `bf/split-drag-time` | patch | 0 run + 1 no-gate |
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `merged-upstream` | `fix/profile-sync-bounded-update` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `merged-upstream` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `blocked` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
@@ -2840,7 +2840,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/split-drag-time` |
 | base | `origin/dev@4011193e` |
@@ -2867,7 +2867,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/bf103-fix-2026-09-23.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into 15.0.9: browser probe red on dev and green on the branch for split, plain move of a damaged record (both stored shapes), split of a damaged record and a v3 record (e.g. COB 0 vs 25 on dev, equal on the branch); dependency-d3 21/3 on dev, 24/0 on the branch; suite 2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run bundle); 9 of 9 break-its caught by the browser probe (7 by unit tests); merge-tree clean with #8754 8211f8e2 and #8758 6d120fa2. The split copy drops page-added mills, endmills, mgdl, scaled, cuttedby, cutting and a Date-typed date; a move clears them on the stored record and sets a disagreeing stored date to the new time (API v3 and AAPS use date). A raw v1 PUT still leaves a stale mills (server-side, not in scope). Server-side options measured, not built: ddata preferring created_at retimes other collections too; stripping on websocket dbAdd leaves existing records stale. Read-only repair query in the evidence section 8. Evidence docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body reports/phase0-pr- bodies/bf-split-drag-time.md. DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag; edit-the-time is unmeasured). Branch being built by session -36b (worktree externals/work/crm-bf-split- drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59. Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
+**Notes.** 2026-09-23 - OPEN upstream as #8760 (head 8d797ba4, verified with ls-remote). BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into 15.0.9: browser probe red on dev and green on the branch for split, plain move of a damaged record (both stored shapes), split of a damaged record and a v3 record (e.g. COB 0 vs 25 on dev, equal on the branch); dependency-d3 21/3 on dev, 24/0 on the branch; suite 2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run bundle); 9 of 9 break-its caught by the browser probe (7 by unit tests); merge-tree clean with #8754 8211f8e2 and #8758 6d120fa2. The split copy drops page-added mills, endmills, mgdl, scaled, cuttedby, cutting and a Date-typed date; a move clears them on the stored record and sets a disagreeing stored date to the new time (API v3 and AAPS use date). A raw v1 PUT still leaves a stale mills (server-side, not in scope). Server-side options measured, not built: ddata preferring created_at retimes other collections too; stripping on websocket dbAdd leaves existing records stale. Read-only repair query in the evidence section 8. Evidence docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body reports/phase0-pr- bodies/bf-split-drag-time.md. DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag; edit-the-time is unmeasured). Branch being built by session -36b (worktree externals/work/crm-bf-split- drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59. Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
 
 ### `BFQ-97` &mdash; BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
 

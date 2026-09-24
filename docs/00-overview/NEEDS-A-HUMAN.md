@@ -57,7 +57,7 @@ that it was reviewed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-103` | `ready-to-push` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | &mdash; |
+| `BFQ-103` | `in-flight-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | #8760 |
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
 ### SECURITY reviewer &mdash; 2 items
@@ -81,6 +81,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
+| **#8760** | `BFQ-103` | `bf/split-drag-time` | BF-103 - a split drag stores the old time, so IOB and COB ig | SAFETY reviewer |
 
 <!-- END GENERATED: open-prs -->
 
