@@ -9,6 +9,10 @@ logs, and the coding agents they work with. It was written with the tim2000s rep
 mind (oref-digital-twin, Insulin-Kinetics, dynamic-isf-calculations, Smoothing-Investigations,
 exercise-eval, clinical-advice-analysis), and applies to any holder.
 
+Start page for the whole collaboration: [`README.md`](README.md). The OREF-INV-003
+replication and the 18-feature algorithm-neutral set have their own brief:
+[`oref-inv-003-replication-brief.md`](oref-inv-003-replication-brief.md).
+
 This work is about the shape of stored data: field names, types, how often each form occurs,
 which client writes it. It does not evaluate anyone's therapy settings or dosing, and nothing
 here is medical advice.
@@ -90,7 +94,7 @@ Each has a claim in this repository behind it; `questions.yaml` names the file.
 | Q12 | Other pumps and uploaders | one pump family dominates |
 | Q13 | The v3 envelope in real data, and v1/v3 identifier agreement | never measured |
 | Q14 | Field appearance over years | 25 days of data |
-| Q15 | OREF-INV-003 findings with logged, not approximated, IOB features | 5 of 32 features approximated |
+| Q15 | OREF-INV-003 findings with logged, not approximated, IOB features | 5 of 32 features approximated; an 18-feature algorithm-neutral set is on par under patient-grouped CV |
 | Q16 | Heart rate and steps: which apps, which keys, what cadence | no activity data |
 | Q17 | Where AAPS-fork step counts live | not present |
 

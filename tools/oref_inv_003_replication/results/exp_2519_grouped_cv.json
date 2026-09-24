@@ -1,0 +1,401 @@
+{
+ "cohorts": {
+  "current": {
+   "patients": 31,
+   "loop_or_ns": 23,
+   "odc": 8,
+   "hypo_4h_rows": 1143127,
+   "hypo_4h_prevalence": 0.2572,
+   "hypo_4h|oref32|row": {
+    "auc": 0.792205956178198,
+    "std": 0.0011979285340976272,
+    "folds": [
+     0.7917,
+     0.7938,
+     0.7932,
+     0.7919,
+     0.7904
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32|patient": {
+    "auc": 0.6657627028781,
+    "std": 0.024980441327290253,
+    "folds": [
+     0.6822,
+     0.6535,
+     0.7065,
+     0.6398,
+     0.6467
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32_pk_replaced|row": {
+    "auc": 0.7993698500499218,
+    "std": 0.0010427060259175123,
+    "folds": [
+     0.7997,
+     0.801,
+     0.7995,
+     0.7988,
+     0.7978
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32_pk_replaced|patient": {
+    "auc": 0.6809908599306167,
+    "std": 0.024735436948656073,
+    "folds": [
+     0.6872,
+     0.6605,
+     0.7216,
+     0.6504,
+     0.6852
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|pk_only_18|row": {
+    "auc": 0.7982886214657304,
+    "std": 0.0008811015902671745,
+    "folds": [
+     0.7983,
+     0.799,
+     0.7985,
+     0.7991,
+     0.7966
+    ],
+    "n_features": 18
+   },
+   "hypo_4h|pk_only_18|patient": {
+    "auc": 0.6922917967790051,
+    "std": 0.0235648207234858,
+    "folds": [
+     0.6637,
+     0.6837,
+     0.7116,
+     0.6753,
+     0.7272
+    ],
+    "n_features": 18
+   },
+   "hyper_4h_rows": 1143127,
+   "hyper_4h_prevalence": 0.4768,
+   "hyper_4h|oref32|row": {
+    "auc": 0.8915897407893955,
+    "std": 0.0003666823873891796,
+    "folds": [
+     0.8921,
+     0.8911,
+     0.8913,
+     0.8919,
+     0.8915
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32|patient": {
+    "auc": 0.7679204855796614,
+    "std": 0.038149238736591325,
+    "folds": [
+     0.7102,
+     0.7387,
+     0.7936,
+     0.7819,
+     0.8152
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32_pk_replaced|row": {
+    "auc": 0.8941723427631638,
+    "std": 0.00048201728196116574,
+    "folds": [
+     0.8947,
+     0.8933,
+     0.8944,
+     0.8939,
+     0.8944
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32_pk_replaced|patient": {
+    "auc": 0.7729965124389604,
+    "std": 0.0377475332140298,
+    "folds": [
+     0.7266,
+     0.7287,
+     0.8003,
+     0.7935,
+     0.816
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|pk_only_18|row": {
+    "auc": 0.8937359126471538,
+    "std": 0.00038206091915085795,
+    "folds": [
+     0.8942,
+     0.8931,
+     0.8938,
+     0.8936,
+     0.894
+    ],
+    "n_features": 18
+   },
+   "hyper_4h|pk_only_18|patient": {
+    "auc": 0.7987201567218131,
+    "std": 0.021791555586391936,
+    "folds": [
+     0.7604,
+     0.8245,
+     0.7979,
+     0.7966,
+     0.8142
+    ],
+    "n_features": 18
+   }
+  },
+  "exp2514": {
+   "patients": 19,
+   "loop_or_ns": 11,
+   "odc": 8,
+   "hypo_4h_rows": 666934,
+   "hypo_4h_prevalence": 0.2353,
+   "hypo_4h|oref32|row": {
+    "auc": 0.8031314206837546,
+    "std": 0.0006400374432469433,
+    "folds": [
+     0.8034,
+     0.8037,
+     0.8024,
+     0.8038,
+     0.8023
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32|patient": {
+    "auc": 0.6765730624855102,
+    "std": 0.010826839204383076,
+    "folds": [
+     0.6656,
+     0.6968,
+     0.6749,
+     0.6762,
+     0.6694
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32_pk_replaced|row": {
+    "auc": 0.812647159157996,
+    "std": 0.0007350374298685235,
+    "folds": [
+     0.8129,
+     0.8126,
+     0.8127,
+     0.8137,
+     0.8114
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|oref32_pk_replaced|patient": {
+    "auc": 0.6851549299213314,
+    "std": 0.022950172542479084,
+    "folds": [
+     0.6466,
+     0.7043,
+     0.6927,
+     0.673,
+     0.7091
+    ],
+    "n_features": 32
+   },
+   "hypo_4h|pk_only_18|row": {
+    "auc": 0.8147934612740887,
+    "std": 0.0010609406999179363,
+    "folds": [
+     0.8146,
+     0.814,
+     0.8156,
+     0.8164,
+     0.8134
+    ],
+    "n_features": 18
+   },
+   "hypo_4h|pk_only_18|patient": {
+    "auc": 0.668507101453089,
+    "std": 0.025169140948822506,
+    "folds": [
+     0.6621,
+     0.6953,
+     0.7005,
+     0.6437,
+     0.6408
+    ],
+    "n_features": 18
+   },
+   "hyper_4h_rows": 666934,
+   "hyper_4h_prevalence": 0.5513,
+   "hyper_4h|oref32|row": {
+    "auc": 0.9007653712875763,
+    "std": 0.0008011741740976262,
+    "folds": [
+     0.9015,
+     0.9012,
+     0.8993,
+     0.9006,
+     0.9013
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32|patient": {
+    "auc": 0.7779093891130154,
+    "std": 0.030958454884461823,
+    "folds": [
+     0.7981,
+     0.7372,
+     0.8042,
+     0.8068,
+     0.7432
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32_pk_replaced|row": {
+    "auc": 0.9050574352625773,
+    "std": 0.000883906107663075,
+    "folds": [
+     0.9065,
+     0.9051,
+     0.9037,
+     0.905,
+     0.9051
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|oref32_pk_replaced|patient": {
+    "auc": 0.7793970821137626,
+    "std": 0.03913684879523883,
+    "folds": [
+     0.8031,
+     0.7254,
+     0.8131,
+     0.8166,
+     0.7387
+    ],
+    "n_features": 32
+   },
+   "hyper_4h|pk_only_18|row": {
+    "auc": 0.9070590532092966,
+    "std": 0.001008425273048625,
+    "folds": [
+     0.9086,
+     0.9068,
+     0.9056,
+     0.9067,
+     0.9076
+    ],
+    "n_features": 18
+   },
+   "hyper_4h|pk_only_18|patient": {
+    "auc": 0.7955722404056049,
+    "std": 0.012864026029246255,
+    "folds": [
+     0.7976,
+     0.7917,
+     0.8182,
+     0.7789,
+     0.7915
+    ],
+    "n_features": 18
+   }
+  }
+ },
+ "feature_sets": {
+  "oref32": [
+   "cgm_mgdl",
+   "sug_current_target",
+   "sug_ISF",
+   "sug_CR",
+   "sug_sensitivityRatio",
+   "sug_rate",
+   "sug_duration",
+   "sug_insulinReq",
+   "sug_eventualBG",
+   "sug_threshold",
+   "iob_iob",
+   "iob_basaliob",
+   "iob_bolusiob",
+   "iob_activity",
+   "sug_COB",
+   "reason_Dev",
+   "reason_BGI",
+   "reason_minGuardBG",
+   "direction_num",
+   "hour",
+   "has_dynisf",
+   "has_smb",
+   "has_uam",
+   "bg_above_target",
+   "isf_ratio",
+   "iob_pct_max",
+   "sr_deviation",
+   "dynisf_x_sr",
+   "dynisf_x_isf_ratio",
+   "maxSMBBasalMinutes",
+   "maxUAMSMBBasalMinutes",
+   "sug_smb_units"
+  ],
+  "oref32_pk_replaced": [
+   "cgm_mgdl",
+   "sug_current_target",
+   "sug_ISF",
+   "sug_CR",
+   "sug_sensitivityRatio",
+   "sug_rate",
+   "sug_duration",
+   "sug_insulinReq",
+   "sug_eventualBG",
+   "sug_threshold",
+   "iob_iob",
+   "pk_basal_iob",
+   "pk_bolus_iob",
+   "pk_activity",
+   "sug_COB",
+   "pk_dev",
+   "pk_bgi",
+   "reason_minGuardBG",
+   "direction_num",
+   "hour",
+   "has_dynisf",
+   "has_smb",
+   "has_uam",
+   "bg_above_target",
+   "isf_ratio",
+   "iob_pct_max",
+   "sr_deviation",
+   "dynisf_x_sr",
+   "dynisf_x_isf_ratio",
+   "maxSMBBasalMinutes",
+   "maxUAMSMBBasalMinutes",
+   "sug_smb_units"
+  ],
+  "pk_only_18": [
+   "cgm_mgdl",
+   "glucose_roc",
+   "glucose_accel",
+   "time_sin",
+   "time_cos",
+   "pk_basal_iob",
+   "pk_bolus_iob",
+   "pk_activity",
+   "pk_dev",
+   "pk_bgi",
+   "pk_insulin_total",
+   "pk_insulin_net",
+   "pk_basal_ratio",
+   "pk_carb_rate",
+   "pk_carb_accel",
+   "pk_hepatic_prod",
+   "pk_net_balance",
+   "pk_isf_curve"
+  ]
+ },
+ "elapsed_seconds": 651
+}

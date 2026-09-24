@@ -130,7 +130,11 @@ fine, and saying so in `<out>/tasks/README.md` is enough.
   pooled per platform;
   (b) the rank of `iob_basaliob` in hypo-prediction importance (finding F3) and the stability
   of the CR×hour interaction across time splits (F10). Report ranks and correlations only.
-  Our numbers are in `tools/oref_inv_003_replication/reports/synthesis_report.md`.
+  (c) EXP-2519's three feature sets (OREF-32, OREF-32 with PK replacements, the 18-feature
+  algorithm-neutral set) under leave-one-user-out:
+  `python3 -m oref_inv_003_replication.exp_repl_2519 --parquet-dir <grid> --out <out>/tasks/exp_2519.json`.
+  Our numbers, and experiments E1 to E6 in full:
+  [`docs/60-research/collaboration/oref-inv-003-replication-brief.md`](../../docs/60-research/collaboration/oref-inv-003-replication-brief.md).
 - **T5: local time vs UTC (Q07).** Where the holder's code looks up a profile schedule by
   UTC hour or by the browser's zone, report the share of decisions whose scheduled basal,
   ISF or CR would differ under the site's `profile.timezone`. One share per platform.

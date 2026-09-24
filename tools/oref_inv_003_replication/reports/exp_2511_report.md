@@ -6,6 +6,12 @@
 **Script**: `exp_repl_2511.py`
 **Data provenance**: Post-ODC-fix; PK features via `pk_bridge.py`
 
+> **Status (2026-09-24):** every AUC below is from row-shuffled 5-fold CV, which puts each
+> patient's decisions in both train and test. EXP-2514 (18-feature PK-only set, not reported
+> below) scored hypo 0.8151 / hyper 0.9070 on that basis. Under patient-grouped folds
+> (EXP-2519, `exp_repl_2519.py`) the 18-feature set is on par with OREF-32, not better:
+> hypo 0.669 vs 0.677, hyper 0.796 vs 0.778 on these 19 patients.
+
 ## Comparison Summary
 
 | Finding | Their Claim | Our Result | Agreement |

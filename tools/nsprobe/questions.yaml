@@ -161,7 +161,11 @@ questions:
       tools/oref_inv_003_replication/reports/synthesis_report.md (F3 basaliob rank, F10 CR×hour
       stability, EXP-2491 transfer); tools/oref_inv_003_replication/data_bridge.py FEATURE_QUALITY
     answered_by: [warehouse:feature_coverage, warehouse:iob, task:T4]
-    ours: 5 of 32 features approximated (basaliob, bolusiob, activity, Dev, BGI); cross-algorithm claims rest on 8 AAPS patients.
+    ours: >-
+      5 of 32 features approximated (basaliob, bolusiob, activity, Dev, BGI); cross-algorithm
+      claims rest on 8 AAPS patients. Under patient-grouped CV an 18-feature algorithm-neutral
+      set (glucose, time, 13 PK channels) is on par with the 32 (EXP-2519); see
+      docs/60-research/collaboration/oref-inv-003-replication-brief.md.
     changes: Whether the approximations in pk_bridge.py are adequate, and the status of F3, F10 and EXP-2491.
 
   - id: Q16

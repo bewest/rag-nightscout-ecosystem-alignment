@@ -52,7 +52,27 @@ PYTHONPATH=tools python3 -m oref_inv_003_replication.run_all
 | EXP-2481 | `exp_repl_2481.py` | Do SHAP and causal importance agree? |
 | EXP-2491 | `exp_repl_2491.py` | Cross-algorithm transfer learning? |
 
+### Phase 5+: Correction, PK features, DIA, algorithm-neutral set
+| ID | Script | Question |
+|----|--------|----------|
+| EXP-2501 | `exp_repl_2501.py` | How does AUC change with forecast horizon? |
+| EXP-2511 | `exp_repl_2511.py` | Do PK replacements help; how does an 18-feature algorithm-neutral set compare? |
+| EXP-2519 | `exp_repl_2519.py` | Does the 18-feature comparison hold under patient-grouped CV? |
+| EXP-2521 | `exp_repl_2521.py` | Baseline replication on the corrected data |
+| EXP-2531 | `exp_repl_2531.py` | Corrected data with PK features |
+| EXP-2541 | `exp_repl_2541.py` | Per-patient DIA fitting |
+| EXP-2581 | `exp_repl_2581.py` | Algorithm prediction quality |
+
+**Cross-validation.** EXP-2431/2432 and EXP-2519 hold out whole patients. Every other AUC in
+`reports/` comes from row-shuffled folds, which put one patient's decisions in both train and
+test and overstate AUC by about 0.10 to 0.15. Feature-set comparisons should be read from
+EXP-2519. Summary for the study's author and other researchers:
+[`docs/60-research/collaboration/oref-inv-003-replication-brief.md`](../../docs/60-research/collaboration/oref-inv-003-replication-brief.md).
+
 ## Data Requirements
 
 - `externals/ns-parquet/training/grid.parquet` — our patient data
-- Colleague's models at `COLLEAGUE_DIR` (see `__init__.py`)
+- The study's own models at `COLLEAGUE_DIR` (see `__init__.py`), for EXP-2401 and the other
+  experiments that compare against them; EXP-2519 does not need them
+- Another data holder's grid: `exp_repl_2519.py --parquet-dir <dir>`, built with
+  `ns2parquet convert-all`
