@@ -21,7 +21,6 @@ repository.
 
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
-| [`P0-TAG`](p0-tag-dev.md) | #70 | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | #8754 | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |

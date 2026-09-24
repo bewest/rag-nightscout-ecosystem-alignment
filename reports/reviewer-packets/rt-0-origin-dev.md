@@ -131,29 +131,36 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-23 - OPEN BEFORE THE TAG: RT-COUNT-COMPAT, whether the 15.0.9 count
-rule is a correction or a compatibility break for oref0 and GluPredKit. Hold
-#8598 and the tag until the maintainer decides it. 2026-09-24 - RT-D3 answered
-(maintainer, session -6a) and removed from blocks_on; the new first gate keeps
-the hand checks valid only while the candidate's browser-side code matches the
-hand-checked tree. 2026-09-23 - COMBINED RUN GREEN (-59):
-rc/15.0.9-combined-59 (local) = ddd9b600, then #8754 ef3404fd (merge
-2731b658), then #8758 6d120fa2 (merge 509235b3). Both merges were automatic;
-tree 2ce67b27. Suite 2453/0/3 on dev, 2548/0/3 with #8754 and 3028/0/3 with
-#8758, on Node 20, 22 and 24 x MongoDB 4.4 and 7, with the CRUD-by-_id matrix
-in each cell (docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So
-#8754 and #8758 can merge on evidence. Still owed before the tag: one run
-after the pin to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds
-#8760 (BF-103). Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its
-own changes line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with
-dev is clean (tree 2ce67b27) and differs from the verified combined rc
-d087588f in exactly #8760's five files, so no combined run covers today's
-candidate. DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined
-suite now on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can
-merge on evidence, and once more after the pin to exact 0.1.0, before the tag.
-The first run is rc/15.0.9-combined-59 (session -59). #8598 carries the
-manual-check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it
-still has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752,
+2026-09-24 - CONNECTOR PIN DONE: nightscout-connect 0.1.0 released (P0-TAG)
+and dev pins it exactly (#8762, dev 153e5658). The run owed after that pin is
+green: dev + pin + #8754 + #8758, tree 4114f45a, 3046/0/3 on all six Node x
+MongoDB cells (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md).
+#8754's head since moved to 280eccbe (a dev merge only); dev 153e5658 +
+280eccbe + #8758 6d120fa2 is the same tree. Open before the tag: #8754, #8758,
+the release notes, and a review of #8598. 2026-09-23 - OPEN BEFORE THE TAG:
+RT-COUNT-COMPAT, whether the 15.0.9 count rule is a correction or a
+compatibility break for oref0 and GluPredKit. Hold #8598 and the tag until the
+maintainer decides it. 2026-09-24 - RT-D3 answered (maintainer, session -6a)
+and removed from blocks_on; the new first gate keeps the hand checks valid
+only while the candidate's browser-side code matches the hand-checked tree.
+2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) =
+ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge
+509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev,
+2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB
+4.4 and 7, with the CRUD-by-_id matrix in each cell
+(docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and
+#8758 can merge on evidence. Still owed before the tag: one run after the pin
+to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103).
+Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes
+line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is
+clean (tree 2ce67b27) and differs from the verified combined rc d087588f in
+exactly #8760's five files, so no combined run covers today's candidate.
+DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now
+on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on
+evidence, and once more after the pin to exact 0.1.0, before the tag. The
+first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual-
+check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still
+has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752,
 #8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754
 (security review: maintainer and Andy) and #8758. The combined rc
 (rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells)

@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
-Prose revised 2026-09-23 against cgm-remote-monitor `origin/dev` `ddd9b600` and
+Prose revised 2026-09-24 against cgm-remote-monitor `origin/dev` `153e5658` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -21,22 +21,24 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 25 | 11 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 25 | 10 |
 | **Modernization** | `release-train` | 17 | 1 | 2 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **116** | **35** | **17** |
+| | **total** | **116** | **35** | **16** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. Twenty-four pull requests
+**Remedial** — finding and fixing defects that already ship. Twenty-six pull requests
 from this work are merged into cgm-remote-monitor `dev`: this programme's #8733, #8734,
 #8735, #8736, #8737, #8738, #8739, #8740 and #8743 (2026-09-17 to 2026-09-20), the three
 advisory fixes #8744, #8745 and #8746 (2026-09-21), #8741 from an external contributor
-(2026-09-20), and eleven of the thirteen 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
-#8760, 2026-09-23). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
+(2026-09-20), eleven of the thirteen 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
+#8760, 2026-09-23), and #8761 and #8762 (2026-09-24). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
 the security review) and #8758 (records keep their own `_id`). Every programme connector fix is
-in `nightscout-connect` `dev` `977da8a` and in prerelease `0.1.0-dev.3`, which Nightscout `dev`
-now installs (#8759); the full `0.1.0` (`P0-TAG`) and a last pin to it remain. The
+in `nightscout-connect` `0.1.0`, released to npm `latest` on 2026-09-24 (`P0-TAG`, tag `v0.1.0` on
+connector `main` `4dde1ec`). Nightscout `dev` pins it exactly (#8762), and `dev` plus the pin, #8754
+and #8758 passes 3046/0/3 on every Node and MongoDB pair
+([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)). The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
 
@@ -158,7 +160,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 3 | 1 | 3 |  | 12 | 2 |  |  |  |  | **22** |
+| `phase0` | 1 | 3 | 1 | 1 |  | 14 | 1 | 1 |  |  |  | **22** |
 | `release-train` | 1 | 4 |  | 5 | 1 | 4 | 1 |  |  |  | 1 | **17** |
 | `register-open` | 18 | 5 |  | 4 | 2 | 12 | 4 |  | 2 | 1 |  | **48** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
@@ -231,12 +233,12 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598, at `ddd9b600`, no approving review). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: #8754, #8758, connector `0.1.0` and its pin, the release notes. |
-| `P0-TAG` | When to cut `nightscout-connect` 0.1.0. Connector `dev` `977da8a` declares `0.1.0` and carries every fix; prerelease `0.1.0-dev.3` is on npm and is what Nightscout `dev` installs (#8759). | A pin to exact `0.1.0` follows it; 15.0.9 must not ship on a prerelease pin. |
+| `RT-0` | Release 15.0.9 (PR #8598, at `dev` `153e5658`, no approving review). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: #8754, #8758, the release notes. |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 
-`RT-D3` (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
+`P0-TAG` (done: `nightscout-connect` 0.1.0 released and pinned by #8762) left this table on
+2026-09-24. `RT-D3` (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
 `BFQ-47` (decided: the allow-list is intended; the admin-page fix is in #8754) and `BFQ-72` (decided
 privately) left this table on 2026-09-23.
 

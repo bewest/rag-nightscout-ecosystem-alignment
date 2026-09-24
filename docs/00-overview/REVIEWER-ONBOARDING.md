@@ -1,8 +1,8 @@
 # Reviewer onboarding — read this first
 
 *Contributor-facing. Written for somebody who has never seen this repository and
-is considering reviewing work in it. Prose revised 2026-09-23 against
-cgm-remote-monitor `origin/dev` `ddd9b600` and `origin/master` `92d08342` (tag
+is considering reviewing work in it. Prose revised 2026-09-24 against
+cgm-remote-monitor `origin/dev` `153e5658` and `origin/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -104,10 +104,9 @@ Three entry points, easiest first:
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
    each item awaiting review. Two 15.0.9 pull requests are open: #8758 (records keep
    their own `_id` across API v1, v3 and the websocket; a large change to core data
-   paths, where careful review is most useful) and #8754 (below). Twenty-four others
-   are merged into `dev`, none released. The connector's fixes are merged into
-   `nightscout-connect` `dev` and published as prerelease `0.1.0-dev.3`; its full
-   release is `P0-TAG`.
+   paths, where careful review is most useful) and #8754 (below). Twenty-six others
+   are merged into `dev`, none released. The connector's fixes are released as
+   `nightscout-connect` `0.1.0` (2026-09-24), which `dev` pins exactly (#8762).
 2. **A security or safety item.** #8754 (login security fixes and `TRUST_PROXY`) is
    the open security PR; its reviewers are the maintainer and Andy, and a second
    pair of eyes on the evidence is still welcome. Among safety items, `BFQ-92` (a page

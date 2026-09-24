@@ -312,7 +312,6 @@ and keep a second way to see them** until you are sure.
 
 ## The built-in CGM connector
 
-<!-- PENDING: connector v0.1.0 tag -->
 This release installs **nightscout-connect 0.1.0**, the built-in CGM connector (it fetches
 readings from Dexcom Share, MiniMed CareLink, LibreLinkUp, Glooko, another Nightscout site and
 others). It is installed as that exact version. If you use the connector — including if you use
@@ -324,26 +323,26 @@ Dexcom `BRIDGE_` settings, which the connector handles — compared with 15.0.8:
   short summaries instead, with or without the debug settings below.
 - **Its detailed diagnostic logging is off unless you turn it on** (see
   [Quieter logs](#quieter-logs-and-two-new-settings)).
-<!-- PENDING: connector v0.1.0 tag -->
 - **A MiniMed CareLink "no reading" marker is no longer stored as a glucose reading of 0.** While
   such a 0 was the newest reading, Nightscout did not check your high and low glucose alarms.
   Readings already stored are not changed. How often CareLink sends such a marker as the newest
   value has not been measured. Keep your pump's or CGM app's own alarms on; do not rely on
   Nightscout as your only alarm.
-<!-- PENDING: connector v0.1.0 tag -->
 - **It waits properly between retries after a CGM service outage.** Earlier versions ignored the
   retry interval each source was designed with, so after an outage they started retrying within a
   fraction of a second instead of after minutes, and every site retried at the same moment.
   Retries now follow the intended interval, are spread out, and have an upper limit, so the
   connector does not stop trying for a very long time either.
-<!-- PENDING: connector v0.1.0 tag -->
 - **Copying data from another Nightscout site that requires login now works.** If the site you
   copy from uses `AUTH_DEFAULT_ROLES=denied`, earlier versions could not read from it. **If an
   earlier version already created a user called `nightscout-connect-reader` on that site**, it is
   reused as it is and still cannot read: on that site's admin page, give that user the
   `readable` role, or delete it so the connector creates it again. The connector now says this
   once in its log when it finds such a user.
-<!-- PENDING: connector v0.1.0 tag -->
+<!-- PENDING: #8758 merge. The connector copies a changed profile only when the receiving site can
+     replace it in place by its _id, which #8758 provides (connector de3cee1 checks for it). If #8758
+     does not ship, do not delete this item: keep the sentence about downloading only new or changed
+     profiles, and say that only new profiles are copied, as in 15.0.8. -->
 - **When copying from another Nightscout site, profile changes are copied too.** A profile (basal
   rates, insulin sensitivity, carb ratios) saved on the site you copy **from** reaches this site
   at the next poll. 15.0.8 copied only new profiles. **Make profile changes on the site you copy
@@ -354,8 +353,8 @@ Dexcom `BRIDGE_` settings, which the connector handles — compared with 15.0.8:
   instead of every profile every five minutes. If a profile on the receiving site does not match
   the source, check it on both sites before relying on the receiving site's reports, and talk to
   your care team about any settings you are unsure of.
+<!-- PENDING: #8758 merge -->
 - **It shuts down cleanly when Nightscout stops.**
-<!-- PENDING: connector v0.1.0 tag -->
 - For developers: the connector's standalone `capture` command no longer fails for the
   Nightscout and Dexcom Share sources.
 
