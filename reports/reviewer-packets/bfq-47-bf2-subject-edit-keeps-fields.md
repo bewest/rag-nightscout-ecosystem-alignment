@@ -50,9 +50,10 @@ surface.
 
 ## Who should review this, and why
 
-maintainer, AND the security reviewer who takes P0-C, together - this is the
-one irreversible change in the Phase 0 batch and the question has to be
-answered BEFORE merge, not after
+maintainer, and the security reviewers of #8754 (the maintainer and Andy),
+together. This is the one irreversible change in the batch: the allow-list and
+the admin-page fill-in were decided on 2026-09-23 (see notes) and are reviewed
+as part of #8754.
 
 ## What was measured
 
@@ -88,38 +89,32 @@ Control, re-run by the coordinator 2026-09-23 - with 29e6430e's storage.js the
 
 ## Notes carried on the item
 
-2026-09-23 - the fix, 7103f657, is the last-but-two commit on bf2/auth-
-hardening and so is in review as #8754 (head 0ca46d92). Nothing of BFQ-47 is
-pushed separately. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope",
-2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c
+In review as part of #8754 (BF2-AUTH): the fix, 7103f657, is a commit on
+bf2/auth-hardening and is in #8754's head e32f7a1c (2026-09-24). Nothing of
+BFQ-47 is pushed separately. Destination 15.0.9 (backfix-2 plan section 1a,
+2026-09-23). Not merged; BF-47 is live on 15.0.8. Decisions: - 2026-09-23
+(maintainer): the subject-field allow-list is intended and stays (option 2),
+with no compatibility flag. It is the declared schema for subjects (name,
+roles, notes, created_at) and roles (name, permissions, notes, created_at);
+fields outside it are not part of the contract. No open-source client in the
+corpus depends on storing other subject fields. - 2026-09-23 (maintainer):
+fold bf2/subject-edit-keeps-fields into the auth-hardening PR as its last
+commit (recorded in the PR body at b248bb73). What remains is the admin-page
+defect, which this fix addresses. Reproduced in a real browser, read back from
+mongo: on dev an admin-page subject edit sets notes to "" and replaces
+created_at with the edit time (the page fetches subjects without notes and
+created_at, then saves the whole subject back); with the allow-list alone
+notes survive but created_at is still replaced; the role editor keeps both on
+every base (its GET serves whole documents), so the admin-page defect is
+subjects only. The field loss already happens on the current release, not only
+with the allow-list. The fix is a server-side fill-in in storage.js save() for
+notes and created_at only: an absent notes key keeps the stored value, a
+present one (even '') is written, so clearing still works. roles is
+deliberately not filled in: the admin page sends no roles field when the last
+role is removed, and filling it would silently keep access. Suite 2462/0/3 ->
+2467/0/3. Evidence: the rc-c integration record, rc/15.0.9-additions-c
 b9c9828b, 2508/0/3 on every Node and MongoDB pair; this unit's step added +5
-and its three break-its are red. The record recommends folding this branch
-into the auth-hardening PR as its last commit; the auth-hardening PR body at
-b248bb73 records that as the maintainer's 2026-09-23 decision (see BF2-AUTH).
-PREPARED 2026-09-23 - bf2/subject-edit-keeps-fields 7103f657, one commit on
-bf2/auth-hardening. REPRODUCED in a real browser, read back from mongo - on
-dev an admin-page subject edit sets notes to "" and replaces created_at with
-the edit time; on bf2/auth-hardening notes survive but created_at is still
-replaced; the role editor keeps both on every base (its GET serves whole
-documents), so the admin-page defect is subjects only. Fix is a server-side
-fill-in in storage.js save() for notes and created_at only - an absent notes
-key keeps the stored value, a present one (even '') is written, so clearing
-still works. roles is deliberately NOT filled in - the admin page sends no
-roles field when the last role is removed, and filling it would silently keep
-access. Suite 2462/0/3 -> 2467/0/3. DECIDED 2026-09-23 (maintainer) - NO
-compatibility flag for the subject-field allow-list. The allow-list IS the
-declared schema for subjects (name, roles, notes, created_at) and roles (name,
-permissions, notes, created_at); fields outside it are not part of the
-contract. What remains is the admin-page defect - an edit through the admin
-page must keep notes and created_at. DECIDED 2026-09-23 (maintainer) - the
-allow-list is intended and stays (option 2). No open-source client in the
-corpus depends on storing other subject fields. The loss that remains is the
-admin page: it fetches subjects without notes and created_at, then saves the
-whole subject back, so an ordinary edit clears both. That is the defect to
-fix. A verifier's review of bf/auth established that the field loss already
-happens on the current release, not only on the unmerged branch. Keeping the
-security goal of BF-17 - the derived token never reaches the database - does
-not require the allow-list.
+and its three break-its are red.
 
 ---
 
@@ -130,4 +125,4 @@ not require the allow-list.
 - [ ] `make queue-status ID=BFQ-47` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

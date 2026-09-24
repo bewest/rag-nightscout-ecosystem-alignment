@@ -99,16 +99,19 @@ rename option to report 2.3 -> 1 failing; empty QUEUE_GATE_ROOT -> 17 failing.
 
 ## Notes carried on the item
 
-Settled 2026-09-16 as TEXT rather than tooling: the maintainer decided against
-a detector script and against a migration, on the ground that the notes carry
-the operator's actual decision and a script does not. The two facts the text
-must get right, both measured: renaming a subject does not retire its token
-(the matcher is name-independent - lib/authorization/storage.js:326 on
+Ready: the text is written and the gate passes. The release notes
+(releases/cgm-remote-monitor-15.0.9/release-notes.md), the PR body
+(reports/phase0-pr-bodies/bf-auth.md) and the source report state both
+required facts, and bf17-remediation-note.js guards them. It ships with the
+fix, which is in #8754 (BF2-AUTH); the release notes go out when the
+maintainer tags 15.0.9. Decisions: - 2026-09-16 (maintainer): text rather than
+tooling. No detector script and no migration, on the ground that the notes
+carry the operator's actual decision and a script does not. The two facts the
+text must get right, both measured: renaming a subject does not retire its
+token (the matcher is name-independent - lib/authorization/storage.js:326 on
 bf/auth, :288 on origin/dev); and upgrading does not discard the stored copy
-(reload() deletes the derived fields from the IN-MEMORY record only; the row
-clears when the subject is next saved through the admin path). The release
-notes, the PR body and the source report state both correctly, and the gate
-above guards them.
+(reload() deletes the derived fields from the in-memory record only; the row
+clears when the subject is next saved through the admin path).
 
 ---
 
@@ -119,4 +122,4 @@ above guards them.
 - [ ] `make queue-status ID=P0-C-REMEDIATE` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

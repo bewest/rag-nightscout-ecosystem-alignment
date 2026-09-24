@@ -293,9 +293,10 @@ them. The general point: a green ablation may mean the ablation was mis-scoped
 rather than that the gate is vacuous, and you have to say which.
 
 Controls are **authored, never derived**. A rule like "a gate is vacuous if it
-passes on the base" would have been wrong twice here: `P0-PIN`'s lockfile gate
-is *deliberately inverted* and passes against `origin/dev` on purpose, and
-`RT-D3`'s suite runs inside the shipping checkout, which no control may modify.
+passes on the base" would be wrong twice here: every containment gate (for
+example `P0-A`'s `merge-base --is-ancestor bf/alarms origin/dev`) and `P0-LOCK`'s
+lockfile gate pass against `origin/dev` on purpose, and `RT-D3`'s suite runs
+against the shipping tree, which no control may modify.
 
 ## Writing `operator_visible`
 

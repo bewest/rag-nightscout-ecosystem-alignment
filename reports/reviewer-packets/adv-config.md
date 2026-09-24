@@ -28,21 +28,15 @@ behind both (BF-77, BF-78, BF-81)**
 
 ## What this changes
 
-BF-77 is merged; the item stays `needs-decision` for BF-78 and BF-81. BF-77
-merged 2026-09-21 as PR #8746 - bf/readable-warning, measured at 74731433,
-merged as 74fc6619, with an integration merge of dev (91ed8d95) added to the
-branch on the way in. Rather than string equality at
+BF-77 merged 2026-09-21 as PR #8746 - bf/readable-warning, measured at
+74731433, merged as 74fc6619, with an integration merge of dev (91ed8d95)
+added to the branch on the way in. Rather than string equality at
 lib/server/bootevent.js:149 it adds a second notice wording for the
-readable+careportal configuration, wording the maintainer approved the same
-day. 2311 -> 2331 passing / 0 failing; the ablation goes red on exactly the
-three careportal cases with thirteen still passing, so the new cases are not
-vacuous. Not released. BF-78 is untouched by that merge. Three possible shapes
-and none obviously right: give the careportal role the read permission its
-routes require; move the router-wide read gate at
-lib/api/treatments/index.js:26 below the create route at :146; or document
-that careportal only functions alongside `readable` and say so at boot when it
-does not. BF-81 is prose - README.md and the swagger documents - with no
-branch, and the wording is a maintainer's to write.
+readable+careportal configuration. 2311 -> 2331 passing / 0 failing; the
+ablation goes red on exactly the three careportal cases with thirteen still
+passing. Not released. BF-78, decided 2026-09-23 as documentation plus a boot
+warning with no behaviour change, has no branch. BF-81 is prose - README.md
+and the swagger documents - with no branch.
 
 ## Why that semver
 
@@ -69,20 +63,17 @@ half is deliberately left unscored until the decision is taken.
 
 ## Who should review this, and why
 
-MAINTAINER - the two that remain are contract questions about the
-configuration surface, not bugs with an obvious patch. BF-77 was merged on its
-own, leaving BF-78 and BF-81 as the pair to decide together. The coupling:
+MAINTAINER - BF-81's wording is the maintainer's to write, and BF-78's
+documentation and boot warning follow the 2026-09-23 decision. The coupling:
 TREATMENTS_AUTH=off appends ' careportal' to authDefaultRoles; the boot
 warning compared that string for equality with 'readable'; so on 15.0.8 the
 notice is suppressed in exactly the configuration that is both world-readable
-AND anonymously writable. Meanwhile careportal alone grants only
+and anonymously writable. Meanwhile careportal alone grants only
 api:treatments:create and is refused by the router's api:treatments:read gate
-before reaching the create route - so the ONLY configuration in which
-careportal does anything is the one whose warning BF-77 suppresses. An
-operator who wants anonymous careportal entry is steered, by the only route
-that works, into the configuration that stops warning them. BF-78 fails CLOSED
-- nothing is exposed - which is why it is low; the defect is silence, not
-access.
+before reaching the create route - so the only configuration in which
+careportal does anything is the one whose warning BF-77 suppressed. BF-78
+fails closed - nothing is exposed - which is why it is low; the defect is
+silence, not access.
 
 ## What was measured
 
@@ -116,28 +107,28 @@ The router-wide read gate BF-78 is about is present on the shipping release.
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - BF-78 (the careportal role) is documented
-and warned about at boot; no behaviour change. Found while building the
-configuration matrix that answers "were the right flags set when the five
-advisories were evaluated"; these two fell out of enumerating what
-AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336,
-mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount
-1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does
-fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous
-read is 200 and anonymous POST /api/v1/treatments is 200 with the record
-stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE
-CONTROL, so absence in the middle row is attributable to the string compare
-and not to the notice being broken generally). These are documented
-configurations, not a bypass. BF-78, anonymous POST /api/v1/treatments:
-`readable careportal` 200 stored, `careportal` 401, `denied careportal` 401,
-`denied` 401. BF-81 was filed on the maintainer's instruction, 2026-09-21, as
-the shared root of the other two: the configuration surface carries two
-authorization-shaped settings with adjacent names - AUTH_DEFAULT_ROLES, which
-is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD, which is a client prompt
-that grants nothing - and nothing documents the difference. Its strongest
-evidence is that the reporter of GHSA-8849 keyed their own security patch to
-the wrong one. It is prose in README.md and the swagger documents, there is no
-branch, and the wording is a maintainer's to write.
+BF-77 is merged into dev by #8746 (74fc6619, 2026-09-21) and not released. The
+item stays needs-decision for BF-81: its wording (README.md and the swagger
+documents) is the maintainer's to write, and there is no branch. BF-78 is
+decided (below) and not yet built: no branch documents it or adds the boot
+warning. Decisions: - 2026-09-23 (maintainer): BF-78 (the careportal role) is
+documented and warned about at boot; no behaviour change. - 2026-09-21
+(maintainer): BF-81 filed as the shared root of the other two, and BF-77's
+second notice wording for the readable+careportal configuration approved.
+Reproduced on v15.0.8 and dev 59430336, mongod 7.0, with both controls in the
+same run. BF-77: default -> notifyCount 1, title "Nightscout readable by
+world" (positive control); TREATMENTS_AUTH=off -> notifyCount 0 while
+anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the
+record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (negative
+control, so absence in the middle row is attributable to the string compare).
+These are documented configurations, not a bypass. BF-78, anonymous POST
+/api/v1/treatments: `readable careportal` 200 stored, `careportal` 401,
+`denied careportal` 401, `denied` 401. BF-81: the configuration surface
+carries two authorization-shaped settings with adjacent names -
+AUTH_DEFAULT_ROLES, which is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD,
+which is a client prompt that grants nothing - and nothing documents the
+difference; the reporter of GHSA-8849 keyed their own security patch to the
+wrong one.
 
 ---
 
@@ -148,4 +139,4 @@ branch, and the wording is a maintainer's to write.
 - [ ] `make queue-status ID=ADV-CONFIG` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

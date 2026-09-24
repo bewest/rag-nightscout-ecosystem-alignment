@@ -62,16 +62,15 @@ choosing.
 
 ## Who should review this, and why
 
-SECURITY, and the same person who has to answer P0-K's sequencing question,
-because it is the same question about the same advisory. Disclosure-sensitive:
-this is a one-request unauthenticated denial of service against a default
-install, live on 15.0.8 and on dev 74fc6619, with no fix yet. The register
-describes the mechanism only; the reproducing patterns are deliberately not in
-any tracked file, and the probe is outside version control. The ordinary path
-for this stack - a public issue or PR carrying the reproduction - would
-publish a working attack against every unpatched Nightscout, and there is no
-patch to move to. The open decision is whether Nightscout's security contact
-process is invoked.
+SECURITY, and the same person who answered P0-K's sequencing question, because
+it is the same advisory. Disclosure-sensitive: a one-request unauthenticated
+denial of service against a default install, live on 15.0.8 and on dev, with
+no fix yet. The register describes the mechanism only; the reproducing
+patterns are deliberately not in any tracked file, and the probe is outside
+version control. A public issue or PR carrying the reproduction would publish
+a working attack against every unpatched Nightscout. The disclosure
+disposition was decided by the maintainer on 2026-09-23 and is held outside
+version control; the open decision is the fix shape.
 
 ## What was measured
 
@@ -117,20 +116,20 @@ same ablation.
 
 ## Notes carried on the item
 
-Disposition decided by the maintainer 2026-09-23; details are held outside
-version control. Found 2026-09-21 while re-measuring the security advisory's
-third proof of concept, which the advisory frames as $regex data extraction.
-On the shipped `readable` default that is close to vacuous - entries,
-treatments and devicestatus are the three collections prep_storage admits, all
-three are already readable, and the API returns whole documents, so a regex
-oracle reveals nothing a plain read does not. What the same operator does do
-is cost the database, which the advisory does not describe. Sequencing with
-P0-K: #8743 merged on 2026-09-18 and did not narrow $regex, because the client
-census found real clients sending it. So this entry is not a regression from
-that branch and is not fixed by it. State is needs-decision rather than gate-
-not-met: a gate fails, but the blocking thing is not work. It is whether
-Nightscout's security contact process is invoked and in what order - the same
-question P0-K left open, still unanswered.
+Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on origin/dev
+153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided
+by the maintainer on 2026-09-23 and its details are held outside version
+control. What remains open is the fix shape: which bound on the $regex operand
+(see the no-gates), a decision about the search affordance's contract. Found
+2026-09-21 while re-measuring the security advisory's third proof of concept,
+which the advisory frames as $regex data extraction. On the shipped `readable`
+default that is close to vacuous - entries, treatments and devicestatus are
+the three collections prep_storage admits, all three are already readable, and
+the API returns whole documents, so a regex oracle reveals nothing a plain
+read does not. What the same operator does do is cost the database, which the
+advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow
+$regex, because the client census found real clients sending it, so this is
+not a regression from that branch and is not fixed by it.
 
 ---
 
@@ -141,4 +140,4 @@ question P0-K left open, still unanswered.
 - [ ] `make queue-status ID=BFQ-72` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

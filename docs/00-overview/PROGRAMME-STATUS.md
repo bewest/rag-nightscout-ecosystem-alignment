@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 25 | 10 |
-| **Modernization** | `release-train` | 17 | 1 | 2 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 26 | 9 |
+| **Modernization** | `release-train` | 17 | 1 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **116** | **35** | **16** |
+| | **total** | **116** | **36** | **14** |
 
 <!-- END GENERATED: horizons -->
 
@@ -119,7 +119,7 @@ cover more than one `BF-`:
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
-| `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
+| `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
@@ -160,9 +160,9 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 3 | 1 | 1 |  | 14 | 1 | 1 |  |  |  | **22** |
-| `release-train` | 1 | 4 |  | 5 | 1 | 4 | 1 |  |  |  | 1 | **17** |
-| `register-open` | 18 | 5 |  | 4 | 2 | 12 | 4 |  | 2 | 1 |  | **48** |
+| `phase0` | 3 | 3 | 1 |  |  | 14 |  | 1 |  |  |  | **22** |
+| `release-train` | 1 | 4 |  | 5 |  | 5 | 1 |  |  |  | 1 | **17** |
+| `register-open` | 17 | 5 |  | 4 | 2 | 13 | 4 |  | 2 | 1 |  | **48** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 6 | 1 |  |  |  |  |  | 2 |  |  |  | **9** |
 | `backfix2` |  |  |  |  | 1 | 1 |  |  |  |  |  | **2** |
@@ -275,6 +275,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `ddd9b600` and this repository at `c1a5e719`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-24**, against cgm-remote-monitor-official `153e5658` and this repository at `b362302b`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

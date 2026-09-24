@@ -26,16 +26,17 @@
 ## What this changes
 
 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag
-15.0.8) to dev 74fc6619, measured 2026-09-22. 308 commits, 48 first-parent
-merges, 200 files, +14381/-1262. Among them the thirteen backfix PRs from this
-programme (#8733, #8734, #8735, #8736, #8737, #8738, #8739, #8740, #8743,
-#8744, #8745, #8746, and #8741 from an external contributor on the same work),
-the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change
-(#8726), profile, treatment-query and clock fixes, report and chart fixes,
-dependency updates and translations. Reproduce with `git -C externals/cgm-
-remote-monitor-official log --first-parent --oneline
-origin/master..origin/dev` and `git diff --shortstat origin/master
-origin/dev`.
+15.0.8) to dev 153e5658, measured 2026-09-24: 350 commits, 61 first-parent
+merges, 212 files, +16002/-1300. Among them the programme's backfix PRs
+(#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753,
+#8755-#8757 and #8759 on 2026-09-23; #8760-#8762 on 2026-09-24; and #8741 from
+an external contributor on the same work), the D3 5.16 -> 7.9 chart migration
+(RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly
+0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart
+fixes, dependency updates and translations. Two open PRs are planned to join
+it: #8754 and #8758. Reproduce with `git -C externals/cgm-remote-monitor-
+official log --first-parent --oneline origin/master..origin/dev` and `git diff
+--shortstat origin/master origin/dev`.
 
 ## Why that semver
 
@@ -58,36 +59,51 @@ lib/api2/loop-notification-errors.js appears.
 > thresholds you set. BOLUS CALCULATOR QUICK PICKS: quick picks are saved
 > food shortcuts in the Bolus Wizard (the calculator that suggests insulin
 > for carbs). Picking one could load a different quick pick's foods or show
-> foods meant to be hidden; that is corrected. A separate problem - the
-> quick-pick list is built once when the page opens and not refreshed - is
-> NOT fixed in this release. DATA SHOWN AND SEARCHED: many searches and
-> counts that quietly returned nothing, or the wrong records, now return the
-> right ones - for example filtering treatments by insulin, carbs, temporary
-> basal rate or duration, and "records missing this field" searches.
-> Profiles without a name and profile switches carrying their own schedule
-> are handled correctly. Pages that read recent glucose values load faster.
-> The carbs-on-board (COB) figure now uses the value reported by the system
-> that uploads it (for example your phone app) when that system provides
-> one, so the COB you see may differ from before. The main charts are
-> rebuilt on a newer version of their drawing library, and several report
-> and display fixes are included. SECURITY OF THE LIVE-UPDATE CONNECTION:
-> the connection that pushes new readings and alarms to open pages had two
-> gaps - recent device status could be sent to a page that had not signed
-> in, and alarm messages went to every connected page. Both are closed,
-> including on sites set to require sign-in. The "readable by world" warning
-> also appears again in one setup where it had been hidden. DEBUG LOGGING
-> QUIETER: detailed debug logging is now off unless it is switched on (the
-> DEBUG_LOGGING setting), so server logs are shorter; if you or a helper
-> rely on those logs to diagnose problems, switch it on. This is not medical
-> advice. If a change to alarms or to a number such as carbs on board
-> affects how you manage diabetes, talk it through with your care team.
+> foods meant to be hidden; that is corrected. The quick-pick list, which on
+> 15.0.8 always showed (none), now shows your saved quick picks each time
+> you open the Bolus Wizard; a food changed elsewhere while a page is open
+> still appears only after that page reloads. TREATMENT DRAG: dragging a
+> treatment into the "Move carbs" or "Move insulin" area to split it now
+> stores the new time, so insulin on board and carbs on board follow the
+> move. DATA SHOWN AND SEARCHED: many searches and counts that quietly
+> returned nothing, or the wrong records, now return the right ones - for
+> example filtering treatments by insulin, carbs, temporary basal rate or
+> duration, and "records missing this field" searches. Profiles without a
+> name and profile switches carrying their own schedule are handled
+> correctly. Pages that read recent glucose values load faster. The carbs-
+> on-board (COB) figure now uses the value reported by the system that
+> uploads it (for example your phone app) when that system provides one, so
+> the COB you see may differ from before. The main charts are rebuilt on a
+> newer version of their drawing library, and several report and display
+> fixes are included. SECURITY OF THE LIVE-UPDATE CONNECTION: the connection
+> that pushes new readings and alarms to open pages had two gaps - recent
+> device status could be sent to a page that had not signed in, and alarm
+> messages went to every connected page. Both are closed, including on sites
+> set to require sign-in. The "readable by world" warning also appears again
+> in one setup where it had been hidden. CGM CONNECTOR: the built-in
+> connector that fetches readings from CGM vendors' online services moves to
+> version 0.1.0, which stops writing your CGM account's username, password,
+> session tokens and readings into the server log, and stops a CareLink "no
+> reading" marker being stored as a glucose value of 0. If Nightscout 15.0.8
+> fetches your readings from a CGM vendor's online service (for example with
+> Dexcom Share or LibreLinkUp settings), treat that account's password as
+> exposed: change it, and change it anywhere else you have used it. OLDER
+> APPS: OpenAPS and GluPredKit keep reading data the way they did on 15.0.8,
+> with a deprecation warning; badly formed record counts are refused with an
+> error. DATABASE: MongoDB 4.4 still works and is still tested, but is
+> deprecated; plan to upgrade. DEBUG LOGGING QUIETER: detailed debug logging
+> is now off unless it is switched on (the DEBUG_LOGGING setting), so server
+> logs are shorter; if you or a helper rely on those logs to diagnose
+> problems, switch it on. This is not medical advice. If a change to alarms
+> or to a number such as carbs on board affects how you manage diabetes,
+> talk it through with your care team.
 
 ## Who should review this, and why
 
 maintainer, and at least one human reviewer who is not the author. Release PR
-#8598 (dev -> master) was, on 2026-09-22, open, mergeable and green on every
-CI check, with reviewDecision REVIEW_REQUIRED and zero approving reviews.
-Integration PR #8605 carries the modernization cuts (RT-3), not this release.
+#8598 (dev -> master) on 2026-09-24: open, mergeable, 27 checks green and 3
+skipped, reviewDecision REVIEW_REQUIRED and zero reviews. Integration PR #8605
+carries the modernization cuts (RT-3), not this release.
 
 ## What was measured
 
@@ -131,68 +147,45 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-24 - CONNECTOR PIN DONE: nightscout-connect 0.1.0 released (P0-TAG)
-and dev pins it exactly (#8762, dev 153e5658). The run owed after that pin is
-green: dev + pin + #8754 + #8758, tree 4114f45a, 3046/0/3 on all six Node x
-MongoDB cells (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md).
-#8754's head since moved to 280eccbe (a dev merge only); dev 153e5658 +
-280eccbe + #8758 6d120fa2 is the same tree. Open before the tag: #8754, #8758,
-the release notes, and a review of #8598. 2026-09-23 - OPEN BEFORE THE TAG:
-RT-COUNT-COMPAT, whether the 15.0.9 count rule is a correction or a
-compatibility break for oref0 and GluPredKit. Hold #8598 and the tag until the
-maintainer decides it. 2026-09-24 - RT-D3 answered (maintainer, session -6a)
-and removed from blocks_on; the new first gate keeps the hand checks valid
-only while the candidate's browser-side code matches the hand-checked tree.
-2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) =
-ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge
-509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev,
-2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB
-4.4 and 7, with the CRUD-by-_id matrix in each cell
-(docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and
-#8758 can merge on evidence. Still owed before the tag: one run after the pin
-to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103).
-Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes
-line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is
-clean (tree 2ce67b27) and differs from the verified combined rc d087588f in
-exactly #8760's five files, so no combined run covers today's candidate.
-DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now
-on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on
-evidence, and once more after the pin to exact 0.1.0, before the tag. The
-first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual-
-check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still
-has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752,
-#8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754
-(security review: maintainer and Andy) and #8758. The combined rc
-(rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells)
-tested exactly this set, so no re-run is owed unless #8754 or #8758 changes
-head. Manual checks passed on ec70aab0 (-6d): RT-D3, alarms under
-AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0
-also carried #8754, which changes lib/api3/alarmSocket.js and is not on
-4011193e; every other client file those checks use is identical). Still before
-the tag - connector v0.1.0 and a pin to exact 0.1.0 (with a re-run), release
-notes, #8598 review. 2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f):
-rc/15.0.9-additions-e 1b1977e0 (local only) on dev 74fc6619 contains the live
-heads of all nine 15.0.9 PRs - #8748 d19043b2, #8749 46b20b38, #8750 aabce4b1,
-#8751 b5038500, #8752 adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755
-92544d8f, #8756 83cfff14 (containment checked). 2534/0/3 on all 12 cells (Node
-20/22/24 x MongoDB 4.4.24/7.0.43, nofile 64000); break-its red for the
-original reason; connector control dev.2 23/23, v0.0.13 18/5. Record:
-docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the
-tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews,
-release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries
-beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB
-4.4 is declared deprecated in the release notes and dropped in a later
-release; the legacy-ingestion notice goes in the release notes and RT-4 is
-dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease
-testing (P0-TAG); RT-D3 is answered by a manual check plus an automated
-browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section
-1a. First on the adopted train. Every merged backfix in dev - the items in
-state merged-upstream - reaches operators only through this release; until it
-ships they are in code nobody runs. Merging dev publishes a Docker Hub image,
-which is not a release. dev pins nightscout-connect at 234d47c by source URL
-(the commit is in connector dev since #64 merged; measured 2026-09-23 with
-merge-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and
-P0-TAG.
+Waiting on four things and the maintainer's tag. dev is 153e5658 (2026-09-24,
+merge of #8762) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
+(P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev ->
+master): mergeable, 27 checks green and 3 skipped, zero reviews, review
+required (measured 2026-09-24). Still before the tag: - #8754 (BF2-AUTH) at
+b5f61f19 once the maintainer pushes it (GitHub head today e32f7a1c), plus a
+combined run on that head. Security review: the maintainer and Andy. - #8758
+(BFQ-102), head 6d120fa2. - The release notes (releases/cgm-remote-
+monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24);
+the sections marked PENDING for #8754 and #8758 are finalised when those
+merge. - A human review of #8598, and the maintainer tagging. Evidence: the
+latest combined run,
+docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev f1591069 +
+the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
+3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
+280eccbe + #8758 6d120fa2 gives the same tree. Neither e32f7a1c nor b5f61f19
+is covered by a combined run. The browser checks were done by hand on ec70aab0
+(RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
+AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-
+lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4;
+client-unchanged-since-hand-check.js says when they need repeating. Decisions:
+- 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood
+(backfix-2 plan section 1a,
+docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0 answers an
+empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is
+declared deprecated in the release notes and dropped in a later release; the
+legacy-ingestion notice goes in the release notes and RT-4's separate release
+is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease
+testing (done, #8762); RT-D3 is answered by a manual check plus an automated
+browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the
+maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via
+-59): run the combined suite before the PRs merge and once more after the pin
+to exact 0.1.0, before the tag (both done; run 010 is the latter). -
+2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and
+GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9
+(session -6a). First on the adopted train. Every merged backfix in dev (the
+items in state merged-upstream) reaches operators only through this release;
+until it ships they are in code nobody runs. Merging to dev publishes a Docker
+Hub image, which is not a release.
 
 ---
 
@@ -203,4 +196,4 @@ P0-TAG.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

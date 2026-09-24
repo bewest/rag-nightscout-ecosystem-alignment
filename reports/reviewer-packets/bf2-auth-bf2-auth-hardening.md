@@ -27,13 +27,14 @@ TRUST_PROXY**
 
 ## What this changes
 
-Tip 29e6430e on origin/dev 74fc6619. lib/authorization/{index,delaylist,
-storage,endpoints}.js; lib/server/{client-ip,env,app,websocket}.js;
-lib/api/{index,status}.js; lib/api3/{index,security,alarmSocket,
-storageSocket}.js; package.json and lock (proxy-addr declared, forwarded-for
-kept); README and docs/proposals/trusted-proxy-migration.md. Against
-chore/nightscout-modernization b1bdaca0 it conflicts in 10 paths, two of them
-pre-existing (bootevent.js from dev, storage.js from bf/auth).
+#8754 head e32f7a1c (2026-09-24) against dev 153e5658: 21 files, +1985/-100.
+lib/authorization/{index,delaylist,storage,endpoints}.js; lib/server/{client-
+ip,env,app,websocket}.js; lib/api/status.js;
+lib/api3/{security,alarmSocket,storageSocket}.js; package.json and lock
+(proxy-addr declared, forwarded-for kept); README.md and
+docs/proposals/trusted-proxy-migration.md; tests authdelay, authsubjects,
+client-ip, env and server.security-headers. Measured with the GitHub compare
+API.
 
 ## Why that semver
 
@@ -43,15 +44,28 @@ new setting, today's behaviour by default).
 
 ## What an operator would notice
 
-> Not released. Combines the two login-security fixes already described
-> under P0-C and P0-J with a setting that lets you tell Nightscout which
-> proxy in front of it to trust. If you change nothing, Nightscout behaves
-> as it does today; the stronger protection against password guessing
-> applies only once you name your trusted proxy.
+> Not released. This combines several login and access fixes planned for
+> 15.0.9. Editing a subject (an access entry on the admin page) no longer
+> writes that subject's access token into your database in readable form;
+> tokens already written that way stay until you act (see P0-C-REMEDIATE for
+> what to do). Editing a subject on the admin page no longer wipes its notes
+> or its creation date. After a failed login, Nightscout still makes the
+> next request from that address wait before it checks the password, as
+> earlier releases do; the wait now also follows the password or token that
+> failed, and the list of recent failures is bounded and cleared on a
+> schedule. A new setting, TRUST_PROXY, tells Nightscout which proxy in
+> front of it to trust, so that the address it counts failed logins against
+> is one a visitor cannot make up; explicit TRUST_PROXY settings accept
+> forwarded addresses that carry a port (the form Azure App Service is
+> reported to send). If you change nothing, Nightscout works out visitor
+> addresses as it does today, and it says in its log at startup that the
+> protection against password guessing is weaker until TRUST_PROXY is set.
+> None of this is medical advice.
 
 ## Who should review this, and why
 
-SECURITY - the reviewer P0-C already names; none assigned.
+SECURITY - the maintainer and Andy (decided 2026-09-23). No review is recorded
+on #8754 as of 2026-09-24.
 
 ## What was measured
 
@@ -93,62 +107,49 @@ default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 ## Notes carried on the item
 
-2026-09-23 - #8754's head is ef3404fd: 0ca46d92, 8211f8e2 and ef3404fd merge
-dev (up to ddd9b600) into 0a74ef4e. Measured: `git diff origin/dev ef3404fd`
-changes the same 21 files with the same added and removed lines as 0a74ef4e's
-own diff, so the PR's content is unchanged. The combined re-run on this head
-is RT-0's. 2026-09-23 - #8754's head is 0a74ef4e (pushed by the maintainer,
-description updated): the API v3 trust proxy line is dropped as inert, like
-v1's in 22953b77; suite 2481/0/3 on Node 20 and 22. Correction to 0a74ef4e's
-commit message (pushed, so not rewritten; a PR comment is drafted):
-lib/api3/security.js:34 DOES read app.get('trust proxy fn') for the v3 token
-throttle key. -1f measured the inherited fn === the parent's for unset, false,
-10.0.0.0/8, 1 and true, with the legacy marker surviving and the resolved IP
-matching, so the trim is still inert in production. FOLLOW-UP -
+Open upstream as #8754, not merged. GitHub head e32f7a1c (2026-09-24), a dev
+merge on 607d51b0; it contains f6f361b1, which puts the failed-login wait back
+before the credential check, as in earlier releases. The maintainer will next
+push b5f61f19, which adds 9c6cde72 (an explicit TRUST_PROXY accepts a
+forwarded address that carries a port, the form Azure App Service is reported
+to send; unset is unchanged) and the proxy guide's recommendation of `1` on
+Azure. That fix is part of #8754 and 15.0.9. Destination 15.0.9 (backfix-2
+plan section 1a, 2026-09-23). Reviewers: the maintainer and Andy (security
+review); no review is recorded on the PR yet (2026-09-24). Owed before merge:
+that push and a combined run on it; the latest combined run
+(rc-15.0.9-combined-010, 3046/0/3) used #8754 at ef3404fd, and neither
+e32f7a1c nor b5f61f19 is covered by one. What it carries: bf/auth (BF-17,
+P0-C) and bf/throttle (BF-30, P0-J) by ancestry; the client-address module and
+TRUST_PROXY setting cherry-picked (-x) from chore/nightscout-modernization
+(06c83f2f, 395f3207), with 8b975b41 a port so that with TRUST_PROXY unset the
+address comes from forwarded-for exactly as on dev (395f3207's default differs
+in four cases, BF-88); the subject-edit fix 7103f657 (BFQ-47) as its last
+content commit. The failed-login delay: the wait comes before the check, as in
+earlier releases; failures are also counted per credential; the list is
+bounded and swept on a schedule. The throttle keys on data.ip, which comes
+from client-ip.js, so one setting governs both. BF-30 is closed only when
+TRUST_PROXY names a boundary; with the default it remains open, and the branch
+says so in its boot message and PR body. Semver stays major for BF-47 (a
+compatibility flag, sketched in the PR body, would make it minor; the
+maintainer decided none). Decisions: - 2026-09-23 (maintainer): ships in
+15.0.9, superseding the plan's section 3 "PRs open after 15.0.9 is tagged". -
+2026-09-23 (maintainer): posted in the withheld style (reports/phase0-pr-
+bodies/bf2-auth-hardening.withheld.md); the full text is kept for after a
+fixed release, and the rotation section goes into the 15.0.9 release notes.
+bf2/subject-edit-keeps-fields folded in as the final commit. - 2026-09-23
+(maintainer): TRUST_PROXY accepts a hop count and true, with Express's meaning
+for each; Express's subnet aliases (loopback, linklocal, uniquelocal) are
+refused, and accepting them is deferred to a later release. The inert trust
+proxy lines in lib/api/index.js and lib/api3/index.js are trimmed (the sub-
+apps inherit trust proxy from lib/server/app.js). - 2026-09-23 (maintainer):
+the security reviewers are the maintainer and Andy. Measured facts a reviewer
+needs: lib/api3/security.js:34 reads app.get('trust proxy fn') for the v3
+token throttle key, and the inherited fn equals the parent's for unset, false,
+10.0.0.0/8, 1 and true, so the api3 trim is inert in production;
 tests/fixtures/api3/instance.js has no parent trust proxy, so no test covers
-the v3 throttle key under the production default. 2026-09-23 - #8754 head is
-22953b77 (pushed): the inert trust proxy line in lib/api/index.js is trimmed
-(maintainer decision), so that file is identical to dev; suite 2481/0/3 on
-Node 20 and 22, unchanged from 81623f9b; BACKPORT DIFFERENCE vs 06c83f2f in
-the commit message. Prepared, not pushed: 0a74ef4e on bf2/auth-hardening-trim-
-api3 trims the same inert line in lib/api3/index.js (54/54 answers identical,
-control 30/54 different; 2481/0/3); pushing it makes #8754 head 0a74ef4e.
-OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base
-dev) - subject-edit folded in as its last commit (maintainer, relayed
-2026-09-23); withheld-style description. PUSHED 2026-09-23 - #8754's head is
-81623f9b ("TRUST_PROXY accepts a hop count and true, with Express's meaning
-for each"), checks green; suite 2481/0/3; the withheld description covers hop
-counts and true. Express's subnet aliases (loopback, linklocal, uniquelocal)
-are refused on a separate path; accepting them is deferred to a later release
-(maintainer, 2026-09-23). chore/nightscout-modernization b1bdaca0's
-lib/server/client-ip.js still refuses hop counts and true, and needs the same
-change. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23).
-Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b,
-2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three
-things for the maintainer from that record. (1) The auth-hardening line in
-lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app
-inherits trust proxy from lib/server/app.js - so removing it fails nothing,
-full suite included. (2) The record recommends folding bf2/subject-edit-keeps-
-fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the
-choice to the maintainer. (3) The record leaves the PR-body style (full or
-withheld) to the maintainer. The PR body as committed at b248bb73
-(reports/phase0-pr-bodies/bf2-auth-hardening.md) records both as decided by
-the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the
-final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now
-superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a
-re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits:
-merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207
-(hunks for files absent on dev dropped); 1114228d adapts two cherry-picked
-tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset
-the address comes from forwarded-for exactly as on dev, because 395f3207's
-default differs in four cases (BF-88); the trusted path is 395f3207's code
-unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes
-from client-ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76
-exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in
-the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is
-tagged" is superseded by the section 1a decision above. BF-30 is closed only
-when TRUST_PROXY names a boundary; with the default it remains open, and the
-branch must say so in its boot message and PR body.
+the v3 throttle key under the production default. chore/nightscout-
+modernization b1bdaca0's lib/server/client-ip.js still refuses hop counts and
+true, and needs the same change at the cut rebase (RT-3).
 
 ---
 
@@ -159,4 +160,4 @@ branch must say so in its boot message and PR body.
 - [ ] `make queue-status ID=BF2-AUTH` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

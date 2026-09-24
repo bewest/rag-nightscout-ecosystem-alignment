@@ -30,16 +30,14 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 11 items
+### Maintainer &mdash; 9 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
-| `RT-COUNT-COMPAT` | `in-flight-upstream` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
-| `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
@@ -193,6 +191,6 @@ gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `ddd9b600` and this repository at `c1a5e719`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-24**, against cgm-remote-monitor-official `153e5658` and this repository at `b362302b`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

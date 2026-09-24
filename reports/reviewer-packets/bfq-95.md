@@ -69,10 +69,11 @@ maintainer - a design decision before code
 
 ## Notes carried on the item
 
-Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed.
-Open, needs a design decision; one option is a notice for readings that arrive
-already ahead of the clock (evidence section 5, option 3). 15.0.9 carries it
-as a known issue. BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
+Open, needs a design decision; 15.0.9 carries it as a known issue. Filed
+2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One
+option is a notice for readings that arrive already ahead of the clock
+(evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of
+forward skew.
 
 ---
 
@@ -83,4 +84,4 @@ as a known issue. BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
 - [ ] `make queue-status ID=BFQ-95` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*

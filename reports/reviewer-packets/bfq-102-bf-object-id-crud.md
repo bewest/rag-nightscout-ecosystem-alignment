@@ -80,20 +80,23 @@ maintainer
 
 ## Notes carried on the item
 
-2026-09-23 - OPEN upstream as #8758 (head 6d120fa2, verified with ls-remote),
-CI green. One PR from bf/object-id-crud (contains bf/object-id-consistency
-597e2899). D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1
-check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids
-and nothing without. Merge-tree clean with every open 15.0.9 PR head incl.
-#8757 5d342ac1 and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now
-conflict with it and are not to land. Built 2026-09-23 on the maintainer's
-question whether one PR could carry the through-line. Merge-tree clean with
-every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with
-bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged
-trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships
-in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan
-section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-
-bodies/bf-object-id-consistency.md.
+Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews
+(2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id-
+consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag.
+Evidence: the combined run rc-15.0.9-combined-010
+(docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md) includes
+6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id
+matrix in each cell. Per-commit suites and the 336-cell matrix are in the no-
+gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that
+carries hex _ids and nothing without. The narrow alternatives (BFQ-99
+9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to
+land. It enables the connector's profile update-on-change (BFQ-97). PR body
+draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: -
+2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with
+consistent working CRUD across the API (plan section 1a, "15.0.9 ID
+consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied:
+D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries
+POST answers the stored _id, D4 helper header.
 
 ---
 
@@ -104,4 +107,4 @@ bodies/bf-object-id-consistency.md.
 - [ ] `make queue-status ID=BFQ-102` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `ddd9b600`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*
