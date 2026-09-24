@@ -1,0 +1,12 @@
+# F5 Traefik v3 DYNAMIC config. NS_ADDR substituted by lab.sh.
+http:
+  routers:
+    ns:
+      rule: "PathPrefix(`/`)"
+      entryPoints: [web]
+      service: ns
+  services:
+    ns:
+      loadBalancer:
+        servers:
+          - url: "http://NS_ADDR"

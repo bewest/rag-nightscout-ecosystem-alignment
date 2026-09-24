@@ -1,0 +1,7 @@
+# images used by the proxy-trust lab (recorded 2026-09-24)
+nginx:1.27-alpine  nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+caddy:2.8  caddy@sha256:226d1f059b75399fe19182893c7184591c07b97afc8dfcf44eeb80c9a77a530f
+traefik:v3.1  traefik@sha256:74d72c7a1345984f186bddbabcc462b2128d0d8054177dc84afaeac4db1f0f56
+haproxy:3.0  haproxy@sha256:b7f9355f56d90e01fee31f2ab503dbb35b99642d7bdac834c917afefde979fdd
+curlimages/curl:8.11.1  curlimages/curl@sha256:c1fe1679c34d9784c1b0d1e5f62ac0a79fca01fb6377cdd33e90473c6f9f9a69
+mongo:7  mongo@sha256:9854f7139445d766a9523571d6f047530c45547460ffcf8259eb2bf4264632ca

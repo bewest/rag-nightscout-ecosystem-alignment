@@ -1,0 +1,10 @@
+# F4: Caddy reverse_proxy with defaults. By default Caddy APPENDS the client to
+# X-Forwarded-For (it preserves an incoming XFF and adds the immediate peer) and
+# sets X-Forwarded-Proto / X-Forwarded-Host. NS_ADDR is substituted by lab.sh.
+{
+    admin off
+    auto_https off
+}
+:80 {
+    reverse_proxy http://NS_ADDR
+}

@@ -102,8 +102,8 @@ now behaves, and **with `TRUST_PROXY` unset it is still how this one behaves.**
 Behind a trusted proxy that adds its entry to a forwarded header the caller may already have
 filled in, the hop count back to that proxy is what makes the address trustworthy. The proxy guide
 (`docs/proposals/trusted-proxy-migration.md`) has a table of the value each kind of deployment
-needs. On Azure App Service, leave it unset for now: the client address arrives with a port, which
-the explicit settings refuse.
+needs. Forwarded addresses that carry a port (the form Azure App Service is reported to send) are
+accepted by the explicit settings.
 
 Once it is set, the failed-login delay counts attempts against an address the caller cannot make
 up, and it starts doing its job.

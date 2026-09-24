@@ -1,0 +1,13 @@
+# F5 Traefik v3 STATIC config. Defaults: no trustedIPs on the entrypoint, so
+# Traefik does not trust a client-supplied X-Forwarded-For; it sets the
+# forwarded headers from the real connection. The lab MEASURES this rather than
+# asserting it.
+entryPoints:
+  web:
+    address: ":80"
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+log:
+  level: INFO
+accessLog: {}
