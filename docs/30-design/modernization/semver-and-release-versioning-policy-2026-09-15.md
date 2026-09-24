@@ -3,21 +3,31 @@
 *Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.*
 
-**Status: living document.** Two parts with different standing:
+**Status: living document.** Three parts with different standing:
 
-- **The release train (§8.3) is adopted** — maintainer, 2026-09-15: 15.0.9, then cut 1
-  (`chore/retire-jsdom`) alone, then cut 2, then cuts 3+5 combined, with cut 4 held behind its
-  own deprecation release. One open register defect, **BF-64**, bears on how step 4 is built.
-- **The policy itself (§1–§7) and the numbers it proposes are a draft awaiting maintainer
-  adoption.** Nothing has been renumbered, tagged or released on its strength. The queue items
-  that carry the numbering decision are `RT-0` and `RT-VERSION`.
+- **The release train (§8.3) is adopted.** Maintainer, 2026-09-15: 15.0.9, then cut 1
+  (`chore/retire-jsdom`) alone, then cut 2, then cuts 3+5 combined, with cut 4 last. Maintainer,
+  2026-09-23: there is no separate deprecation release (queue `RT-4`; the legacy-ingestion notice
+  is in 15.0.9's release notes), the legacy Dexcom and MiniMed bridge removal moves from cut 4
+  onto cut 1 (`RT-1`), and BF-61's hard stop at boot is intended (`RT-5`). Still open: whether the
+  cuts ship as separate releases or as one combined release
+  ([backfix-2 plan §1a](../remedial/backfix-2-plan-2026-09-22.md)), and register **BF-64** (cut 4
+  is an ancestor of cut 5), which bears on how step 4 is built.
+- **15.0.9's number is decided: `15.0.9`** (maintainer, 2026-09-22, queue `RT-VERSION`). On
+  2026-09-24 the maintainer decided that reads tolerate the `count` shapes oref0 and GluPredKit
+  send, so that 15.0.9 stays a patch under §3.2's test (`RT-COUNT-COMPAT`, merged as #8761). §8.1
+  records the decision against this policy's classification.
+- **The policy itself (§1–§7) and the numbers it proposes for the cuts are a draft awaiting
+  maintainer adoption.** Nothing has been renumbered, tagged or released on its strength.
 
-Measured facts are anchored as of **2026-09-22**: `cgm-remote-monitor` `origin/dev` =
-`74fc6619` (package.json `15.0.9`), `origin/master` = `92d08342` = tag `15.0.8`, the shipping
-release; master is 308 commits behind dev
-(`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`).
-Sections that quote gate transcripts (§3.8, §6.3) were measured 2026-09-15 against the then
-`origin/dev` `a8888f0d` and the `bf/*` branch tips of that date, and are labelled so.
+Measured facts are anchored as of **2026-09-24**: `cgm-remote-monitor` `official/dev` =
+`153e5658` (package.json `15.0.9`; pins `nightscout-connect` exactly `0.1.0`), `official/master`
+= `92d08342` = tag `15.0.8`, the shipping release; master..dev is 350 commits and 61
+first-parent merges
+(`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
+and the same with `--first-parent`). Sections that quote gate transcripts (§3.8, §6.3) were
+measured 2026-09-15 against the then `origin/dev` `a8888f0d` and the `bf/*` branch tips of that
+date, and are labelled so.
 
 Related: the classification draft this policy builds on,
 [`gt4-semver-classification-2026-09-15.md`](../../60-research/modernization/gt4-semver-classification-2026-09-15.md)
@@ -38,16 +48,18 @@ document. The one file it added is the gate script, which is tooling in this rep
 
 | What | Where |
 |---|---|
-| `cgm-remote-monitor` | `externals/cgm-remote-monitor-official` — `origin/master` `92d08342` (15.0.8), `origin/dev` `74fc6619` (15.0.9 candidate), the five published `chore/*` cut tips, the locally prepared rebases `rt/cut1`…`rt/cut4` (unpushed) |
-| `nightscout-connect` | `externals/nightscout-connect`, `externals/work/nc-jitter` — tag `v0.0.13` `b394411`; `official/dev` `1946beb` (package.json `0.1.0`, 2026-09-22); tag `v0.1.0-dev.1` → `1946beb`, published on npm as `0.1.0-dev.1` (`next`) |
+| `cgm-remote-monitor` | `externals/cgm-remote-monitor-official` — `official/master` `92d08342` (15.0.8), `official/dev` `153e5658` (15.0.9 candidate), the five published `chore/*` cut tips, the local rehearsals `rt/cut1`…`rt/cut4` and `rh/*` (unpushed; queue `RT-REBASE`) |
+| `nightscout-connect` | `externals/nightscout-connect`, `externals/work/nc-jitter` — tag `v0.0.13` `b394411`; tag `v0.1.0` → `official/main` `4dde1ec`, released 2026-09-24 and npm `latest` (its code equals `v0.1.0-dev.3` `977da8a`); `official/dev` `04102f9` (package.json `0.1.1`) |
 | semver arithmetic | `semver` **6.3.1** under Node v24.15.0, resolved from the inspected repo (`package.json` declares `"semver": "^6.3.0"` on `dev` and on every cut) |
 | the gate | `tools/qc/semver-surface-gate.js`, exercised in §6.3 |
 
 **Environment-variable census method.** Variables are read through several helpers
-(`readENV`, `readENVTruthy`, `readENVRaw`), so a census must match `readENV[A-Za-z]*\('NAME'`.
-Measured at both refs: master 30 names, dev 32, the delta being exactly `CONNECT_DEBUG` and
-`DEBUG_LOGGING`. A census restricted to `readENV(` reports no difference between master and
-dev, which is the exact case the policy exists to catch.
+(`readENV`, `readENVTruthy`, `readENVRaw`) and with either quote style, so a census must match
+`readENV[A-Za-z]*\(['"]NAME['"]` under `lib/`. Measured 2026-09-24: master `92d08342` 38 names,
+dev `153e5658` 42, the delta being exactly `API_V1_COUNT_LEADING_NUMBER`,
+`API_V1_COUNT_ZERO_WINDOW` (#8761, double-quoted), `CONNECT_DEBUG` and `DEBUG_LOGGING`. A census
+restricted to `readENV(` reports no difference between master and dev, and one restricted to
+single quotes misses #8761's two names, which is the exact case the policy exists to catch.
 
 **House rule: orderings are more durable than absolutes.** Where a number appears, the method
 is named next to it.
@@ -107,7 +119,7 @@ variables, and one-click hosts encode them in templates that outlive the operato
 |---|---|---|
 | A new variable is read | minor | Additive; nothing an operator set stops working |
 | An existing variable changes meaning or default | minor at least, major if it changes what the deployment does without the operator acting | `DEBUG_LOGGING` flipping logging off is the live example |
-| A variable stops being read | **major** | The operator's expressed intent is discarded, usually silently. `DEXCOM_BRIDGE_USE_LEGACY` in cut 4 is the live example, and dev's own warning text tells operators to set it (BF-62) |
+| A variable stops being read | **major** | The operator's expressed intent is discarded, usually silently. `DEXCOM_BRIDGE_USE_LEGACY` in the legacy-bridge removal is the live example, and dev's own warning text tells operators to set it (BF-62; the cut 1 rehearsal logs it as ignored) |
 
 **Accepted-and-ignored is the worst of the three**: it produces no error, no log line and no
 failing test. The gate in §6 detects it mechanically by censusing the names read at both refs.
@@ -124,8 +136,11 @@ BF-22) is a correctness defect within one version, owned by the register, not a 
 question. **S4 is about what a release does to an operator's stored documents.**
 
 **The event this policy calls out:** *a non-delete write that silently discards a field it did
-not write.* `bf/auth`'s subject and role allow-list does this (queue `P0-C`, not merged). Data
-loss on an edit is a major even when the field removed should never have been stored.
+not write.* `bf/auth`'s subject and role allow-list does this (BF-47; it ships in #8754, which is
+open, queue `BF2-AUTH`). Data loss on an edit is a major even when the field removed should never
+have been stored. The maintainer decided on 2026-09-23 that the allow-list is intended and is the
+declared schema for subjects and roles, with no compatibility flag (queue `BFQ-47`); 15.0.9's
+release notes declare it a correction (§8.1).
 
 ### S5 — The Node and MongoDB runtime floor. **IN, and for an application the loudest surface of all.**
 
@@ -140,13 +155,14 @@ that raises its floor has not changed its API, and many projects call that a min
    `>=20.x`, but `lib/server/bootevent.js` enforces `semver.satisfies(nodeVersion, '>=16.x')`.
    The *enforced* jump is from 16, not 20.
 3. **The published cut-1 range is a whitelist, not a floor.** Measured with `semver.satisfies`:
-   `^22.23.2 || ^24.20.0` (the range on every published cut tip, 2026-09-22) rejects 20.0.0,
+   `^22.23.2 || ^24.20.0` (the range on every published cut tip, 2026-09-24) rejects 20.0.0,
    20.19.5, 21.7.3, 22.0.0, 22.23.1, 23.11.0, 24.0.0, 24.19.1, 25.0.0 and 26.0.0; `>=20.x`
    accepts all ten (18.20.4 is rejected by both). An operator on Node 22.23.1, a current 22 LTS,
-   boots today and exits after cut 1, and Node 26 will not start Nightscout until someone edits
-   `package.json`. The locally prepared rebase `rt/cut1` (`ed21961f`, unpushed) declares
-   `^22.12 || >=24` instead, which admits 22.12+ and 24+ but still rejects 20, 21 and 23;
-   whichever range ships, it is a narrowing of the enforced floor.
+   boots today and would exit after the published cut 1, and Node 26 would not start Nightscout
+   until someone edits `package.json`. The maintainer decided on 2026-09-21 that the floor
+   becomes `^22.12 || >=24` (queue `RT-NODE-FLOOR-TESTED`, prepared on the local rebase `rt/cut1`
+   `ed21961f`, unpushed). That range admits 22.12+ and 24+ but still rejects 20, 21 and 23, so it
+   is a narrowing of the enforced floor.
 
 For a person whose family member's glucose data flows through that deployment, "it does not
 start" is the largest observable change any branch in this programme makes.
@@ -166,8 +182,9 @@ failure is that a person's glucose data stops arriving.**
 
 - A change that can stop ingestion is **major**, even when it is also correct, small and overdue.
 - A change to a pinned connector revision is classified by **what the operator receives**, not by
-  diff size. `bf/connect-pin` is `+1/-1` and carries a 585.94× change in retry timing plus three
-  log-redaction fixes.
+  diff size. #8762, the pin to `nightscout-connect` `0.1.0`, is a one-line `package.json` change
+  plus its lockfile entry, and carries a 585.94× change in retry timing plus three log-redaction
+  fixes.
 - **An ingestion removal requires a deprecation release first** (§5) — the one place where the
   number alone is not a sufficient warning.
 
@@ -203,11 +220,12 @@ cannot be answered by grep.
 
 ### S8 — The version string itself. **IN.**
 
-An operator, a support volunteer and a bug reporter all depend on it. Measured 2026-09-22 with
-`git show <ref>:package.json`: master is `15.0.8`; **`origin/dev` and all five published cut tips
-carry `15.0.9`**, with two different `engines.node` values between them (`>=20.x` on dev,
-`^22.23.2 || ^24.20.0` on the cuts), and one of them (cut 4) deletes two CGM ingestion paths
-(register BF-60). The string is live, not merely a file: `lib/server/env.js:137` copies it to
+An operator, a support volunteer and a bug reporter all depend on it. Measured 2026-09-24 with
+`git show <ref>:package.json`: master is `15.0.8`; **`official/dev` and all five published cut
+tips carry `15.0.9`**, with two different `engines.node` values between them (`>=20.x` on dev,
+`^22.23.2 || ^24.20.0` on the cuts), and cuts 4 and 5 delete two CGM ingestion paths (register
+BF-60). `dev` is the 15.0.9 release (`RT-VERSION`); the maintainer decided on 2026-09-23 that
+each cut is renumbered when it is rebased. The string is live, not merely a file: `lib/server/env.js:137` copies it to
 `env.version` and `lib/api/status.js:32` returns it, so every deployment on the dev channel
 already answers `/api/v1/status` with `15.0.9`. "My 15.0.9 will not start" cannot be triaged
 from the string.
@@ -497,11 +515,12 @@ size of the branch.* A dead URGENT alarm is a missing alarm, and restoring it is
 
 **Answer: MAJOR** (argued in S5). Three practical additions:
 
-1. **Prefer a floor (`>=22.23.2`, or `>=22.12` if the rebased range is kept) to a caret
-   whitelist** unless there is a known incompatibility with an odd-numbered major, in which case
-   name it in the PR. Measured: Node 26.0.0 fails
+1. **Prefer a floor to a caret whitelist** unless there is a known incompatibility with an
+   odd-numbered major, in which case name it in the PR. Measured: Node 26.0.0 fails
    `semver.satisfies('26.0.0', '^22.23.2 || ^24.20.0')`. That is a recurring maintenance
-   obligation created by the notation, not by any incompatibility.
+   obligation created by the notation, not by any incompatibility. The decided range
+   `^22.12 || >=24` (maintainer, 2026-09-21) is open-ended above 24, so it accepts Node 26; it
+   still excludes Node 23, and the cut 1 PR should name the reason.
 2. **The declared floor and the enforced floor must be the same thing.** Today `engines` says
    `>=20.x` and `bootevent.js` enforces `>=16.x`. Cut 1 derives the check from `engines`, which
    is the right design: **`engines.node` is the single source of truth for the runtime floor, and
@@ -514,19 +533,22 @@ size of the branch.* A dead URGENT alarm is a missing alarm, and restoring it is
 
 Adding Node 26 to the accepted set is a minor, and the gate says so.
 
-### 3.5 Deleting an ingestion path — cut 4
+### 3.5 Deleting an ingestion path — the legacy-bridge removal
 
 **Answer: MAJOR, and the number is the least of what it needs.**
 
-**What cut 4 removes, with the caveat that applies.** Cut 4 (`chore/mime-exposure-review`)
-deletes the legacy Dexcom Share bridge and the legacy MiniMed CareLink plugin (mmconnect). The
-maintainer reports (2026-09-21; operational knowledge, **not measured here** — it would fail at
-the CareLink vendor API, which no local test reaches) that **mmconnect has not worked for some
-time**, and that **legacy Dexcom Share is intended to map to compatible `nightscout-connect`
-options**. So the MiniMed deletion may remove nothing a user currently receives, and the Dexcom
-path is the live one whose mapping must be verified. Register entries **BF-44** and **BF-45** were
-graded assuming mmconnect is live and **have not been re-graded**. The cut's own evidence document
-says *"No real Dexcom account or live database has been used and no live migration is claimed."*
+**What the removal takes out, with the caveat that applies.** The published cut 4
+(`chore/mime-exposure-review`) deletes the legacy Dexcom Share bridge and the legacy MiniMed
+CareLink plugin (mmconnect). On 2026-09-23 the maintainer moved that removal onto cut 1 (queue
+`RT-1`; rehearsed on the local `rh/cut1-retire-legacy` `c043fb2d`, unpushed). The maintainer
+reports (2026-09-21 and 2026-09-22; operational knowledge, **not measured here** — it would fail
+at the CareLink vendor API, which no local test reaches) that **mmconnect does not work**, and
+that Dexcom `BRIDGE_*` settings have been served by `nightscout-connect` by default since 15.0.8
+(`a91e8ee4`, with a deprecation warning and the `DEXCOM_BRIDGE_USE_LEGACY` escape hatch). So the
+MiniMed deletion removes nothing a user currently receives, and the Dexcom deletion removes the
+escape hatch rather than the default path. Register entries **BF-44** and **BF-45** are graded
+low on that premise. The cut's own evidence document says *"No real Dexcom account or live
+database has been used and no live migration is claimed."*
 
 **What does not depend on whether mmconnect works** (GT4, executing the shims from
 `origin/chore/mime-exposure-review` under `node`; register BF-61):
@@ -553,6 +575,18 @@ says *"No real Dexcom account or live database has been used and no live migrati
    adopted train 15.0.9 retires nothing. Every deprecation warning must name the version that
    actually deletes the plugins.
 
+**What the maintainer decided** (2026-09-23; queue `RT-4`, `RT-1`, `RT-5`, register BF-61):
+there is no separate deprecation release. The notice is in 15.0.9's release notes, and 15.0.9's
+MiniMed boot warning names every replacement setting (#8757, merged, not released). The removal
+ships on cut 1, the release after 15.0.9, and mmconnect is removed as early as possible because
+it does not work and carries deprecated dependencies. BF-61's hard stop at boot is intended:
+`MMCONNECT_*` is usually the site's primary data source, so a misconfigured one shows a page
+naming the fix, and that fix must boot as written. On `rh/cut1-retire-legacy` `c043fb2d` each
+stopping configuration names a fix that boots, no message names a release number, and
+`DEXCOM_BRIDGE_USE_LEGACY` is logged as ignored (BF-62); queue gate
+`tools/queue/gates/cut4-total-outage.js` is green there. The decision departs from requirements
+1 and 2 above; requirement 3 is met on the rehearsal.
+
 **General rule:** *an ingestion removal is major, requires a deprecation release, and requires
 that the failure mode during the window be "warn and keep ingesting" rather than "stop".*
 
@@ -569,7 +603,8 @@ sources** (`dexcomshare`, `minimedcarelink`, `glooko`, `nightscout` each declare
 `opts.linkUpInterval * 60 * 1000` (`lib/sources/librelinkup.js:220`), so its ceiling is the
 operator's configured interval × 6. With `'equal'` jitter the delay at the ceiling spreads over
 [15 min, 30 min] (2,000 samples at attempt 10 fell in [900,351 ms, 1,799,757 ms]). The fix is
-connector PR #68 (queue `P0-F`), merged into connector `dev` and in prerelease `0.1.0-dev.1` (§4.3).*
+connector PR #68 (queue `P0-F`), released in `nightscout-connect` `0.1.0` (§4.3) and pinned by
+`cgm-remote-monitor` `dev` (#8762, merged, not released).*
 
 **Answer: MINOR in `cgm-remote-monitor` (a default change, question 11). A `y` bump in
 `nightscout-connect` (§4). And the release note is the entire point**, because the change looks
@@ -637,6 +672,11 @@ Queue gate: `tools/queue/gates/d3-drag-clamp-covered.js`.
   the release ships**, recorded in the PR — either cut 1's Playwright suite, or a human who opens
   the chart, drags a treatment to each edge of the plot, opens the COB pill on a real deployment,
   and says so by name.
+- **Where 15.0.9 stands:** the gate is met by both routes. The maintainer answered `RT-D3` for
+  15.0.9 on 2026-09-24 on an automated Chrome probe (15.0.8 and dev identical on every drag
+  measured; deleting the clamps turns 2 of 19 checks red) and a hand check (mouse in mg/dL and
+  mmol/L, and touch). The mocha gap above remains and is queue `RT-D3-SUITE`, on cut 1's browser
+  suite.
 
 **Rule:** *a version number is never accepted as mitigation for absent coverage.*
 
@@ -689,7 +729,10 @@ and scores `NONE`.
 >
 > §5.6 obligation: **a fix to a therapy-adjacent calculation names, in plain language, what was
 > wrong, over what period, and what a person should do about decisions they already made on it.**
-> For BF-35 that sentence has no draft anywhere in this programme. The model is §3.1's
+> For BF-35, 15.0.9's draft release notes ("Bolus calculator quick picks" in
+> `releases/cgm-remote-monitor-15.0.9/release-notes.md`) say what was wrong and to raise a past
+> calculation with the care team; they do not name the period (the defect dates from `3457de5b`,
+> 2017). The model is §3.1's
 > `bf/coercion` sentence — and BF-35 is the stronger case, because a wrong carb count reaching a
 > bolus calculation is a dosing input, not a report.
 >
@@ -723,31 +766,36 @@ one npm's operators encode.
 
 ### 4.2 How the connector is pinned
 
-Every pin is a **tarball URL**, not an npm range. Measured 2026-09-22 with
-`git show <ref>:package.json`:
+`dev` pins an **exact npm version**; every other ref pins a **tarball URL**. Measured 2026-09-24
+with `git show <ref>:package.json`:
 
 | ref | pin |
 |---|---|
-| `origin/master` (15.0.8) | `refs/tags/v0.0.13.tar.gz` |
-| `origin/dev` (15.0.9 candidate) | commit `234d47c` — in connector `dev` (PR #64, 2026-09-22) and prerelease `0.1.0-dev.1`, in no full connector release |
+| `official/master` (15.0.8) | `refs/tags/v0.0.13.tar.gz` |
+| `official/dev` `153e5658` (15.0.9 candidate) | exactly `0.1.0` from npm (#8762, merged 2026-09-24, queue `P0-PIN`); the lockfile resolves the registry tarball with npm's integrity |
 | cuts 1, 2, 3 (published tips) | `refs/tags/v0.0.13.tar.gz` |
 | cut 4 `chore/mime-exposure-review` | commit `c962a13f` |
 | cut 5 `chore/nightscout-modernization` (`b1bdaca0`) | commit `b77e5bb` |
-| `rt/cut1` (local rebase, unpushed) | commit `234d47c` |
-| `bf/connect-pin` (local, unpushed; queue `P0-PIN`) | `refs/tags/v0.0.14.tar.gz` — a tag that will not exist; P0-PIN replaces it with the npm version `0.1.0` |
+| `rt/cut1` (local rehearsal, unpushed) | commit `234d47c` |
+| `rh/cut1`…`rh/cut35` (local rehearsal, unpushed) | exactly `0.1.0-dev.1` |
 
-The `^0.2.12` on master belongs to `share2nightscout-bridge`, a different package. There is no
-npm-range pin for `nightscout-connect` anywhere in the tree, so **the version-number choice
-changes no consumer's resolution; its job is to make a human stop.**
+The cuts take `dev`'s exact `0.1.0` pin when they are rebased (queue `RT-CONNECT-PIN-CUTS`,
+`RT-REBASE`). The `^0.2.12` on master and dev belongs to `share2nightscout-bridge`, a different
+package. There is no npm-range pin for `nightscout-connect` anywhere in the tree: `dev`'s exact
+pin makes `package.json` name the connector that ships, but no range resolves through the
+number, so **the version-number choice changes no consumer's resolution; its job is to make a
+human stop.**
 
 ### 4.3 The policy for nightscout-connect
 
 > **While `nightscout-connect` is below 1.0.0, `0.y.z` is read as `y` = major, `z` =
 > minor-and-patch. A change that would be major under §2 bumps `y`. Everything else bumps `z`.**
 
-**Applied to the backoff change (BF-34, PR #68): a `y` bump.** Measured on the programme's local
-`v0.0.14` (`b394411` → `649a7de`, fast-forward from v0.0.13, 29 files +1362/−312, 887 lines new
-tests), by executing `lib/backoff.js` at both revisions — five caller-visible changes:
+**Applied to the backoff change (BF-34, PR #68): a `y` bump.** Measured on the programme's
+former local `v0.0.14` line (`b394411` → `649a7de`, fast-forward from v0.0.13, 29 files
++1362/−312, 887 lines new tests; the line is retired, no 0.0.14 exists, and its commits are in
+connector `dev`, queue `P0-TAG`), by executing `lib/backoff.js` at both revisions — five
+caller-visible changes:
 
 1. option precedence reversed — `{...config, ...defaults}` → `{...defaults, ...config}`;
 2. a changed default — `use_random_slot: false` → `jitter: 'equal'`;
@@ -757,28 +805,26 @@ tests), by executing `lib/backoff.js` at both revisions — five caller-visible 
 
 (1) alone is question 3: a configured value went from ignored to honoured, moving timing 585.94×.
 
-**The connector line is `0.1.0` (maintainer, connector PR #76, 2026-09-22).** Connector
-`official/dev` `1946beb` declares `0.1.0` and carries all seven programme connector commits,
-including the backoff change `c1cce2a`, so this policy's reading holds: the first release carrying
-it is a `y` bump. Prerelease `0.1.0-dev.1` is on npm under `next`; the full `0.1.0` is queue
-`P0-TAG`. Tags are checked against `package.json` by `scripts/release-version.js` in the connector
-repository: `v0.1.0` must match it exactly, and a prerelease must be `v0.1.0-<id>`.
+**The connector line is `0.1.0` (maintainer, connector PR #76, 2026-09-22), and `0.1.0` is
+released** (2026-09-24, queue `P0-TAG`): tag `v0.1.0` on connector `main` `4dde1ec`, npm `latest`
+with provenance. It carries every programme connector fix, including the backoff change `c1cce2a`,
+so this policy's reading holds: the first release carrying it is a `y` bump. Connector `dev`
+`04102f9` declares `0.1.1`. Tags are checked against `package.json` by
+`scripts/release-version.js` in the connector repository: `v0.1.0` must match it exactly, and a
+prerelease must be `v0.1.0-<id>`.
 
 **Two things that do not change with the number:**
 
-- **`package-lock.json` stays on the old SHA until the tag is pushed.** Its `integrity` is a hash
-  over the tarball GitHub generates, which does not exist until then. A locally invented hash
-  breaks `npm ci`; a stale lock fails `npm ci` loudly as out of sync, which is correct. Regenerate
-  with `npm install` after the tag is pushed, **in the same PR** (queue `P0-LOCK`).
-- **A tarball pin means the consumer's release note must carry the connector's breaking notes.**
-  Nobody reading `cgm-remote-monitor`'s `package.json` sees a version number. The `+1/-1` pin diff
-  is the only place the 585.94× change surfaces in the consuming repository — why R4 exists.
-
-**If the maintainer prefers to stay on `0.0.z`** — defensible — the release **must** carry a
-`BREAKING` section, because the number will not.
+- **A pin and its lockfile entry move in the same PR.** For a tarball pin the lockfile's
+  `integrity` is a hash over the tarball GitHub generates, which does not exist until the tag is
+  pushed; a locally invented hash breaks `npm ci`. For `dev`'s exact npm pin the lockfile carries
+  npm's own integrity, and #8762 moved both together (queue `P0-LOCK`).
+- **The consumer's release note must carry the connector's breaking notes.** A reader of the
+  `package.json` diff sees at most a version string, not what changed. The one-line pin diff is
+  the only place the 585.94× change surfaces in the consuming repository — why R4 exists.
 
 **On reaching 1.0.0:** the natural trigger is `cgm-remote-monitor` pinning connect by **version
-range rather than tarball**, the moment a number starts resolving something.
+range rather than an exact version or tarball**, the moment a number starts resolving something.
 
 ---
 
@@ -792,18 +838,22 @@ pre-release under a plain range unless asked.
 > **Policy: a branch that is not the release its version names carries a pre-release
 > identifier.**
 
-One line per branch closes S8 (register BF-60, queue `RT-VERSION`). Proposed, using §8.3's
-numbering — **the identifier is the point; the numbers move with §8**:
+One line per branch closes S8 (register BF-60, queue `RT-VERSION`). The maintainer decided on
+2026-09-23 that each cut is renumbered when it is rebased. Proposed, using §8.3's numbering for
+separate releases — **the identifier is the point; the numbers move with §8**:
 
-| branch | today (2026-09-22) | proposed |
+| branch | today (2026-09-24) | proposed |
 |---|---|---|
-| `origin/dev` | `15.0.9` | `15.1.0-rc.1`, or `16.0.0-rc.1` if §3.2's major reading is kept (§8.1) |
+| `official/dev` | `15.0.9` | `15.0.9`, decided (`RT-VERSION`): `dev` is the release that number names |
 | `chore/retire-jsdom` (cut 1) | `15.0.9` | `16.0.0-alpha.1` |
 | `chore/build-runtime-separation` (cut 2) | `15.0.9` | `16.1.0-alpha.1` |
 | `chore/compose-mongodb6` (cut 3) | `15.0.9` | `17.0.0-alpha.1` |
-| `chore/mime-exposure-review` (cut 4) | `15.0.9` | `18.0.0-alpha.1` |
 | `chore/nightscout-modernization` (cut 5) | `15.0.9` | `17.0.0-alpha.2` |
-| unmerged `bf/*` branches (`bf/auth`, `bf/throttle`, `bf/connect-pin`) | `15.0.9` | inherit dev's number when they land |
+| `chore/mime-exposure-review` (cut 4) | `15.0.9` | not proposed until BF-64 is resolved (§8.3): cut 5 contains it |
+| open 15.0.9 PRs (#8754, #8758) | `15.0.9` | inherit dev's number |
+
+If the cuts ship as one combined release (§8.3, open), every cut branch carries that release's
+identifier, `16.0.0-alpha.<n>`.
 
 ### 5.2 How a deprecation release is numbered
 
@@ -814,10 +864,12 @@ numbering — **the identifier is the point; the numbers move with §8**:
 
 The removal that follows it is the major.
 
-**The deprecation release ships the escape route, not merely the warning.** For cut 4 this means
-shipping `mmconnect-connect-compat.js` *without* deleting `lib/plugins/mmconnect.js`, so an
-operator can set `CONNECT_COUNTRY_CODE` and verify it **while the old path still runs**. A warning
-that cannot be acted on without downtime is a countdown, not a deprecation.
+**The deprecation release ships the escape route, not merely the warning.** For the legacy-bridge
+removal this means shipping `mmconnect-connect-compat.js` *without* deleting
+`lib/plugins/mmconnect.js`, so an operator can set `CONNECT_COUNTRY_CODE` and verify it **while
+the old path still runs**. A warning that cannot be acted on without downtime is a countdown, not
+a deprecation. (For that removal the maintainer decided on 2026-09-23 that 15.0.9's notice and
+boot warning are the deprecation, with no separate release; §3.5.)
 
 ### 5.3 What a deprecation announcement must contain
 
@@ -854,25 +906,30 @@ releases" as well.** Time alone does not help an operator who upgrades in one ju
 predating the warning; the removing release should also **detect the removed configuration and say
 what happened** (question 7). Both figures are reasoned, not measured (§10 item 5).
 
-**Consequence for cut 4:** it cannot ship immediately after its deprecation release. The adopted
-train already holds it last.
+**Applied to the legacy-bridge removal:** under this table it could not ship immediately after its
+deprecation release. The maintainer's 2026-09-23 decision puts it on cut 1, the release after
+15.0.9, whose notes carry the notice (§3.5). For Dexcom the warning naming
+`DEXCOM_BRIDGE_USE_LEGACY` has shipped since 15.0.8; for MiniMed the first warning naming the
+replacement settings is 15.0.9's (#8757).
 
 ### 5.5 Deprecating something that was never announced
 
 MiniMed is the live case: `lib/server/mmconnect-connect-compat.js` does not exist on dev or master
-— it is born in the branch that deletes `lib/plugins/mmconnect.js`. Dexcom has had a shim
-(`bridge-connect-compat.js`) on master and dev for some time, with a boot warning naming
-`DEXCOM_BRIDGE_USE_LEGACY`. MiniMed's only warning today is a generic "PLEASE CONSIDER
-nightscout-connect instead." naming no setting (queue gate
-`tools/queue/gates/minimed-deprecation-path.js`).
+— it is born in the branch that deletes `lib/plugins/mmconnect.js` (the published cut 4, and the
+cut 1 rehearsal `rh/cut1-retire-legacy`). Dexcom has had a shim (`bridge-connect-compat.js`) on
+master and dev since 15.0.8, with a boot warning naming `DEXCOM_BRIDGE_USE_LEGACY`. On master
+(15.0.8) MiniMed's only warning is a generic "PLEASE CONSIDER nightscout-connect instead." naming
+no setting; on dev the MiniMed warning names every replacement setting (#8757, merged, not
+released). Queue gate `tools/queue/gates/minimed-deprecation-path.js` checks both halves and stays
+red until the shim ships with the removal (`RT-4`).
 
 > **Policy: the window starts when the announcement ships, not when the intention forms.** A
 > migration shim that appears in the same release as the deletion has a window of zero.
 
-So cut 4's deprecation release (queue `RT-4`) is real code work — the shim extracted, made
-non-fatal, and shipped ahead. If mmconnect is confirmed already non-functional (§3.5), the
-MiniMed half of that window protects configuration (leftover `MMCONNECT_*` variables that would
-otherwise produce a boot error), not a working data path; the Dexcom half protects a live path.
+Under this policy the shim would be extracted, made non-fatal and shipped ahead of the removal.
+The maintainer decided on 2026-09-23 not to (§3.5): mmconnect does not work, so the MiniMed half
+of any window would protect configuration (leftover `MMCONNECT_*` variables that stop the site at
+boot, with a page naming the fix), not a working data path.
 
 ### 5.6 The operator-facing half of every minor and major
 
@@ -897,7 +954,7 @@ their own or a family member's diabetes will read must:
 
 All 495 modernization commits have one author; the 100 child PRs were self-merged with zero human
 reviews; release PR #8598 and integration PR #8605 each carry zero approving reviews (#8598:
-`REVIEW_REQUIRED`, 2026-09-22). **When there is no second reader, the version number is the only
+`REVIEW_REQUIRED` and no reviews; #8605: two comment-only reviews; read from GitHub 2026-09-24). **When there is no second reader, the version number is the only
 signal an operator gets about how carefully to upgrade.**
 
 A checklist asks a human who may be the only human; a gate cannot read intent. The design: the gate
@@ -1095,14 +1152,18 @@ C and D show the arithmetic is discriminating, not a tax. H/H2 control the S5 ru
 decide whether the gate can be trusted**: K shows the arithmetic can be bypassed with one word;
 L and M show two client-only defects score `NONE` however honestly answered.
 
-Run F has not been re-run against `74fc6619`. dev now also carries `bf/reads` as written, so an
-honest answers file on master → dev would escalate on `Q-4XX` (§8.1).
+Run F re-run 2026-09-24 on `official/master` → `official/dev` `153e5658`, no answers file: exit 1,
+`REQUIRED: MINOR   ACTUAL: PATCH` (S3 from `CONNECT_DEBUG`/`DEBUG_LOGGING`, S6 from the connector
+pin moving to `0.1.0`), with seven questions open (`Q-PIN`, `Q-ALARM`, `Q-REMOVE`, `Q-4XX`,
+`Q-ROWS`, `Q-PLUGIN`, `Q-FIELD`). 15.0.9's number is the maintainer's decision, not the gate's
+(§8.1).
 
 #### Open defect: the answer bypass (run K)
 
 `unanswered` is `questions.filter(q => !impact[q.id])` — any non-empty string counts as answered —
 while escalation is `/^yes\b/i.test(a)`. Every string that is not "yes…" is silently treated as
-"no". Present in `tools/qc/semver-surface-gate.js` as of 2026-09-22 (line 354).
+"no". Present in `tools/qc/semver-surface-gate.js` as of 2026-09-24 (line 354; the file was last
+changed in this repository's `1a10007b`).
 
 **Required fix before the gate is binding** (a decision for the gate's owner): parse answers into
 an enum — `yes` / `no` / `unknown` — reject anything else with exit 2, and make `unknown` escalate
@@ -1111,6 +1172,10 @@ to the surface's minimum.
 #### Known limits
 
 - **Answers are free text and only `yes…` escalates** — the bypass above.
+- **The env-var census matches single-quoted names only** (`/readENV[A-Za-z]*\(\s*'[A-Z0-9_]+'/`,
+  line 228). On master → dev `153e5658` it sees `CONNECT_DEBUG` and `DEBUG_LOGGING` and misses
+  #8761's double-quoted `API_V1_COUNT_LEADING_NUMBER` and `API_V1_COUNT_ZERO_WINDOW` (§0's method
+  finds all four; measured 2026-09-24).
 - **A version downgrade reads as no bump, not as an error**
   (`if (semver.lt(headVersion, baseVersion)) actual = 'none'`).
 - Surface hits are prompts, not verdicts: `lib/authorization/storage.js` is reported under S4 on
@@ -1142,144 +1207,159 @@ overrode it and why.
 ## 7. Where current practice departs from this policy
 
 Stated without blame: the project has had **no written definition of its public surface**, so none
-of these is a rule violation. Measured 2026-09-22 unless marked.
+of these is a rule violation. Measured 2026-09-24 unless marked.
 
 | # | Departure | Evidence |
 |---|---|---|
-| D-a | **The version number does not move.** `origin/dev` and all five published cut tips carry `15.0.9`, including the branch that changes the Node floor and the branch that deletes two ingestion paths | `git show <ref>:package.json`; register BF-60 |
+| D-a | **The version number does not move on the cuts.** `official/dev` carries `15.0.9`, the release it is (`RT-VERSION`), and all five published cut tips carry `15.0.9` too, including the branch that changes the Node floor and the branches that delete two ingestion paths. The maintainer decided on 2026-09-23 that each cut is renumbered when it is rebased | `git show <ref>:package.json`; register BF-60 |
 | D-b | **Two artefacts claim the same version with different runtimes.** dev is `15.0.9` at `>=20.x`; the cut tips are `15.0.9` at `^22.23.2 \|\| ^24.20.0` | same; queue gate `tools/queue/gates/version-collision.js` |
-| D-c | **A patch number carries a two-major charting upgrade with jsdom-only coverage** and two unexercised drag clamps | §3.7; queue `RT-D3` |
-| D-d | **New environment variables ship under a patch number.** `DEBUG_LOGGING` and `CONNECT_DEBUG` are new on dev, and debug logging flips from on to off | env census, master 30 names → dev 32 |
-| D-e | **The gate says so mechanically.** master → dev (at `a8888f0d`, 2026-09-15) is numbered PATCH and the gate computes MINOR | §6.3 run F |
-| D-f | **Deprecation warnings name a version that does not do the thing.** Both cut-4 shims say "retired in Nightscout 15.0.9" | GT4, executed |
-| D-g | **A deletion ships in the same release as its own migration shim** — `mmconnect-connect-compat.js` is born in the branch that deletes `mmconnect.js` | §5.5 |
-| D-h | **A documented escape hatch is removed without a word** — `DEXCOM_BRIDGE_USE_LEGACY` becomes accepted-and-ignored in cut 4 | BF-62 |
-| D-i | **Release dependencies are pinned to untagged commit SHAs**: dev → `234d47c` (in connector `dev`, in no connector release), cut 4 → `c962a13f`, cut 5 → `b77e5bb` | §4.2 |
-| D-j | **Shipping the published cut 1 after 15.0.9 would remove two environment variables and regress the connector.** Published cut 1 (`bce12ecc`) is 133 commits behind dev and reads neither `DEBUG_LOGGING` nor `CONNECT_DEBUG`, and pins `v0.0.13`. The local rebase `rt/cut1` (`ed21961f`, 9 behind dev, unpushed) reads both and pins `234d47c`, so the published branch, not the train, carries this defect | §6.3 run G; `git grep` of `lib/server/env.js` at both refs |
-| D-k | **15.0.9 as it stands classifies above a patch.** See §8.1 | queue `semver` fields |
+| D-c | **A patch number carries a two-major charting upgrade whose drag clamps Nightscout's own suite cannot see.** For 15.0.9 the drag was checked in a real browser, by hand and by an automated probe (`RT-D3`, answered 2026-09-24); the suite gap is `RT-D3-SUITE` | §3.7 |
+| D-d | **New environment variables ship under a patch number.** `DEBUG_LOGGING`, `CONNECT_DEBUG`, `API_V1_COUNT_LEADING_NUMBER` and `API_V1_COUNT_ZERO_WINDOW` are new on dev, and debug logging flips from on to off | env census, master `92d08342` 38 names → dev `153e5658` 42 (§0) |
+| D-e | **The gate says so mechanically.** master → dev `153e5658` is numbered PATCH and the gate computes MINOR | §6.3 run F (re-run 2026-09-24) |
+| D-f | **Deprecation warnings name a version that does not do the thing.** Both shims on the published cut 4 say "retired in Nightscout 15.0.9". The cut 1 rehearsal `rh/cut1-retire-legacy` names no release number (BF-61 decision) | GT4, executed; register BF-61 |
+| D-g | **A deletion ships in the same release as its own migration shim** — `mmconnect-connect-compat.js` is born in the branch that deletes `mmconnect.js` (the published cut 4, and cut 1 in the rehearsal). The maintainer decided this on 2026-09-23 (§3.5) | §5.5 |
+| D-h | **A documented escape hatch is removed** — `DEXCOM_BRIDGE_USE_LEGACY` becomes accepted-and-ignored on the published cut 4; the cut 1 rehearsal logs that it is ignored | BF-62 |
+| D-i | **Release dependencies are pinned to untagged commit SHAs** on the cuts: cut 4 → `c962a13f`, cut 5 → `b77e5bb`. dev pins the released `0.1.0` exactly (#8762) | §4.2 |
+| D-j | **Shipping the published cut 1 after 15.0.9 would remove four environment variables and regress the connector.** Published cut 1 (`bce12ecc`) is 175 commits behind dev `153e5658`, reads none of D-d's four names, and pins `v0.0.13`. The local rehearsals `rt/cut1` (`ed21961f`) and `rh/cut1` (`c77797e0`) read `DEBUG_LOGGING` and `CONNECT_DEBUG` and predate #8761; at the rebase the cuts take dev's exact `0.1.0` pin (`RT-CONNECT-PIN-CUTS`), so the published branch, not the train, carries this defect | `git rev-list --left-right --count official/dev...official/chore/retire-jsdom`; `git grep` of `lib/server/env.js` at each ref |
+| D-k | **15.0.9 is numbered as a patch while this ladder classifies it as minor.** The number is the maintainer's decision (§8.1) | queue `semver` fields; §6.3 run F |
 | D-m | **There is no PR field for semver impact** | §6.2 closes this |
 | D-n | **Nothing enforces the number** | §6.3, once the bypass is fixed |
 
-**Why D-j matters beyond numbering.** The two connector pins have diverged rather than one being
-older: `v0.0.13` is `b394411`, a merge commit, and `234d47c` is a sibling of it off the shared
-parent `6dfc4f0b` (`git diff 6dfc4f0b b394411` is empty, so the practical effect is losing one
-commit — "Make embedded connector debug logging opt-in", 18 files +379/−146 — which is the commit
-that produced `CONNECT_DEBUG` and `DEBUG_LOGGING`). **None of the three log-redaction commits
-(`9fa2c3c`, `5349d47`, `77e2396`) is in either pin**, so moving from `234d47c` back to `v0.0.13`
-turns connector debug logging back on by default on a connector that still writes Dexcom and
-MiniMed credentials, sessions and patient data into runtime logs (register BF-42/BF-43, queue
-`BFQ-CONNECTOR`, `RT-CONNECT-PIN-CUTS`). That is the case for a connector pin carrying the
-redaction fixes landing **before** any cut ships.
+**Why D-j matters beyond numbering.** Published cut 1's `v0.0.13` (`b394411`) carries neither the
+connector's debug-logging opt-in (`234d47c`, merged as `04c7173`; the commit that produced
+`CONNECT_DEBUG` and `DEBUG_LOGGING`) nor the three log-redaction commits (`9fa2c3c`, `5349d47`,
+`77e2396`). `nightscout-connect` `0.1.0`, which dev pins, carries all four (`git merge-base
+--is-ancestor <commit> v0.1.0` in `externals/nightscout-connect`, 2026-09-24). Shipping the
+published cut 1 after 15.0.9 would turn connector debug logging back on by default, on a connector
+that writes Dexcom and MiniMed credentials, sessions and patient data into runtime logs (register
+BF-42/BF-43, queue `BFQ-CONNECTOR`, `RT-CONNECT-PIN-CUTS`).
 
 ---
 
 ## 8. What this policy costs the work in flight
 
-The options are laid out; **the choice is the maintainer's.** Where this document has a preference
-it says so.
+Where the maintainer has decided, this section records the decision. Where a choice is still open,
+the options are laid out and the choice is the maintainer's.
 
-### 8.1 The 15.0.9 candidate (`origin/dev` `74fc6619`)
+### 8.1 15.0.9 (`official/dev` `153e5658`)
 
-15.0.9 is master..dev: 48 first-parent merges (`git rev-list --first-parent --count
-official/master..official/dev`), 200 files, +14381/−1262, including twelve of this programme's
-backfix PRs plus #8741 from an external contributor (none released). Classified row by row from the queue's `semver` fields:
+15.0.9 is master..dev, measured 2026-09-24: 350 commits, 61 first-parent merges, 212 files,
++16002/−1300 (`git -C externals/cgm-remote-monitor-official rev-list --count
+official/master..official/dev`, the same with `--first-parent`, and `git diff --shortstat
+official/master official/dev`). The programme PRs in it are listed in queue `RT-0`; two open PRs,
+#8754 and #8758, are planned to join it (§8.2). None is released. Classified under this policy,
+from the queue's `semver` fields where one exists:
 
 | Change | PR | Class under this policy |
 |---|---|---|
-| `?count=` validator, as written — rejects `?count=0` on every v1 route, reads and writes | #8738 (`bf/reads`) | **major** (§3.2), or minor if the maintainer adopts the census reading |
-| `DEBUG_LOGGING`, `CONNECT_DEBUG`; debug logging off by default; new `lib/api2/loop-notification-errors.js` | pre-programme dev work | minor |
+| v1 `?count=` rule as it ships: malformed counts answer 400 on reads; oref0's `N?…` reads `N`; `count=0` reads everything inside a two-sided date window and the endpoint default otherwise, both with a deprecation warning; saves and updates ignore `count`; a delete with an invalid count is refused, as on dev | #8738 as amended by #8748 and #8761 | **patch** by §3.2's test: no input a real client sends is narrowed (§3.2, decided 2026-09-24) |
+| new settings `DEBUG_LOGGING`, `CONNECT_DEBUG` (debug logging off by default), `API_V1_COUNT_LEADING_NUMBER`, `API_V1_COUNT_ZERO_WINDOW`; new `lib/api2/loop-notification-errors.js` | pre-programme dev work; #8761 | minor |
 | insulinage URGENT made reachable (S7); Alexa/Google Home locale handling removed | #8739 (`bf/alarms`) | minor (the locale removal is a defect correction by maintainer ruling, §9) |
 | schema-driven query coercion; `$exists` read as boolean (BF-40) | #8737 (`bf/coercion`) | minor |
 | v1 operator allowlist (`$expr`, pipeline refused; `$type` allowed) | #8743 (`bf/operators`) | minor |
 | `/alarm` delivery scoped to entitled sockets (GHSA-8849, BF-75/76) | #8745 | minor |
 | food quick-pick filter (S1) and BF-35 chooser (client) | #8735 (`bf/food`) | minor |
-| D3 5.16 → 7.9 | pre-programme dev work | minor (question 13), with the §3.7 browser-pass gate |
+| D3 5.16 → 7.9 | pre-programme dev work | minor (question 13); the §3.7 browser-pass gate is met for 15.0.9 |
+| connector pin to `nightscout-connect` `0.1.0` (585.94× retry-timing default, log redaction) | #8762 | minor under R4 (question 11) |
+| subject and role field allow-list (BF-47) | #8754 (open) | **major** under S4 (question 5), per queue `BF2-AUTH` and `BFQ-47` |
 | quadratic treatment scans; read-path cost; client merge; URL parameter parsing; `loadRetro` authorization (GHSA-gjhc, BF-79); readable-by-world boot notice (BF-77) | #8733, #8740, #8734, #8736, #8744, #8746 | patch |
-| external contributions | #8741, #8729, #8732 | not classified here |
+| the other 15.0.9 additions and external contributions | see `RT-0` | per item's queue `semver` field; not re-classified here |
 
-**Under R3 the release is MAJOR on one row, and MINOR without it.** Options:
+Under R3 this ladder classifies 15.0.9 as **minor**, and as **major** while the BF-47 row stands.
 
-| Option | What it means | Cost |
-|---|---|---|
-| **1. Rule §3.2 minor on the census (§10 item 1) and number `15.1.0`** | One line in `package.json`; notes gain a "what changed for you" section naming `?count=0` and the write-path scope | Accepts the latent risk to runtime-computed counts |
-| **2. Land the §3.2 clamp before release and number `15.1.0`** *(this document's preference)* | `?count=0` clamps with `Deprecation`/`Warning`; the five meaningless spellings stay rejected | One further PR before RT-0 |
-| 3. Number `16.0.0` | Honest under the strict reading | Spends a major on bug fixes, and pulls forward the attention budget cut 1 needs |
-| 4. Ship as `15.0.9` with a `BEHAVIOUR CHANGES` section | Keeps the planned number | The number understates the release, and D-b survives |
+**Decided — the number is `15.0.9`:**
+
+- **2026-09-22, amended 2026-09-23 (maintainer, `RT-VERSION`):** the dev → master release is
+  15.0.9, the number `dev`'s `package.json` already carries. #8743 ships as-is and #8738 as
+  amended by #8748; both are declared as corrections in the release notes, with no compatibility
+  flag retrofitted.
+- **2026-09-23 (maintainer, `BFQ-47`):** the subject and role field allow-list is intended, is the
+  declared schema for those documents, and has no compatibility flag; the release notes declare it
+  a correction.
+- **2026-09-24 (maintainer, `RT-COUNT-COMPAT`, §3.2):** reads tolerate the `count` shapes oref0 and
+  GluPredKit send, each behind its own setting, on by default, so that 15.0.9 stays a patch.
+
+The draft release notes state the reasoning to operators ("About the version number" in
+`releases/cgm-remote-monitor-15.0.9/release-notes.md`): the refusals are corrections of behaviour
+that was never intended, not new features, and they are listed under "Corrections: requests
+answered differently".
 
 **`15.0.9` has never been tagged** (`git tag -l` stops at `15.0.8`), and dev Docker builds are
 tagged `dev_<sha>` and `latest_dev`, not by version. **But the running application reports its
 package.json version** (`lib/server/env.js:137`, `lib/api/status.js:32`), so dev-channel
-deployments already answer `/api/v1/status` with `15.0.9`. If the release is renumbered, its note
-should say `15.0.9` was never a release, so a reporter who says "I was on 15.0.9" is understood.
+deployments already answer `/api/v1/status` with `15.0.9`; the draft release notes say that a
+report from "15.0.9" made before the release is from that channel.
 
-**Independent of the choice, the cut branches must stop claiming `15.0.9`** (§5.1, D-b).
+**The cut branches still claim `15.0.9`** (§5.1, D-b); each is renumbered when it is rebased
+(maintainer, 2026-09-23, `RT-VERSION`).
 
-The decision is queue items `RT-0` (release 15.0.9) and `RT-VERSION`; `RT-D3` also blocks RT-0.
-Release PR #8598 (dev → master) is open, mergeable, CI green across Node 20/22/24 × Mongo
-4.4/5/6, CodeQL and Docker build, with `REVIEW_REQUIRED` and zero approving reviews (2026-09-22).
-See [release readiness for 15.0.9](release-readiness-15.0.9-2026-09-22.md).
+What stands between dev and the tag is queue `RT-0`'s notes. Release PR #8598 (dev → master) is
+open and mergeable, with 27 checks green and 3 skipped, `REVIEW_REQUIRED` and no reviews (queue
+`RT-0`, 2026-09-24).
 
-### 8.2 The Phase 0 branches not yet merged
+### 8.2 The 15.0.9 PRs still open
 
-| Branch | Queue | Class | Why |
+| PR | Queue | Class | Why |
 |---|---|---|---|
-| `bf/auth` (BF-17) | `P0-C` | **major** | narrows `lib/authorization/storage.js` to an allow-list of fields, so a field a third-party admin tool stored is dropped on the next edit with no error (S4); adds `notes` to `GET /api/v1/subjects` |
-| `bf/throttle` (BF-30) | `P0-J` | patch (queue classification) | failed-auth throttling with a compatibility default |
-| `bf/connect-pin` | `P0-PIN` | minor under R4 | moves the connector pin to a tag that exists only locally; blocked on `P0-TAG` |
-
-**Preference for `bf/auth`:** narrow it so it stops being major — delete only
-`DERIVED_SUBJECT_FIELDS` instead of allow-listing the whole document. The major-ness is incidental
-to the fix's purpose.
+| #8754 `bf2/auth-hardening`: `bf/auth` (BF-17), `bf/throttle` (BF-30), the `TRUST_PROXY` setting, the BF-47 subject-edit fix | `BF2-AUTH` | **major** under S4, per the queue | the allow-list drops fields outside the declared schema on the next edit (S4); `TRUST_PROXY` is a new setting (minor). The maintainer decided the allow-list is intended (§8.1) |
+| #8758 `bf/object-id-crud` | `BFQ-102` | patch (queue classification) | records keep their own `_id` across API v1, v3 and the websocket; no API or setting moves |
 
 ### 8.3 The release train
 
-**Adopted by the maintainer, 2026-09-15.** The numbers are this policy's proposal; the order is the
-decision.
+**Adopted by the maintainer, 2026-09-15, and amended by the maintainer on 2026-09-23.** The order
+is the decision; the cut numbers are this policy's proposal for separate releases.
 
 | Step | Queue | Contents | Proposed number | Class |
 |---|---|---|---|---|
-| 1 | `RT-0` | 15.0.9: dev as it stands (§8.1) | `15.1.0` (or `16.0.0`, §8.1) | minor / major |
-| 2 | `RT-1` | Cut 1 `chore/retire-jsdom`, **alone** — Playwright browser suite, Node floor, MongoDB 4.4 out of CI | `16.0.0` | major (S5) |
+| 1 | `RT-0` | 15.0.9: dev (§8.1); its release notes carry the legacy-ingestion notice | `15.0.9` (decided) | minor under this ladder; numbered by decision |
+| 2 | `RT-1` | Cut 1 `chore/retire-jsdom`, **alone** — Playwright browser suite, Node floor `^22.12 \|\| >=24` (decided 2026-09-21), MongoDB 4.4 out of CI, and the legacy Dexcom and MiniMed bridge removal (moved from cut 4, 2026-09-23) | `16.0.0` | major (S5, S6) |
 | 3 | `RT-2` | Cut 2 `chore/build-runtime-separation` — page bundles, narrowed D3, event bus, boot sequence, Babel 8 | `16.1.0` | minor (judgement; unmeasured against any third-party plugin) |
-| 4 | `RT-3` | Cuts 3 + 5 combined — MongoDB driver 7, jQuery UI; Express 5, Helmet, EJS, Axios, Mocha 12, Swagger | `17.0.0` | major (dependency majors; no measured contract break) |
-| 5 | `RT-4` | Deprecation release — MiniMed shim shipped non-fatally, Dexcom escape hatch preserved | `17.1.0` | minor |
-| 6 | `RT-5` | Cut 4 `chore/mime-exposure-review` — legacy Dexcom and MiniMed retirement, trusted proxies, DOMPurify, Moment/tz — ≥180 days and 2 releases after step 5 | `18.0.0` | major |
+| 4 | `RT-3` | Cuts 3 + 5 combined — MongoDB driver 7, jQuery UI; Express 5, Helmet, EJS, Axios, Mocha 12, Swagger. Cut 5 descends from cut 4, so as the branches stand this step also carries cut 4 (BF-64) | `17.0.0` | major (dependency majors; no measured contract break) |
+| 5 | `RT-5` | Cut 4 `chore/mime-exposure-review`, last — with the bridge removal on cut 1, its remainder is trusted proxies, DOMPurify, Moment/tz, MIME, webpack and ESLint | not proposed until BF-64 is resolved | — |
+
+**No separate deprecation release** (maintainer, 2026-09-23, `RT-4`): 15.0.9's release notes carry
+the legacy-ingestion notice, and 15.0.9's MiniMed boot warning names every replacement setting
+(#8757). §3.5 records the removal decisions and how they stand against this policy.
+
+**Open: separate releases or one combined release.** The backfix-2 plan
+([§1a](../remedial/backfix-2-plan-2026-09-22.md), 2026-09-23) leaves open whether the cuts ship as
+the separate steps above or as one combined release (`16.0.0`); the
+[cut rehearsal](cut-rehearsal-on-15.0.9-rc-2026-09-23.md) §6–§7 measures both shapes and makes no
+recommendation.
 
 **Open defect in step 4: BF-64** (register, **open**, reproduced). The stack is linear and cut 4 is
 an **ancestor** of cut 5 (`merge-base --is-ancestor` exits 0), so "cuts 3 + 5 without 4" is not a
-prefix: built from the branches as they stand, step 4 would ship cut 4's ingestion retirement
-before the deprecation release meant to precede it. `lib/plugins/bridge.js` and `mmconnect.js` are
-present on dev and cut 3 and absent on cuts 4 and 5. Step 4's contents cannot be written down until
-this is resolved (for example by reverting the retirement out of cut 5 for step 4, or by
-re-cutting the stack so the retirement is last).
+prefix; the rehearsal's `rh/cut35` contains cut 4. With the bridge removal lifted onto cut 1
+(local `rh/cut1-retire-legacy` `c043fb2d`), cut 4's remainder removes no CGM path, and a trial
+merge of `rh/cut4` into the lifted cut 1 conflicts only in legacy files and manifests (queue
+`RT-5`). Steps 4 and 5 cannot be written down separately until BF-64 is resolved.
 
-**Why cut 4 is last and behind its own deprecation release** (§3.5): it deletes two CGM ingestion
-paths, and if the Connect migration misbehaves the symptom is that a user's glucose data stops
-arriving. The caveat: the maintainer reports mmconnect has not worked for some time (not measured
-here), so the MiniMed half may remove nothing users receive; the Dexcom half is live and its
-mapping to `nightscout-connect` has not been exercised against a real account. What does not
-depend on the caveat: leftover `MMCONNECT_*` configuration without `CONNECT_COUNTRY_CODE`, or
-`BRIDGE_*` and `MMCONNECT_*` together, produce a **whole-site outage** on cut 4 (BF-61; queue gate
-`tools/queue/gates/cut4-total-outage.js`). Before step 5 is planned: re-grade BF-44 and BF-45 on
-the maintainer's premise, and confirm the Dexcom Share → `nightscout-connect` option mapping
-against a real account (a human step; nothing in this repository may use real credentials).
+**Before the bridge removal ships:** confirm the Dexcom Share → `nightscout-connect` option mapping
+against a real account (a human step; nothing in this repository may use real credentials). The
+removal's BF-61 behaviour is settled on the rehearsal (§3.5).
 
-**Rebase state, 2026-09-22** (`git rev-list --left-right --count official/dev...<cut>` and
-`git merge-tree --write-tree official/dev <cut>`; queue `RT-REBASE`): published cuts 1–4 are 133
-commits behind dev with 7 / 14 / 16 / 18 conflicting paths; cut 5 (`b1bdaca0`) is 9 behind / 498
-ahead with one conflict (`lib/server/bootevent.js`, from the BF-77 fix merged as #8746). Local
-rebases `rt/cut1`…`rt/cut4` are prepared at 9 behind dev and are unpushed.
+**Rebase state** is measured by queue `RT-REBASE`'s gates. On 2026-09-24 against `official/dev`
+`153e5658` (`git rev-list --left-right --count official/dev...<cut>` and `git merge-tree
+--write-tree --name-only official/dev <cut>`): published cuts 1–4 are 175 commits behind dev with
+9 / 15 / 17 / 22 conflicting paths; cut 5 (`b1bdaca0`, PR #8605) is 51 behind / 498 ahead with 9.
+The local rehearsals `rt/*` and `rh/*` are unpushed, and the real propagation is done on dev after
+15.0.9 is tagged (`RT-REBASE`).
 
-**The orderings are more durable than the numbers.** What matters: the deprecation release
-precedes the major that needs it; the runtime break and the ingestion break are **not** in the same
-release, because an operator debugging a site that will not start should not simultaneously be
-debugging why their CGM data stopped; and cut 4 is last.
+**The orderings are more durable than the numbers.** The orderings this policy asks for: the
+deprecation precedes the major that needs it, and the runtime break and the ingestion break are
+**not** in the same release, because an operator debugging a site that will not start should not
+simultaneously be debugging why their CGM data stopped. The 2026-09-23 decision puts the bridge
+removal on cut 1 beside the Node floor. The maintainer's premise is that neither legacy path
+carries data a user relies on today: mmconnect does not work, and Dexcom `BRIDGE_*` settings have
+been served by `nightscout-connect` by default since 15.0.8, so on the rehearsal a Dexcom operator
+is migrated with the legacy override logged as ignored, and leftover `MMCONNECT_*` settings stop the
+site with a page naming a fix that boots.
 
 ### 8.4 nightscout-connect
 
 The connector line carrying the backoff change (PR #68) is **`0.1.0`** (connector PR #76), as §4.3
-reads it. Prerelease `0.1.0-dev.1` is published; the full `0.1.0` is queue `P0-TAG`.
-`cgm-remote-monitor`'s release note for the pin move must still carry the 585.94× retry change in
+reads it, and `0.1.0` was released on 2026-09-24 (queue `P0-TAG`). `cgm-remote-monitor` `dev` pins
+it exactly (#8762). 15.0.9's release note for the pin move must carry the 585.94× retry change in
 operator language (§3.6), because a pin diff shows no version semantics to a reader.
 
 ---
@@ -1290,17 +1370,17 @@ GT4 marked eleven judgement calls. This policy's position on each:
 
 | GT4 § | Judgement | This policy | Why |
 |---|---|---|---|
-| 3.5 | `?count=0` → 400 is major | **Major as written; the split makes both halves minor** (§3.2) | Five spellings are unreachable; `?count=0` is reachable by construction |
+| 3.5 | `?count=0` → 400 is major | **Major as written; the split makes both halves minor** (§3.2) | Five spellings are unreachable; `?count=0` is reachable by construction. 15.0.9 ships the tolerant rule, a patch by §3.2's test (maintainer, 2026-09-24) |
 | 1 | S7 (alarms) is a first-class surface | **Adopted** (§1 S7) | |
 | 3.1 | Alexa/Google Home locale removal is major | **Not major — maintainer ruling, 2026-09-17** | `ctx.language.set` and `moment.locale` are process-global, so a request carrying `request.locale` re-languaged every later request for every other user. The per-request locale was never a working capability; removing it is a correction, and the branch needed an ordinary review (queue `P0-A`) |
-| 2 #1 | `bf/connect-pin` is minor although it is one line | **Upheld, as rule R4** | Classify by what the operator receives |
+| 2 #1 | `bf/connect-pin` (shipped as #8762) is minor although it is one line | **Upheld, as rule R4** | Classify by what the operator receives |
 | 2 #5 | `bf/parms` is patch although `_`-decoding changes | **Upheld**, with a required release-note line | The old decoding was inconsistent and the server never agreed with it; a bookmarked report URL might depend on it, which is the note |
 | 2 #15 | v3 `_id` tiebreak is patch | **Overruled → minor** | The commit's own subject is that paging "lost and repeated documents whenever the whole sort chain tied" — a paging client previously received a different set of records than the collection contains. That is question 10 |
 | 2 #18 | v3 `?limit` restriction is minor, unlike `?count=` | **Upheld** (§3.2) | Restoring a documented bound ≠ inventing one |
 | 5.2 | Cut 2 is minor | **Upheld, conditionally** | Unmeasured against third-party plugins. `Q-PLUGIN` must be answered with evidence; an honest "unknown" should escalate to the release's number — a reviewer obligation until the gate's enum fix lands (§6.3) |
 | 5.5 | Cut 5 is major | **Upheld** | Express 4→5 changes routing and error semantics under everything that mounts a route. Classified from dependency majors, not a measured break (§10) |
 | 6 | connect should be `0.1.0` | **Upheld** (§4.3) | Five caller-visible breaking changes |
-| 5.6 | The numbering table | **Upheld with two changes**: pre-release identifiers on the cut branches (§5.1), and a 180-day window before cut 4 (§5.4) | |
+| 5.6 | The numbering table | **Upheld with two changes**: pre-release identifiers on the cut branches (§5.1), and a 180-day window before the ingestion removal (§5.4) | The maintainer decided on 2026-09-23 to ship the removal on cut 1, with 15.0.9's notice as the deprecation (§3.5) |
 
 **`bf/coercion` and `$exists=false` (BF-40).** GT4 noted the change replaced one wrong `$exists`
 answer with another on the previously walked fields. That is a defect question, not a versioning
@@ -1311,8 +1391,10 @@ one, and it is closed: #8737 reads `$exists` operands as booleans (`BOOLEAN_OPER
 
 ## 10. What a verifier should attack, and what is unsettled
 
-1. **§3.2 is the most overrulable call**, and it now decides 15.0.9's number. The unbounded-download
-   counter-argument is real and the split is an opinion about sequencing, not a measurement.
+1. **§3.2 is the most overrulable call.** 15.0.9's number is decided (`RT-VERSION`), and the
+   `count` rule it ships was chosen so that §3.2's test gives a patch (`RT-COUNT-COMPAT`). The
+   census behind that test reads client source, not requests; a real OpenAPS rig or GluPredKit
+   install has not been run against it (the consumer-replay lab replays their requests).
 2. **§1 S2 and §9's cut-2 row are unmeasured against any third-party plugin.** No plugin corpus
    exists here; running one would be worth more than both sections.
 3. **Cut 5's major rests on dependency majors and a 36-file production diff**, not on a measured
@@ -1323,9 +1405,10 @@ one, and it is closed: #8737 reads `$exists` operands as booleans (`BOOLEAN_OPER
    version distribution in the wild, that number should replace this one.
 6. **§1's in/out arguments are where the document is falsifiable.** If S7 or S8 is rejected, several
    classifications move.
-7. **Cut 4's risk grading rests partly on an unmeasured premise.** The maintainer reports mmconnect
-   non-functional; BF-44/BF-45 have not been re-graded on that premise, and the Dexcom Share →
-   `nightscout-connect` mapping has not been exercised against a real account.
+7. **The legacy-bridge removal's risk grading rests on an unmeasured premise.** The maintainer
+   reports mmconnect non-functional (operational knowledge); BF-44/BF-45 are graded low on that
+   premise, and the Dexcom Share → `nightscout-connect` mapping has not been exercised against a
+   real account.
 8. **The gate can be passed by writing `unknown` in every answer** (§6.3, run K). Until answers are
    parsed as an enum, the gate is advisory and §6.2's checklist is binding. **Fix this first.**
 9. **§1 has no surface for what the client computes and shows a person** (§3.8). Under §2 as
@@ -1339,7 +1422,7 @@ one, and it is closed: #8737 reads `$exists` operands as booleans (`BOOLEAN_OPER
 ---
 
 *Draft policy requiring maintainer review before anything is renumbered, tagged or released; the
-release-train order in §8.3 is adopted. Nothing in this document was pushed, tagged, merged or
+release-train order in §8.3 is adopted and 15.0.9's number is decided. Nothing in this document was pushed, tagged, merged or
 published, and no shipping file was modified.*
 
 *Operator-facing release notes derived from this document must follow §5.6. Nightscout is not a

@@ -21,22 +21,31 @@ their date and commit.
 
 ---
 
-## Where things stand, 2026-09-22
+## Where things stand
 
-- **Shipping release:** `cgm-remote-monitor` tag `15.0.8` (`origin/master` `92d08342`).
-  `origin/dev` is `74fc6619`, 308 commits ahead
-  (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`).
+Measured 2026-09-24 against `cgm-remote-monitor` `official/dev` `153e5658` and
+`nightscout-connect` `official/main` `4dde1ec`.
+
+- **Shipping release:** `cgm-remote-monitor` tag `15.0.8` (`official/master` `92d08342`).
+  `official/dev` is `153e5658` (the merge of #8762) and declares `15.0.9`: 350 commits and 61
+  first-parent merges ahead of master
+  (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
+  and the same with `--first-parent`). Nothing past 15.0.8 is released; the release is queue
+  `RT-0` (release PR #8598, no approving review).
 - **Phase 0, `cgm-remote-monitor` half: merged, not released.** T0.1 (#8733), T0.2/T0.3
-  (`bf/cache`, #8740) and T0.5 (`bf/coercion`, #8737) are in `dev`, with the other Phase 0 and
-  advisory PRs listed in the [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md)
-  and the queue. **Every §1 register defect, including those merged, is still present for every
-  operator on 15.0.8** until a release ships. Not merged: `bf/auth`, `bf/throttle`,
-  `bf/connect-pin`. Connector PR #68 (T0.4) is merged into connector `dev` and published in
-  connector prerelease `0.1.0-dev.1`; no full connector release exists yet.
+  (`bf/cache`, #8740), T0.5 (`bf/coercion`, #8737) and T2.4's allowlist (#8743) are in `dev`,
+  with the other Phase 0, advisory and 15.0.9 PRs listed in queue `RT-0`. **Every §1 register
+  defect, including those merged, is still present for every operator on 15.0.8** until 15.0.9
+  ships. `bf/auth` (BF-17) and `bf/throttle` (BF-30) ship inside #8754 (`bf2/auth-hardening`,
+  queue `BF2-AUTH`), which is open. `dev` pins `nightscout-connect` exactly `0.1.0` from npm
+  (#8762, queue `P0-PIN`); `master` pins the `v0.0.13` tag tarball.
+- **Connector half: released.** Connector PR #68 (T0.4) is in `nightscout-connect` `0.1.0`,
+  released 2026-09-24 (tag `v0.1.0` on connector `main` `4dde1ec`, npm `latest`; queue `P0-TAG`).
+  It reaches Nightscout operators with 15.0.9.
 - **Tenancy work (Phases 1–4) is local and unpushed.** The seam chain ends at
   `seam/t1-2-storage-interface` `81a1f6ce` (worktree `externals/work/crm-seam`), cut from
-  `chore/nightscout-modernization` at `0a4109f6`. That base has since moved to `b1bdaca0`; the
-  seam is 68 behind it with 19 conflicting paths on trial merge (queue `SEAM-REFRESH`).
+  `chore/nightscout-modernization` at `0a4109f6`. That base is now `b1bdaca0`; the seam is 68
+  behind it and 50 ahead, with 19 conflicting paths on trial merge (§5, queue `SEAM-REFRESH`).
 - **Open tenancy work:** T3.0 (configuration surface and credential root). `T30-SCHEMA-CRED` has
   no blockers and is claimable; `T30-SCHEMA-CONFIG` waits on `T30-RESEARCH` (config half) and
   `T30-ORY-PROOF` (identity half).
@@ -94,11 +103,11 @@ decision was, this plan wins.**
 | [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
 | [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
 | [semver and release versioning policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
-| [release readiness for 15.0.9](../modernization/release-readiness-15.0.9-2026-09-22.md) | the 15.0.9 decision | the next release |
+| [release readiness for 15.0.9](../modernization/release-readiness-15.0.9-2026-09-22.md) | the 15.0.9 decision (a 2026-09-22 snapshot; current state in queue `RT-0`) | the next release |
 | [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | T3.0's research deliverable and proposed DDL | the per-tenant configuration surface |
 | [operator upgrade path](../../40-migration/operator-upgrade-path-2026-09-15.md) | what each release means for someone running a site | operator-facing upgrade guidance |
-| [legacy CGM ingestion → Connect](../../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the cut-4 migration |
-| [connector pin consolidation](../../40-migration/connector-pin-consolidation-2026-09-15.md) | the `nightscout-connect` pins in flight | the pin decision |
+| [legacy CGM ingestion → Connect](../../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the legacy-bridge migration, which is on cut 1 (queue `RT-1`) |
+| [connector pin consolidation](../../40-migration/connector-pin-consolidation-2026-09-15.md) | the `nightscout-connect` pins across `dev` and the cuts | background to the pin decision; item state in `P0-PIN` and `RT-CONNECT-PIN-CUTS` |
 | [MongoDB → PostgreSQL, hosted](../../40-migration/mongodb-to-postgres-hosted-2026-09-15.md) | what moving a tenant's data costs | the migration shape |
 
 ---
@@ -661,14 +670,17 @@ The seam carries **two mature backends permanently**, not one plus a migration p
 Node 22/24 floor; rebasing that many commits underneath this work later would be worse than
 starting on top of it.
 
-**Measured 2026-09-22:** `origin/chore/nightscout-modernization` is `b1bdaca0`, 9 behind / 498 ahead
-of `origin/dev` `74fc6619` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`),
-after a maintainer-side merge of `dev` into it (`e3b22034`). The seam chain has not been refreshed
-onto it (`SEAM-REFRESH`: 68 behind, 19 conflicting paths — three of them add/add supersessions from
-BF-04's upstream allowlist, which wins; sixteen content conflicts across the v1 API and server
-storage modules, cost unmeasured). **Open, recorded in `SEAM-REFRESH`:** whether the seam should
-refresh onto the modernization branch or onto `dev`, now that `dev` carries the allowlist the seam
-duplicates. D9 stands until the maintainer decides otherwise.
+**Measured 2026-09-24:** `official/chore/nightscout-modernization` is `b1bdaca0`, 51 behind / 498
+ahead of `official/dev` `153e5658` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`);
+its last merge of `dev` is `e3b22034` (2026-09-21). The seam chain has not been refreshed onto it
+(`SEAM-REFRESH`): `seam/t1-2-storage-interface` `81a1f6ce` is 68 behind / 50 ahead of `b1bdaca0`
+with 19 conflicting paths (`git merge-tree --write-tree --name-only official/chore/nightscout-modernization seam/t1-2-storage-interface`)
+— three of them add/add supersessions from BF-04's upstream allowlist, which wins; sixteen content
+conflicts across the v1 API and server storage modules, cost unmeasured. Against `official/dev`
+`153e5658` the seam is 116 behind / 545 ahead with 36 conflicting paths (the same two commands with
+`official/dev`). **Open, recorded in `SEAM-REFRESH`:** whether the seam should refresh onto the
+modernization branch or onto `dev`, now that `dev` carries the allowlist the seam duplicates. D9
+stands until the maintainer decides otherwise.
 
 **Caveat:** #8605 (the modernization integration PR) has zero human reviews across its production
 lines, all by one author. That blocks *shipping* the stack, not *developing* against it. This plan
@@ -731,9 +743,9 @@ re-measure**, not a harness that reproduces the threshold. *Evidence*: {R} §12.
 
 **T0.4 · Start and interval jitter in `nightscout-connect` — DONE on `fix/connect-timer-jitter`
 `c1cce2a`; connector PR #68, merged into connector `dev` as `3f73288` on 2026-09-22** (queue `P0-F`;
-the merged head `635cc9f` unifies this jitter with LibreLinkUp's own; suite 283 pass / 0 fail). In
-connector prerelease `0.1.0-dev.1`, not in a full release. The
-measurements below were taken on `b77e5bb` (the commit `chore/nightscout-modernization` pins): 19
+the merged head `635cc9f` unifies this jitter with LibreLinkUp's own; suite 283 pass / 0 fail).
+Released in `nightscout-connect` `0.1.0` (2026-09-24, queue `P0-TAG`), which `cgm-remote-monitor`
+`dev` pins exactly (#8762, merged, not released). The measurements below were taken on `b77e5bb` (the commit `chore/nightscout-modernization` pins): 19
 new tests, suite 135 pass / 0 fail, every part of the change reverted in turn and caught by at least
 one test. Harness `tools/mt-bench/vcherd.js`
 (EXP-MT-048b), local mock only — no vendor endpoint contacted, no credentials used.
@@ -761,8 +773,8 @@ one test. Harness `tools/mt-bench/vcherd.js`
   with `max_interval_ms` and two cadence-relative ceilings, because `exponent_ceiling` caps the
   exponent, not the delay (uncapped, attempt 20 is five years); the six-interval cycle cap is a
   judgement, flagged as one in the code and the register.
-*Lands on operators when* `cgm-remote-monitor`'s connector pin moves to a release containing it
-(queue `P0-TAG`, `P0-PIN`). **Release-note it**: a vendor outage will look slower to recover.
+*Lands on operators with* 15.0.9 (queue `RT-0`): `dev` pins `0.1.0` (queue `P0-PIN`), while
+`master` (15.0.8) pins `v0.0.13`. **Release-note it**: a vendor outage will look slower to recover.
 *Evidence*: {R} §6.2, register BF-08 and BF-34, `tools/mt-bench/results/exp-mt-048b-*.json`.
 
 **T0.5 · Schema-driven query type coercion — DONE; merged in `bf/coercion`, PR #8737, 2026-09-18**
@@ -1282,7 +1294,7 @@ Queue: `A7A-GATE` and the items below.
 | 4 | **A health signal for a silent per-tenant outage** — the per-plugin `try/catch` turns bad data into an alarm outage nobody is told about | **not started** (`A7A-4`) |
 | 5 | **BF-31** — one assistant request re-points `moment`'s global locale for the whole process | **not a gate item.** A shared-state defect, not an alarm-text one: `language.set` records a code only and the catalogue is read once at boot, so `levels.translate` does not move. Fixed in `bf/alarms`, merged #8739, not released |
 | 6 | **BF-29** — an unknown `ENABLE` entry silently disabled an alarm plugin | **partial, not credit.** It now warns and names the plugin it thinks was meant (six file-name mismatches); merged #8739, not released. This removes the silence; it does not make per-tenant arming trustworthy |
-| 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. The same comparison has a single-tenant safety consequence today: a reading dated ahead of the clock silences both stale-data alarm paths (register **BF-41**, with **BF-44** as one way to produce such a reading) | **open** (`A7A-7`); T4.4a chose wall time for ack |
+| 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. The same clock has a single-tenant safety consequence today: once the wall clock passes a future-dated reading's timestamp, `lastEntry` returns it as current, so an uploader clock running ahead delays the stale-data alarm by about the size of the skew (register **BF-95**, open; **BF-44** is one shipping source of forward skew). A reading still ahead of the clock does not silence the alarm, because `lastEntry` skips it (**BF-41**, closed 2026-09-23 as not reproducing) | **open** (`A7A-7`); T4.4a chose wall time for ack |
 
 **Score: 1 of the 5 gate items (1–4, 7) complete.** `bin/` holds only `admin.js` and `feed.js` — there
 is no `ns-evaluator` and no `ns-realtime` entrypoint, so two of D5's four hosted entrypoints do not
