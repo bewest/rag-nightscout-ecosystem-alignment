@@ -2034,6 +2034,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      2026-09-23 - the merged rule may be reopened before the tag: oref0 and GluPredKit send count shapes it refuses or answers empty. Tracked as RT-COUNT-COMPAT (a semver and compatibility decision, not a defect).
       MERGED 2026-09-23 into dev (now 4011193e); NOT RELEASED. #8748 as 42c5e21e (head fc2d25ca). CI and CodeQL green on the merge commit.
       2026-09-23 - CodeQL on #8748 reported 2 high alerts, both in the test file: the write suites built the api-secret header with sha1(API_SECRET) at run time. d19043b2 (local, not pushed) uses the precomputed header value the other API tests use; test-only, 36/36.
       OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev).
@@ -2095,6 +2096,49 @@ items:
       Prepared as aabce4b1 by the other session; this item was added
       2026-09-23 because the branch had none. The commit message serves as the
       PR body (gh pr create --fill).
+
+  - id: RT-COUNT-COMPAT
+    title: "Two real clients meet the 15.0.9 count rule: a correction or a compatibility break?"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@ddd9b600
+    worktree: externals/cgm-remote-monitor-official
+    state: needs-decision
+    blast_radius: >
+      The v1 count rule from #8738 as amended by #8748 (lib/server/count.js,
+      lib/api/index.js validateCount), and the number 15.0.9 ships under.
+    review: maintainer - a semver and compatibility decision, with a safety
+      dimension on the oref0 side
+    operator_visible: >
+      Some apps ask Nightscout for records in a way this release reads more
+      strictly than 15.0.8 did. OpenAPS (oref0) asks for its latest treatment
+      with a malformed count and would get an error; GluPredKit asks for "zero"
+      records meaning "all of them" and would get none. What changes, and how
+      the release notes describe it, is being decided before 15.0.9 ships.
+    semver: n/a
+    semver_reason: this item decides whether the count rule is patch, minor or major
+    register: []
+    gates:
+      - no-gate: >
+          Evidence is read from client source and reproduced at the parser
+          level; an end-to-end replay on 15.0.8, dev and the candidate tree
+          2ce67b27 is running (-6a), including whether the resulting oref0
+          re-upload stores duplicate treatments. The decision waits on it.
+    blocks_on: []
+    evidence:
+      - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
+    notes: >
+      Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer
+      instruction to document it as a compatibility and semver item, not a
+      backfix. oref0 (dev d219baf9, master 88cf032a) sends count as
+      "1?<credential>" from latest-openaps-treatment; 15.0.8 parseInt read 1,
+      15.0.9 answers 400. GluPredKit sends count=0 as "no limit"; 15.0.9
+      answers []. Under the semver policy rule (section 3.2) both make the
+      narrowing major as written. Options, in outline - ship as a declared
+      correction naming both clients; tolerate the shapes real clients send and
+      keep 15.0.9 a patch; or number the release as a major. The release notes
+      count section carries a hidden OPEN BEFORE THE TAG note.
 
   - id: RT-REBASE
     title: Cuts 1-4 are 133 commits behind dev and now all five conflict
@@ -2321,6 +2365,7 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-09-23 - OPEN BEFORE THE TAG: RT-COUNT-COMPAT, whether the 15.0.9 count rule is a correction or a compatibility break for oref0 and GluPredKit. Hold #8598 and the tag until the maintainer decides it.
       2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) = ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge 509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev, 2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB 4.4 and 7, with the CRUD-by-_id matrix in each cell (docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and #8758 can merge on evidence. Still owed before the tag: one run after the pin to exact 0.1.0.
       2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103). Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is clean (tree 2ce67b27) and differs from the verified combined rc d087588f in exactly #8760's five files, so no combined run covers today's candidate. DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on evidence, and once more after the pin to exact 0.1.0, before the tag. The first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual-check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still has zero reviews.
       2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754 (security review: maintainer and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-run is owed unless #8754 or #8758 changes head. Manual checks passed on ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes lib/api3/alarmSocket.js and is not on 4011193e; every other client file those checks use is identical). Still before the tag - connector v0.1.0 and a pin to exact 0.1.0 (with a re-run), release notes, #8598 review.

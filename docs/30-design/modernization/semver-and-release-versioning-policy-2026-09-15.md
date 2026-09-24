@@ -388,6 +388,40 @@ number (§8.1). If it ships as written and the major reading stands, the release
 `?count=0` and the write-path scope, which the branch's CHANGELOG does not (it lists read routes
 only).
 
+**Evidence added 2026-09-23, after 15.0.9's rule was amended by #8748.** *Read from client source and
+partly reproduced at the parser level; an end-to-end replay on 15.0.8, `dev` and the 15.0.9 candidate
+tree `2ce67b27` is running (session -6a). Nothing below is decided.* 15.0.9's rule is now: a read with
+`count=0` answers an empty list; a read with any other count that is not a plain whole number answers
+400; saves and updates ignore `count`; a delete with an unreadable count is refused. Two real clients
+meet that rule in ways the table above did not foresee:
+
+- **oref0, the closed loop, sends a count that is not a plain whole number.** `oref0-ns-loop.sh:242`
+  calls `nightscout latest-openaps-treatment`, which passes `treatments.json?find[enteredBy]=…&count=1`
+  to `ns-get.sh`; that script treats its credential argument as a query and appends `'?'${QUERY}`, so
+  `count` arrives as `1?<credential>` (hashed-secret mode) or `1?token=<t>` (token mode). The same code
+  is on oref0 `dev` `d219baf9` and `master` `88cf032a` (`bin/nightscout.sh:164`, `bin/ns-get.sh:9,29-35`).
+  15.0.8's `parseInt` reads it as 1; 15.0.9 answers 400 (reproduced with `qs` 6.14, 6.15 and 6.16 and
+  `dev`'s `parseCount`). The consequence read from oref0's source is an empty "latest treatment" time,
+  after which oref0 keeps and re-uploads its last 24 hours of treatments on every loop. **Whether
+  Nightscout then stores duplicate treatments, which would count insulin and carbs twice, is exactly
+  what the replay is measuring**, and it decides how serious this is. The defect is in the client, and
+  it also puts the credential in a URL on 15.0.8 (mechanism only here).
+- **GluPredKit sends a literal `count=0` meaning "no limit".** `glupredkit/parsers/nightscout.py:66-91`
+  sends `count: 0` with a date window for profiles, treatments and entries. 15.0.8 returned everything
+  in the window (`limit(0)` is unbounded); 15.0.9 returns an empty list, and GluPredKit's resampling
+  then raises. GluPredKit was not in the census above, which is why the census found no literal
+  `count=0`.
+
+**What this means under this policy's own test.** The table's "could a real client send it?" answers
+were *No* for both rows, and both are now *Yes*: oref0 sends a non-integer spelling, and GluPredKit
+sends a literal zero. By the rule stated at the top of this case, narrowing input that a real client
+sends is **major**. The choices this puts to the maintainer before 15.0.9 is tagged are, in outline:
+keep the rule and ship it under 15.0.9 as a declared correction, naming both clients in the release
+notes; tolerate the specific shapes real clients send (for example, read a leading whole number the
+way 15.0.8 did, and/or keep `count=0` as the default limit with a deprecation warning, as recommended
+above) so 15.0.9 stays a patch; or keep the rule and number the release as a major. The replay's
+verdict on duplicates should come first.
+
 **The asymmetry with v3 `?limit=0x10`, which this policy keeps.** v3's limit is a documented
 closed contract: `API3_MAX_LIMIT` is described in `lib/api3/swagger.json` (verified by grep at
 `origin/dev`) and the endpoint already had a 400 path. **Restoring a documented bound is not the

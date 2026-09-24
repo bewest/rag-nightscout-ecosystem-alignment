@@ -209,6 +209,18 @@ routine while it is sorted out.**
 
 ### Asking for a number of records (`count`)
 
+<!-- OPEN BEFORE THE TAG (2026-09-23): this section describes the rule on dev, and two real clients
+     meet it in ways that may make it a compatibility break. See the semver policy, section 3.2,
+     "Evidence added 2026-09-23". An end-to-end replay is running. Do not publish these notes until
+     the maintainer has decided the count rule.
+     - oref0 (OpenAPS) sends count as "1?<credential>" on its latest-treatment lookup; 15.0.8 read it
+       as 1, and this release answers 400.
+     - GluPredKit sends count=0 to mean "no limit"; this release answers with an empty list.
+     If the rule ships as it stands, add to this section, in plain words: which clients are affected,
+     what they will see, and that OpenAPS users should update oref0 once it has a fix. The OpenAPS
+     wording must be settled with the replay's result on whether duplicate treatments are stored,
+     because that affects insulin and carbs on board. If the rule changes, rewrite the table to match. -->
+
 Apps add `count` to a request to say how many records they want back, for example "the last 10
 readings". On 15.0.8, a request for **zero** records could send back your **entire** history,
 and counts that are not plain whole numbers were read in surprising ways. On the version 1 API,

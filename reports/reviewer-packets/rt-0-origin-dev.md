@@ -121,11 +121,14 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) =
-ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge
-509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev,
-2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB
-4.4 and 7, with the CRUD-by-_id matrix in each cell
+2026-09-23 - OPEN BEFORE THE TAG: RT-COUNT-COMPAT, whether the 15.0.9 count
+rule is a correction or a compatibility break for oref0 and GluPredKit. Hold
+#8598 and the tag until the maintainer decides it. 2026-09-23 - COMBINED RUN
+GREEN (-59): rc/15.0.9-combined-59 (local) = ddd9b600, then #8754 ef3404fd
+(merge 2731b658), then #8758 6d120fa2 (merge 509235b3). Both merges were
+automatic; tree 2ce67b27. Suite 2453/0/3 on dev, 2548/0/3 with #8754 and
+3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB 4.4 and 7, with the CRUD-
+by-_id matrix in each cell
 (docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and
 #8758 can merge on evidence. Still owed before the tag: one run after the pin
 to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103).
