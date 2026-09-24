@@ -1,7 +1,7 @@
 # `bf/count-client-compat`: reads accept the count shapes OpenAPS and GluPredKit send
 
-**OPENED 2026-09-24 as nightscout/cgm-remote-monitor #8761** (head `b4ead206`). A second commit,
-`516f971a` (two settings, local, not pushed), follows. Branch `bf/count-client-compat` on `origin/dev`
+**OPENED 2026-09-24 as nightscout/cgm-remote-monitor #8761.** Head `516f971a` (the second commit
+adds the two settings); body updated and a comment posted for it; CI green on it. Branch `bf/count-client-compat` on `origin/dev`
 `ddd9b600`. No `CHANGELOG.md` edit. The version stays 15.0.9. This implements the
 maintainer's 2026-09-24 decision (queue item `RT-COUNT-COMPAT`; semver policy §3.2, "Decided
 2026-09-24"). The posting copy is the text below the line.
