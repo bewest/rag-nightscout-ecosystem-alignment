@@ -89,6 +89,15 @@ class TestSMBDetection(unittest.TestCase):
         """AAPS: type == 'SMB' is sufficient."""
         self.assertTrue(self.is_smb({'type': 'SMB', 'insulin': 0.3}))
 
+    def test_aaps_is_smb_flag(self):
+        """AAPS: isSMB true with eventType Correction Bolus."""
+        self.assertTrue(self.is_smb({'eventType': 'Correction Bolus',
+                                     'isSMB': True, 'insulin': 0.3}))
+
+    def test_trio_smb_event_type(self):
+        """Trio: eventType 'SMB', with neither type nor automatic set."""
+        self.assertTrue(self.is_smb({'eventType': 'SMB', 'insulin': 0.3}))
+
     def test_loop_automatic_small(self):
         """Loop/Trio: automatic=True + small insulin."""
         self.assertTrue(self.is_smb({'automatic': True, 'insulin': 0.2}))

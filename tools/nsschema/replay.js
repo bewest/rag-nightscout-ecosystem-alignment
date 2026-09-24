@@ -34,15 +34,34 @@ const COLLECTIONS = ['entries', 'treatments', 'devicestatus', 'profile'];
 const PROFILES = ['write', 'read'];
 const STRICTNESS = ['permissive', 'tolerant', 'extension-bag', 'strict'];
 
-const SNAPSHOTS = [
+const DEFAULT_SNAPSHOTS = [
   { id: '2026-04-01', root: 'externals/ns-data/patients', layout: 'site_dir' },
   { id: '2026-04-26', root: 'externals/ns-resync-2026-04-26/raw', layout: 'flat_site' },
 ];
 
+// NSSCHEMA_CORPUS replaces the built-in roots, exactly as in corpus.py:
+// comma-separated snapshot_id=path:site_dir|flat_site entries.
+function snapshots() {
+  const spec = (process.env.NSSCHEMA_CORPUS || '').trim();
+  if (!spec) return DEFAULT_SNAPSHOTS;
+  return spec.split(',').map((item) => {
+    const eq = item.indexOf('=');
+    const colon = item.lastIndexOf(':');
+    const id = item.slice(0, eq).trim();
+    const root = item.slice(eq + 1, colon);
+    const layout = item.slice(colon + 1);
+    if (eq < 1 || colon <= eq + 1 || !['site_dir', 'flat_site'].includes(layout)) {
+      throw new Error(`NSSCHEMA_CORPUS entry ${JSON.stringify(item)}: expected snapshot_id=path:site_dir|flat_site`);
+    }
+    return { id, root, layout };
+  });
+}
+const SNAPSHOTS = snapshots();
+
 function discover(collection) {
   const out = [];
   for (const snap of SNAPSHOTS) {
-    const root = path.join(ROOT, snap.root);
+    const root = path.resolve(ROOT, snap.root);
     if (!fs.existsSync(root)) continue;
     for (const site of fs.readdirSync(root).sort()) {
       const base = snap.layout === 'site_dir'
@@ -175,7 +194,7 @@ function main() {
     console.log(`${collection.padEnd(13)} ${total.toLocaleString().padStart(9)} docs   ${line}`);
   }
 
-  const dest = path.join(ROOT, outPath);
+  const dest = path.resolve(ROOT, outPath);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(dest, JSON.stringify(results, null, 1) + '\n');
   console.log(`-> ${outPath}`);

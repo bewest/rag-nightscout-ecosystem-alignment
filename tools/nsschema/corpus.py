@@ -44,10 +44,33 @@ class Source:
         return f"{self.snapshot}/{self.site}/{self.collection}"
 
 
+def snapshots():
+    """The snapshot roots to read: ``SNAPSHOTS``, or ``NSSCHEMA_CORPUS``.
+
+    ``NSSCHEMA_CORPUS`` replaces the built-in roots with a comma-separated
+    list of ``snapshot_id=path:layout`` entries, so the whole pipeline can run
+    over a corpus held somewhere else — another data holder's export laid out
+    by ``nsprobe layout``. A relative path resolves against the repo root.
+    """
+    spec = os.environ.get("NSSCHEMA_CORPUS", "").strip()
+    if not spec:
+        return SNAPSHOTS
+    out = []
+    for item in spec.split(","):
+        snapshot, _, rest = item.strip().partition("=")
+        rel, _, layout = rest.rpartition(":")
+        if not snapshot or not rel or layout not in ("site_dir", "flat_site"):
+            raise ValueError(
+                f"NSSCHEMA_CORPUS entry {item!r}: expected "
+                "snapshot_id=path:site_dir|flat_site")
+        out.append((snapshot, rel, layout))
+    return tuple(out)
+
+
 def discover(repo_root: Path, collections=COLLECTIONS) -> List[Source]:
     """Enumerate every readable (snapshot, site, collection) JSON file."""
     found: List[Source] = []
-    for snapshot, rel, layout in SNAPSHOTS:
+    for snapshot, rel, layout in snapshots():
         root = repo_root / rel
         if not root.is_dir():
             continue

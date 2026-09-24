@@ -110,11 +110,13 @@ def _is_smb(record: dict) -> bool:
     """Multi-step SMB detection per GAP-TREAT-002.
 
     Do NOT rely solely on eventType. Check:
-    1. AAPS: type == 'SMB'
-    2. Loop/Trio: automatic == true AND small insulin dose
-    3. eventType == 'Correction Bolus' with automatic flag
+    1. AAPS: type == 'SMB' or isSMB == true
+    2. Trio: eventType == 'SMB'
+    3. Loop: automatic == true AND small insulin dose
     """
-    if record.get('type') == 'SMB':
+    if record.get('type') == 'SMB' or record.get('isSMB') is True:
+        return True
+    if record.get('eventType') == 'SMB':
         return True
     if record.get('automatic') is True:
         insulin = record.get('insulin', 0) or 0

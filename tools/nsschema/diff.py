@@ -134,12 +134,15 @@ def reconcile(census, flat, collection):
 
         num = field.get("numeric")
         if num:
-            if decl["minimum"] is not None and num["min"] < decl["minimum"]:
+            # census withholds min/max below MIN_NUMERIC_SAMPLES observations
+            if (decl["minimum"] is not None and num.get("min") is not None
+                    and num["min"] < decl["minimum"]):
                 constraint_violations.append({
                     "path": path, "kind": "minimum",
                     "declared_minimum": decl["minimum"], "observed_min": num["min"],
                 })
-            if decl["maximum"] is not None and num["max"] > decl["maximum"]:
+            if (decl["maximum"] is not None and num.get("max") is not None
+                    and num["max"] > decl["maximum"]):
                 constraint_violations.append({
                     "path": path, "kind": "maximum",
                     "declared_maximum": decl["maximum"], "observed_max": num["max"],
