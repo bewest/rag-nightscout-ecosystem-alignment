@@ -31,27 +31,27 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 115 |
-| runnable gates | 184 |
-| explicit `no-gate:` markers | 159 |
+| items | 116 |
+| runnable gates | 185 |
+| explicit `no-gate:` markers | 160 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 343 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 345 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE, BFQ-106, BFQ-108 |
-| `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
-| `blocked` | 16 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT, BFQ-99, BFQ-100, BFQ-101 |
+| `blocked` | 17 | P0-PIN, P0-LOCK, RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 4 | RT-COUNT-COMPAT, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 29 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-4, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 8 | P0-TAG, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
+| `answered` | 1 | RT-D3 |
 
 ### Reaches an operator on today's release
 
@@ -990,7 +990,7 @@ needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 16 items
+`parcel: release-train` &mdash; 17 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -999,13 +999,14 @@ that costs.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
+| `RT-D3` | Answer the D3 question before 15.0.9 ships | `answered` | `origin/dev` | minor | 1 run + 1 no-gate |
+| `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `chore/retire-jsdom` | n/a | 1 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `merged-upstream` | `bf/count-zero-empty` | patch | 2 run |
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `in-flight-upstream` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
-| `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
+| `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `chore/build-runtime-separation` | minor | 1 run + 1 no-gate |
 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `chore/nightscout-modernization` | major | 1 run + 2 no-gate |
@@ -1020,7 +1021,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `origin/dev` |
 | base | `origin/master` |
@@ -1039,8 +1040,6 @@ that costs.
 
 - `[unit]` `sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive origin/dev | tar -x -C "$d" && ln -s "$PWD/externals/cgm-remote-monitor-official/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --require ./tests/hooks.js --exit tests/dependency-d3.test.js; r=$?; rm -rf "$d"; exit $r'`
   - Runs origin/dev's own tree (git archive), not the checkout's working tree, which is not kept at dev. 24 passing (GT2), driving the real renderer and chart against the D3 7 browser bundle. Non-vacuous: it catches reverting mouseover handlers to the D3-5 signature and catches breaking d3.pointer.
-- `[static]` `node tools/queue/gates/d3-drag-clamp-covered.js`
-  - The coverage gap. With BOTH treatment-drag clamps deleted (renderer.js:764 and 770-771) the suite stays at 24/24 - the handler runs 25 times with only x in {20,400}, all strictly inside 0..900, so the boundary is never reached (GT2). This gate re-runs that ablation and FAILS while the clamps are uncovered.
 - **NO GATE** &mdash; lib/plugins/cob.js +49/-73 is filed under the D3 heading in release-readiness §2 and is NOT D3 work - it is 34e9b2da, "fix(cob): use the COB reported by the uploading system". It is more than twice the size of the entire D3 migration, it changes what a user reads when deciding about food and correction, and it has no line of its own in the 15.0.9 release decision. Nothing gates it because nobody has decided what it is.
 
 **Evidence.**
@@ -1049,7 +1048,39 @@ that costs.
 - `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** 2026-09-23 - both gates measure again. They had been red without testing anything: dev's suite refuses to run unless NODE_ENV=test, the unit gate ran the official checkout's working tree (a8888f0d, not dev) without my.test.env, and the ablation gate borrowed node_modules from an old worktree. Now: the unit gate passes on origin/dev ddd9b600 (24 passing); the ablation gate's control passes (24) and deleting the three drag clamps still leaves 24 passing. That is the known mocha-suite gap, and the browser probe tools/review/probes/rt-d3-drag-browser.js covers it (2 of 19 checks go red without the clamps). Whether the mocha gap must close before RT-D3 counts as answered for RT-0 is the maintainer's call. 2026-09-23 - BOTH HALVES DONE for 15.0.9. Manual check passed by hand on the combined rc ec70aab0 (-6d): mouse in mg/dL and mmol/L, and touch, same as 15.0.8. Automated half as recorded below. The drag clamps behave as on 15.0.8. Found on the way, pre-existing on 15.0.8 and not a D3 regression: BF-103 (a split drag stores the old time, so IOB and COB ignore the move), tracked as BFQ-103. DECIDED 2026-09-23 (maintainer) - answered two ways: a manual check in a browser, plus an automated browser test (possibly driven through a Chrome DevTools MCP as a hybrid). The automated half has a first run: docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md (7e86ab91) finds 15.0.8 and dev identical on every drag measured, with 0 page errors, and deleting the clamps turns 2 of 19 checks red. Its probe, tools/review/probes/rt-d3-drag-browser.js, was untracked then; it is committed now. The manual check was done by hand on 2026-09-23 (note above; docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md). The clamps bound a user-initiated rewrite of a treatment's created_at emitted over the socket, and a treatment's timestamp is what IOB/COB key off. They are the exact lines the D3 6 migration rewrote and the least covered lines it touched.
+**Notes.** 2026-09-24 - ANSWERED for 15.0.9 (maintainer, session -6a): the drag is safe to ship on the evidence of the automated Chrome probe (2026-09-22, 15.0.8 and dev identical, 2 of 19 checks red without the clamps) and the hand check (ec70aab0, and again on #8760's head 8d797ba4). No repeat is needed while the candidate's browser-side code matches 8d797ba4, which RT-0's client-unchanged- since-hand-check gate measures. The mocha suite's inability to see the drag clamps is not a 15.0.9 question; it moved to RT-D3-SUITE, targeted at cut 1's real-browser suite. 2026-09-23 - both gates measure again. They had been red without testing anything: dev's suite refuses to run unless NODE_ENV=test, the unit gate ran the official checkout's working tree (a8888f0d, not dev) without my.test.env, and the ablation gate borrowed node_modules from an old worktree. Now: the unit gate passes on origin/dev ddd9b600 (24 passing); the ablation gate's control passes (24) and deleting the three drag clamps still leaves 24 passing. That is the known mocha-suite gap, and the browser probe tools/review/probes/rt-d3-drag-browser.js covers it (2 of 19 checks go red without the clamps). Whether the mocha gap must close before RT-D3 counts as answered for RT-0 is the maintainer's call. 2026-09-23 - BOTH HALVES DONE for 15.0.9. Manual check passed by hand on the combined rc ec70aab0 (-6d): mouse in mg/dL and mmol/L, and touch, same as 15.0.8. Automated half as recorded below. The drag clamps behave as on 15.0.8. Found on the way, pre-existing on 15.0.8 and not a D3 regression: BF-103 (a split drag stores the old time, so IOB and COB ignore the move), tracked as BFQ-103. DECIDED 2026-09-23 (maintainer) - answered two ways: a manual check in a browser, plus an automated browser test (possibly driven through a Chrome DevTools MCP as a hybrid). The automated half has a first run: docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md (7e86ab91) finds 15.0.8 and dev identical on every drag measured, with 0 page errors, and deleting the clamps turns 2 of 19 checks red. Its probe, tools/review/probes/rt-d3-drag-browser.js, was untracked then; it is committed now. The manual check was done by hand on 2026-09-23 (note above; docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md). The clamps bound a user-initiated rewrite of a treatment's created_at emitted over the socket, and a treatment's timestamp is what IOB/COB key off. They are the exact lines the D3 6 migration rewrote and the least covered lines it touched.
+
+### `RT-D3-SUITE` &mdash; The treatment-drag clamps get a regression test in cut 1's real-browser suite
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `chore/retire-jsdom` |
+| base | `origin/chore/retire-jsdom` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `RT-1` |
+
+**Blast radius.** A new test under tests/browser/ on cut 1 (playwright-core 1.63, Chromium, Firefox and WebKit in CI), ported from the alignment repo's tools/review/probes/rt-d3-drag-browser.js.
+
+**What an operator sees.** Nothing you see. A future change that breaks dragging a treatment on the chart would be caught by Nightscout's own tests before a release.
+
+**Why `n/a`.** tests only
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/d3-drag-clamp-covered.js`
+  - The coverage gap. With BOTH treatment-drag clamps deleted (renderer.js:764 and 770-771) the suite stays at 24/24 - the handler runs 25 times with only x in {20,400}, all strictly inside 0..900, so the boundary is never reached (GT2). This gate re-runs that ablation and FAILS while the clamps are uncovered.
+- **NO GATE** &mdash; The port itself is not gated yet. Done means a tests/browser/ test on cut 1 that fails when both drag clamps are deleted, on all three engines, with the axis-computed expected time and the dismissed-confirm control from the probe. The candidate list of probes to port is in tools/review/README.md.
+
+**Evidence.**
+
+- `docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md`
+- `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
+
+**Notes.** 2026-09-24 - split out of RT-D3 when RT-D3 was answered for 15.0.9 (maintainer, session -6a). Cut 1 (chore/retire-jsdom) replaces jsdom with a real-browser mocha suite, so the port waits for it rather than adding a second browser harness to dev. Cut 1's tests/browser/chart-interactions.test.js already moves a treatment by touch and checks cancel, and its clamp test is the context brush's; the work is to add the treatment-drag edge cases there, with the axis-computed expected time.
 
 ### `RT-VERSION` &mdash; Two artefacts claim version 15.0.9 with different Node floors
 
@@ -1224,7 +1255,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 (dev -> master) was, on 2026-09-22, open, mergeable and green on every CI check, with reviewDecision REVIEW_REQUIRED and zero approving reviews. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-D3`, `RT-VERSION` |
+| blocks on | `RT-VERSION` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 74fc6619, measured 2026-09-22. 308 commits, 48 first-parent merges, 200 files, +14381/-1262. Among them the thirteen backfix PRs from this programme (#8733, #8734, #8735, #8736, #8737, #8738, #8739, #8740, #8743, #8744, #8745, #8746, and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. Reproduce with `git -C externals/cgm- remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1234,10 +1265,12 @@ that costs.
 
 **Gates.**
 
+- `[static]` `node tools/queue/gates/client-unchanged-since-hand-check.js`
+  - The 15.0.9 browser checks were done by hand (ec70aab0, and the drag again on #8760's head 8d797ba4). This rebuilds the candidate, origin/dev merged with the open 15.0.9 PR heads, and fails if any browser-side file, or any package outside a server-only list, differs from 8d797ba4. RED means the manual checks need repeating for what it names. Its control, #8760's own client change, is seen in the same run. Edit the --with list as 15.0.9 PRs open or merge.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/master origin/dev`
   - dev descends from master with no divergence to reconcile
 - **NO GATE** &mdash; CI at dev's tip is not re-run here. Release PR #8598's checks (Node 20/22/24 x Mongo 4.4/5/6, CodeQL, Docker build and publish) were all green on 2026-09-22, read from GitHub. Re-running them needs the full matrix with replica sets, and dev has no real-browser test job, so the D3 chart behaviour is not covered by that green.
-- **NO GATE** &mdash; RT-D3's drag-clamp gap is unresolved and this release ships the D3 7 charts. The decision to ship anyway is the maintainer's; recording it as a no-gate keeps it from reading as covered.
+- **NO GATE** &mdash; This release ships the D3 7 charts with the drag checked in a real browser, not by Nightscout's own mocha suite, which cannot see the drag clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut 1). Recording it as a no-gate keeps it from reading as covered.
 
 **Evidence.**
 
@@ -1246,7 +1279,7 @@ that costs.
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** 2026-09-23 - OPEN BEFORE THE TAG: RT-COUNT-COMPAT, whether the 15.0.9 count rule is a correction or a compatibility break for oref0 and GluPredKit. Hold #8598 and the tag until the maintainer decides it. 2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) = ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge 509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev, 2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB 4.4 and 7, with the CRUD- by-_id matrix in each cell (docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and #8758 can merge on evidence. Still owed before the tag: one run after the pin to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103). Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is clean (tree 2ce67b27) and differs from the verified combined rc d087588f in exactly #8760's five files, so no combined run covers today's candidate. DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on evidence, and once more after the pin to exact 0.1.0, before the tag. The first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual- check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754 (security review: maintainer and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-run is owed unless #8754 or #8758 changes head. Manual checks passed on ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes lib/api3/alarmSocket.js and is not on 4011193e; every other client file those checks use is identical). Still before the tag - connector v0.1.0 and a pin to exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0 (local only) on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs - #8748 d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752 adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14 (containment checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB 4.4.24/7.0.43, nofile 64000); break-its red for the original reason; connector control dev.2 23/23, v0.0.13 18/5. Record: docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews, release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4 is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (P0-TAG); RT-D3 is answered by a manual check plus an automated browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section 1a. First on the adopted train. Every merged backfix in dev - the items in state merged-upstream - reaches operators only through this release; until it ships they are in code nobody runs. Merging dev publishes a Docker Hub image, which is not a release. dev pins nightscout-connect at 234d47c by source URL (the commit is in connector dev since #64 merged; measured 2026-09-23 with merge-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
+**Notes.** 2026-09-23 - OPEN BEFORE THE TAG: RT-COUNT-COMPAT, whether the 15.0.9 count rule is a correction or a compatibility break for oref0 and GluPredKit. Hold #8598 and the tag until the maintainer decides it. 2026-09-24 - RT-D3 answered (maintainer, session -6a) and removed from blocks_on; the new first gate keeps the hand checks valid only while the candidate's browser-side code matches the hand-checked tree. 2026-09-23 - COMBINED RUN GREEN (-59): rc/15.0.9-combined-59 (local) = ddd9b600, then #8754 ef3404fd (merge 2731b658), then #8758 6d120fa2 (merge 509235b3). Both merges were automatic; tree 2ce67b27. Suite 2453/0/3 on dev, 2548/0/3 with #8754 and 3028/0/3 with #8758, on Node 20, 22 and 24 x MongoDB 4.4 and 7, with the CRUD-by-_id matrix in each cell (docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md). So #8754 and #8758 can merge on evidence. Still owed before the tag: one run after the pin to exact 0.1.0. 2026-09-23 (01:43Z 09-24) - dev ddd9b600 adds #8760 (BF-103). Open: #8754 (head ef3404fd: three dev merges on 0a74ef4e, its own changes line-identical to 0a74ef4e) and #8758 (6d120fa2). Their merge with dev is clean (tree 2ce67b27) and differs from the verified combined rc d087588f in exactly #8760's five files, so no combined run covers today's candidate. DECIDED 2026-09-23 (maintainer, relayed via -59) - run the combined suite now on dev ddd9b600 + #8754 ef3404fd + #8758 6d120fa2, so both PRs can merge on evidence, and once more after the pin to exact 0.1.0, before the tag. The first run is rc/15.0.9-combined-59 (session -59). #8598 carries the manual-check comment and the BF-103 update (2026-09-24 00:33Z and 04:41Z); it still has zero reviews. 2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757, #8749, #8748, #8755, #8756, #8753 and #8751; open: #8754 (security review: maintainer and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f, 3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-run is owed unless #8754 or #8758 changes head. Manual checks passed on ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes lib/api3/alarmSocket.js and is not on 4011193e; every other client file those checks use is identical). Still before the tag - connector v0.1.0 and a pin to exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0 (local only) on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs - #8748 d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752 adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14 (containment checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB 4.4.24/7.0.43, nofile 64000); break-its red for the original reason; connector control dev.2 23/23, v0.0.13 18/5. Record: docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews, release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4 is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (P0-TAG); RT-D3 is answered by a manual check plus an automated browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section 1a. First on the adopted train. Every merged backfix in dev - the items in state merged-upstream - reaches operators only through this release; until it ships they are in code nobody runs. Merging dev publishes a Docker Hub image, which is not a release. dev pins nightscout-connect at 234d47c by source URL (the commit is in connector dev since #64 merged; measured 2026-09-23 with merge-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 

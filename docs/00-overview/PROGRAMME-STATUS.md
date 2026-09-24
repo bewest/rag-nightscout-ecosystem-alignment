@@ -22,9 +22,9 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 25 | 11 |
-| **Modernization** | `release-train` | 16 | 1 | 2 |
+| **Modernization** | `release-train` | 17 | 1 | 2 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **115** | **35** | **17** |
+| | **total** | **116** | **35** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -156,14 +156,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | total |
+| parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 |  | 3 | 1 | 3 |  | 12 | 2 |  |  |  | **22** |
-| `release-train` | 1 | 1 | 4 |  | 4 | 1 | 4 | 1 |  |  |  | **16** |
-| `register-open` | 18 |  | 5 |  | 4 | 2 | 12 | 4 |  | 2 | 1 | **48** |
-| `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
-| `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
-| `backfix2` |  |  |  |  |  | 1 | 1 |  |  |  |  | **2** |
+| `phase0` | 1 | 3 | 1 | 3 |  | 12 | 2 |  |  |  |  | **22** |
+| `release-train` | 1 | 4 |  | 5 | 1 | 4 | 1 |  |  |  | 1 | **17** |
+| `register-open` | 18 | 5 |  | 4 | 2 | 12 | 4 |  | 2 | 1 |  | **48** |
+| `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
+| `docs-truth` | 6 | 1 |  |  |  |  |  | 2 |  |  |  | **9** |
+| `backfix2` |  |  |  |  | 1 | 1 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -201,14 +201,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 82 | 71% |
+| Maintainer | 83 | 72% |
 | SECURITY reviewer | 15 | 13% |
 | Maintainer + a second human | 6 | 5% |
 | SAFETY reviewer | 6 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **115** | |
+| **total** | **116** | |
 
 <!-- END GENERATED: reviewer-load -->
 
