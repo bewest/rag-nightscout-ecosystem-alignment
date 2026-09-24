@@ -2,9 +2,9 @@
 
 *Contributor-facing. Living document, maintained alongside the
 [multitenancy execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
-Facts are measured against cgm-remote-monitor `origin/dev` `ddd9b600` and `origin/master`
-`92d08342` (= tag `15.0.8`, the shipping release) as of 2026-09-23, unless an entry names another
-ref. Nothing here is medical advice.*
+Entries name the refs they were measured on. Status and the counts below are as of 2026-09-24,
+cgm-remote-monitor `origin/dev` `153e5658` and `origin/master` `92d08342` (= tag `15.0.8`, the
+shipping release), nightscout-connect `0.1.0`. Nothing here is medical advice.*
 
 **What belongs here.** An entry in §1 is a defect that
 
@@ -38,18 +38,25 @@ words:
 | `wontfix` | deliberately not repaired, with the reason in the detail section |
 | `closed …, invalid` | investigated and does not reproduce; the row is struck through and kept, so the claim is not raised again |
 
+**Connector defects.** For a defect in `nightscout-connect`, the status word is what a Nightscout
+operator gets: `merged <date>` is the date Nightscout `dev` first pinned a connector version
+carrying the fix. The cell then says where the connector release stands, in the form
+"connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0`
+exactly via PR #8762". A connector release reaches Nightscout operators only through a Nightscout
+release, so such an entry is still present on 15.0.8, which pins connector `v0.0.13`.
+
 **What a status means for an operator.** Every §1 entry marked `fixed`, `partly merged` or
 `merged` is **still present for every operator running today's release, 15.0.8, until it is
 released.** Merging to `dev` is not releasing: a push to `dev` publishes a Docker Hub image, but
-`origin/master` and its tags are what operators install. On 2026-09-23 `origin/master` is **345
-commits behind `origin/dev` (`ddd9b600`) and 0 ahead**
+`origin/master` and its tags are what operators install. On 2026-09-24 `origin/master` is **350
+commits behind `origin/dev` (`153e5658`) and 0 ahead**
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`),
-and the release PR #8598 (`dev` → `master`) is open, now at `ddd9b600`, with no approving review.
+and the release PR #8598 (`dev` → `master`) is open at `153e5658`, with no review.
 
-| question | answer, 2026-09-23 (`origin/dev` `ddd9b600`) | reproduce with |
+| question | answer, 2026-09-24 (`origin/dev` `153e5658`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **75** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **25 open, 42 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17, BF-30, BF-52, BF-99, BF-100, BF-101, BF-102). **73** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (its word-matching counts BF-07 as open) |
-| How much work is outstanding? | **52 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **75** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **24 open, 43 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17 and BF-30 in PR #8754; BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **73** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under merged) |
+| How much work is outstanding? | **49 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
 Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
 cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
@@ -68,13 +75,13 @@ against which ref.
 Where only part of a claim was run, the cell says which part.
 
 **Mechanism, not recipe.** This repository is public. An entry that is live on 15.0.8 describes the
-mechanism only; the working probes for BF-70, BF-72, BF-73, BF-75 and BF-79 are held outside
-version control, and no request, payload or pattern that would work against a deployed instance
+mechanism only; the working probes for BF-70, BF-72, BF-73, BF-75, BF-79 and BF-107 are held
+outside version control, and no request, payload or pattern that would work against a deployed instance
 belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-23 the highest is BF-105. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-24 the highest is BF-108. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -104,82 +111,82 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 
 | id | defect | where | severity | tenancy-independent | status |
 |---|---|---|---|---|---|
-| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (`bf/reads` `4772b983`, PR #8738); reproduced live; `count/treatments/where` was affected too — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (T0.5, `bf/coercion` `f829ea11`, PR #8737) — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** for `devicestatus` + `profile`** (T0.5, `bf/coercion` `f829ea11`, PR #8737); `food` and `activity` misfiled, see detail — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (T0.5, `bf/coercion` `f829ea11`, PR #8737) — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
+| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `4772b983`); reproduced live; `count/treatments/where` was affected too |
+| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (PR #8737, merge `025f1310`; T0.5, `bf/coercion` `f829ea11`) |
+| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** for `devicestatus` and `profile` (PR #8737, merge `025f1310`; T0.5, `bf/coercion` `f829ea11`); `food` and `activity` are not affected as stated, see detail; the fix costs `activity` its numeric `date` filter (BF-106) |
+| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (PR #8737, merge `025f1310`; T0.5, `bf/coercion` `f829ea11`); reproduced against a real `mongod` |
 | **BF-12** | ~~`entries.rawbg` is coerced but is not in the model~~ — **does not reproduce**; the walker entry is `rssi`, which *is* in the model | `lib/server/entries.js:186` | none — not a defect | n/a | **closed 2026-09-15, invalid** |
-| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **merged 2026-09-18** (`bf/reads` `5a5269a3`, PR #8738); reproduced through the v3 HTTP path — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **merged 2026-09-18** (`bf/reads` `06b133a7`, PR #8738); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **merged 2026-09-18** (`bf/reads` `12207df3`, PR #8738); reproduced live — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. **The "wrong order in the built-in editor" half of this entry was wrong** — the editor re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **merged 2026-09-20** (`bf/food` `73495331`); reproduced live, both spellings written over HTTP — **merged to `dev` via PR #8735 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **merged 2026-09-20** (found during BF-16, `bf/food` `73495331`); reproduced in jsdom, ablated six ways — **merged to `dev` via PR #8735 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | **fixed 2026-09-15** — `bf/auth` `64db1f35`, carried by `bf2/auth-hardening`, in review as PR #8754 (head `0ca46d92`; security review by the maintainer and Andy); reproduced live; **existing rows still hold tokens, see the report** |
-| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | **merged 2026-09-20** (`bf/alarms` `8714093b`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | **merged 2026-09-20** (`bf/alarms` `99e46a52`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | **fixed 2026-09-15** — `bf/auth` `a26ba416`, carried by `bf2/auth-hardening`, in review as PR #8754 (head `0ca46d92`; security review by the maintainer and Andy); reproduced live; **the register's preferred fix was refuted by measurement** |
-| **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | **merged 2026-09-20** (`bf/alarms` `5dcf783f`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. **The consequence this entry claimed is refuted** — `{$exists: NaN}` is read by MongoDB as **true**, not false, so `$exists=true` was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — **re-graded from medium**: a 500 on `$regex`, not a wrong answer on `$exists`. The fix remains right; its stated reason was wrong | yes | **merged 2026-09-18** (found during T0.5, `bf/coercion` `f829ea11`, PR #8737); **claim refuted 2026-09-15**, see detail and BF-40 — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **merged 2026-09-18** (`bf/reads` `2ecfeb53`, PR #8738); found while fixing BF-14, reproduced live — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (found during T0.4, `c1cce2a`; in connector `dev` via connector PR #68, `3f73288`; in connector prereleases `0.1.0-dev.1` to `dev.3`, which Nightscout `dev` has pinned since PR #8752 and pins now via PR #8759); in no full connector release; NOT RELEASED (shipping tag 15.0.8; see the status legend); on the pre-`dev` base `b77e5bb`, 100 actors delivered the same 800 requests across 3 s before and 67 s after |
-| **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **merged 2026-09-18** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape — **merged to `dev` via PR #8734 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **merged 2026-09-20** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **merged 2026-09-20** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **merged 2026-09-20** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver. **`$where` executes on the driver**: measured, a caller-supplied `$where` reaches `mongod` unchanged on `origin/dev` `a8888f0d` and `mongod` runs it, on a route `AUTH_DEFAULT_ROLES=readable` opens without a token | `lib/server/query.js:157` | **high** — server-side JavaScript execution, plus ReDoS / full-scan exposure | yes | **merged 2026-09-18** (`bf/operators` `3e8ce695` + `71506cf8`) — **the extraction this entry asked for since 2026-09-14, done on a `dev`-based branch rather than inside the seam.** Reproduced against `mongod 7.0` before and after. Repaired on a branch, NOT merged, so it still reaches every operator on today's release. See detail — **merged to `dev` via PR #8743 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **merged 2026-09-18** (`bf/reads` `3b588098`, PR #8738) — deleted, not gated; the module has no `env` handle — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **merged 2026-09-20** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP — **merged to `dev` via PR #8740 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly merged 2026-09-20** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** — **merged to `dev` via PR #8740 on 2026-09-20; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-08** | `nightscout-connect` actors have no start jitter — a pool reaches the vendor inside one second on every restart. **The interval half of this entry was wrong**: all four drivers already jitter the aligned path by 18 s | `nightscout-connect` `lib/machines/cycle.js` `Init`, and `run()` | medium — thundering herd on restart | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (T0.4, `c1cce2a`; in connector `dev` via connector PR #68, `3f73288`; in connector prereleases `0.1.0-dev.1` to `dev.3`, which Nightscout `dev` has pinned since PR #8752 and pins now via PR #8759); in no full connector release; NOT RELEASED (shipping tag 15.0.8; see the status legend); measured at 400 actors on the pre-`dev` base `b77e5bb`, busiest second 400 → 15 |
-| **BF-09** | Socket dedup uses truthiness, so a falsy value is skipped as a match key. **The fields this entry named were wrong**: in 277,690 corpus treatments `insulin` is never `0` (0 of 107,732) and `carbs` never (0 of 12,394). The field that actually carries the value is **`absolute`** — zero in 67,521 of 153,315, 44 % — which is the **zero temp basal**, the canonical AID suspend | `lib/server/websocket.js:538-566` (the range this entry used to cite, 535-568, does not resolve; the same stale range is copied into the [storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md) §4.4) | **medium** — re-graded from `unsettled`: naming `insulin`/`carbs` made it read as an edge case, and a zero temp basal is not one | yes | open — **measured 2026-09-23** on `74fc6619` and `15.0.8` through the real socket path ([evidence](../../60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md)): treating zero as a real key value fixes 6 dedup cases (a dropped zero temp, cancel, 100 % temp, zero bolus and zero carbs) and changes no control; `bec641ca` was a rendering change and does not touch dedup. Awaiting the maintainer's choice among the options in the evidence |
-| **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024`. **Not documentation-only**: `docker-compose.yml` ships at the repository root with a `mongo:` service and **no `ulimits:` block**, on `master` and `dev` alike (both `mongo:5.0.32`; an earlier `dev (mongo:4.4)` here was wrong, corrected 2026-09-22) | `docker-compose.yml` `mongo` service — a one-block code landing site in the file most self-hosters actually use; operator documentation second | medium — self-hosters in containers | yes | **merged 2026-09-23** to `dev` via PR #8753 (`3a38c6f2`, `ulimits` on the bundled compose file's `mongo` service); NOT RELEASED (shipping tag 15.0.8; see the status legend). Before: **REPRODUCED 2026-09-21 on `mongod 7.0.43`**, unplanned, with the full fatal-assert trace; see detail |
-| **BF-40** | `find[<field>][$exists]=false` returns the documents that **have** the field, on every field, on today's release; repaired on `bf/coercion`. MongoDB reads a non-numeric operand as **true**, so the string `"false"` and the `NaN` the old walker produced both mean *exists* | `lib/server/query.js` `walk_prop` / `lib/server/query-coercion.js` `isValueLeaf` (on `bf/coercion`) + `lib/server/query.js:288` | **medium** — inverted answer, HTTP 200, on a filter any client can send; **and it refutes BF-32's stated mechanism** | yes | **merged 2026-09-18** on `bf/coercion` (`b7234753`), open as PR **#8737** — repaired on a branch, NOT merged, so it still reaches every operator on today's release. Reproduced 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43), identical on all seven — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-41** | ~~A reading timestamped ahead of the server clock silently disables both stale-data alarm paths, because `isStale()` compares a negative age against a positive threshold~~ — **does not reproduce as registered**. Through the shipping sandbox, `lib/sandbox.js` `lastEntry` has skipped every entry later than `sbx.time` since `556091bf` (2015, in every tag from 0.10.0), so the timeago plugin never sees a future reading. What does happen: an uploader clock running **ahead** delays the stale-data alarm by about the size of the skew (BF-95), and when no usable reading is loaded at all there is no alarm (not filed) | `lib/plugins/timeago.js:26` (`lastSGVEntry.mills >= sbx.time` early return) and `:97-98` (`isStale`), with `lib/client/index.js:918-919` and `lib/sandbox.js` `lastEntry` | none — not a defect as registered. The residual, an uploader clock running ahead delaying the stale-data alarm, is BF-95 | yes | **closed 2026-09-23, invalid** — does not reproduce as registered (reproduced-negative on `origin/dev` `74fc6619` and `15.0.8` `92d08342`, through the real sandbox with `tools/remedial/bf3/bf41-real-sandbox.js`, with a break-it that removes the `556091bf` filter and brings the symptom back; [evidence](../../60-research/remedial/bf41-future-reading-2026-09-23.md)). **Maintainer decision 2026-09-23**: closed as not reproducing (evidence §5, option 1), and no tolerance setting is added; the earlier decision for a 5-minute tolerance, which was not built because it would suppress a warning that fires today, is superseded. The evidence §7 text ships as a 15.0.9 known issue. The queue gate `tools/queue/gates/timeago-future-reading.js` runs through the real sandbox since `b248bb73`: 8 checked / 0 failing on `a8888f0d` and `15.0.8`, and with `lastEntry`'s filter replaced by `return true` the four future-reading arms fail with the registered symptom while the controls stay green. The gate before `b248bb73` stubbed `sbx.lastSGVEntry` and was vacuous. The clock-ahead delay is BF-95; "no usable reading means no alarm" (evidence §3, F1/F2) is not filed |
-| **BF-42** | `nightscout-connect` **v0.0.13** — the version `origin/master` pins, i.e. the one every current operator runs — writes vendor credentials, session tokens and patient glucose data to the runtime log **unconditionally**, with no setting that turns it off | `nightscout-connect` v0.0.13 (`b394411`): `index.js:54` (`console.log("INPUT PARAMS", spec, validated.config)` — every source, every boot, before any network call), `lib/outputs/internal.js:88`, `lib/sources/minimedcarelink/`, `dexcomshare.js`, `librelinkup.js`, `glooko`; reached via `origin/master:package.json` | **high** — credential disclosure to anywhere the log goes | yes | merged 2026-09-23 — #8752 then #8759: `origin/dev` pins exactly `nightscout-connect` `0.1.0-dev.3` (connector `dev` `977da8a`), a prerelease that carries the fix (connector PR #64). No full connector release carries it yet; the release pin is P0-PIN. `origin/master` still pins the v0.0.13 tag (`tools/queue/gates/connector-pin-exposure.js`, 2026-09-23). Source census of a `git archive` extraction (112 live `console.*` sites, 101 passing a non-literal argument); **not** run against a live vendor — see detail for the per-pin table |
-| **BF-43** | `origin/master` forces `nightscout-connect` onto `axios` **1.16.0**, below the connector's own declared `^1.18.1`. `overrides` suppresses the `ERESOLVE` that would normally reject it, so the violation is silent | `origin/master:package.json` `overrides['nightscout-connect']`; the branches disagree four ways (`1.16.0` on master, `1.20.0` on dev and cuts 1-4, absent on cut 5) | **medium** — a silent constraint violation on the released artefact; no specific broken API identified | yes | merged 2026-09-05 — #8565 (a dependabot bump) set `origin/dev`'s override to axios `1.20.0`, which satisfies the connector's `^1.18.1` at v0.0.13 and at the `0.1.0-dev.3` dev now pins (`tools/queue/gates/connector-pin-exposure.js`, 2026-09-23). `origin/master` is still `1.16.0`: measured (`semver.satisfies('1.16.0','^1.18.1')` is `false`; master's lockfile confirms the override takes effect). Found by `tools/qc/connector-pin-agreement-gate.js` rule R5 |
-| **BF-44** | `nightscout-connect`'s MiniMed CareLink source and the retired `minimed-connect-to-nightscout` derive a reading's **absolute time by different algorithms**, so the same reading is filed at a different instant across a cutover — breaking the `sysTime`+`type` dedup key and plotting the trace at the wrong time | `nightscout-connect` `lib/sources/minimedcarelink/index.js` `reassign_zone` (identity fallback when `lastConduitDateTime` is absent) vs `minimed-connect-to-nightscout/transform.js:41-85` `guessPumpOffset`/`parsePumpTime`. Present in **every** pin including v0.0.13 | **low** — the divergence needs readings from both paths, and the maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, so no cutover produces them. The connector-alone half — its identity fallback when `lastConduitDateTime` is absent — is not graded here and is worth measuring, because a *forward* shift would compound **BF-41** | yes | open — **reproduced**: both shipping implementations loaded side by side, three arms diverging by exactly the offset and two controls agreeing. **Magnitude corrected**: the divergence is (pump offset − server timezone offset) whenever the payload timestamps carry no zone designator, which the retired package's own recorded payloads do not |
+| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `5a5269a3`); reproduced through the v3 HTTP path |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `06b133a7`; rule amended by PR #8748, merge `42c5e21e`, and PR #8761, merge `f1591069`); reproduced live; **v3's own validation is defective — see BF-33** |
+| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `12207df3`); reproduced live |
+| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. The built-in editor is not affected: it re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **merged 2026-09-20** (PR #8735, merge `ff0d506c`; `bf/food` `73495331`); reproduced live, both spellings written over HTTP |
+| **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **merged 2026-09-20** (PR #8735, merge `ff0d506c`; `bf/food` `73495331`, found during BF-16); reproduced in jsdom, ablated six ways |
+| **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | **fixed 2026-09-15** — `bf/auth` `64db1f35`, carried by `bf2/auth-hardening`, in review as PR #8754 (head `e32f7a1c`; the maintainer will next push `b5f61f19`; security review by the maintainer and Andy); reproduced live; **existing rows still hold tokens, see the report** |
+| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | **merged 2026-09-20** (PR #8739, merge `7a5561f4`; `bf/alarms` `8714093b`) |
+| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | **merged 2026-09-20** (PR #8739, merge `7a5561f4`; `bf/alarms` `99e46a52`) |
+| **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | **fixed 2026-09-15** — `bf/auth` `a26ba416`, carried by `bf2/auth-hardening`, in review as PR #8754 (head `e32f7a1c`; the maintainer will next push `b5f61f19`; security review by the maintainer and Andy); reproduced live; keying on the credential alone was measured to be a regression, see detail. The address key protects only once `TRUST_PROXY` is set; unset, the behaviour is 15.0.8's, with a boot warning |
+| **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. It does *not* change alarm text (measured 2026-09-15): the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | **merged 2026-09-20** (PR #8739, merge `7a5561f4`; `bf/alarms` `5dcf783f`); reproduced |
+| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. `{$exists: NaN}` is read by MongoDB as **true**, so `$exists=true` answers correctly by accident; what the coercion does on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — a 500 on `$regex`, not a wrong answer on `$exists` (measured against seven live `mongod` instances) | yes | **merged 2026-09-18** (PR #8737, merge `025f1310`; `bf/coercion` `f829ea11`, found during T0.5); reproduced against seven live `mongod` instances: `$exists=true` was not inverted, see detail and BF-40 |
+| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `2ecfeb53`); found while fixing BF-14, reproduced live |
+| **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8752 onward); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix `c1cce2a` (found during T0.4), connector PR #68 (`3f73288`). On the pre-`dev` base `b77e5bb`, 100 actors delivered the same 800 requests across 3 s before and 67 s after |
+| **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **merged 2026-09-18** (PR #8734, merge `fdd08706`; `bf/merge` `b06c6faf`, found by auditing the suppressions after BF-35); reproduced directly, ablated against the shipped shape |
+| **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **merged 2026-09-20** (PR #8736, merge `2e94de1b`; `bf/parms` `522c6ffb`, suppression audit); reproduced directly |
+| **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **merged 2026-09-20** (PR #8736, merge `2e94de1b`; `bf/parms` `c9a7a21c`, suppression audit); reproduced directly |
+| **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **merged 2026-09-20** (PR #8736, merge `2e94de1b`; `bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise |
+| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver. **`$where` executes on the driver**: measured, a caller-supplied `$where` reaches `mongod` unchanged on `origin/dev` `a8888f0d` and `mongod` runs it, on a route `AUTH_DEFAULT_ROLES=readable` opens without a token | `lib/server/query.js:157` | **high** — server-side JavaScript execution, plus ReDoS / full-scan exposure | yes | **merged 2026-09-18** (PR #8743, merge `1a36f023`; `bf/operators` `3e8ce695` + `71506cf8`); reproduced against `mongod 7.0` before and after. Does not close the NoSQL-injection advisory: see BF-71 and BF-72 |
+| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **merged 2026-09-18** (PR #8738, merge `d3358e91`; `bf/reads` `3b588098`) — deleted, not gated; the module has no `env` handle |
+| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **merged 2026-09-20** (PR #8740, merge `49f562d8`; T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
+| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly merged 2026-09-20** (PR #8740, merge `49f562d8`; T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
+| **BF-08** | `nightscout-connect` actors have no start jitter — a pool reaches the vendor inside one second on every restart. The aligned poll interval is not affected: all four drivers already jitter it by 18 s | `nightscout-connect` `lib/machines/cycle.js` `Init`, and `run()` | medium — thundering herd on restart | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8752 onward); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix `c1cce2a` (T0.4), connector PR #68 (`3f73288`); measured at 400 actors on the pre-`dev` base `b77e5bb`, busiest second 400 → 15 |
+| **BF-09** | Socket dedup uses truthiness, so a falsy value is skipped as a match key. The value at risk is not in `insulin` or `carbs`: in 277,690 corpus treatments `insulin` is never `0` (0 of 107,732) and `carbs` never (0 of 12,394). The field that actually carries the value is **`absolute`** — zero in 67,521 of 153,315, 44 % — which is the **zero temp basal**, the canonical AID suspend | `lib/server/websocket.js:538-566` (the [storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md) §4.4 cites a stale `535-568`) | **medium** — a zero temp basal is the canonical AID suspend, not an edge case | yes | open — **measured 2026-09-23** on `74fc6619` and `15.0.8` through the real socket path ([evidence](../../60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md)): treating zero as a real key value fixes 6 dedup cases (a dropped zero temp, cancel, 100 % temp, zero bolus and zero carbs) and changes no control; `bec641ca` was a rendering change and does not touch dedup. Awaiting the maintainer's choice among the options in the evidence |
+| **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024`. **Not documentation-only**: `docker-compose.yml` ships at the repository root with a `mongo:` service and **no `ulimits:` block**, on `master` and `dev` alike (both `mongo:5.0.32`) | `docker-compose.yml` `mongo` service — a one-block code landing site in the file most self-hosters actually use; operator documentation second | medium — self-hosters in containers | yes | **merged 2026-09-23** (PR #8753, merge `3a38c6f2`: `ulimits` on the bundled compose file's `mongo` service); **reproduced 2026-09-21 on `mongod 7.0.43`** and 2026-09-22 with the shipped compose file, with the full fatal-assert trace; see detail |
+| **BF-40** | `find[<field>][$exists]=false` returns the documents that **have** the field, on every field, on today's release; repaired on `bf/coercion`. MongoDB reads a non-numeric operand as **true**, so the string `"false"` and the `NaN` the old walker produced both mean *exists* | `lib/server/query.js` `walk_prop` / `lib/server/query-coercion.js` `isValueLeaf` (on `bf/coercion`) + `lib/server/query.js:288` | **medium** — inverted answer, HTTP 200, on a filter any client can send; **and it refutes BF-32's stated mechanism** | yes | **merged 2026-09-18** (PR #8737, merge `025f1310`; `bf/coercion` `b7234753`); reproduced 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43), identical on all seven, and end to end after the fix |
+| **BF-41** | ~~A reading timestamped ahead of the server clock silently disables both stale-data alarm paths, because `isStale()` compares a negative age against a positive threshold~~ — **does not reproduce as registered**. Through the shipping sandbox, `lib/sandbox.js` `lastEntry` has skipped every entry later than `sbx.time` since `556091bf` (2015, in every tag from 0.10.0), so the timeago plugin never sees a future reading. What does happen: an uploader clock running **ahead** delays the stale-data alarm by about the size of the skew (BF-95), and when no usable reading is loaded at all there is no alarm (not filed) | `lib/plugins/timeago.js:26` (`lastSGVEntry.mills >= sbx.time` early return) and `:97-98` (`isStale`), with `lib/client/index.js:918-919` and `lib/sandbox.js` `lastEntry` | none — not a defect as registered. The residual, an uploader clock running ahead delaying the stale-data alarm, is BF-95 | yes | **closed 2026-09-23, invalid** — does not reproduce as registered (reproduced-negative on `origin/dev` `74fc6619` and `15.0.8` `92d08342`, through the real sandbox with `tools/remedial/bf3/bf41-real-sandbox.js`, with a break-it that removes the `556091bf` filter and brings the symptom back; [evidence](../../60-research/remedial/bf41-future-reading-2026-09-23.md)). **Maintainer decision 2026-09-23**: closed as not reproducing (evidence §5, option 1), and no tolerance setting is added, because a tolerance would suppress a warning that fires today. The evidence §7 text ships as a 15.0.9 known issue. The queue gate `tools/queue/gates/timeago-future-reading.js` runs through the real sandbox since `b248bb73`: 8 checked / 0 failing on `a8888f0d` and `15.0.8`, and with `lastEntry`'s filter replaced by `return true` the four future-reading arms fail with the registered symptom while the controls stay green. The gate before `b248bb73` stubbed `sbx.lastSGVEntry` and was vacuous. The clock-ahead delay is BF-95; "no usable reading means no alarm" (evidence §3, F1/F2) is not filed |
+| **BF-42** | `nightscout-connect` **v0.0.13** — the version `origin/master` pins, i.e. the one every current operator runs — writes vendor credentials, session tokens and patient glucose data to the runtime log **unconditionally**, with no setting that turns it off | `nightscout-connect` v0.0.13 (`b394411`): `index.js:54` (`console.log("INPUT PARAMS", spec, validated.config)` — every source, every boot, before any network call), `lib/outputs/internal.js:88`, `lib/sources/minimedcarelink/`, `dexcomshare.js`, `librelinkup.js`, `glooko`; reached via `origin/master:package.json` | **high** — credential disclosure to anywhere the log goes | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8752, then PR #8759); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix: connector PR #64. `origin/master` (15.0.8) pins the v0.0.13 tag (`tools/queue/gates/connector-pin-exposure.js`, 2026-09-23). Source census of a `git archive` extraction (112 live `console.*` sites, 101 passing a non-literal argument); **not** run against a live vendor — see detail for the per-pin table |
+| **BF-43** | `origin/master` forces `nightscout-connect` onto `axios` **1.16.0**, below the connector's own declared `^1.18.1`. `overrides` suppresses the `ERESOLVE` that would normally reject it, so the violation is silent | `origin/master:package.json` `overrides['nightscout-connect']`; the branches disagree four ways (`1.16.0` on master, `1.20.0` on dev and cuts 1-4, absent on cut 5) | **medium** — a silent constraint violation on the released artefact; no specific broken API identified | yes | **merged 2026-09-05** (PR #8565, merge `eedc9439`, a dependabot bump): `origin/dev`'s override is axios `1.20.0`, which satisfies the connector's `^1.18.1` at v0.0.13 and at `0.1.0`. `origin/master` is `1.16.0`: measured (`semver.satisfies('1.16.0','^1.18.1')` is `false`; master's lockfile confirms the override takes effect). Found by `tools/qc/connector-pin-agreement-gate.js` rule R5 |
+| **BF-44** | `nightscout-connect`'s MiniMed CareLink source and the retired `minimed-connect-to-nightscout` derive a reading's **absolute time by different algorithms**, so the same reading is filed at a different instant across a cutover — breaking the `sysTime`+`type` dedup key and plotting the trace at the wrong time | `nightscout-connect` `lib/sources/minimedcarelink/index.js` `reassign_zone` (identity fallback when `lastConduitDateTime` is absent) vs `minimed-connect-to-nightscout/transform.js:41-85` `guessPumpOffset`/`parsePumpTime`. Present in **every** pin including v0.0.13 | **low** — the divergence needs readings from both paths, and the maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, so no cutover produces them. The connector-alone half — its identity fallback when `lastConduitDateTime` is absent — is not graded here and is worth measuring, because a *forward* shift would compound **BF-95** | yes | open — **reproduced**: both shipping implementations loaded side by side, three arms diverging by exactly the offset and two controls agreeing. The divergence is (pump offset − server timezone offset) whenever the payload timestamps carry no zone designator, which the retired package's own recorded payloads do not |
 | **BF-45** | `setupMMConnect` starts the legacy MiniMed plugin whenever `MMCONNECT_*` is set, with **no check for `nightscout-connect`** — while `setupBridge` does stand down for Connect. An operator who follows ordinary staged-migration advice runs **both** ingestion paths at once | `lib/server/bootevent.js` `setupMMConnect`, on `origin/master` and `origin/dev`; compare `setupBridge` (`origin/dev:lib/server/bootevent.js:369`) | **low** — legacy mmconnect does not work (maintainer, 2026-09-22), so starting it alongside Connect produces failed logins, not double ingestion. Cut 4 removes the path | yes | open — both function bodies read in full on both refs; not run as a live double-ingestion |
 | **BF-46** | **Eleven API v3 environment variables bypass `lib/server/env.js` and the settings layer entirely** and appear in no documentation — and one six-name family of them **irreversibly deletes stored documents** older than a configured age | `lib/api3/index.js:24-38` (`setENVTruthy` reads `process.env` directly, plus three Azure/lowercase spellings), `:70`, `:73-76`; `lib/api3/generic/collection.js:32`, `:129-152` (`API3_AUTOPRUNE_<COLLECTION>` for six registered collections; `deleteBefore = now − autoPruneDays×24h`, called **without `await`**) | **high** — an undocumented variable that deletes a person's glucose history, set by a spelling nobody can look up | yes | open — measured by grep and by reading the call sites; `grep -c API3_ README.md` = 0. The deletion path was **read, not executed** |
-| **BF-47** | Saving a subject or role through the stock admin UI **destroys every stored field the response did not carry**: `endpoints.js` returns a `pick()`ed object, the admin plugin `PUT`s that object straight back, and `storage.save()` does `replaceOne`. `notes`, `created_at` and anything a third-party tool stored are gone, silently. A code revert does not recover the data | `lib/authorization/endpoints.js:40` + `lib/admin_plugins/subjects.js` + `lib/authorization/storage.js` `save()`, on `origin/dev` today | **medium** — silent one-way data loss on an ordinary edit | yes | open — derived from source on `origin/dev`; **not** reproduced against a deployment, and no inventory existed of tools that store extra fields. **`bf/auth` narrows this rather than introducing it** — see detail. **Maintainer decision 2026-09-23**: the allow-list is intended. A corpus check found no open-source client that stores other subject fields; the one it found sends a misspelled field (BF-89). What remains is the admin page, which fetches subjects without `notes` and `created_at` and saves the whole subject back, clearing both |
-| **BF-48** | `lib/plugins/webhook.js` reads four configuration variables straight from `process.env` inside the plugin factory, bypassing `env.js`, the settings layer **and** `extendedSettings` — which `findExtendedSettings` would otherwise populate for it. They are in no documentation | `lib/plugins/webhook.js:36-39` | **medium** — undocumented and unconfigurable through any documented mechanism; under `multi` every tenant's webhook posts to the same host | yes | open — found by grepping every `process.env` read in `lib/` and subtracting `env.js`; `grep -c WEBHOOK_ README.md` = 0. Not run against a live instance. **Mechanism corrected**: the reads are in the exported factory, not at module load, so the fix is an ordinary call-site change |
+| **BF-47** | Saving a subject or role through the stock admin UI **destroys every stored field the response did not carry**: `endpoints.js` returns a `pick()`ed object, the admin plugin `PUT`s that object straight back, and `storage.save()` does `replaceOne`. `notes`, `created_at` and anything a third-party tool stored are gone, silently. A code revert does not recover the data | `lib/authorization/endpoints.js:40` + `lib/admin_plugins/subjects.js` + `lib/authorization/storage.js` `save()`, on `origin/dev` today | **medium** — silent one-way data loss on an ordinary edit | yes | open — derived from source on `origin/dev`; **not** reproduced against a deployment. **`bf/auth` narrows this rather than introducing it** — see detail. **Maintainer decision 2026-09-23**: the allow-list is intended. A corpus check found no open-source client that stores other subject fields; the one it found sends a misspelled field (BF-89). What remains on 15.0.8 and `dev` is the admin page, which fetches subjects without `notes` and `created_at` and saves the whole subject back, clearing both |
+| **BF-48** | `lib/plugins/webhook.js` reads four configuration variables straight from `process.env` inside the plugin factory, bypassing `env.js`, the settings layer **and** `extendedSettings` — which `findExtendedSettings` would otherwise populate for it. They are in no documentation | `lib/plugins/webhook.js:36-39` | **medium** — undocumented and unconfigurable through any documented mechanism; under `multi` every tenant's webhook posts to the same host | yes | open — found by grepping every `process.env` read in `lib/` and subtracting `env.js`; `grep -c WEBHOOK_ README.md` = 0. Not run against a live instance. The reads are in the exported factory, not at module load, so the fix is an ordinary call-site change |
 | **BF-49** | `SECURE_HSTS_HEADER_INCLUDESUBDOMAINS` has **two spellings**. `env.js` reads the un-underscored one; `lib/settings.js`'s own `nameFromKey` produces `SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS`, which is accepted, stored and read by **nothing**. Five keys in the settings dictionary are dead this way | `lib/settings.js:48` (and `:49` `secureHstsHeaderPreload`, plus `insecureUseHttp`, `secureHstsHeader`, `secureCsp`) vs `lib/server/env.js:114` and `lib/server/app.js:144`; `README.md:399` documents the working spelling | low — but a tenant-admin UI generated from the settings dictionary would offer five settings that do nothing, one of them a security header | yes | open — measured by grep over `lib/`, `views/` and `static/`: zero consumers |
 | **BF-50** | `README.md` documents `MONGODB_COLLECTION` as a configuration variable. **Nothing reads it.** The code reads `ENTRIES_COLLECTION` or `MONGO_COLLECTION`. An operator who sets it gets the default and no error | `README.md:240`; `lib/server/env.js:211` | low — documentation defect with no code landing site | yes | open — measured: the only occurrence of the string in the tree is the README line |
 | **BF-51** | `azuredeploy.json`'s `WEBSITE_NODE_DEFAULT_VERSION` **parameter is referenced nowhere in the template**, while the `appSettings` block hard-codes the literal `8.11.1`. No Azure operator's Node version is controlled by the field that appears to control it — and cut 1's change of that parameter's default therefore has no effect on a deployed site | `azuredeploy.json`, on `origin/master`, `origin/dev` and `origin/chore/retire-jsdom` alike | medium — a one-click deployment path whose runtime knob is inert | yes | open — measured by parsing the template and counting `parameters('WEBSITE_NODE_DEFAULT_VERSION')`: **0** on both refs. **Not** reproduced against a live Azure deployment, so *why deployments work today* is an open question, not a finding |
-| **BF-52** | The four age plugins **grade the level on a threshold but request the notification only while the age is exactly at the threshold hour and within its first 20 minutes** (`age === threshold` and `minFractions <= 20`), at all three levels. The server evaluates about once a minute, so the request is made about 20 times in that window; it is lost only when the server does not evaluate at all during those minutes — a restart or deploy, a host that sleeps, a stalled data load — and nothing later asks, while the pill stays red | `lib/plugins/insulinage.js:92` and the same shape in `cannulaage`, `sensorage`, `batteryage` | **medium** — re-graded from `unsettled` 2026-09-23: reproduced, and the maintainer decided (2026-09-23) that the reminder is to be sent once even if the window is missed, which makes the current behaviour a defect. Opt-in push only; the on-screen level is unaffected | yes | **fixed 2026-09-23** on local branch `bf3/age-push-once` `896629f8` (one commit on `origin/dev` `74fc6619`, not pushed): all four plugins, all three levels; the missed reminder is requested once. Reproduced red on dev and on 15.0.8 (`cage`, `sage`, `bage`; `iage` on 15.0.8 also has BF-28). Suite 2410/0/3 on Node 20 and 22; the break-it gives 17 red with the original symptom. One `sensorage` test expectation changed (it asserted the defect) and the README's alert entries changed. **Deferred** (maintainer, 2026-09-23): not in 15.0.9; it ships in a later release, paired with BF-92, and delivery after `requestNotify` through `pushnotify` and Pushover is to be measured first ([evidence](../../60-research/remedial/bf52-age-push-once-2026-09-23.md)) |
+| **BF-52** | The four age plugins **grade the level on a threshold but request the notification only while the age is exactly at the threshold hour and within its first 20 minutes** (`age === threshold` and `minFractions <= 20`), at all three levels. The server evaluates about once a minute, so the request is made about 20 times in that window; it is lost only when the server does not evaluate at all during those minutes — a restart or deploy, a host that sleeps, a stalled data load — and nothing later asks, while the pill stays red | `lib/plugins/insulinage.js:92` and the same shape in `cannulaage`, `sensorage`, `batteryage` | **medium** — reproduced, and the maintainer decided (2026-09-23) that the reminder is to be sent once even if the window is missed, which makes the current behaviour a defect. Opt-in push only; the on-screen level is unaffected | yes | **fixed 2026-09-23** on local branch `bf3/age-push-once` `896629f8` (one commit on `origin/dev` `74fc6619`, not pushed): all four plugins, all three levels; the missed reminder is requested once. Reproduced red on dev and on 15.0.8 (`cage`, `sage`, `bage`; `iage` on 15.0.8 also has BF-28). Suite 2410/0/3 on Node 20 and 22; the break-it gives 17 red with the original symptom. One `sensorage` test expectation changed (it asserted the defect) and the README's alert entries changed. **Deferred** (maintainer, 2026-09-23): not in 15.0.9; it ships in a later release, paired with BF-92, and delivery after `requestNotify` through `pushnotify` and Pushover is to be measured first ([evidence](../../60-research/remedial/bf52-age-push-once-2026-09-23.md)) |
 | **BF-67** | An out-of-order alarm threshold is **silently rewritten to a neighbour ±1** and the only trace is a `console.warn` on the server. An operator who enters an mmol/L number into a mg/dL field — `BG_HIGH=14` — gets it stored as **181 mg/dL**: the alarm then fires at a number the person never chose, and nothing they can see says so | `lib/settings.js:302-324` `verifyThresholds`, called from `:298`; present on `origin/master` and `origin/dev` alike | **medium** — the guard itself is right and the silence is the defect. It is an alarm threshold for a person managing diabetes, so quietly correcting it is the wrong behaviour even when the correction is sensible | yes | open — **reproduced** in-process against the shipping `lib/settings.js` (unchanged from `v15.0.8` to `origin/dev` `74fc6619`) by `tools/queue/gates/threshold-silent-rewrite.js`: `BG_HIGH=14` is stored as 181, `BG_LOW=90` as 79, each with only `console.warn` lines; no client-side or on-screen surface reports the rewrite (grep over `lib/client/` and `views/` finds none). A `BG_LOW` of 3.9 is *not* rewritten — see BF-86 |
-| **BF-69** | The Bolus Wizard's quick-pick chooser is **built exactly once, at client construction, from an empty sandbox, and is never rebuilt**. `lib/client/index.js:239` creates `client.sbx` with no data, `:323` constructs `boluscalc`, whose own init calls `loadFoodQuickpicks()` against `client.sbx.data.food` = `[]`; `:596` then REPLACES `client.sbx` on every data update and `:637` calls `boluscalc.updateVisualisations`, which does not rebuild the chooser. `loadFoodQuickpicks` has exactly ONE call site. The chooser therefore offers only "(none)" forever, for every operator, while *Add food from database* works because it reads `sbx.data.food` at click time | `lib/client/boluscalc.js` (single call site at init) + `lib/client/index.js:239,323,596,637` | **medium** — a documented feature is inert for everyone; no wrong number is shown, and the defect it masks (BF-35) is worse than itself | yes | **merged 2026-09-23** to `dev` via PR #8756 (`c11888ed`; branch `bf3/quickpick-rebuild` `83cfff14`, on top of #8735); NOT RELEASED (shipping tag 15.0.8; see the status legend): the chooser is rebuilt when the drawer opens and only then, and its change handler is bound once. Suite 2394/0/3 on Node 20 and 22; BF-35's probes still pass; each pick enters its own carbs in a browser. The Bolus Wizard is shown only with `boluscalc` in `SHOW_PLUGINS` and to viewers who may create treatments. First found 2026-09-17 by a maintainer in a browser, reproduced on `a8888f0d` and `rc/2026-09-dev-cycle`. **MUST NOT SHIP WITHOUT `bf/food` (#8735, in `dev` since 2026-09-20)** — see detail. Food edits made after a page has loaded still do not reach it (BF-93) ([evidence](../../60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)). **Ships in 15.0.9** (maintainer, 2026-09-23): integrated on `rc/15.0.9-additions-d` `5764156e`, 2520/0/3 on every Node and MongoDB pair ([rc-d record](rc-15.0.9-additions-d-2026-09-23.md)); PR body drafted, `reports/phase0-pr-bodies/bf3-quickpick-rebuild.md` |
-| **BF-70** | `GET /api/v1/count/:storage/where` **took its aggregation pipeline from the URL**. `lib/server/aggregate.js` concatenated `opts.pipeline` — and `opts` is `req.query` — into the pipeline it ran, so a caller could add arbitrary **aggregation stages**, not merely filter operators, to a read, including stages that read collections the endpoint is not about | `lib/server/aggregate.js:21` (`opts.pipeline`), reached from `lib/api/entries/index.js:519` `count_records` | **high** — an oracle over any collection in the database, answered under HTTP 200, on the shipped default `AUTH_DEFAULT_ROLES=readable` which needs **no token**. write-capable stages are excluded only by the order in which the module assembles the pipeline, which nothing asserts | yes | **merged 2026-09-18** (`bf/operators` `52b7b640`); **reproduced 2026-09-18** through the booted v1 app against `mongod 7.0`, unauthenticated, and the same probe returns 400 after the fix. **DISCLOSURE: see detail before writing this into anything public** — **merged to `dev` via PR #8743 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-71** | `enforceDateFilter()` applies the default date window only when **neither** `query[dateField]` **nor** `query.dateString` is present, and the test on the second is a bare **presence check**. So any `dateString` key at all drops the 4-day default: `$ne`, `$exists`, `$gte`, `$regex` were each measured doing it. The window is a paging convenience — its own source comment is `// TODO: discuss/consensus on right value/ENV?` — and **not an access control** | `lib/server/query.js:98` (`!dateValue && !query.dateString`), default set at `:47-48` (`TWO_DAYS * 2`) | **low** — a correctness and consistency defect, **not a privilege boundary**. Measured: the allowlisted, documented `find[date][$gte]=0` returns the identical record set on the identical auth, and every form is **401 under `AUTH_DEFAULT_ROLES=denied`**. It grants a caller nothing they cannot already ask for | yes | **open, found 2026-09-21.** **Reproduced** on `dev` `59430336` through the booted v1 app against `mongod 7.0.43`, unauthenticated, *with its control in the same run*. **This entry exists to correct the record**: the advisory calls this PoC its primary evidence and a full-history PHI dump, and the outcome is real but the mechanism is not a bypass — see detail |
+| **BF-69** | The Bolus Wizard's quick-pick chooser is **built exactly once, at client construction, from an empty sandbox, and is never rebuilt**. `lib/client/index.js:239` creates `client.sbx` with no data, `:323` constructs `boluscalc`, whose own init calls `loadFoodQuickpicks()` against `client.sbx.data.food` = `[]`; `:596` then REPLACES `client.sbx` on every data update and `:637` calls `boluscalc.updateVisualisations`, which does not rebuild the chooser. `loadFoodQuickpicks` has exactly ONE call site. The chooser therefore offers only "(none)" forever, for every operator, while *Add food from database* works because it reads `sbx.data.food` at click time | `lib/client/boluscalc.js` (single call site at init) + `lib/client/index.js:239,323,596,637` | **medium** — a documented feature is inert for everyone; no wrong number is shown, and the defect it masks (BF-35) is worse than itself | yes | **merged 2026-09-23** (PR #8756, merge `c11888ed`; branch `bf3/quickpick-rebuild` `83cfff14`, on top of #8735): the chooser is rebuilt when the drawer opens and only then, and its change handler is bound once. Suite 2394/0/3 on Node 20 and 22; BF-35's probes still pass; each pick enters its own carbs in a browser. The Bolus Wizard is shown only with `boluscalc` in `SHOW_PLUGINS` and to viewers who may create treatments. First found 2026-09-17 by the maintainer in a browser, reproduced on `a8888f0d` and `rc/2026-09-dev-cycle`. **Must not ship without `bf/food`** (#8735, in `dev` since 2026-09-20) — see detail. Food edits made after a page has loaded still do not reach it (BF-93) ([evidence](../../60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)). Ships in 15.0.9 (maintainer, 2026-09-23) |
+| **BF-70** | `GET /api/v1/count/:storage/where` **took its aggregation pipeline from the URL**. `lib/server/aggregate.js` concatenated `opts.pipeline` — and `opts` is `req.query` — into the pipeline it ran, so a caller could add arbitrary **aggregation stages**, not merely filter operators, to a read, including stages that read collections the endpoint is not about | `lib/server/aggregate.js:21` (`opts.pipeline`), reached from `lib/api/entries/index.js:519` `count_records` | **high** — an oracle over any collection in the database, answered under HTTP 200, on the shipped default `AUTH_DEFAULT_ROLES=readable` which needs **no token**. write-capable stages are excluded only by the order in which the module assembles the pipeline, which nothing asserts | yes | **merged 2026-09-18** (PR #8743, merge `1a36f023`; `bf/operators` `52b7b640`); **reproduced 2026-09-18** through the booted v1 app against `mongod 7.0`, unauthenticated, and the same probe returns 400 after the fix. **DISCLOSURE: see detail before writing this into anything public** |
+| **BF-71** | `enforceDateFilter()` applies the default date window only when **neither** `query[dateField]` **nor** `query.dateString` is present, and the test on the second is a bare **presence check**. So any `dateString` key at all drops the 4-day default: `$ne`, `$exists`, `$gte`, `$regex` were each measured doing it. The window is a paging convenience — its own source comment is `// TODO: discuss/consensus on right value/ENV?` — and **not an access control** | `lib/server/query.js:98` (`!dateValue && !query.dateString`), default set at `:47-48` (`TWO_DAYS * 2`) | **low** — a correctness and consistency defect, **not a privilege boundary**. Measured: the allowlisted, documented `find[date][$gte]=0` returns the identical record set on the identical auth, and every form is **401 under `AUTH_DEFAULT_ROLES=denied`**. It grants a caller nothing they cannot already ask for | yes | **open, found 2026-09-21.** **Reproduced** on `dev` `59430336` through the booted v1 app against `mongod 7.0.43`, unauthenticated, *with its control in the same run*. The advisory calls this PoC its primary evidence and a full-history data dump; the outcome is real but the mechanism is not a bypass — see detail |
 | **BF-72** | `$regex` on a field is in API v1's accept set **by design**, and reaches `mongod` as a caller-supplied pattern with **no anchoring, length or complexity bound**. `mongod`'s `$regex` backtracks, so a suitably constructed pattern turns a collection scan into minutes of database CPU for a single short request | `lib/server/query.js` operator allowlist (`$regex`/`$options` accepted on a field); any v1 read or `/api/v1/count/:storage/where`. A documented text-search affordance also depends on `$regex` | **high (availability)** — **unauthenticated on the shipped default `AUTH_DEFAULT_ROLES=readable`**, one request, no token, and Nightscout is a screen someone watches to decide about insulin. Not a data-exposure finding: the collections the scan reaches are already readable on that default | yes | **open, found 2026-09-21.** **Reproduced** on `dev` `59430336`, 20 000 seeded entries, `mongod 7.0.43`: control **22 ms**, three catastrophic-backtracking-class patterns **60 s / 65 s / 71 s**, stable across two runs. Unchanged by #8743 — the allowlist admits `$regex` deliberately. **DISCLOSURE: see detail before writing this into anything public** |
 | **BF-73** | Express's `errorhandler` is mounted **unconditionally** — the `NODE_ENV === 'development'` guard around it is commented out — so any exception that escapes to express returns an HTML page carrying the error message and a `<ul id="stacktrace">` with **absolute server filesystem paths** and the internal call chain, on a production instance | `lib/server/app.js:388-391` on `origin/dev` and `v15.0.8`, `:343-346` on `v15.0.7` — identical on all three, long-standing, not a regression | **low-to-moderate** — paths and module layout, not data and not credentials, and it costs a write credential. It is filed because the **XSS hardening in 15.0.8 added an uncaught exception path that reaches it** (in `lib/server/purifier.js`), on v1, v3 and the socket alike | yes | **open, found 2026-09-21** while measuring the purifier's bounds for the GHSA XSS pair. **Reproduced** on `dev` `59430336` against `mongod 7.0` — stack frames naming `lib/server/purifier.js` and the deployment's full directory path returned in the HTTP body. Not reachable from the unauthenticated read surface by any of seven malformed-query probes; those return handled JSON. **DISCLOSURE: mechanism and remedy are public in the evidence doc, the trigger is not** |
 | **BF-74** | `PURIFIED_COLLECTIONS` in the API v3 write purifier lists five collections and omits **`settings`**, which is the sixth enabled v3 collection. `POST /api/v3/settings` therefore stores free text **verbatim**, with no comment in the file saying why | `lib/api3/shared/writePurifier.js:3-9`; `settings` enabled at `lib/api3/index.js:67` | **low** — **no first-party render path exists**: no consumer of the v3 `settings` collection appears anywhere in `lib/client/`, `lib/report_plugins/` or `views/`. It is a storage bucket for third-party apps, which render it on their own terms | yes | **open, found 2026-09-21.** **Reproduced** end-to-end on all three of `v15.0.7`, `v15.0.8` and `dev` `59430336` with a real v3 JWT: `<img src=x onerror=…>` stored unchanged on every ref, while the same payload to `/api/v3/treatments` is sanitized on the two patched refs. **No fix proposed** — whether purification is correct for a UI-configuration collection, where entity re-encoding could corrupt stored values, is a decision and not an oversight to patch blind |
-| **BF-75** | `emitNotification()` in the `/alarm` Socket.IO namespace delivers with `self.namespace.emit(...)` — the **whole namespace**. Delivery is conditional on neither having sent `subscribe` nor being allowed to read. `subscribe` *does* resolve authorization and *does* compute `read` from `api:*:read`, then returns that boolean to the client and never uses it server-side. The main namespace already gets this right twelve hundred lines away, gating `dataUpdate` behind `socket.join('DataReceivers')` on the same permission | `lib/api3/alarmSocket.js:178` (the five emits), `:67` (`subscribe`), `:36` (connection accepted); contrast `lib/server/websocket.js:150` and `:791` | **high** — **CWE-862, a real authorization bypass**: an unauthenticated socket that never subscribed receives `notification`, `announcement`, `alarm`, `urgent_alarm` and `clear_alarm` — insulin doses, entering device, treatment notes and live BG — on an instance where `AUTH_DEFAULT_ROLES=denied` makes all four v1 read endpoints **401** to the same caller. On the shipped `readable` default the marginal content disclosure is **zero**, measured field by field against `treatments.json`/`entries.json`/`status.json`; what it adds there is real-time push. Proposed `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5** for the hardened case, 5.3 for the default | yes | **merged 2026-09-21** (`bf/alarm-socket-scope`, PR #8745, merge commit `2b22c0ce`) — **merged to `dev` on 2026-09-21; NOT RELEASED** (shipping tag 15.0.8; see the status legend). Filed as GHSA-8849-qjp5-vrrj, external report. **Reproduced** on **`v15.0.8` (= `origin/master`, what operators run) and `dev` `59430336`**, `mongod 7.0.43`, **both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`**, all five event classes driven through the real plugin paths with the 401 control in the same run. **No shipped setting stops it** — `denied`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and `ENABLE=` were each measured. **Fix shape decided 2026-09-21 by Ben West: shape B** — admit the socket to the delivery room at *connection* time when the deployment's anonymous default role already permits reading, and re-evaluate on `subscribe`; this closes the `denied` bypass identically to the stricter subscribe-and-entitled shape and changes nothing on the shipped `readable` default. Branch `bf/alarm-socket-scope` rebuilt on that shape at `012f1623` and **merged that evening as PR #8745**; origin's branch tip is `a198e308`, which carries an integration merge of `dev` added on the way in and was **not** re-measured. **DISCLOSURE: the fix is public in `dev`, but the shipping release is still affected — see detail before writing this into anything public** |
-| **BF-76** | The access-token branch of the same `subscribe` wires `socket.on('ack', …)` up with **no permission check**, while the web-client branch beside it checks `notifications:*:ack`. `resolveAccessToken` fails only for an unknown subject, so **any valid token of any role** reaches `ctx.notifications.ack(level, group, silenceTime, true)`, which silences the alarm for every viewer — and `silenceTime` comes straight from the caller with no upper bound | `lib/api3/alarmSocket.js:83` (unguarded) vs `:137-149` (guarded); `lib/notifications.js:172` (`alarm.silenceTime = time ? time : THIRTY_MINUTES`) | **moderate** — needs a credential, so not unauthenticated, but it is loss of the safety function this software exists to provide: indefinitely silencing a hypo alarm for everyone watching. `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:H` = **7.3** | yes | **merged 2026-09-21** (`bf/alarm-socket-scope`, PR #8745) — **merged to `dev` on 2026-09-21; NOT RELEASED** (shipping tag 15.0.8; see the status legend). Found while fixing BF-75; **not part of GHSA-8849 as filed**. **Reproduced** as a unit against `dev` `59430336`: a token holding only `api:*:read` reached the global ack; ablating the new guard reproduces it (`expected 1 to be 0`). Authorization fixed on `bf/alarm-socket-scope` as a separate commit; **the unbounded `silenceTime` is deliberately unbounded for now** — what a legitimately authorized client may ask for is a decision, not an oversight |
-| **BF-77** | `TREATMENTS_AUTH=off` **silently suppresses the in-product "Nightscout readable by world" warning**, and it is the one configuration that most needs it. `lib/server/env.js` implements the deprecated setting by *appending* to the roles string, producing `readable careportal`; `lib/server/bootevent.js:149` decides whether to warn with an **exact string compare** against `'readable'`, which no longer matches. That configuration is world-readable *and* accepts anonymous treatment writes | `lib/server/bootevent.js:149` (`authDefaultRoles == 'readable'`) against `lib/server/env.js:187-190` on `v15.0.8`, `:195-198` on `dev` (the append). **Correction 2026-09-21:** the two *files* are **not** byte-identical across those refs (`bootevent.js` carries the debounce logging change, `env.js` the credential-coercion change); the two defect *fragments* are unchanged, verified fragment-by-fragment, so the conclusion stands | **medium** — no new access is granted; what is lost is the only notice the operator gets, in the one case where both reads and writes are open to anyone with the URL. The warning fails open in exactly the case it exists for | yes | **merged 2026-09-21** (`bf/readable-warning` `74731433`, PR #8746, merge commit `74fc6619`) — **merged to `dev` on 2026-09-21; NOT RELEASED** (shipping tag 15.0.8; see the status legend). **Reproduced** on **v15.0.8** and on `dev` `59430336`, `mongod 7.0`, three arms in one run through `GET /api/v2/adminnotifies` with an admin credential: default → `notifyCount` **1**, title *Nightscout readable by world* (**positive control**); `TREATMENTS_AUTH=off` → `notifyCount` **0** while anonymous read **200** and anonymous `POST /api/v1/treatments` **200, record stored**; `AUTH_DEFAULT_ROLES=denied` → `notifyCount` 0, correctly (**negative control**). **Fix on `bf/readable-warning`** (`74731433`, off `dev` `59430336`; **merged as PR #8746**): the decision moves into `worldReadableNotify(settings)` in `lib/server/bootevent.js` and asks role membership via a new `lib/authorization/defaultroles.js`, which `lib/authorization/index.js` now shares — the split is character-identical, so the auth path does not change. `readable careportal` gets its own wording, **approved by the maintainer 2026-09-21 and merged**; plain `readable` is unchanged byte for byte. 20-case `tests/bootevent-readable-warning.test.js`; **ablation** (original compare restored inside the same seam) goes red with the original symptom — `expected null to exist` for `readable careportal` and for the `TREATMENTS_AUTH=off` string `env.js` really produces, `expected 0 to be 1` notifies — 7 failing, **13 still green**, so the red is attributable. Suite 2311→**2331** passing / 3 pending / 0 failing. **Re-measured after the fix, all four arms:** `readable` → 1, text unchanged; `readable careportal` → **1**, wider text, anonymous `POST` still 200 (nothing about access changed); `denied` → 0; `denied careportal` → 0. **BF-78 is not touched by this merge** and still needs its decision between three shapes; BF-81 was filed the same day as the root both share |
+| **BF-75** | `emitNotification()` in the `/alarm` Socket.IO namespace delivers with `self.namespace.emit(...)` — the **whole namespace**. Delivery is conditional on neither having sent `subscribe` nor being allowed to read. `subscribe` *does* resolve authorization and *does* compute `read` from `api:*:read`, then returns that boolean to the client and never uses it server-side. The main namespace already gets this right twelve hundred lines away, gating `dataUpdate` behind `socket.join('DataReceivers')` on the same permission | `lib/api3/alarmSocket.js:178` (the five emits), `:67` (`subscribe`), `:36` (connection accepted); contrast `lib/server/websocket.js:150` and `:791` | **high** — **CWE-862, a real authorization bypass**: an unauthenticated socket that never subscribed receives `notification`, `announcement`, `alarm`, `urgent_alarm` and `clear_alarm` — insulin doses, entering device, treatment notes and live BG — on an instance where `AUTH_DEFAULT_ROLES=denied` makes all four v1 read endpoints **401** to the same caller. On the shipped `readable` default the marginal content disclosure is **zero**, measured field by field against `treatments.json`/`entries.json`/`status.json`; what it adds there is real-time push. Proposed `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5** for the hardened case, 5.3 for the default | yes | **merged 2026-09-21** (PR #8745, merge `2b22c0ce`; `bf/alarm-socket-scope` measured at `012f1623`; origin's branch tip `a198e308` carries an integration merge of `dev` and was **not** re-measured). Filed as GHSA-8849-qjp5-vrrj, external report. **Reproduced** on **`v15.0.8` (= `origin/master`, what operators run) and `dev` `59430336`**, `mongod 7.0.43`, **both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`**, all five event classes driven through the real plugin paths with the 401 control in the same run. **No shipped setting stops it** — `denied`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and `ENABLE=` were each measured. **Fix shape decided 2026-09-21 by Ben West: shape B** — admit the socket to the delivery room at *connection* time when the deployment's anonymous default role already permits reading, and re-evaluate on `subscribe`; this closes the `denied` bypass identically to the stricter subscribe-and-entitled shape and changes nothing on the shipped `readable` default. **DISCLOSURE: the fix is public in `dev`, but the shipping release is still affected — see detail before writing this into anything public** |
+| **BF-76** | The access-token branch of the same `subscribe` wires `socket.on('ack', …)` up with **no permission check**, while the web-client branch beside it checks `notifications:*:ack`. `resolveAccessToken` fails only for an unknown subject, so **any valid token of any role** reaches `ctx.notifications.ack(level, group, silenceTime, true)`, which silences the alarm for every viewer — and `silenceTime` comes straight from the caller with no upper bound | `lib/api3/alarmSocket.js:83` (unguarded) vs `:137-149` (guarded); `lib/notifications.js:172` (`alarm.silenceTime = time ? time : THIRTY_MINUTES`) | **moderate** — needs a credential, so not unauthenticated, but it is loss of the safety function this software exists to provide: indefinitely silencing a hypo alarm for everyone watching. `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:H` = **7.3** | yes | **merged 2026-09-21** (PR #8745, merge `2b22c0ce`; `bf/alarm-socket-scope`). Found while fixing BF-75; **not part of GHSA-8849 as filed**. **Reproduced** as a unit against `dev` `59430336`: a token holding only `api:*:read` reached the global ack; ablating the new guard reproduces it (`expected 1 to be 0`). Authorization fixed as a separate commit; **the unbounded `silenceTime` is deliberately unbounded for now** — what a legitimately authorized client may ask for is a decision, not an oversight |
+| **BF-77** | `TREATMENTS_AUTH=off` **silently suppresses the in-product "Nightscout readable by world" warning**, and it is the one configuration that most needs it. `lib/server/env.js` implements the deprecated setting by *appending* to the roles string, producing `readable careportal`; `lib/server/bootevent.js:149` decides whether to warn with an **exact string compare** against `'readable'`, which no longer matches. That configuration is world-readable *and* accepts anonymous treatment writes | `lib/server/bootevent.js:149` (`authDefaultRoles == 'readable'`) against `lib/server/env.js:187-190` on `v15.0.8`, `:195-198` on `dev` (the append). The two defect fragments are unchanged across those refs, verified fragment by fragment; the files otherwise differ (`bootevent.js` carries the debounce logging change, `env.js` the credential-coercion change) | **medium** — no new access is granted; what is lost is the only notice the operator gets, in the one case where both reads and writes are open to anyone with the URL. The warning fails open in exactly the case it exists for | yes | **merged 2026-09-21** (PR #8746, merge `74fc6619`; `bf/readable-warning` `74731433`, off `dev` `59430336`). **Reproduced** on **v15.0.8** and on `dev` `59430336`, `mongod 7.0`, three arms in one run through `GET /api/v2/adminnotifies` with an admin credential: default → `notifyCount` **1**, title *Nightscout readable by world* (**positive control**); `TREATMENTS_AUTH=off` → `notifyCount` **0** while anonymous read **200** and anonymous `POST /api/v1/treatments` **200, record stored**; `AUTH_DEFAULT_ROLES=denied` → `notifyCount` 0, correctly (**negative control**). The fix moves the decision into `worldReadableNotify(settings)` in `lib/server/bootevent.js` and asks role membership via a new `lib/authorization/defaultroles.js`, which `lib/authorization/index.js` now shares — the split is character-identical, so the auth path does not change. `readable careportal` gets its own wording, **approved by the maintainer 2026-09-21**; plain `readable` is unchanged byte for byte. 20-case `tests/bootevent-readable-warning.test.js`; **ablation** (original compare restored inside the same seam) goes red with the original symptom — 7 failing, **13 still green**, so the red is attributable. Suite 2311→**2331** passing / 3 pending / 0 failing. **Re-measured after the fix, all four arms:** `readable` → 1, text unchanged; `readable careportal` → **1**, wider text, anonymous `POST` still 200 (nothing about access changed); `denied` → 0; `denied careportal` → 0. BF-78 is not touched by this fix; BF-81 is the root both share |
 | **BF-78** | The `careportal` default role is **inert unless reads are also open**, and fails silently. `lib/api/treatments/index.js:26` applies a router-wide `api.use(ctx.authorization.isPermitted('api:treatments:read'))` *before* the per-route create check at `:146`, while the `careportal` role grants exactly one permission, `api:treatments:create`. So the role can never reach the POST handler on its own. `README.md:243` says `AUTH_DEFAULT_ROLES` takes "any valid role name"; `careportal` is one of the five the product ships | `lib/api/treatments/index.js:26` vs `:146`; role table at `lib/authorization/storage.js:143`; documented at `README.md:243` | **low** — it fails **closed**, so nothing is exposed. The defect is that a documented setting does nothing and says nothing: the operator intent it most obviously expresses — close reads, let the household enter carbs without a token — is unreachable, with no error and no log line | yes | **open, found 2026-09-21.** **Reproduced** on **v15.0.8** and `dev` `59430336`, anonymous `POST /api/v1/treatments`: `readable careportal` → **200, stored** (the only working combination, and see BF-77); `careportal` alone → **401**; `denied careportal` → **401**; `denied` → 401. **Pairs with BF-77** — the only configuration in which `careportal` works is the only configuration whose warning is suppressed, so an operator chasing the second behaviour lands on the first by construction |
-| **BF-79** | `socket.on('loadRetro')` emits the retained `devicestatus` window to whoever asks. It consults **nothing** — not `socketAuthorization`, not `socketAuthorization.read`, not `DataReceivers` membership — while every sibling handler in the same closure routes through `checkConditions`, which refuses on `!socketAuthorization`. The correct decision exists 460 lines below in the `authorize` handler and is never asked for. The attacker's move is **not to call `authorize` at all**: a wrong secret ends in `socket.disconnect()`, so `authorize` is a gate to walk around, not through | `lib/server/websocket.js:315` on `v15.0.7`, `v15.0.8` and `dev` `59430336` — byte-identical on all three; contrast `:269` (`checkConditions`) and `:775-802` (`authorize`) | **high on a hardened install, zero marginal disclosure on the shipped default** — and both halves were measured. On `AUTH_DEFAULT_ROLES=denied`, where all four v1 reads are **401**, an unauthenticated socket receives **24 h** of `openaps`/`loop`, `pump` (battery, reservoir, bolusing, suspended, **manufacturer, model, pumpID**) and `uploader` (battery, isCharging, **name**) — 48 h with `DEVICESTATUS_DAYS=2`, the one setting that touches this path and which **doubles** it. On the `readable` default the payload is a **strict subset** of what anonymous `GET /api/v1/devicestatus.json?count=N` already returns on the same instance: 574 records against 1 730, **0** record ids absent from the REST answer and **0** field paths present only on the socket. Proposed `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5** for the hardened case (8.2 counting the unthrottled amplification), **0.0** marginal for the default | yes | **merged 2026-09-21** (`bf/ws-loadretro-auth` `9765e8cd`, PR #8744, merge commit `a9acd313`) — **merged to `dev` on 2026-09-21; NOT RELEASED** (shipping tag 15.0.8; see the status legend). Filed as GHSA-gjhc-pc29-r3m6, external report. **Reproduced** on **`v15.0.7`, `v15.0.8` (= `origin/master`, what operators run) and `dev` `59430336`**, `mongod 7.0.43`, **both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`**, with the 401 REST control and the never-emits-`loadRetro` socket control in the same run. **No shipped setting stops it** — `denied`, `status-only`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and `TREATMENTS_AUTH=off` were each measured. **The advisory's range `>0.8.1` is wrong**: `loadRetro` is absent from every `0.8.x` tag and first ships in **0.9.0**, alongside the authorization it bypasses. Fix on `bf/ws-loadretro-auth` **merged as PR #8744**, at the exact tip measured here — no integration merge was added. The reply correcting the advisory's range to `>=0.9.0` and its impact claim is drafted and **not yet sent**. **DISCLOSURE: the fix is public in `dev`, but the shipping release is still affected — see detail before writing this into anything public** |
+| **BF-79** | `socket.on('loadRetro')` emits the retained `devicestatus` window to whoever asks. It consults **nothing** — not `socketAuthorization`, not `socketAuthorization.read`, not `DataReceivers` membership — while every sibling handler in the same closure routes through `checkConditions`, which refuses on `!socketAuthorization`. The correct decision exists 460 lines below in the `authorize` handler and is never asked for. The attacker's move is **not to call `authorize` at all**: a wrong secret ends in `socket.disconnect()`, so `authorize` is a gate to walk around, not through | `lib/server/websocket.js:315` on `v15.0.7`, `v15.0.8` and `dev` `59430336` — byte-identical on all three; contrast `:269` (`checkConditions`) and `:775-802` (`authorize`) | **high on a hardened install, zero marginal disclosure on the shipped default** — and both halves were measured. On `AUTH_DEFAULT_ROLES=denied`, where all four v1 reads are **401**, an unauthenticated socket receives **24 h** of `openaps`/`loop`, `pump` (battery, reservoir, bolusing, suspended, **manufacturer, model, pumpID**) and `uploader` (battery, isCharging, **name**) — 48 h with `DEVICESTATUS_DAYS=2`, the one setting that touches this path and which **doubles** it. On the `readable` default the payload is a **strict subset** of what anonymous `GET /api/v1/devicestatus.json?count=N` already returns on the same instance: 574 records against 1 730, **0** record ids absent from the REST answer and **0** field paths present only on the socket. Proposed `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5** for the hardened case (8.2 counting the unthrottled amplification), **0.0** marginal for the default | yes | **merged 2026-09-21** (PR #8744, merge `a9acd313`; `bf/ws-loadretro-auth` `9765e8cd`, the exact tip measured). Filed as GHSA-gjhc-pc29-r3m6, external report. **Reproduced** on **`v15.0.7`, `v15.0.8` (= `origin/master`, what operators run) and `dev` `59430336`**, `mongod 7.0.43`, **both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`**, with the 401 REST control and the never-emits-`loadRetro` socket control in the same run. **No shipped setting stops it** — `denied`, `status-only`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and `TREATMENTS_AUTH=off` were each measured. **The advisory's range `>0.8.1` is wrong**: `loadRetro` is absent from every `0.8.x` tag and first ships in **0.9.0**, alongside the authorization it bypasses. The reply correcting the advisory's range to `>=0.9.0` and its impact claim is drafted and **not yet sent**. **DISCLOSURE: the fix is public in `dev`, but the shipping release is still affected — see detail before writing this into anything public** |
 | **BF-80** | **Scoping alarm delivery to a room couples it to the failed-login delay list, and a household shares one public IP.** `authorization.resolve()` consults `shouldDelayRequest(ip)` and `await`s the accumulated penalty before returning any permissions. Once `/alarm` delivery depends on a resolved entitlement — which it must, to close BF-75 — a socket from an address that recently failed an authentication is **outside the delivery room for the length of that penalty**, and any alarm emitted in the window does not reach it. The penalty is **cumulative, 5 s per failure** (`authFailDelay`), so a misconfigured uploader retrying with a wrong API secret keeps extending it for every other device behind the same NAT address | `lib/authorization/delaylist.js` (`DELAY_ON_FAIL`, cumulative; `FAIL_AGE` 60 s) reached from `lib/authorization/index.js:155`, via `applyReadEntitlement` on `bf/alarm-socket-scope` | **medium** — an alarm a caregiver is entitled to is not delivered, silently, for tens of seconds, and the trigger is a *neighbouring device's* misconfiguration rather than anything the viewer did. Not a new exposure and not exploitable; it is the cost of the BF-75 fix | yes (once BF-75 lands) | **open, found 2026-09-21** while reviewing the BF-75 fix. **Reproduced** on the fixed build, `readable`, mongod 7.0, alarm fired 2 s after connect, **window scales with the poison**: 0 failures → received at **2.0 s** (clean control), 1 → **4.9 s**, 3 → **10.0 s**, 6 → **15.0 s**. A *shape* assertion, not a threshold. **No shape of the BF-75 fix avoids this** — any room-scoped delivery inherits it, and the pre-fix code avoided it only by not checking anything. Deliberately NOT fixed on `bf/alarm-socket-scope`: what a failed-login control should do to an unrelated read is its own decision and must not ride along on an authorization fix |
-| **BF-81** | **The configuration surface has two authorization-shaped settings with adjacent names, and only one is the access-control boundary. Nothing says which.** `AUTH_DEFAULT_ROLES` is the boundary; `AUTHENTICATION_PROMPT_ON_LOAD` decides whether the web client is *asked* to log in and grants nothing. The README documents them 30 lines apart with no statement of the difference. Three consequences measured in one week: an external security reviewer competent enough to find a real authorization defect wrote a remedy keyed to the wrong one (GHSA-8849); the `/alarm` namespace they were fixing appears in **no swagger file and nothing under `docs/`**, so its protocol is defined only by observed behaviour; and `README.md:243`'s "or any valid role name" is false for the role most operators would reach for (BF-78) | `README.md:243` (`AUTH_DEFAULT_ROLES`), `README.md` (`AUTHENTICATION_PROMPT_ON_LOAD`), `README.md:247` (`TREATMENTS_AUTH`); `swagger.yaml` / `swagger.json` (no `/alarm`); `lib/settings.js:39,74` | **medium** — no code defect and nothing exposed, but it is the shared cause of BF-77, BF-78 and of a third party's non-working security patch, and it costs a reviewer's time every time somebody audits this area | yes — operators and reviewers both | **open, found 2026-09-21.** Documentation, not code. Evidence is the three consequences above, each measured elsewhere in this register rather than asserted here. **Cheaper than any of the fixes it would have prevented** |
-| **BF-85** | A CareLink **no-reading marker** (`sg: 0`) is stored as a glucose entry with `sgv: 0`. While it is the newest entry, the simple high/low alarms are **not evaluated**, because `simplealarms` only checks when the newest reading is above 39 mg/dL | nightscout-connect `lib/sources/minimedcarelink/index.js` `sgs_to_sgv` (no filter on `sg === 0` at `v0.0.13` or at `234d47c`); cgm-remote-monitor `lib/plugins/simplealarms.js:21` | **high** — alarm suppression for the only working MiniMed path (the legacy mmconnect bridge is reported broken). Bounded by how often CareLink puts a zero in the newest position, which is unmeasured | yes | open — **read-derived**, not reproduced. Present on `15.0.8` (connector `v0.0.13`) and in `15.0.9` (pin `234d47c`); not a regression. The fix, connector commit `8406edf`, is in connector `dev` (PR #64, 2026-09-22) and in connector prerelease `0.1.0-dev.1`, and in no full connector release or cgm-remote-monitor pin — it reaches operators through the full release (P0-TAG) and the pin move (P0-PIN). Operators: keep pump and CGM device alarms on |
+| **BF-81** | **The configuration surface has two authorization-shaped settings with adjacent names, and only one is the access-control boundary. Nothing says which.** `AUTH_DEFAULT_ROLES` is the boundary; `AUTHENTICATION_PROMPT_ON_LOAD` decides whether the web client is *asked* to log in and grants nothing. The README documents them 30 lines apart with no statement of the difference. Three consequences measured in one week: an external security reviewer competent enough to find a real authorization defect wrote a remedy keyed to the wrong one (GHSA-8849); the `/alarm` namespace they were fixing appears in **no swagger file and nothing under `docs/`**, so its protocol is defined only by observed behaviour; and `README.md:243`'s "or any valid role name" is false for the role most operators would reach for (BF-78) | `README.md:243` (`AUTH_DEFAULT_ROLES`), `README.md` (`AUTHENTICATION_PROMPT_ON_LOAD`), `README.md:247` (`TREATMENTS_AUTH`); `swagger.yaml` / `swagger.json` (no `/alarm`); `lib/settings.js:39,74` | **medium** — no code defect and nothing exposed, but it is the shared cause of BF-77, BF-78 and of a third party's non-working security patch, and it costs a reviewer's time every time somebody audits this area | yes — operators and reviewers both | **open, found 2026-09-21.** Documentation, not code. Evidence is the three consequences above, each measured elsewhere in this register rather than asserted here |
+| **BF-85** | A CareLink **no-reading marker** (`sg: 0`) is stored as a glucose entry with `sgv: 0`. While it is the newest entry, the simple high/low alarms are **not evaluated**, because `simplealarms` only checks when the newest reading is above 39 mg/dL | nightscout-connect `lib/sources/minimedcarelink/index.js` `sgs_to_sgv` (no filter on `sg === 0` at `v0.0.13` or at `234d47c`); cgm-remote-monitor `lib/plugins/simplealarms.js:21` | **high** — alarm suppression for the only working MiniMed path (the legacy mmconnect bridge is reported broken). Bounded by how often CareLink puts a zero in the newest position, which is unmeasured | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8752 onward); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix: connector commit `8406edf` (connector PR #64). **Read-derived**, not reproduced — neither the defect nor the fix has been run against CareLink. Present on `15.0.8` (connector `v0.0.13`); not a regression. Operators: keep pump and CGM device alarms on |
 | **BF-86** | A `BG_LOW` entered in mmol/L on a mg/dL deployment — `BG_LOW=3.9` — is stored as **3.9 mg/dL with no warning of any kind**, so the low alarm can never fire. BF-67's guard only catches a threshold that is *above* its neighbour | `lib/settings.js` `verifyThresholds` (one-sided); present on `v15.0.8` and `origin/dev` `74fc6619` | **high** — a low alarm the person believes is set does not exist, and nothing on screen or in the log says so | yes | open — **reproduced** in-process against the shipping `lib/settings.js` by `tools/queue/gates/threshold-silent-rewrite.js` (the `BG_LOW=3.9` control: stored 3.9, 0 warn lines). Operators: Nightscout's thresholds are mg/dL unless `DISPLAY_UNITS`/units say otherwise — check that your alarm settings read as the numbers you meant, and keep device alarms on. Not medical advice |
-| **BF-87** | Root `overrides.qs` (and `overrides.request.qs`) force **qs 6.15.1** on the whole tree. `nightscout-connect` declares `qs ^6.15.3` (v0.0.13 and `1946beb` alike), so the connector is held below its own range, and the one copy is also what express and body-parser parse query strings with. `npm audit` reports three moderate advisories against 6.15.1 | `package.json` `overrides` on `origin/master` (`v15.0.8`) and `origin/dev` `74fc6619`, from `5ab0af7a` (2026-05-10); both lockfiles resolve a single `node_modules/qs` at 6.15.1 | **medium** — the same silent-constraint class as BF-43, on the released artefact, and it pins a server-wide parser inside published advisory ranges; exploitability through Nightscout's routes is **not measured** | yes | **merged 2026-09-23** to `dev` via PR #8749 (`9fd4600e`, both `qs` overrides to 6.16.0); NOT RELEASED (shipping tag 15.0.8; see the status legend). Before: measured 2026-09-22: lockfiles on both refs, `npm audit --package-lock-only --omit=dev` on master's lock (GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g; the last is fixed only at 6.16.0). Found while pinning the connector to 0.1.0-dev.1. **Fix prepared 2026-09-23** on `bf/qs-6.16` `46b20b38` (both overrides to 6.16.0): the documented query shapes parse identically and the suite is unchanged; only malformed bracket keys change |
-| **BF-89** | nightscout-connect's `nightscout` source creates its reader subject on the source site with the field **`role`** instead of **`roles`**. Nightscout grants a subject's permissions from `roles`, so the subject has **none**, and the token the connector reads back grants nothing beyond what anonymous access already allows. On a default `readable` site that is enough, which hides the defect; on a site set to `denied` the source cannot read | nightscout-connect `lib/sources/nightscout.js:81` at `v0.0.13` (the release 15.0.8 pins) and `:83` at `official/dev`; present since `3b290e5` (2023-04-05) | **low** — the Nightscout-to-Nightscout source only, and only against a source site that denies anonymous read; every CGM vendor source is unaffected. Reproduced end to end (below) | yes | **merged 2026-09-23** in connector `dev` via connector PR #77 (`dea2bec`, merge `b4d8d29`) and in connector prerelease `0.1.0-dev.2` (tag `v0.1.0-dev.2`, `fbd4e55`); in no full connector release and no cgm-remote-monitor pin. **Reproduced**: the end-to-end run against cgm-remote-monitor `74fc6619` with `AUTH_DEFAULT_ROLES=denied` is recorded in connector commit `dea2bec`'s message (before: every poll 401, no entries; after: the seeded entry arrives). A subject created by an earlier connector version keeps no roles after upgrading until it is given the readable role or deleted |
-| **BF-90** | When an alarm reaches the web client while it holds **no glucose reading**, the "disabled locally" branch of the `alarm` and `urgent_alarm` handlers reads `client.latestSGV.mgdl` from an undefined `latestSGV` and throws, so the `chart.update` after it never runs | `lib/client/index.js:1230` and `:1242`, identical on `v15.0.8` and `origin/dev` `74fc6619` | **low** — re-graded 2026-09-23 from "low — latent": it is **reachable without forcing anything**, on 15.0.8 and `dev`, by any opt-in device alert at a site with no stored CGM reading, so it is not latent. It stays low because its own cost is a skipped chart redraw (and any later listener on the same event). **It loses no alarm only because the page already drops every server alarm when it holds no reading** — that is BF-92, the safety-relevant half | yes | **merged 2026-09-23** to `dev` via PR #8755 (`728351e3`; branch `bf3/alarm-no-reading` `92544d8f`); NOT RELEASED (shipping tag 15.0.8; see the status legend): two guards per handler, the log argument and `chart.update`, because a page that never received data has no chart and throws a second time. Suite 2390/0/3 on Node 20 and 22. Reproduced in a browser on 15.0.8, `dev` and the branch with no forcing ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md)); first seen in the RT-D3 probe run, with the `/alarm` gate forced to deliver. The fix does not change when alarms sound (BF-92). **Ships in 15.0.9** (maintainer, 2026-09-23): integrated on `rc/15.0.9-additions-d` `5764156e`, 2520/0/3 on every Node and MongoDB pair ([rc-d record](rc-15.0.9-additions-d-2026-09-23.md)); PR body drafted, `reports/phase0-pr-bodies/bf3-alarm-no-reading.md` |
-| **BF-91** | nightscout-connect's `capture` mode crashes with `MODULE_NOT_FOUND` for the `nightscout` and `dexcomshare` sources: both `require('../../trace-axios')` from `lib/sources/`, which resolves to a repository-root file that does not exist; the module is `lib/trace-axios.js`. Sources one directory deeper (`glooko/`, `minimedcarelink/`) resolve the same string correctly | `lib/sources/nightscout.js:190`, `lib/sources/dexcomshare.js:243`, on connector `v0.0.13` and `dev` `1946beb` | **low** — only the standalone `capture` command, used to record test fixtures; the plugin path Nightscout embeds and `forever` mode never load it | yes | **merged 2026-09-23** in connector `dev` via connector PR #78, released in no connector version yet; Nightscout `dev` installs it through the `0.1.0-dev.3` pin (PR #8759); NOT RELEASED (shipping tag 15.0.8; see the status legend). Before: reproduced by running `capture --source nightscout` (2026-09-23), and confirmed from the trees: no `trace-axios` at either root. **Fix prepared** on `fix/trace-axios-path` `894b132`, with a test that fails on any unresolvable relative require |
+| **BF-87** | Root `overrides.qs` (and `overrides.request.qs`) force **qs 6.15.1** on the whole tree. `nightscout-connect` declares `qs ^6.15.3` (v0.0.13 and `1946beb` alike), so the connector is held below its own range, and the one copy is also what express and body-parser parse query strings with. `npm audit` reports three moderate advisories against 6.15.1 | `package.json` `overrides` on `origin/master` (`v15.0.8`) and `origin/dev` `74fc6619`, from `5ab0af7a` (2026-05-10); both lockfiles resolve a single `node_modules/qs` at 6.15.1 | **medium** — the same silent-constraint class as BF-43, on the released artefact, and it pins a server-wide parser inside published advisory ranges; exploitability through Nightscout's routes is **not measured** | yes | **merged 2026-09-23** (PR #8749, merge `9fd4600e`; `bf/qs-6.16` `46b20b38`: both `qs` overrides to 6.16.0; the documented query shapes parse identically and the suite is unchanged; only malformed bracket keys change). Measured 2026-09-22: lockfiles on both refs, `npm audit --package-lock-only --omit=dev` on master's lock (GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g; the last is fixed only at 6.16.0). Found while pinning the connector to 0.1.0-dev.1 |
+| **BF-89** | nightscout-connect's `nightscout` source creates its reader subject on the source site with the field **`role`** instead of **`roles`**. Nightscout grants a subject's permissions from `roles`, so the subject has **none**, and the token the connector reads back grants nothing beyond what anonymous access already allows. On a default `readable` site that is enough, which hides the defect; on a site set to `denied` the source cannot read | nightscout-connect `lib/sources/nightscout.js:81` at `v0.0.13` (the release 15.0.8 pins) and `:83` at `official/dev`; present since `3b290e5` (2023-04-05) | **low** — the Nightscout-to-Nightscout source only, and only against a source site that denies anonymous read; every CGM vendor source is unaffected. Reproduced end to end (below) | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8759, then PR #8762); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix: connector PR #77 (`dea2bec`, merge `b4d8d29`). **Reproduced**: the end-to-end run against cgm-remote-monitor `74fc6619` with `AUTH_DEFAULT_ROLES=denied` is recorded in connector commit `dea2bec`'s message (before: every poll 401, no entries; after: the seeded entry arrives). A subject created by an earlier connector version keeps no roles after upgrading until it is given the readable role or deleted (BF-98) |
+| **BF-90** | When an alarm reaches the web client while it holds **no glucose reading**, the "disabled locally" branch of the `alarm` and `urgent_alarm` handlers reads `client.latestSGV.mgdl` from an undefined `latestSGV` and throws, so the `chart.update` after it never runs | `lib/client/index.js:1230` and `:1242`, identical on `v15.0.8` and `origin/dev` `74fc6619` | **low** — **reachable without forcing anything**, on 15.0.8 and `dev`, by any opt-in device alert at a site with no stored CGM reading, so it is not latent. It stays low because its own cost is a skipped chart redraw (and any later listener on the same event). **It loses no alarm only because the page already drops every server alarm when it holds no reading** — that is BF-92, the safety-relevant half | yes | **merged 2026-09-23** (PR #8755, merge `728351e3`; branch `bf3/alarm-no-reading` `92544d8f`): two guards per handler, the log argument and `chart.update`, because a page that never received data has no chart and throws a second time. Suite 2390/0/3 on Node 20 and 22. Reproduced in a browser on 15.0.8, `dev` and the branch with no forcing ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md)); first seen in the RT-D3 probe run, with the `/alarm` gate forced to deliver. The fix does not change when alarms sound (BF-92). Ships in 15.0.9 (maintainer, 2026-09-23) |
+| **BF-91** | nightscout-connect's `capture` mode crashes with `MODULE_NOT_FOUND` for the `nightscout` and `dexcomshare` sources: both `require('../../trace-axios')` from `lib/sources/`, which resolves to a repository-root file that does not exist; the module is `lib/trace-axios.js`. Sources one directory deeper (`glooko/`, `minimedcarelink/`) resolve the same string correctly | `lib/sources/nightscout.js:190`, `lib/sources/dexcomshare.js:243`, on connector `v0.0.13` and `dev` `1946beb` | **low** — only the standalone `capture` command, used to record test fixtures; the plugin path Nightscout embeds and `forever` mode never load it | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8759, then PR #8762); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix: connector PR #78 (`fix/trace-axios-path` `894b132`, with a test that fails on any unresolvable relative require). Reproduced by running `capture --source nightscout` (2026-09-23), and confirmed from the trees: no `trace-axios` at either root |
 | **BF-92** | **A page with no glucose reading never presents a server alarm, including device alarms.** `isAlarmForHigh()` and `isAlarmForLow()` both begin with `client.latestSGV &&`, and the `alarm` and `urgent_alarm` handlers present an alarm only if one of them is true. With no reading loaded both are false, so every `alarm` and `urgent_alarm` — including pump, loop and site-change alerts that have nothing to do with glucose — is treated as "disabled locally": no sound, no banner, no title change | `lib/client/index.js:1196-1204` (`isAlarmForHigh`, `isAlarmForLow`), gating at `:1225` and `:1237`, on `origin/dev` `74fc6619`; the same code on `15.0.8` | **high** — the maintainer's position (2026-09-23) is that it is unintended for non-glucose alarms. Measured: `URGENT: Pump Reservoir Low` is presented (red title, alarm sound) on a page with 12 in-range readings, and nothing is presented on a page with none. | yes | open — **reproduced** 2026-09-23 in a browser on `15.0.8` and `dev`, with and without the BF-90 fix, by ordinary uploads of pump status with `PUMP_ENABLE_ALERTS=true` ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md) §1, §4). Found while fixing BF-90. **Maintainer position 2026-09-23:** non-glucose alarms (pump, loop, age) should present on a page with no reading; to ship in a later release, not 15.0.9, paired with BF-52. 15.0.9 carries it as a known issue. No fix prescribed |
 | **BF-93** | **Food changes never reach an open page.** The broadcast delta that keeps open pages current covers `sgvs`, `treatments`, `mbgs`, `cals` and `devicestatus` (and `profiles` as a whole object), and not `food`. A food or quick pick written through the API, or in the food editor in another tab, reaches a page only on a full load (connect or reconnect), so an open page keeps the old food list, including an old quick-pick carb total | `lib/data/calcdelta.js` `compressArrays` (`compressibleArrays`) and `deleteSkippables` (`skippableObjects`), on `origin/dev` `74fc6619` and `15.0.8` | **medium** — the stale data feeds the Bolus Wizard's carb entry. Measured for an added quick pick; an edited carb total follows from the same path and was not run separately | yes | open — **reproduced** 2026-09-23 in a browser on `15.0.8`, `dev` and `bf3/quickpick-rebuild` alike: a quick pick added while the page is open does not arrive by broadcast, and does after a transport drop and reconnect ([evidence](../../60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md) §4, §8.1). Found while fixing BF-69. No fix prescribed |
 | **BF-94** | `prevBasalTreatment` is kept at **module scope**, and `tempBasalTreatment()` returns it whenever the time falls inside it. Only `profile.clear()` resets it, which runs when an instance is created, not when `updateTreatments()` replaces the treatments. So an instance that is kept and given new treatments can return a temp basal that has since been replaced | `lib/profilefunctions.js:19` (declaration), `:455-456` (the early return), `updateTreatments` at `:292-311` (clears the cache, not this), on `origin/dev` `74fc6619`; the same on `15.0.8` | **unsettled** — the server builds a new instance on every tick and is not affected. The browser keeps one `client.profilefunctions` and calls `updateTreatments` on each data update (`lib/client/index.js:1366`), so a pill or chart lookup there could show a replaced temp; **the browser was not measured** | yes | open — **reproduced at module level** 2026-09-23 on `dev` and `15.0.8`: a 1.2 U/h temp later cut by a zero temp, the same instance returned 1.2 after `updateTreatments` (expected 0), and a new instance returned the right value ([evidence](../../60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md) §3.2). Not BF-09 |
 | **BF-95** | **An uploader clock running ahead delays the stale-data alarm by the size of the error.** Once the wall clock passes a future-dated reading's timestamp, `lastEntry` returns it and the timeago plugin treats it as current. With an uploader 60 minutes ahead that stops sending, the warning a correct clock raises 15 minutes after the feed stops comes about 75 minutes after it stops, on the browser path and the server push path alike. v1 entries store no server-receipt time (`lib/server/entries.js:118-126` derives `sysTime` from the reading), so an arrival-based check needs new data | `lib/sandbox.js` `lastEntry` (`notInTheFuture`), `lib/plugins/timeago.js` `checkStatus`/`isStale`, `lib/server/entries.js:118-126`; the same on `origin/dev` `74fc6619` and `15.0.8` | **medium** — the one continuous "my data stopped" detector arrives late by the skew; it does not stay silent. BF-44 is a shipping source of forward skew | yes | open — **reproduced** 2026-09-23 through the shipping sandbox and plugin, no booted server (cases F7 and F8, `tools/remedial/bf3/bf41-real-sandbox.js`, identical on `74fc6619` and `15.0.8`; [evidence](../../60-research/remedial/bf41-future-reading-2026-09-23.md) §2, §3). Split out of BF-41 when BF-41 was closed (maintainer, 2026-09-23). **Needs a design decision**: one option is a notice when readings arrive already ahead of the clock by more than a tolerance (evidence §5, option 3); the BF-41 decision of 2026-09-23 added no new warning. 15.0.9 carries it as a known issue. No fix prescribed |
-| **BF-98** | **The BF-89 fix does not repair a reader subject an earlier connector already created.** `0.1.0-dev.2` looks up `nightscout-connect-reader` on the source by name and reuses it without checking its roles. Every released version creates that subject with `role` instead of `roles` (BF-89), so a site that ever tried the API-secret path against a source with `AUTH_DEFAULT_ROLES=denied` keeps getting HTTP 401 after upgrading | connector Nightscout source reader-subject lookup: `v0.0.13` `lib/sources/nightscout.js:75-77` takes the `accessToken` of any subject named `nightscout-connect-reader` without checking its roles, and `dev` `fbd4e55` does the same; `v0.0.12`, `v0.0.13` and `234d47c` create that subject without roles (BF-89) | **low** — affects only sites that already hit BF-89, and a one-time admin step on the source clears it | yes | **merged 2026-09-23** in connector `dev` via connector PR #79 (the warning is `f924de2`), in `0.1.0-dev.3` and so in Nightscout `dev` through PR #8759; no release carries it. Before: **reproduced** 2026-09-23 (soak control (c): started on dev.1 then moved to dev.2, never synced in 4 h 20 min; [evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). **Maintainer, 2026-09-23: warn clearly, don't repair.** The connector logs one plain message naming the subject and the two fixes (add `readable`, or delete it so the connector re-creates it) when the reused subject has no roles or its reads return 401, and writes nothing to the source; the 0.1.0 and 15.0.9 release notes carry the same steps. Warning in progress on `fix/profile-duplicate-stall` |
-| **BF-99** | **A profile POSTed with a 24-hex `_id` is stored with a string `_id`, while PUT, DELETE and `find[_id]` look profiles up by ObjectId.** An edit adds a second profile and keeps the stale one, DELETE by id cannot remove the original, and `find[_id]` returns nothing | `lib/server/profile.js` `create()` (`insertMany` with `_id` as given) against `save()` (`new ObjectID`, then upsert), `remove()` and `lib/server/query.js` `updateIdQuery`; the same on `origin/dev` `1f9a9d10` and `15.0.8` `92d08342`. `chore/nightscout-modernization` `b1bdaca0` carries it too (**reproduced** 2026-09-23: 11 of 13 red on Node 22.23.2 and 24.20.0) | **medium** — every Nightscout-to-Nightscout connector sink (every connector version) and every restored export. Reports load every profile in their date range, so a stale copy is among the profiles they read; report output not measured | yes | **fixed 2026-09-23** on `bf/object-id-crud` `6d120fa2`, in review as PR #8758 (commit `09566345`; the narrower `bf/profile-object-id` `9b8cc2f9` is superseded and will not be opened) — **reproduced** red on dev and 15.0.8 (11 of 13 new tests); suite 2399/0/3 on Node 20 and 22 against dev 2386/0/3; break-its give the original symptoms. Existing string-`_id` profiles become editable and deletable by id with no boot migration ([evidence](../../60-research/remedial/profile-object-id-2026-09-23.md)). Blocks the maintainer's profile update-on-change for the connector (BFQ-97). The same fix, rebuilt on a shared helper, is commit b of `bf/object-id-consistency` `597e2899` (BF-99 to BF-102; the two conflict in `lib/server/profile.js`, so one lands) |
-| **BF-100** | **devicestatus, food and activity also store a 24-hex `_id` as a string.** DELETE by id leaves the string document; a food or activity PUT adds an ObjectId duplicate; devicestatus and activity `find[_id]` return nothing | `lib/server/devicestatus.js` `create` (`insertMany`), `lib/server/food.js` and `lib/server/activity.js` `create` (upsert with the id as given); the same on `1f9a9d10` and `15.0.8` | **low to medium** — reached by clients that send their own `_id` (the connector's Nightscout source passes devicestatus `_id`s through, read-derived) | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` `6d120fa2`, which carries `bf/object-id-consistency` `597e2899`), commit c; the narrower `bf/object-id-other-collections` `2fac53f5` is superseded — **reproduced** red on dev (27 of 31 new tests); suite 2432/0/3 and 2445/0/3 at commit c on Node 20 and 22; every hunk broken singly goes red. devicestatus has no create guard, so a devicestatus re-sent with the `_id` of a string copy is stored beside it; the connector's in-process output does not re-send (measured: strict `created_at` watermark) ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
-| **BF-101** | **API v3's id filters do not match a string `_id`,** so records stored with a string `_id` through v1 cannot be found or deduplicated by id through v3 | `lib/api3/storage/mongoCollection/utils.js` `filterForOne` and `identifyingFilter`, shared by every v3 collection; the same on `1f9a9d10` and `15.0.8` | **low** — a legacy string-`_id` profile is invisible to v3 id lookup until it is edited through v1 | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` `6d120fa2`, which carries `bf/object-id-consistency` `597e2899`), commit e and `44ac9047`; the narrower `bf/api3-string-id` `7295bc8c` is superseded — **reproduced** through the v3 routes on dev (9 of 10 new tests red: GET and DELETE 404, PUT and POST 201 with a second record); suite 2411/0/3 and 2470/0/3 on Node 20 and 22; `explain()` on `mongo:7` keeps IXSCAN on `_id_` and `identifier_1`, no COLLSCAN ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
-| **BF-102** | **Treatments and entries stored by 15.0.6 or earlier with their own 24-hex `_id` hold it as a string, and today's lookups miss them.** `find[_id]` returns nothing, DELETE by id removes nothing, a treatment PUT adds an ObjectId copy, and `GET /entries/<id>` answers 500 | 15.0.6 `9cd304f7` stores the string (measured); the REQ-SYNC-072 conversion that stores new ones as ObjectId first appears in 15.0.7, but `lib/server/query.js` `updateIdQuery`, `treatments.js` save and `entries.js` `getEntry` still look up the ObjectId only, on `1f9a9d10` and `15.0.8` | **low to medium** — sites running since 15.0.6 or earlier whose uploaders sent their own hex `_id`; how many do is not known | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` `6d120fa2`, which carries `bf/object-id-consistency` `597e2899`), commit d `5581c5e4` — **reproduced** red on dev (13 of 15 new tests); suite 2460/0/3 at commit d on Node 20 and 22; the REQ-SYNC-072 UUID path and its tests are unchanged ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
-| **BF-103** | **Splitting a treatment by drag (Move carbs / Move insulin) stores the new record with the old time in `mills` and `date`, so IOB and COB ignore the move.** The page shows and stores the new `created_at`; the moved half is drawn at the chart's top-left with `translate(undefined, …)` console errors | `lib/client/renderer.js` split cases copy the page's in-memory treatment (15.0.8 `:877`/`:904`, 15.0.9 rc `:879`/`:906`); `lib/data/ddata.js:39-40` derives `mills` from `created_at` only when `mills` is absent | **medium to high** — wrong IOB and COB with HTTP 200 after an ordinary UI action, feeding the Bolus Wizard and BWP; reach is limited to edit-mode users who drop a treatment carrying carbs and insulin in a split zone, and the display symptom is visible | yes | merged 2026-09-24 (#8760) — **reproduced** 2026-09-23 by hand in a browser on 15.0.8 and the 15.0.9 rc; the IOB/COB effect measured on the rc with a control (COB 0 vs 25 g, IOB 0 vs 2.49 U for the same record with and without the stale fields). Not a D3 regression: the handlers are identical on both trees ([evidence](../../60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md)). **merged** 2026-09-24 as #8760 (`8d797ba4`, merge `ddd9b600`), on the browser side: browser probe red on dev, green on the branch; suite 2453/0/3 on Node 20 and 22; 9 of 9 break-its red. A raw v1 PUT still leaves a stale `mills` ([fix evidence](../../60-research/remedial/bf103-fix-2026-09-23.md)) |
-| **BF-104** | When an `/alarm` subscription fails authorization, the API v3 alarm socket **writes the credential it was sent to the server log**: the access token, the JWT, or the whole subscribe message. Anyone who can read the log sees it | `lib/api3/alarmSocket.js` (three `console.log` calls on the failure paths) on `v15.0.8` and `origin/dev` before PR #8751 | **low–medium** — only failed credentials are logged, which are often mistyped or retired, but a near-miss secret or a token that later becomes valid is exposed to log readers | yes | **merged 2026-09-23** to `dev` via PR #8751 (`4011193e`, a content-identical cherry-pick of `31c354d8` from the modernization branch); NOT RELEASED (shipping tag 15.0.8; see the status legend). Reproduced on `dev` and `v15.0.8` by the backport triage |
-| **BF-105** | Two v1 routes under the entries router pick which collection to read from a path parameter, but the router checks only the **entries** read permission, so a credential scoped to entries can read **treatments and devicestatus** through them | `lib/api/entries/index.js` `prep_storage` on `v15.0.8` and `origin/dev` before PR #8751 | **medium** — matters only on sites that deny anonymous read and hand out collection-scoped tokens; on the default `readable` everything is readable anyway | yes | **merged 2026-09-23** to `dev` via PR #8751 (`4011193e`, a content-identical cherry-pick of `d3ac8026`); NOT RELEASED (shipping tag 15.0.8; see the status legend). Reproduced on `dev` and `v15.0.8` by the backport triage |
+| **BF-98** | **The BF-89 fix does not repair a reader subject an earlier connector already created.** `0.1.0-dev.2` looks up `nightscout-connect-reader` on the source by name and reuses it without checking its roles. Every released version creates that subject with `role` instead of `roles` (BF-89), so a site that ever tried the API-secret path against a source with `AUTH_DEFAULT_ROLES=denied` keeps getting HTTP 401 after upgrading | connector Nightscout source reader-subject lookup: `v0.0.13` `lib/sources/nightscout.js:75-77` takes the `accessToken` of any subject named `nightscout-connect-reader` without checking its roles, and `dev` `fbd4e55` does the same; `v0.0.12`, `v0.0.13` and `234d47c` create that subject without roles (BF-89) | **low** — affects only sites that already hit BF-89, and a one-time admin step on the source clears it | yes | **merged 2026-09-23** into Nightscout `dev` through the connector pin (PR #8759, then PR #8762); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`). Fix: the warning `f924de2`, connector PR #79. **Reproduced** 2026-09-23 (soak control (c): started on dev.1 then moved to dev.2, never synced in 4 h 20 min; [evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). **Maintainer, 2026-09-23: warn clearly, don't repair.** The connector logs one plain message naming the subject and the two fixes (add `readable`, or delete it so the connector re-creates it) when the reused subject has no roles or its reads return 401, and writes nothing to the source; the 0.1.0 and 15.0.9 release notes carry the same steps |
+| **BF-99** | **A profile POSTed with a 24-hex `_id` is stored with a string `_id`, while PUT, DELETE and `find[_id]` look profiles up by ObjectId.** An edit adds a second profile and keeps the stale one, DELETE by id cannot remove the original, and `find[_id]` returns nothing | `lib/server/profile.js` `create()` (`insertMany` with `_id` as given) against `save()` (`new ObjectID`, then upsert), `remove()` and `lib/server/query.js` `updateIdQuery`; the same on `origin/dev` `1f9a9d10` and `15.0.8` `92d08342`. `chore/nightscout-modernization` `b1bdaca0` carries it too (**reproduced** 2026-09-23: 11 of 13 red on Node 22.23.2 and 24.20.0) | **medium** — every Nightscout-to-Nightscout connector sink (every connector version) and every restored export. Reports load every profile in their date range, so a stale copy is among the profiles they read; report output not measured | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` head `6d120fa2`, commit `09566345`) — **reproduced** red on dev and 15.0.8 (11 of 13 new tests); suite 2399/0/3 on Node 20 and 22 against dev 2386/0/3; break-its give the original symptoms. Existing string-`_id` profiles become editable and deletable by id with no boot migration ([evidence](../../60-research/remedial/profile-object-id-2026-09-23.md)). The connector's profile update-on-change needs it (BFQ-97) |
+| **BF-100** | **devicestatus, food and activity also store a 24-hex `_id` as a string.** DELETE by id leaves the string document; a food or activity PUT adds an ObjectId duplicate; devicestatus and activity `find[_id]` return nothing | `lib/server/devicestatus.js` `create` (`insertMany`), `lib/server/food.js` and `lib/server/activity.js` `create` (upsert with the id as given); the same on `1f9a9d10` and `15.0.8` | **low to medium** — reached by clients that send their own `_id` (the connector's Nightscout source passes devicestatus `_id`s through, read-derived) | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` head `6d120fa2`, commit `80993afc`) — **reproduced** red on dev (27 of 31 new tests); suite 2432/0/3 and 2445/0/3 at that commit on Node 20 and 22; every hunk broken singly goes red. devicestatus has no create guard, so a devicestatus re-sent with the `_id` of a string copy is stored beside it; the connector's in-process output does not re-send (measured: strict `created_at` watermark) ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
+| **BF-101** | **API v3's id filters do not match a string `_id`,** so records stored with a string `_id` through v1 cannot be found or deduplicated by id through v3 | `lib/api3/storage/mongoCollection/utils.js` `filterForOne` and `identifyingFilter`, shared by every v3 collection; the same on `1f9a9d10` and `15.0.8` | **low** — a legacy string-`_id` profile is invisible to v3 id lookup until it is edited through v1 | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` head `6d120fa2`, commits `597e2899` and `44ac9047`) — **reproduced** through the v3 routes on dev (9 of 10 new tests red: GET and DELETE 404, PUT and POST 201 with a second record); suite 2411/0/3 and 2470/0/3 on Node 20 and 22; `explain()` on `mongo:7` keeps IXSCAN on `_id_` and `identifier_1`, no COLLSCAN ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
+| **BF-102** | **Treatments and entries stored by 15.0.6 or earlier with their own 24-hex `_id` hold it as a string, and today's lookups miss them.** `find[_id]` returns nothing, DELETE by id removes nothing, a treatment PUT adds an ObjectId copy, and `GET /entries/<id>` answers 500 | 15.0.6 `9cd304f7` stores the string (measured); the REQ-SYNC-072 conversion that stores new ones as ObjectId first appears in 15.0.7, but `lib/server/query.js` `updateIdQuery`, `treatments.js` save and `entries.js` `getEntry` still look up the ObjectId only, on `1f9a9d10` and `15.0.8` | **low to medium** — sites running since 15.0.6 or earlier whose uploaders sent their own hex `_id`; how many do is not known | yes | **fixed 2026-09-23**, in review as PR #8758 (`bf/object-id-crud` head `6d120fa2`, commit `5581c5e4`) — **reproduced** red on dev (13 of 15 new tests); suite 2460/0/3 at that commit on Node 20 and 22; the REQ-SYNC-072 UUID path and its tests are unchanged ([evidence](../../60-research/remedial/object-id-other-collections-2026-09-23.md)) |
+| **BF-103** | **Splitting a treatment by drag (Move carbs / Move insulin) stores the new record with the old time in `mills` and `date`, so IOB and COB ignore the move.** The page shows and stores the new `created_at`; the moved half is drawn at the chart's top-left with `translate(undefined, …)` console errors | `lib/client/renderer.js` split cases copy the page's in-memory treatment (15.0.8 `:877`/`:904`, 15.0.9 rc `:879`/`:906`); `lib/data/ddata.js:39-40` derives `mills` from `created_at` only when `mills` is absent | **medium to high** — wrong IOB and COB with HTTP 200 after an ordinary UI action, feeding the Bolus Wizard and BWP; reach is limited to edit-mode users who drop a treatment carrying carbs and insulin in a split zone, and the display symptom is visible | yes | **merged 2026-09-24** (PR #8760, merge `ddd9b600`; branch `bf/split-drag-time` `8d797ba4`), on the browser side: browser probe red on dev, green on the branch; suite 2453/0/3 on Node 20 and 22; 9 of 9 break-its red. **Reproduced** 2026-09-23 by hand in a browser on 15.0.8 and the 15.0.9 rc; the IOB/COB effect measured on the rc with a control (COB 0 vs 25 g, IOB 0 vs 2.49 U for the same record with and without the stale fields). Not a D3 regression: the handlers are identical on both trees ([evidence](../../60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md)). A raw v1 PUT still leaves a stale `mills` ([fix evidence](../../60-research/remedial/bf103-fix-2026-09-23.md)) |
+| **BF-104** | When an `/alarm` subscription fails authorization, the API v3 alarm socket **writes the credential it was sent to the server log**: the access token, the JWT, or the whole subscribe message. Anyone who can read the log sees it | `lib/api3/alarmSocket.js` (three `console.log` calls on the failure paths) on `v15.0.8` and `origin/dev` before PR #8751 | **low–medium** — only failed credentials are logged, which are often mistyped or retired, but a near-miss secret or a token that later becomes valid is exposed to log readers | yes | **merged 2026-09-23** (PR #8751, merge `4011193e`: a content-identical cherry-pick of `31c354d8` from the modernization branch). Reproduced on `dev` and `v15.0.8` by the backport triage |
+| **BF-105** | Two v1 routes under the entries router pick which collection to read from a path parameter, but the router checks only the **entries** read permission, so a credential scoped to entries can read **treatments and devicestatus** through them | `lib/api/entries/index.js` `prep_storage` on `v15.0.8` and `origin/dev` before PR #8751 | **medium** — matters only on sites that deny anonymous read and hand out collection-scoped tokens; on the default `readable` everything is readable anyway | yes | **merged 2026-09-23** (PR #8751, merge `4011193e`: a content-identical cherry-pick of `d3ac8026`). Reproduced on `dev` and `v15.0.8` by the backport triage |
 | **BF-106** | A numeric `date` (or `sgv`) filter on API v1 `/activity` **matches nothing and answers 200**: the schema-driven coercion that fixed BF-03 names a `collection` on each storage and, when one is named, drops `query.js`'s default walker (`date`, `sgv` → `parseInt`). `activity`'s schema entry is empty, so the bound stays a string and never matches the stored number. `devicestatus` loses the same default for `sgv` only (its schema still types `date` and `mills`) | `lib/server/query.js` `default_options` (`opts.walker = opts.collection ? { } : …`) with `lib/server/activity.js` `queryOpts.collection = 'activity'`, on `origin/dev` `ddd9b600` and the 15.0.9 candidate; not on `v15.0.8` | **medium** — wrong answer with HTTP 200 for a read filter; no write or delete is affected, and no client in the [consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md) filters activity by `date` | yes (once 15.0.9 ships) | **open, found 2026-09-23** by the consumer survey. **Reproduced**: the same `GET /api/v1/activity.json?find[date][$gte]=<ms>` returns 7 records on `v15.0.8`, 0 on `dev` `ddd9b600` and 0 on the candidate, with the `find[created_at][$gte]` control at 7 on all three (mongod 7.0.43, Node 22.23.2); gate `tools/queue/gates/bf106-activity-date-coercion.js` |
-| **BF-107** | A v1 treatments read whose database query fails **ends the Nightscout process**: `serveTreatments` never checks the query error, so `results.forEach` throws on `null` and the uncaught `TypeError` exits Node. A client that retries on restart keeps the site down (issue #8675) | `lib/api/treatments/index.js` `serveTreatments` on `v15.0.8` | **high** — one request takes the whole site offline, glucose display and alarms included, on the default `readable` install; mechanism only here, because it is live on the shipping release | yes | **merged 2026-09-06** to `dev` via PR #8697 (`0ab266a3`: the handler returns HTTP 500 JSON on a query error); NOT RELEASED (shipping tag 15.0.8; see the status legend). **Reproduced** 2026-09-23 in the consumer-replay lab: the `v15.0.8` process exited on each of 3 runs, and `dev` `ddd9b600` and the candidate answered the same request 200 |
+| **BF-107** | A v1 treatments read whose database query fails **ends the Nightscout process**: `serveTreatments` never checks the query error, so `results.forEach` throws on `null` and the uncaught `TypeError` exits Node. A client that retries on restart keeps the site down (issue #8675) | `lib/api/treatments/index.js` `serveTreatments` on `v15.0.8` | **high** — one request takes the whole site offline, glucose display and alarms included, on the default `readable` install; mechanism only here, because it is live on the shipping release | yes | **merged 2026-09-06** (PR #8697, merge `0ab266a3`: the handler returns HTTP 500 JSON on a query error). **Reproduced** 2026-09-23 in the consumer-replay lab: the `v15.0.8` process exited on each of 3 runs, and `dev` `ddd9b600` and the candidate answered the same request 200 |
 | **BF-108** | A v1 filter that lists **two or more** timestamps under the date field (`find[date][$in][]=…`) **answers 500 and does nothing**: `enforceDateFilter` calls `.replace` on every operator value that `isNaN`, and a list is an array. xdripswift sends exactly this to delete readings in bulk (`DELETE /api/v1/entries.json?find[type]=sgv&find[date][$in][]=…`, chunks of 50), so those deletes have never removed anything; one-value lists and range deletes work | `lib/server/query.js` `enforceDateFilter` on `v15.0.8`, `origin/dev` `ddd9b600` and the 15.0.9 candidate | **medium** — readings a client asked to delete stay on the site with no error the user sees; nothing is lost or written wrongly | yes | **open, found 2026-09-23** by the consumer survey. **Reproduced**: 500 `dateString.replace is not a function` for 2, 5, 20, 21 and 50 values on all three builds, entries unchanged; the one-value and range-delete controls answer 200 and delete; gate `tools/queue/gates/bf108-date-in-list.js` |
 
 ## 1b. Pre-release findings
@@ -213,19 +220,19 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-55** | Merging any of cuts 1-4 into `dev` **destroys the only test coverage for a bug fix shipping in 15.0.9**: cut 1 deletes `tests/clock-client.test.js` while `dev` adds 56 lines to it, and the Playwright replacement covers none of that behaviour. The production fix auto-merges silently; only its test disappears | `tests/clock-client.test.js` (deleted on `chore/retire-jsdom`, modified on `dev` by `06372e1d`) vs `tests/browser/clock-client.test.js` | **high** — the clock view is a screen someone reads at a glance to decide whether to act, and the fix is the low-and-falling concern face | open — measured: `merge-tree` reports `CONFLICT (modify/delete)`; `grep -ciE 'concern\|falling'` is **0** against the replacement with **3** on `dev`'s file as positive control. Taking either side is wrong: the deletion is right, the 56 lines must be ported |
 | **BF-56** | Merging a cut into `dev` also **silently reverts dev-only changes**, because cuts 1-4 are each 133 commits behind `dev` (2026-09-22, `74fc6619`; queue RT-REBASE re-measures): the `nightscout-connect` pin rolls back from `234d47c8` to the v0.0.13 tag — past the commit that made connector debug logging opt-in, into the tree **BF-42** describes — `DEBUG_LOGGING` and `CONNECT_DEBUG` disappear, and `dev`'s bare connector `require` replaces cut 1's stand-down guard | `package.json` and `lib/server/bootevent.js` in the `dev` × `chore/retire-jsdom` merge; same shape for cuts 2, 3 and 4 | **medium** — taking either side of either conflict hunk wholesale is wrong, and one direction re-opens a credential leak | open — measured with `merge-tree --write-tree` and by reading both conflict hunks out of the written tree. **Possible the train assumes a merge of `dev` into each cut first** — nobody has written that assumption down, which is the open question attached |
 | **BF-57** | A behaviour change to **carbs-on-board reporting** is shipping in 15.0.9 with no line of its own in the release decision, because the release-readiness document files it under the D3 heading. At +49/−73 it is more than twice the size of the entire genuine D3 migration | `lib/plugins/cob.js`, commit `34e9b2da`; misattributed to `48075a18` by [release readiness](../modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §2 | **unsettled** — the COB change itself was **not audited** and no claim is made that it is wrong. The defect asserted is that the largest chart-adjacent production change on `dev` is invisible to the release decision | open — measured: `48075a18` touches three files and `cob.js` is not one of them. COB feeds what a person reads when deciding about food and correction, so it warrants its own review line |
-| **BF-58** | `Dockerfile` pins the **floating** `node:22-alpine` tag while `package.json` `engines` enforces a **patch** floor of `^22.23.2`, from cut 1 onward, with `runtime-policy.js` calling `process.exit(1)` on a mismatch | `Dockerfile` vs `package.json` `engines.node` + `lib/server/runtime-policy.js`, on `chore/retire-jsdom` and every cut above it | **high — RE-GRADED 2026-09-21 from `low`, then REFRAMED the same day: the defect is the FLOOR, not the image.** Measured with the policy stubbed out, cut 4 is 310 passing / 0 failing on 20.20.0, 22.12.0, 22.22.0, 22.23.2, 24.15.0 and 24.20.0 alike, and cut 1's Playwright suite is 21/0 on Node 20 — so `^22.23.2 \|\| ^24.20.0` rejects a working major line and eleven working patches for no measured reason. The visible symptom: `node:22-alpine` resolves to **v22.22.0 today**, which VIOLATES `^22.23.2`, so the container `runtime-policy.js` refuses to start: reproduced inside the image itself, exit 1. Not a cached-layer edge case — the current tag. Every cut 1-5 Docker self-hoster | **fixed 2026-09-21** on `rt/cut1`…`rt/cut4` (`ed21961f` and its merges up the stack), NOT PUSHED — `engines.node` loosened to `^22.12 || >=24` on the maintainer's decision, which is the root change; the Dockerfile is untouched and `node:22-alpine` now boots, verified inside the image. `tools/queue/gates/node-floor-consistency.js` is 9/9 green against each prepared cut and still red against the published refs. Originally: "No image was built" — the step from "engines requires 22.23.2" to "the container will not start" is read, not observed. Docker is the primary distribution path, so name the symptom in the release notes |
-| **BF-59** | From **cut 3 onward CI stops exercising the exact floor Node versions** the runtime policy enforces: the matrix goes from `['22.23.2','22','24.20.0','24']` to `['22','24']`, while the floor itself is unchanged | `.github/workflows/main.yml` on cuts 3, 4 and 5 | low — lost coverage, not a changed requirement: a regression precisely at the boundary the software refuses to start below would not be caught | **fixed 2026-09-21** on `rt/cut1`…`rt/cut4`, NOT PUSHED — and fixed by REMOVING ITS SUBJECT rather than restoring the entries: with `engines` at minor precision (`^22.12 || >=24`) there is no patch boundary left to guard, so every job now tests `['22','24']` and cut 3's divergence from cut 1 is gone. Originally: open — measured by reading each ref's test-job matrix; `engines` confirmed byte-identical across all five cuts |
+| **BF-58** | `Dockerfile` pins the **floating** `node:22-alpine` tag while `package.json` `engines` enforces a **patch** floor of `^22.23.2`, from cut 1 onward, with `runtime-policy.js` calling `process.exit(1)` on a mismatch | `Dockerfile` vs `package.json` `engines.node` + `lib/server/runtime-policy.js`, on `chore/retire-jsdom` and every cut above it | **high — the defect is the floor, not the image.** Measured 2026-09-21 with the policy stubbed out, cut 4 is 310 passing / 0 failing on 20.20.0, 22.12.0, 22.22.0, 22.23.2, 24.15.0 and 24.20.0 alike, and cut 1's Playwright suite is 21/0 on Node 20 — so `^22.23.2 \|\| ^24.20.0` rejects a working major line and eleven working patches for no measured reason. The visible symptom: `node:22-alpine` resolved to **v22.22.0** (2026-09-21), which violates `^22.23.2`, so the container's `runtime-policy.js` refuses to start: reproduced inside the image itself, exit 1. Every cut 1-5 Docker self-hoster | **fixed 2026-09-21** on the local rebase branches `rt/cut1`…`rt/cut4` (`ed21961f` and its merges up the stack, not pushed): `engines.node` is `^22.12 \|\| >=24` on the maintainer's decision, which is the root change; the Dockerfile is untouched and `node:22-alpine` boots, verified inside the image. `tools/queue/gates/node-floor-consistency.js` is 9/9 green against each prepared cut and red against the published refs. Docker is the primary distribution path, so name the symptom in the release notes |
+| **BF-59** | From **cut 3 onward CI stops exercising the exact floor Node versions** the runtime policy enforces: the matrix goes from `['22.23.2','22','24.20.0','24']` to `['22','24']`, while the floor itself is unchanged | `.github/workflows/main.yml` on cuts 3, 4 and 5 | low — lost coverage, not a changed requirement: a regression precisely at the boundary the software refuses to start below would not be caught | **fixed 2026-09-21** on `rt/cut1`…`rt/cut4` (not pushed), by removing the subject: with `engines` at minor precision (`^22.12 \|\| >=24`) there is no patch boundary left to guard, so every job tests `['22','24']` and cut 3's divergence from cut 1 is gone. Measured by reading each ref's test-job matrix; `engines` byte-identical across all five cuts |
 | **BF-60** | **Fifteen refs all declare `"version": "15.0.9"`** while enforcing two different Node floors — `>=20.x` on `dev` and the nine `bf/*` branches, `^22.23.2 \|\| ^24.20.0` on all five cuts — and one of those artefacts deletes two CGM ingestion paths. A support volunteer cannot triage "my 15.0.9 will not start" from the version string | `package.json` `version` at `origin/dev`, all five `chore/*` cut tips and all nine `bf/*` branches | **medium** — supportability. Compounded by cut 4's two migration shims emitting "retired in Nightscout 15.0.9" while, on the adopted train, 15.0.9 retires nothing | open — measured by parsing `package.json` at sixteen refs. The fix is one pre-release identifier per branch and should land **before** any of them is tagged |
-| **BF-61** | Cut 4 turns a **missing `CONNECT_COUNTRY_CODE` into a total site outage** for every operator running the legacy MiniMed bridge — not a loss of ingestion but of the whole deployment, because a `bootError` installs `app.get('*', bootErrorView)` and returns before every router and before websocket setup. The same happens to anyone running `BRIDGE_*` and `MMCONNECT_*` together, which **works today** | `chore/mime-exposure-review:lib/server/mmconnect-connect-compat.js` with `bootevent.js:325-340`, `app.js:202`, `server.js:61` | **high** — and the shim itself states the country **cannot be inferred**, so no MMCONNECT operator can upgrade without manual reconfiguration, while no released version warns them | open — **reproduced** by executing the shipping shim under node in four env shapes and reading the three call sites. **DECIDED 2026-09-23 (maintainer): the hard stop is intended** — these settings are usually the site's primary data source, so a misconfigured one should show a page saying what to fix. Still open under that decision: following the page must be enough (today `CONNECT_COUNTRY_CODE` alone still stops the site unless `connect` is in `ENABLE`), the messages must not name 15.0.9, and the RT-5 gate's pass condition changes from "no boot error" to "the boot error names the fix, and the fix boots". **2026-09-23: all three done on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed)**, where the removal now lives (lifted onto cut 1); boot matrix: each stopping shape's named fix boots 200/401/401; rewritten gate green there, red on `rh/cut4` ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)) |
-| **BF-62** | Cut 4 accepts `DEXCOM_BRIDGE_USE_LEGACY` and **silently ignores it**, after `dev`'s own `DEPRECATION WARNING` told operators to set exactly that variable | `chore/mime-exposure-review:lib/server/bridge-connect-compat.js` (`bridgeUseLegacy` deleted) with the `bootevent.js` log line deleted | low — **not** a data-availability failure: Dexcom credentials are still migrated unconditionally, so ingestion continues. What is discarded is the operator's expressed intent | open — measured by diffing the shim against `dev`'s. Either honour it with a clear "no longer supported" boot error, or log that it is ignored. **2026-09-23: fixed on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed)** — the override is logged as ignored and Dexcom still migrates; regression test with break-it ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)) |
-| **BF-63** | `booterror.js` **throws `TypeError` when a boot error carries no `err` key**, because `Object.getOwnPropertyNames(obj.err)` is evaluated as an argument before `pick()`'s null guard runs. Cut 4 adds the only two `bootErrors.push` sites in the tree that omit `err` — so the migration failure messages, which are the mitigation for **BF-61**, crash the page meant to display them and leave a generic 500 | `lib/server/booterror.js` (**unchanged from `dev`** — the renderer weakness is in shipping code today, awaiting a caller) reached from `chore/mime-exposure-review:lib/server/bootevent.js:330` and `:335` | **high** — the operator is told nothing at all, on the failure this batch most needs to explain | **partly merged 2026-09-23**: the renderer half is in `dev` via PR #8753 (`3a38c6f2`); the other site, cut 4's `pick.js`, is on the modernization branch only. NOT RELEASED (shipping tag 15.0.8; see the status legend). Before: **reproduced**: five boot-error shapes through the renderer's own map with cut 4's `pick.js`. Both cut-4 shapes throw; three controls (the Mongo shape, the ENV Error shape, a real `Error`) render. Fix **both** sites: pass `err`, *and* make the renderer defensive, with a regression test |
-| **BF-64** | **The adopted release train specifies a combination of releases that cannot be built.** It ships cut 5 as a "dependency release" while holding cut 4 back behind a deprecation release — but cut 4 is an **ancestor** of cut 5, so that release would ship the CGM ingestion retirement one release early and *before* the deprecation release that exists to warn operators about it | [release readiness](../modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §5 and every document repeating it. **No branch is wrong** — the description of how to combine them is | **high** — it silently ships the highest-blast-radius change in the programme ahead of its own warning | open — **reproduced**: `merge-base --is-ancestor` exits 0 (cut 5 is 154 commits past cut 4), and `lib/plugins/bridge.js`/`mmconnect.js` are present on `dev` and cut 3 and **absent** on cuts 4 and 5. Must be resolved before Release 4's contents can be written down. **Maintainer direction 2026-09-23:** mmconnect is deprecated and removed as early as possible (it does not work and carries deprecated dependencies), partly in the current cycle where appropriate; with RT-4 dropped, 15.0.9's notes are the deprecation notice, so holding cut 4 behind a separate release no longer applies. **2026-09-23: the removal is lifted onto cut 1** (local `rh/cut1-retire-legacy`, 8 cherry-picks); cut 4's remainder has no CGM-path removal, and a trial merge conflicts only in legacy files and manifests ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)) |
-| **BF-65** | The adopted train **ships the leaking connector to upgraders first**: cuts 1, 2 and 3 all pin `nightscout-connect` v0.0.13 — the tree **BF-42** describes — and are scheduled first as low-blast-radius releases, while cut 4, which carries most of the redaction, is held back longest | `package.json` on the three lower cut tips, against the adopted train | medium — an operator upgrading to cut 1 or 2 moves from a leaking connector to the same leaking connector | open — the pins are measured; the ordering is **quoted** from the adopted train and was not re-derived. Cheap to remove: all three pin the v0.0.13 **tag**, so moving them to the connector release cut by P0-TAG is the same one-line change as `dev`'s |
+| **BF-61** | Cut 4 turns a **missing `CONNECT_COUNTRY_CODE` into a total site outage** for every operator running the legacy MiniMed bridge — not a loss of ingestion but of the whole deployment, because a `bootError` installs `app.get('*', bootErrorView)` and returns before every router and before websocket setup. The same happens to anyone running `BRIDGE_*` and `MMCONNECT_*` together, which **works today** | `chore/mime-exposure-review:lib/server/mmconnect-connect-compat.js` with `bootevent.js:325-340`, `app.js:202`, `server.js:61` | **high** — and the shim itself states the country **cannot be inferred**, so no MMCONNECT operator can upgrade without manual reconfiguration, while no released version warns them | **fixed 2026-09-23** on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed), where the removal now lives (lifted onto cut 1), under the maintainer's decision of 2026-09-23 that **the hard stop is intended** — these settings are usually the site's primary data source, so a misconfigured one should show a page saying what to fix. On that branch the page's named fix is enough, the messages do not name 15.0.9, and the RT-5 gate checks "the boot error names the fix, and the fix boots": each stopping shape's named fix boots 200/401/401; the rewritten gate is green there and red on `rh/cut4` ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)). **Reproduced** on cut 4 by executing the shipping shim under node in four env shapes and reading the three call sites |
+| **BF-62** | Cut 4 accepts `DEXCOM_BRIDGE_USE_LEGACY` and **silently ignores it**, after `dev`'s own `DEPRECATION WARNING` told operators to set exactly that variable | `chore/mime-exposure-review:lib/server/bridge-connect-compat.js` (`bridgeUseLegacy` deleted) with the `bootevent.js` log line deleted | low — **not** a data-availability failure: Dexcom credentials are still migrated unconditionally, so ingestion continues. What is discarded is the operator's expressed intent | **fixed 2026-09-23** on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed) — the override is logged as ignored and Dexcom still migrates; regression test with break-it ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)). Measured on cut 4 by diffing the shim against `dev`'s |
+| **BF-63** | `booterror.js` **throws `TypeError` when a boot error carries no `err` key**, because `Object.getOwnPropertyNames(obj.err)` is evaluated as an argument before `pick()`'s null guard runs. Cut 4 adds the only two `bootErrors.push` sites in the tree that omit `err` — so the migration failure messages, which are the mitigation for **BF-61**, crash the page meant to display them and leave a generic 500 | `lib/server/booterror.js` (**unchanged from `dev`** — the renderer weakness is in shipping code today, awaiting a caller) reached from `chore/mime-exposure-review:lib/server/bootevent.js:330` and `:335` | **high** — the operator is told nothing at all, on the failure this batch most needs to explain | **partly merged 2026-09-23**: the renderer half is in `dev` via PR #8753 (merge `3a38c6f2`); the other site, cut 4's `pick.js`, is on the modernization branch only. **Reproduced**: five boot-error shapes through the renderer's own map with cut 4's `pick.js`. Both cut-4 shapes throw; three controls (the Mongo shape, the ENV Error shape, a real `Error`) render |
+| **BF-64** | **The adopted release train specifies a combination of releases that cannot be built.** It ships cut 5 as a "dependency release" while holding cut 4 back behind a deprecation release — but cut 4 is an **ancestor** of cut 5, so that release would ship the CGM ingestion retirement one release early and *before* the deprecation release that exists to warn operators about it | [release readiness](../modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §5 and every document repeating it. **No branch is wrong** — the description of how to combine them is | **high** — it silently ships the highest-blast-radius change in the programme ahead of its own warning | open — **reproduced**: `merge-base --is-ancestor` exits 0 (cut 5 is 154 commits past cut 4), and `lib/plugins/bridge.js`/`mmconnect.js` are present on `dev` and cut 3 and **absent** on cuts 4 and 5. Must be resolved before Release 4's contents can be written down. **Maintainer direction 2026-09-23:** mmconnect is deprecated and removed as early as possible (it does not work and carries deprecated dependencies), partly in the current cycle where appropriate; with RT-4 dropped, 15.0.9's notes are the deprecation notice, so holding cut 4 behind a separate release no longer applies. The removal is lifted onto cut 1 (local `rh/cut1-retire-legacy`, 8 cherry-picks); cut 4's remainder has no CGM-path removal, and a trial merge conflicts only in legacy files and manifests ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)) |
+| **BF-65** | The adopted train **ships the leaking connector to upgraders first**: cuts 1, 2 and 3 all pin `nightscout-connect` v0.0.13 — the tree **BF-42** describes — and are scheduled first as low-blast-radius releases, while cut 4, which carries most of the redaction, is held back longest | `package.json` on the three lower cut tips, against the adopted train | medium — an operator upgrading to cut 1 or 2 moves from a leaking connector to the same leaking connector | open — the pins are measured; the ordering is **quoted** from the adopted train and was not re-derived. Cheap to remove: all three pin the v0.0.13 **tag**, so moving them to nightscout-connect `0.1.0` is the same one-line change as `dev`'s (PR #8762) |
 | **BF-66** | The deployment **mints JWTs with no tenant claim**, so under `TENANCY_MODE=multi` with the default `requireTokenClaim` the tenant check refuses every token the deployment itself issues | `lib/authorization/index.js:289` (the only minting path besides `enclave.js:58`); `lib/server/tenant-middleware.js:139-151`, `:181-192`, `:208` | **medium** — **fails safe**, refusing rather than admitting, which is why it has gone unnoticed | open — **reproduced** by executing both modules with the exact payload line 289 mints: `credentialRefusal` returns "This credential does not name a Nightscout site."; the control with a `tenant` field proceeds. Must be fixed by the task that introduces the per-tenant signing key (T3.0), because that task chooses the payload |
-| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **merged 2026-09-18** on `bf/coercion` (`f829ea11`), open as PR **#8737** — repaired on a branch, NOT merged. **Reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (shipping tag 15.0.8; see the status legend) |
-| **BF-88** | The modernization branch's `TRUST_PROXY`-unset default (`395f3207`, "Restore proxy compatibility by default") **does not reproduce today's client address** in four cases: an IPv6 entry after the first in a comma-and-space `X-Forwarded-For` chain, an IPv4 address with a non-numeric port suffix, a request with no socket remote address, and a request carrying more than one forwarding-header family (dev's precedence depends on which family earlier requests used; the branch's order is fixed) | `lib/server/client-ip.js` on `origin/chore/nightscout-modernization` `b1bdaca0` against `forwarded-for` on `origin/dev` `74fc6619` | **low** — edge-case inputs, but the address is the failed-authentication delay's key and the setting is presented as compatibility-preserving, so an upgrader has no warning | no | **decided 2026-09-23 (maintainer): the cuts keep 15.0.9's unset default** — `forwarded-for`, as on `dev`; `395f3207`'s fixed-precedence normalisation is not taken, and cut 5's four `tests/client-ip.test.js` expectations are replaced by 15.0.9's when the cuts are rebased (the rehearsal's resolution). **Reproduced** by a differential probe; `bf2/auth-hardening` `8b975b41` pins dev's behaviour for the unset default, and restoring `395f3207`'s `client-ip.js` there fails exactly 7 of 48 `tests/client-ip.test.js` cases (re-run 2026-09-22). No flag for the other normalisation: with `TRUST_PROXY` unset the forwarding headers come from any peer, so neither answer is a security boundary; an address list (`proxy-addr`) is the deterministic path. The unset path is revisited when `TRUST_PROXY`'s default is flipped |
+| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **merged 2026-09-18** (PR #8737, merge `025f1310`; repaired inside `bf/coercion` by `operandReaderFor` in `f829ea11`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through). **Reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. Never in any release |
+| **BF-88** | The modernization branch's `TRUST_PROXY`-unset default (`395f3207`, "Restore proxy compatibility by default") **does not reproduce today's client address** in four cases: an IPv6 entry after the first in a comma-and-space `X-Forwarded-For` chain, an IPv4 address with a non-numeric port suffix, a request with no socket remote address, and a request carrying more than one forwarding-header family (dev's precedence depends on which family earlier requests used; the branch's order is fixed) | `lib/server/client-ip.js` on `origin/chore/nightscout-modernization` `b1bdaca0` against `forwarded-for` on `origin/dev` `74fc6619` | **low** — edge-case inputs, but the address is the failed-authentication delay's key and the setting is presented as compatibility-preserving, so an upgrader has no warning | open — **decided 2026-09-23 (maintainer): the cuts keep 15.0.9's unset default** — `forwarded-for`, as on `dev`; `395f3207`'s fixed-precedence normalisation is not taken, and cut 5's four `tests/client-ip.test.js` expectations are replaced by 15.0.9's when the cuts are rebased (the rehearsal's resolution). **Reproduced** by a differential probe; `bf2/auth-hardening` `8b975b41` pins dev's behaviour for the unset default, and restoring `395f3207`'s `client-ip.js` there fails exactly 7 of 48 `tests/client-ip.test.js` cases (re-run 2026-09-22). No flag for the other normalisation: with `TRUST_PROXY` unset the forwarding headers come from any peer, so neither answer is a security boundary; an address list (`proxy-addr`) is the deterministic path. The unset path is revisited when `TRUST_PROXY`'s default is flipped |
 | **BF-96** | The headless client test fixture passes the bundle loader an **un-normalised path** (`tests/fixtures/../../node_modules/...`), so `benv-shim.js`'s `delete require.cache[filename]` misses the key Node stored the bundle under. A second headless suite in the same mocha process gets the cached bundle from the first, and `$` is undefined. `careportal` was the only headless suite, so nothing showed it before BF-90's test | `tests/fixtures/headless.js` and `tests/fixtures/benv-shim.js` on `origin/dev` `74fc6619` | **low** — test-only; a new headless suite fails for a reason unrelated to its subject, or passes against a stale bundle. Nothing an operator runs is affected | open — **reproduced** 2026-09-23 while writing BF-90's `tests/client.alarm-no-reading.test.js`, which clears the resolved key itself, with a comment ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md) §3). Found, not fixed: the one-line shim change (`path.resolve`) is left for a separate change |
-| **BF-97** | **On the connector 0.1.0 line, a Nightscout source that has a profile stalls every poll.** The Nightscout source re-fetches each profile with its source `_id` on every poll, so from the second poll the sink's insert fails with a duplicate key. Up to `v0.0.13` `lib/outputs/internal.js` logged that failure and resolved the batch; from `808ab1c` (2026-09-21) the write failure fails the whole poll, and the retry backoff grows toward its 30-minute cap. Nothing is lost, but the sink runs behind with no visible error. The failing insert also logs the whole profile document each time (that part is old, `v0.0.13` too) | connector `lib/outputs/internal.js` `safePersist` and `lib/outputs/nightscout.js` `recordingError` (`808ab1c`), on connector `dev` `fbd4e55` = `v0.1.0-dev.2`; not in `v0.0.13` or `234d47c` | **high** for the 0.1.0 tag and `#8752` — a Nightscout-to-Nightscout sink ran 20–35 min behind for most of a 4 h 23 min run (55 min across an outage), with no error shown to followers. It does not reach operators today: 15.0.8 pins `v0.0.13` and `dev` pins `234d47c` | **merged 2026-09-23** in connector `dev` via connector PR #79 (`de3cee1`, merge `977da8a`), published as the prerelease `0.1.0-dev.3`; Nightscout `dev` installs it through PR #8759 (`feafa533`). No connector release and no Nightscout release carries it yet. Before: **reproduced** 2026-09-23 by a lab soak; the one-variable control (profiles excluded with `CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus`) polls a steady 5 min, and `v0.0.13` and `234d47c` stay current ([evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). **Maintainer, 2026-09-23: fix in the connector first, tag dev.3, then 0.1.0; `#8752` waits.** Fix in progress |
+| **BF-97** | **On the connector 0.1.0 line, a Nightscout source that has a profile stalls every poll.** The Nightscout source re-fetches each profile with its source `_id` on every poll, so from the second poll the sink's insert fails with a duplicate key. Up to `v0.0.13` `lib/outputs/internal.js` logged that failure and resolved the batch; from `808ab1c` (2026-09-21) the write failure fails the whole poll, and the retry backoff grows toward its 30-minute cap. Nothing is lost, but the sink runs behind with no visible error. The failing insert also logs the whole profile document each time (that part is old, `v0.0.13` too) | connector `lib/outputs/internal.js` `safePersist` and `lib/outputs/nightscout.js` `recordingError` (`808ab1c`), on connector `dev` `fbd4e55` = `v0.1.0-dev.2`; not in `v0.0.13` or `234d47c` | **high** for the affected prereleases — a Nightscout-to-Nightscout sink ran 20–35 min behind for most of a 4 h 23 min run (55 min across an outage), with no error shown to followers. It never reached a Nightscout release: 15.0.8 pins `v0.0.13`, and `0.1.0` carries the fix | **merged 2026-09-23** in connector `dev` via connector PR #79 (merge `977da8a`: `f6359b4`, `1d2ebc8`, `de3cee1`); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`), and pinned `0.1.0-dev.3` via PR #8759 (merge `feafa533`) before that. Never in a Nightscout release: 15.0.8 pins `v0.0.13`. **Reproduced** 2026-09-23 by a lab soak; the one-variable control (profiles excluded with `CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus`) polls a steady 5 min, and `v0.0.13` and `234d47c` stay current ([evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). The fix was lab-run as `9dbef9e` (`lib/` identical to `de3cee1`) for 80 min and for 46 min against the 15.0.9 candidate sinks ([evidence](../../60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md)) |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -609,7 +616,7 @@ would use is itself unsettled: see the measured correction in
 
 ## 2. Detail
 
-### BF-69 · the quick-pick chooser is built once, from nothing, and never rebuilt — **FIXED 2026-09-23** on a local branch
+### BF-69 · the quick-pick chooser is built once, from nothing, and never rebuilt — **merged 2026-09-23** (PR #8756)
 
 Found 2026-09-17 by the maintainer in a browser.
 
@@ -667,7 +674,7 @@ offered, and BF-35's probes still pass. The Bolus Wizard is shown only when `SHO
 `boluscalc`, and only to a viewer who may create treatments. A food changed after a page has loaded
 still does not reach that page until it reconnects: that is BF-93, not this entry.
 
-### BF-01 · `count/entries/where` silently matches nothing — **FIXED 2026-09-15**
+### BF-01 · `count/entries/where` silently matches nothing — **merged 2026-09-18** (PR #8738)
 
 `aggregate.js:21` calls `find_options(opts)` with **one argument**, so the collection's
 `queryOpts` never arrive and `lib/server/query.js` falls back to its defaults — `dateField:
@@ -729,25 +736,26 @@ against 2,791 integer ones** across 11 sites — 98 % of its non-null values are
 
 ### BF-03 · Numeric filters that silently match nothing
 
-**PARTLY FIXED 2026-09-15** by plan T0.5 — `devicestatus` (99 fields) and `profile` (10) are now typed from the schema, as are the fields `entries` and `treatments` were missing. cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737); write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
+**Merged 2026-09-18** via PR #8737 (merge `025f1310`), repaired by plan T0.5 on `bf/coercion` `f829ea11` — `devicestatus` (99 fields) and `profile` (10) are typed from the schema, as are the fields `entries` and `treatments` were missing. The fix drops `query.js`'s default walker for a collection that names a schema, which costs `activity` its numeric `date` filter: that is BF-106. Write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
 
-**Two of the four collections named above were misfiled, and neither for the reason given.**
+**`food` and `activity` are not affected in the way this entry's title says:**
 
 * **`food` reaches `lib/server/query.js` at no point.** `lib/server/food.js` exposes `list(fn)`, `listquickpicks(fn)` and `listregular(fn)` — none takes query options — and `lib/api/food/index.js` passes none. v1 `/food` accepts no filters at all, so there is no under-coercion to fix. (Its numeric fields are also `['number','string']` unions in the model, because the built-in client writes form-encoded; that is BF-16.)
 * **`activity` has no numeric field to fix.** Its model has exactly two leaves, `_id` and `created_at`, both strings. The collection is open-bodied, so a deployment may hold numbers there, but nothing declares them and the table will not guess. It is wired to the table with a legitimately empty entry, so it starts working the day the model gains a field.
 
-**A smaller correction to the table below:** `devicestatus` and `activity` are recorded as having no walker "at all". They actually inherit `query.js`'s *default* walker, `{ date: parseInt, sgv: parseInt }`, because neither sets `walker` and `default_options` fills one in. The conclusion is unchanged — the fields people filter on were untyped — but that is not what the code did.
+The walkers on 15.0.8:
 
 | collection | `walker` |
 |---|---|
 | entries | 7 fields, all `parseInt` |
 | treatments | `insulin carbs glucose` → `parseInt`; `notes eventType enteredBy` → regex |
 | profile | `{}` — empty |
-| **devicestatus, activity, food** | **none at all** |
+| **devicestatus, activity** | none of their own; they inherit `query.js`'s *default* walker, `{ date: parseInt, sgv: parseInt }`, because neither sets `walker` and `default_options` fills one in |
+| **food** | none, and no query options reach it (above) |
 
 A field with no `walker` entry stays a **string**, and MongoDB's type ordering means a numeric
-field never matches a string bound. So `devicestatus` and `activity` have no coercion at all
-and **every numeric filter on them matches nothing and returns 200**:
+field never matches a string bound. So on `devicestatus` and `activity` **every numeric filter
+other than `date` and `sgv` matches nothing and returns 200**:
 
 ```
 devicestatus  uploader.battery $lt=50   ->  {"uploader.battery":{"$lt":"50"}}   <- still a string
@@ -757,10 +765,9 @@ entries       delta            $gte=1.5 ->  {"delta":{"$gte":"1.5"}}            
 **Fixing this is user-visible in the good direction**: queries that silently returned nothing
 start returning rows. Release-note it, so it arrives as a fix rather than as a surprise.
 
-*Fix*: plan T0.5 — emit a coercion table from `specs/nsschema/*.model.json` (a sixth emitter)
-and drive the walker from it, instead of four hand-maintained lists that drift.
-**The emitter now exists** (`tools/nsschema/emit/coercion_emit.py`, `make schema-emit`); what
-remains is wiring `lib/server/query.js` to it, which is `cgm-remote-monitor` work.
+*Fix*: plan T0.5 — emit a coercion table from `specs/nsschema/*.model.json` (a sixth emitter,
+`tools/nsschema/emit/coercion_emit.py`, `make schema-emit`) and drive the walker from it, instead
+of four hand-maintained lists that drift. Merged via PR #8737.
 
 **The gap is 158 disagreements** — 147 under-coercions, 8 over-coercions, 1 stale entry, and 2
 collections with no model at all. Graded by corpus evidence in
@@ -768,13 +775,13 @@ collections with no model at all. Graded by corpus evidence in
 they are **not** 158 equivalent bugs: `entries.sgv` is declared `number` but was observed as
 895,418 integers and **zero** fractional values, so truncating its bound harms nobody today.
 
-> **Sharpened by the three-arm validation.** T0.5 was written as a v1 bug fix. It is also a
+> **Three-arm validation.** T0.5 is a v1 bug fix and also a
 > **precondition for the seam's backend-equivalence claim**: with correctly-typed values, all
 > three arms agree 3000/3000; with mistyped ones, four divergence classes open, two of which
 > produce *different data* depending on which backend a deployment runs.
 > See [three-arm validation](../../60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md) §4.
 
-### BF-14 · `?count=0` is an unbounded read — **FIXED 2026-09-15**
+### BF-14 · `?count=0` is an unbounded read — **merged 2026-09-18** (PR #8738)
 
 API v1 builds its limit in five places with one expression:
 
@@ -793,25 +800,33 @@ because `parseInt('1e2')` stops at the `e`.
 Not a seam regression — `origin/dev` chains `this.limit(parseInt(opts.count))` and reaches the
 identical driver call.
 
-*Fix*: API v3 already has it. `lib/api3/generic/collection.js:76` bounds-checks against
-`API3_MAX_LIMIT`, returns `HTTP 400` on `0`, `abc` or a negative, and defaults sanely when absent.
-Give v1 the same validation rather than inventing one.
+*Do not copy v3's validation*: v3's `parseLimit` bounds-checks the raw string with `isNaN`/`<=`
+and then converts with `parseInt(_, 10)`; the two readings disagree, so `?limit=0x10` passes the
+ceiling as 16 and arrives at the driver as `.limit(0)`. That is
+**[BF-33](#bf-33--v3s-limit-has-the-same-hole--merged-2026-09-18-pr-8738)**, found while fixing this one.
 
-> **That instruction was wrong, and following it literally would have carried a defect across.**
-> v3's `parseLimit` bounds-checks the raw string with `isNaN`/`<=` and then converts with
-> `parseInt(_, 10)`; the two readings disagree, so `?limit=0x10` passes the ceiling as 16 and
-> arrives at the driver as `.limit(0)`. That is **[BF-33](#bf-33--v3s-limit-has-the-same-hole)**,
-> found while doing this one.
-
-*Fix, shipped*: `bf/reads` `06b133a7` (PR #8738), in two layers. One `validateCount` middleware in
-`lib/api/index.js` in front of every v1 route — `count` must be a whole number of documents, 1 or
-greater, otherwise `HTTP 400`. **No upper bound was introduced**, because the census below records
-`count=100000` and `count=9999999` being sent deliberately and capping v1 would break those
-clients for no benefit related to this defect. And `lib/server/count.js`, one reading of the rule,
+*Fix, merged via PR #8738* (`bf/reads` `06b133a7`), in two layers: a `validateCount` middleware in
+`lib/api/index.js` in front of every v1 route, and `lib/server/count.js`, one reading of the rule,
 used by the six `list()` helpers and by `profile.list()`, so that a caller reaching the storage
-modules directly cannot produce `.limit(0)` either. Measured before the fix, 24 documents stored:
-`count=0` -> 24 rows, `count=abc` -> 24 rows, `count=1e2` -> 1 row, `count=-3` -> 3,
-`count=0x10` -> 16 (v1's `parseInt` has no radix), `count=2.5` -> 2.
+modules directly cannot produce `.limit(0)` either. **No upper bound was introduced**, because the
+census below records `count=100000` and `count=9999999` being sent deliberately. Measured before
+the fix, 24 documents stored: `count=0` -> 24 rows, `count=abc` -> 24 rows, `count=1e2` -> 1 row,
+`count=-3` -> 3, `count=0x10` -> 16 (v1's `parseInt` has no radix), `count=2.5` -> 2.
+
+*The rule on `origin/dev` `153e5658`* (read from `lib/api/index.js` and `lib/server/count.js`;
+PR #8738 as amended by PR #8748, merged 2026-09-23, and PR #8761, merged 2026-09-24):
+
+- **Reads (`GET`/`HEAD`)**: `count` must be a whole number, 0 or greater, otherwise `HTTP 400`.
+  `count=0` with a `find` that bounds one date field from both sides returns the whole window;
+  `count=0` without such a window is dropped, so the endpoint's default applies (setting
+  `API_V1_COUNT_ZERO_WINDOW`, default `true`; with it `false`, `count=0` returns `[]`). A whole
+  number followed by `?` and other text, the shape oref0 sends, reads the number (setting
+  `API_V1_COUNT_LEADING_NUMBER`, default `true`; with it `false`, `400`). Both tolerated shapes
+  answer with a deprecation warning.
+- **Deletes**: `count` must be a whole number, 1 or greater, otherwise `HTTP 400`.
+- **Saves and updates** ignore `count`.
+- `lib/server/count.js` answers a zero it is handed directly with no documents and never calls
+  `.limit(0)`.
 
 *Also relevant to the seam*: `findFiltered` falls back to `toSafeInt(o.limit, 0)`, and `0` is the
 value that means unbounded. `findMany`, in the same file, defaults to `1000`.
@@ -824,32 +839,22 @@ that makes the read unbounded also makes driver 7 abandon `READ_OPTIONS`, so the
 doubles as the read runs. Fixing this entry closes that one — **narrowly**. See BF-18 for what was
 and was not established.
 
-**Re-graded to high on 2026-09-15.** The medium grade rested on "it returns no wrong data".
-With a second backend that is no longer true. Measured end to end through the shipping
+**Graded high** because the answer differs by backend. Measured end to end through the shipping
 `lib/server/entries.js` `list()`: `?count=0` returns **10 rows on MongoDB and 0 rows on
 PostgreSQL** — an empty `200` on a glucose read. `?count=abc` behaves identically, because
 `parseInt` yields `NaN`, which passes the `!== undefined/null` gate and reaches
 `toSafeInt(NaN, 0)`. And `?count=-3` is a `2201W` — an HTTP 500 — against 3 rows on MongoDB.
 
-> **The paragraph below is the *superseded* sizing, kept for its census and marked as superseded —
-> 2026-09-15.** As written it restated "it returns no wrong data" in the **present tense**,
-> immediately after the re-grade above retracted exactly that sentence, so a reader landing here
-> came away with an open medium entry. A naive grep for "open" matched this entry for that reason;
-> there is no second table and no stale heading. Read the re-grade above as current. The census
-> remains the best evidence for *reachability* and is the reason the grade was ever medium.
+*Reachability* (census, 2026-09-14): `tools/qc/v1_count_census.py` over 10 client projects:
+**274 `count=` occurrences, no literal `count=0`**. 86 % are literals (`1 … 9999999`); 9 % are
+computed at request time, which is where the exposure sits — nothing bounds a computed count away
+from zero, and `oref0` has four such sites. An unbounded read is not a novel load for a server whose
+clients already send `count=100000` and `count=9999999` deliberately; on MongoDB alone it returns
+no wrong data. The later consumer survey found two clients that do send `count=0` or a count with
+trailing text (GluPredKit and oref0), which is what PR #8761 tolerates
+([consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md)).
 
-*Sized on 2026-09-14, when the measurement downgraded it from high to medium. Superseded by the
-re-grade above.*
-`tools/qc/v1_count_census.py` over 10 client projects: **274 `count=` occurrences, no literal
-`count=0`**. 86 % are literals (`1 … 9999999`); 9 % are computed at request time, which is where
-the exposure sits — nothing bounds a computed count away from zero, and `oref0` has four such
-sites. Two facts held the grade down *at that time*: nothing in the corpus reached it, and an
-unbounded read is not a novel load for a server whose clients already send `count=100000` and
-`count=9999999` deliberately. **On MongoDB alone it returned no wrong data** — that is the clause
-the second backend falsified. It stays in the register because a bounded request should not produce
-an unbounded read, and because the fix already exists in v3.
-
-### BF-15 · `?fields=` with a dotted path returns `{}` — **FIXED 2026-09-15**
+### BF-15 · `?fields=` with a dotted path returns `{}` — **merged 2026-09-18** (PR #8738)
 
 v3 projects in two stages. `storageProjection()` is handed to the driver, so MongoDB's
 dotted-path rules apply and a **nested** document comes back. `applyProjection(doc)` then deletes
@@ -872,7 +877,7 @@ Comma-separated top-level fields are unaffected, which is why it has gone unnoti
 requested field equals it or is prefixed by it plus `.`, and prune within the subtree. Either
 that, or reject a dotted `fields` with `HTTP 400` rather than answering `200` with nothing.
 
-*Fix, shipped*: `bf/reads` `12207df3` (PR #8738) — the first option, path comparison with subtree pruning.
+*Fix, merged via PR #8738*: `bf/reads` `12207df3` — the first option, path comparison with subtree pruning.
 The prune recurses into **array members** the way the driver's own dotted projection does, so
 `?fields=foods.name` works as well as `?fields=uploader.battery`. Comma-separated top-level fields
 take exactly the path they took before. Reproduced live before the fix: `200` with `{}`.
@@ -904,17 +909,15 @@ that matters: an operator who intended to enable an age or bolus-wizard alarm se
 with that alarm permanently off. Nothing on the status page distinguishes "not enabled" from
 "misspelt".
 
-**Found twice, independently**, by two agents that did not share results — both had alarm plugins
-measure as INERT before noticing the naming rule, and one of them nearly published a wrong
-`ddata` slice because of it. If it can silently defeat an instrument built to look at exactly
-these plugins, it can silently defeat an operator.
+**Found independently twice**: two harnesses built to exercise these alarm plugins both measured
+them as inert before the naming rule was noticed.
 
 *Fix*: warn at registration for any `ENABLE` entry matching no plugin name, and suggest the
 nearest registered name.
 
-**Fixed 2026-09-15**, `bf/alarms` `99e46a52`. Scanning every plugin module `lib/plugins/index.js`
-requires and comparing the file name to the `name:` it registers gives **six** mismatches, not
-five — `basalprofile` → `basal` is the one this entry did not list. The warning is
+**Merged 2026-09-20** via PR #8739 (merge `7a5561f4`; `bf/alarms` `99e46a52`). Scanning every
+plugin module `lib/plugins/index.js` requires and comparing the file name to the `name:` it
+registers gives **six** mismatches, including `basalprofile` → `basal`. The warning is
 suggestion-only on purpose: warning about *every* unmatched entry produces **six warnings on a
 stock install**, because `ENABLE` also carries features that are not plugins (`delta`,
 `devicestatus`, `food`, `cors`) and plugins registered on only one side of the client/server
@@ -953,18 +956,15 @@ requests WARN.
 
 *Fix*: `insulinInfo.urgent` → `prefs.urgent`. One identifier, and it matches three siblings.
 
-> **Confirm intent before fixing.** This branch has never executed in any deployment, so repairing
-> it **starts emitting an URGENT alarm that no operator has ever received** — on a threshold they
-> may have set years ago and never seen honoured. That is the right end state, and it is also a
-> behaviour change that should be release-noted rather than shipped as a typo fix. Both agents
-> that found it independently flagged the same caveat.
+This branch has never executed in any deployment, so repairing it starts emitting an URGENT level
+that no operator has seen, on a threshold they may have set years ago. It is release-noted as a
+behaviour change, not shipped as a typo fix.
 
-**Fixed 2026-09-15**, `bf/alarms` `8714093b`, with the release note the caveat above asked for.
-Measured through the real sandbox at four ages: 72 h requested **nothing** before and the URGENT
-overdue notification after. The entry understated it — at **80 h**, and at every age past the
-threshold, the plugin reported level **WARN** rather than URGENT, so the severity was wrong for
-as long as the reservoir stayed overdue, not only during the hour the notification would have
-fired. **No grace period**, argued from evidence: the notification is already gated on the
+**Merged 2026-09-20** via PR #8739 (merge `7a5561f4`; `bf/alarms` `8714093b`), with a release
+note. Measured through the real sandbox at four ages: 72 h requested **nothing** before and the
+URGENT overdue notification after. At **80 h**, and at every age past the threshold, the plugin
+reported level **WARN** rather than URGENT before the fix, so the severity was wrong for as long as
+the reservoir stayed overdue, not only during the hour the notification would have fired. **No grace period**, argued from evidence: the notification is already gated on the
 operator having set `IAGE_ENABLE_ALERTS`, README documents `IAGE_URGENT` as issuing exactly this
 warning, `cannulaage` has always fired on the identical default of 72, and a grace keyed on the
 threshold having been set explicitly would leave the most exposed operators — the ones who
@@ -974,11 +974,7 @@ enabled alerts and trusted the default — exactly where the bug left them.
 `tools/qc/ns-evaluator-arm.js`,
 [BF-28/29/31 alarm delivery](../../60-research/remedial/bf28-29-31-alarm-delivery-2026-09-15.md) §1 and §4.
 
-*Not fixed by that task* — it is pre-existing, single-tenant, and belongs here rather than in a
-tenancy commit.
-
-> **Two things a release note for this must get right — added 2026-09-15 from the semver review,
-> because a draft got both wrong in the direction that alarms people.**
+> **Two things a release note for this must state (from the semver review):**
 >
 > 1. **The push alarm is opt-in and OFF by default.** `iage.getPrefs` sets
 >    `enableAlerts: sbx.extendedSettings.enableAlerts || false`, the notification is built only
@@ -992,10 +988,9 @@ tenancy commit.
 >    pill turns urgent-red once the reservoir passes `IAGE_URGENT`, with no opt-in. That is the
 >    change to describe first, and it is a *visual* change, not a sound.
 >
-> **And the notification is one-shot, not continuous** — `sendNotification = insulinInfo.age === prefs.urgent`
-> is exact equality and this fix did not touch it. A note promising an alert that keeps nagging
-> would describe something that does not happen. Filed separately as **BF-52**, because it is
-> family-wide and predates this entry.
+> **And the notification is requested only in one window, not continuously** —
+> `sendNotification = insulinInfo.age === prefs.urgent` is exact equality and this fix did not
+> touch it. That is **BF-52**, family-wide and older than this entry.
 
 ### BF-04 · No operator allowlist on API v1
 
@@ -1003,88 +998,47 @@ tenancy commit.
 constraint, and **returns it to the driver with no operator allowlist**. Whatever
 `find[x][$op]` a client sends reaches MongoDB — `$where`, `$expr`, an unbounded `$regex`.
 
-**Status `fixed-in-seam`.** The seam branch's `fromMongo` (commit `68ffbd66`) parses `query.js`'s
-output into the AST, and an AST that cannot represent an unlisted operator *is* the allowlist —
-so this is repaired there as a structural consequence. **It should not have to wait for the
-seam to land.** Extracting the allowlist as a standalone change is a small piece of work and a
-security fix that ships to every current operator.
+**Severity.** Measured on `origin/dev` `a8888f0d` against `mongod 7.0`: a caller-supplied
+top-level `$where` operand reached the driver unchanged, and the driver **executes it**.
+Server-side JavaScript is enabled by default in `mongod`, the top level of `find` is never walked
+by the type coercer, and the route is gated only on `api:entries:read` — which
+`AUTH_DEFAULT_ROLES=readable`, the shipped default, grants without a token. This is code execution
+against the database, as well as ReDoS and full-scan exposure.
 
-> **And it has never been done — flagged 2026-09-15.** This entry is **high severity**, it is live
-> for **every** operator on today's release, and it appears in **no open-work list anywhere in this
-> programme**, because `fixed-in-seam` reads as a form of "fixed". It is the clearest single
-> illustration of why the status column is not operator exposure (see the legend above). The
-> extraction needs an owner and a queue item; `fixed-in-seam` is not a resting state.
+**Fix, merged 2026-09-18 via PR #8743** (merge `1a36f023`; `bf/operators`, queue item P0-K), two
+commits split at the revert boundary: `3e8ce695` refuses `$where`/`$function`/`$accumulator` with
+their own message and adds the shared 400 responder; `71506cf8` is the allowlist proper. The seam
+branch's `fromMongo` (commit `68ffbd66`) repairs the same defect structurally — an AST that cannot
+represent an unlisted operator is the allowlist — and
+`lib/storage/assert-no-query-javascript.js` is carried across byte-identical at the same path, so
+landing this ahead of the seam costs the seam branch nothing.
 
-> ### Extracted 2026-09-18 — `bf/operators`, queue item P0-K
->
-> Three days later, and it took a reader asking an unrelated question about PR #8737 to get it
-> done. **The prompt is worth recording**: *"does #8737 disallow `$where`, `$projection` and other
-> operators that could introduce security issues?"* — it does not and was never meant to, but
-> answering it required measuring what v1 actually carries, which is this entry. A `fixed-in-seam`
-> row was not enough to get the work scheduled; a question about a different branch was.
->
-> **The severity above was understated and is corrected.** This entry said "ReDoS / full-scan
-> exposure". Measured on `origin/dev` `a8888f0d` against `mongod 7.0`:
-> a caller-supplied top-level `$where` operand reached the driver unchanged, and the driver
-> **executes it**. Server-side JavaScript is enabled by default in `mongod`, the top level of
-> `find` is never walked by the type coercer, and the route is gated only on `api:entries:read` —
-> which `AUTH_DEFAULT_ROLES=readable`, the shipped default, grants without a token. This is code
-> execution against the database, not a performance problem. **Both halves of the original grading
-> were also true**, and remain so.
->
-> **PR #8737 changes none of this**, which is the direct answer to the question that started it.
-> `$where` appears in that branch's `NON_VALUE_OPERATORS` table because the coercer must keep its
-> hands *off* that operand — an exemption from conversion, not a refusal. Top-level `$where` and
-> `$or`-wrapped `$where` build byte-identically on `dev` and on `bf/coercion`. The only rows that
-> differ are `$where` and `$regex` *nested under a field*, and `mongod` rejects every such operator
-> as "cannot be applied to a field" / "unknown operator", so the delta is inert.
->
-> Two commits, split at the revert boundary: `3e8ce695` refuses `$where`/`$function`/`$accumulator`
-> with their own message and adds the shared 400 responder; `71506cf8` is the allowlist proper.
-> Opened 2026-09-18 as **PR #8743**, merged up to `dev` `fdd08706` the same day (`9745cae2`).
->
-> **It does NOT close the reported NoSQL-injection advisory, and the row above should not be read as
-> saying it does.** Of that advisory's three proof-of-concepts only `$where` is refused, and the
-> other two are now filed and re-measured: **BF-71** (the date window) and **BF-72** (`$regex`).
-> **REVISED 2026-09-21, and the revision reverses what this paragraph used to say.** It described
-> the date-window path as the advisory's "headline full-history PHI dump" and the larger of the two
-> remaining. Reproduced with a control in the same run, it is **not a privilege boundary at all**:
-> the allowlisted, documented `find[date][$gte]=0` returns the identical records on the identical
-> authorisation, and every form is 401 under `AUTH_DEFAULT_ROLES=denied`. The full-history read is
-> what the shipped `readable` default means, not something this code path grants. BF-71 is `low`.
-> **BF-72 is the one that survives**, and it is an availability defect rather than the extraction
-> the advisory describes: an unauthenticated `$regex` measured at 60–71 s of database CPU against a
-> 22 ms control. Both gradings here had been read off the code rather than run.
->
-> **The accept set is the seam's, exactly** — `$eq $ne $gt $gte $lt $lte $in $nin $exists $regex`
-> (`$options`) on a field, `$and`/`$or` at the top including the indexed form Trio sends. Not
-> trimmed to the census's measured seven, because the census measured client *source*. Matching the
-> seam makes this **one narrowing instead of the first of two**.
->
-> **It refuses one operator that works today** — `$expr`, reachable through `/api/v1/profiles/`.
->
-> **It refused a second, `$type`, and that was reversed on 2026-09-18 when #8737 merged.** This
-> entry recorded the collision and left the call to the maintainer, taken by nobody; `dev` then
-> moved `a8888f0d..fdd08706` and settled it. `readTypeOperand()` is on `dev` because
-> `find[sgv][$type]=2` must arrive as the **number** `2` or the request becomes an HTTP 500 —
-> measured against mongod 3.6.8 and 7.0.43. Refusing it would regress a fix that landed a week
-> earlier, to gain nothing: `$type` executes nothing and reads nothing outside the document.
-> **`$type` is allowed, and is the one departure from the seam's set — when the seam lands its AST
-> needs a `$type` node, or v1 narrows by one operator then.** `$not` and `$text` stay refused: both
-> were *fixtures* in #8737's tests rather than subjects, and their assertions are rewritten rather
-> than deleted. Report §2.2.
->
-> **The reusable part: `git merge-tree` called this merge CLEAN.** The collision was semantic, and
-> only running #8737's own suite against the merge found it — three failures, all fixtures. A clean
-> textual merge against a branch is not evidence of compatibility with it.
->
-> `lib/storage/assert-no-query-javascript.js` is carried across byte-identical at the same path, so
-> landing this ahead of the seam costs the seam branch nothing.
+- **The accept set is the seam's, exactly** — `$eq $ne $gt $gte $lt $lte $in $nin $exists $regex`
+  (`$options`) on a field, `$and`/`$or` at the top including the indexed form Trio sends. Not
+  trimmed to the census's measured seven, because the census measured client *source*. Matching the
+  seam makes this one narrowing instead of the first of two.
+- **It refuses one operator that works on 15.0.8** — `$expr`, reachable through `/api/v1/profiles/`.
+- **`$type` is allowed**, the one departure from the seam's set: `readTypeOperand()` (from #8737)
+  makes `find[sgv][$type]=2` arrive as the number `2`, without which the request is an HTTP 500
+  (measured against mongod 3.6.8 and 7.0.43; BF-68). `$type` executes nothing and reads nothing
+  outside the document. When the seam lands its AST needs a `$type` node, or v1 narrows by one
+  operator then. `$not` and `$text` stay refused. Report §2.2.
+- **PR #8737 alone does not refuse `$where`.** `$where` is in that branch's `NON_VALUE_OPERATORS`
+  table as an exemption from conversion, not a refusal. Top-level and `$or`-wrapped `$where` build
+  byte-identically on `dev` and on `bf/coercion`; the only rows that differ are `$where` and
+  `$regex` nested under a field, which `mongod` rejects, so the delta is inert.
+
+**It does not close the reported NoSQL-injection advisory.** Of that advisory's three
+proofs-of-concept only `$where` is refused. The other two are filed and reproduced with controls:
+**BF-71** (the date window) is `low` and not a privilege boundary — the allowlisted, documented
+`find[date][$gte]=0` returns the identical records on the identical authorisation, and every form
+is 401 under `AUTH_DEFAULT_ROLES=denied`; **BF-72** (`$regex`) is an availability defect, measured
+at 60–71 s of database CPU against a 22 ms control, and is open.
 
 *Evidence*: {M} §6.5; seam interface §8.2;
 [BF-04/BF-70 report](../../60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md).
 
-### BF-05 · Debug logging on the count request path — **FIXED 2026-09-15**
+### BF-05 · Debug logging on the count request path — **merged 2026-09-18** (PR #8738)
 
 ```js
 console.log('$match query', query);
@@ -1097,12 +1051,12 @@ noise the modernization branch's own quiet-logging work (`c2ac743c`) set out to 
 filter can carry values a deployment would rather not have in its logs. **Route through the
 existing logger at debug level, or delete.**
 
-*Fix, shipped*: `bf/reads` `3b588098` (PR #8738) — **deleted**. `aggregate.js` has no `env` handle, so gating
+*Fix, merged via PR #8738*: `bf/reads` `3b588098` — **deleted**. `aggregate.js` has no `env` handle, so gating
 them on `env.debug.logging` would mean threading `env` through a shared module for a debug print,
 and `/api/v1/echo/*` already exists for inspecting how a query string becomes a filter.
 [Report](../../60-research/remedial/bf01-13-14-15-read-defects-2026-09-15.md) §2.
 
-*Same shape, not fixed*: `lib/authorization/storage.js:113` (**corrected 2026-09-15** — this entry cited `:84`; confirmed still present on `bf/auth` by grep) has an unguarded
+*Same shape, not fixed*: `lib/authorization/storage.js:113` (present on `bf/auth` too, by grep) has an unguarded
 `console.log('Loading', opts)` on the auth-storage read path. It logs query options rather than
 user-supplied filter values, so it is left for an operator's judgement rather than given an id.
 
@@ -1113,7 +1067,7 @@ response, because `ctx.cache.getData('entries')` deep-clones the whole 48-hour a
 anything is sliced. *Fix*: slice first, then clone the slice — the documents handed out are
 still clones, so the defensive property is preserved. *Evidence*: {R} §12.2. Plan T0.2.
 
-**Fixed 2026-09-15**, `bf/cache` `ddcdb1a8`. Re-measured baseline reproduced the figure exactly
+**Merged 2026-09-20** via PR #8740 (merge `49f562d8`; `bf/cache` `ddcdb1a8`). Re-measured baseline reproduced the figure exactly
 (0.837 ms vs 0.020 ms, 42.0×). The untyped branch now reads through a new `cache.getDataRef`,
 which returns a fresh array of the cache's own documents; the response is still cloned out of the
 slice. **0.025 ms p50 at `count=10`, 0.7× the typed branch.** Byte-identity is asserted, not
@@ -1123,8 +1077,7 @@ the bodies compared. Write-up in
 
 ### BF-07 · `cache.insertData` round-trips the whole retained array
 
-> **PARTIALLY REVERTED ON THE MODERNIZATION BRANCH — found 2026-09-21, and it is not visible
-> without counting call sites.** `chore/nightscout-modernization` `b1bdaca0` keeps `getDataRef`
+> **Partially reverted on the modernization branch (measured 2026-09-21).** `chore/nightscout-modernization` `b1bdaca0` keeps `getDataRef`
 > in `lib/server/cache.js` and both `lib/data/dataloader.js` callers, but its
 > `lib/api/entries/index.js` reverted to `getData`. Measured: `origin/dev` has **7** occurrences
 > of `getDataRef` under `lib/`, `b1bdaca0` has **6**, and the missing one is the
@@ -1138,14 +1091,14 @@ the bodies compared. Write-up in
 
 `insertData` returns `getData()` — a JSON round-trip over the **whole** retained array, per
 datatype, per cycle: **4.08 ms**, 65 % of the post-#8733 load cycle.
-**Resolve `dataloader.js:204` first** (this entry said `:203`; measured on `origin/dev` it is `:204`) — `if (!element.mills) element.mills = element.date` writes
+**Resolve `dataloader.js:204` first** — `if (!element.mills) element.mills = element.date` writes
 to the element, so a shallow copy changes behaviour there. The measurement sizes the prize; it
 does not license the patch. *Evidence*: {R} §12.3. Plan T0.3.
 
-**Partly fixed 2026-09-15**, `bf/cache` `4f86bab1` — **3.747 ms → 2.657 ms per cycle, not below
-1 ms**, and the shortfall is a decision rather than an omission.
+**Partly merged 2026-09-20** via PR #8740 (merge `49f562d8`; `bf/cache` `4f86bab1`) — **3.747 ms →
+2.657 ms per cycle, not below 1 ms**, and the shortfall is a decision rather than an omission.
 
-`dataloader.js:204` resolved first, as the entry demanded: **the write is dead.** All three
+`dataloader.js:204` resolved first: **the write is dead.** All three
 branches below it take `mills` from `element.date`, and the array is discarded when the loop
 ends, so under the clone regime it wrote to a throwaway copy that nothing read. It is removed,
 and a test runs a real load cycle and asserts the cached documents come back byte-for-byte as
@@ -1161,22 +1114,19 @@ That is 2.6 ms of the remaining 2.66, and taking it means proving no consumer an
 plugin tier writes to a device status document — a larger claim than this change would make.
 
 The by-reference accessors are sound because **the cache already clones on the way in**:
-`mergeCacheArrays` → `idMergePreferNew` → `JSON.parse(JSON.stringify(newData))`. A normalising
-clone added to the insert path in the first draft turned out to be redundant and was removed when
-deleting it failed to turn any test red. Write-up, including the non-vacuity runs, in
+`mergeCacheArrays` → `idMergePreferNew` → `JSON.parse(JSON.stringify(newData))`, so a normalising
+clone on the insert path is redundant (deleting one turned no test red). Write-up, including the non-vacuity runs, in
 [T0.2/T0.3](../../60-research/remedial/t02-t03-cache-clone-2026-09-15.md).
 
-### BF-08 · No start jitter in `nightscout-connect` — **FIXED 2026-09-15**
+### BF-08 · No start jitter in `nightscout-connect` — **merged 2026-09-23** through the connector pin; released in nightscout-connect 0.1.0
 
-The original entry, from {R} §6.2, said two things. The first was right and the second was not.
-
-**Right: the start is a herd.** `run()` sends `START`, and the cycle machine walked
+**The start is a herd.** `run()` sends `START`, and the cycle machine walked
 `Init → Ready → Operating` with no delay on any edge, so every actor in a pool issued its first
 upstream request in the same instant. Measured at **400 actors** against a local mock: all 400
 first contacts inside **216 ms**, busiest second **400**.
 
-**Wrong: "and stay phase-locked on the same five-minute boundary afterwards."** The poll
-interval is *not* unjittered. All four vendor drivers independently spell
+**The aligned poll interval is already jittered**, so a pool does not stay phase-locked on the
+same five-minute boundary after the start. All four vendor drivers independently spell
 `Math.floor(Math.random() * 18000)` into the timestamp they align to — `nightscout.js:161`,
 `dexcomshare.js:233`, `librelinkup.js:182`, `minimedcarelink/index.js:662`. Over a 700-second
 run at 400 actors the later cycles arrive as a **band about 15 s wide peaking at 30 requests/s**,
@@ -1199,7 +1149,7 @@ already the key `index.js` reads.
 **Both default to `0`, so nothing changes for anyone who does not ask.** One connector is not a
 herd; a self-hosted site would only be delaying its own first reading. This is the part of T0.4
 that does *not* ship value to every existing operator — it ships a knob the hosted vendor pool
-must set. What ships to every operator from that task is [BF-34](#bf-34--every-configured-retry-interval-was-discarded--fixed-2026-09-15),
+must set. What ships to every operator from that task is [BF-34](#bf-34--every-configured-retry-interval-was-discarded--merged-2026-09-23-through-the-connector-pin-released-in-nightscout-connect-010),
 found while doing it.
 
 With `CONNECT_START_JITTER_MS=60000` at 400 actors the busiest second goes **400 → 15**, and the
@@ -1223,9 +1173,9 @@ profile has to widen the driver's alignment window, not the start** — that is 
 four vendor drivers and is not in this fix.
 
 *Evidence*: `tools/mt-bench/vcherd.js` (EXP-MT-048b) and `tools/mt-bench/results/exp-mt-048b-*.json`;
-{R} §6.2 for the original reading, which §6.2 should now be read against.
+{R} §6.2 for the original reading.
 
-### BF-34 · Every configured retry interval was discarded — **FIXED 2026-09-15**
+### BF-34 · Every configured retry interval was discarded — **merged 2026-09-23** through the connector pin; released in nightscout-connect 0.1.0
 
 `lib/backoff.js` built its options as `{ ...config, ...defaults }`. **The defaults go last, so
 they win.** Every value a caller passed was silently thrown away.
@@ -1267,17 +1217,17 @@ delay and spreads the rest. Full jitter can return ~0 on any attempt, which weak
 it is there to spread.
 
 *Blast radius*: this changes retry timing for every operator running the connector, in the
-direction the source authors wrote down. It reaches them when `cgm-remote-monitor`'s
-`package.json` pin moves off `b77e5bb`; **release-note it** — a vendor outage will now look
+direction the source authors wrote down. It is released in nightscout-connect 0.1.0 and reaches
+Nightscout operators with 15.0.9, whose `dev` pins 0.1.0 exactly (PR #8762); **release-note it** — a vendor outage will now look
 slower to recover, because it stops retrying in a burst that could not have worked.
 
-### BF-09 · Socket dedup truthiness — the entry named the wrong fields
+### BF-09 · Socket dedup truthiness — the value at risk is a zero temp basal
 
 `websocket.js` tests truthiness rather than presence, so a **falsy** value is skipped as a match
 key. No test covers it — the only values in `tests/websocket.*.test.js` are `insulin: 1` and
 `carbs: 9/10/15/18`. **Recorded rather than guessed**: it may be intentional.
 
-> **Re-graded `unsettled` → `medium`, 2026-09-15, because the fields were wrong.** A corpus census
+> **Graded medium on a corpus census.** A census
 > over **277,690 treatment documents across 11 sites** found:
 >
 > | field | zero-valued | present | share |
@@ -1289,11 +1239,9 @@ key. No test covers it — the only values in `tests/websocket.*.test.js` are `i
 > | `percent` | never appears | — | — |
 >
 > `absolute: 0` is the **zero temp basal** — the canonical AID suspend action. `duration: 0` is
-> cancelling a temp. Naming `insulin` and `carbs`, neither of which has a single zero-valued
-> occurrence in the corpus, is why this entry has read as an edge case and stayed `unsettled` for a
-> day. It is not an edge case.
+> cancelling a temp. It is not an edge case.
 >
-> **My reading is that it is a bug, not intent**: the author built an explicit `selected`/fallback
+> **Read as a bug, not intent**: the author built an explicit `selected`/fallback
 > mechanism, so truthiness on `absolute` means the code treats a zero temp as "no value here",
 > which is false in AID terms.
 >
@@ -1303,16 +1251,13 @@ key. No test covers it — the only values in `tests/websocket.*.test.js` are `i
 > harness makes the comparison report 2 divergences and 2 controls agreeing, as designed. But the
 > corpus is **stored data**, so it is survivorship-biased in exactly the direction that hides this
 > defect: a treatment the defect swallowed as a false duplicate cannot appear in it. The null
-> bounds collision frequency **among surviving records only**.
->
-> **The one arm that would settle it** is a live uploader-burst replay. Until then this stays open
-> with a medium grade rather than moving to `fixed` or `invalid`.
+> bounds collision frequency **among surviving records only**; the socket-path measurement below
+> is what settles the behaviour.
 >
 > Also measured: the dedup window is `maxtimediff = times.secs(2).msecs`, i.e. **±2 seconds**
-> (`lib/server/websocket.js:452`) — a bound this entry never stated, and the reason the divergence
-> sweep had to be windowed at all.
+> (`lib/server/websocket.js:452`), which is why the divergence sweep had to be windowed.
 
-**Added 2026-09-23 — from reading, NOT reproduced.** Leaving a falsy field out of the lookup
+**Cross-eventType match** (read 2026-09-23, reproduced by the measurement below). Leaving a falsy field out of the lookup
 does more than lose it as a key. The lookup is built from whichever of `insulin`, `carbs`,
 `percent`, `absolute`, `duration` and `NSCLIENT_ID` are truthy, and `eventType` is added **only if
 none of them were**. A zero temp basal therefore looks up on `duration` alone, and can match a
@@ -1343,8 +1288,7 @@ zero temp is itself a shipped way to draw a temp the pump was not running. Stays
 maintainer's choice among the options in the evidence. A side finding while building the harness is
 BF-94.
 
-*Evidence*: seam interface §4.4 — **which carries the same stale `535-568` line range this entry
-used to, and needs the same correction.**
+*Evidence*: seam interface §4.4 (which cites the range as `535-568`; the code is at `538-566`).
 
 ### BF-10 · `mongod` fatal-asserts at the default file-descriptor limit
 
@@ -1357,11 +1301,9 @@ databases. **So the fd ceiling is not a scale-only concern** — it is reachable
 running `mongod` in a container with default limits. It is the kind of failure that looks like data
 loss to the person it happens to.
 
-> **"Not a code defect; it belongs in the operator documentation" was wrong — corrected
-> 2026-09-15.** `cgm-remote-monitor` **ships `docker-compose.yml` at the repository root**, with a
-> `mongo:` service, on both `origin/master` and `origin/dev` (both `mongo:5.0.32` since `d91a9b4c`, 2026-03-17 — the
-> `dev (mongo:4.4)` first written here was wrong, corrected 2026-09-22), and
-> **neither carries a `ulimits:` block**. A recursive grep for `ulimit` or `nofile` over the whole
+> **It has a code landing site.** `cgm-remote-monitor` **ships `docker-compose.yml` at the
+> repository root**, with a `mongo:` service, on both `origin/master` and `origin/dev` (both
+> `mongo:5.0.32` since `d91a9b4c`, 2026-03-17), and on 15.0.8 it **carries no `ulimits:` block**. A recursive grep for `ulimit` or `nofile` over the whole
 > released tree, excluding `node_modules`, returns **nothing**.
 >
 > **Reproduced with the shipped file, 2026-09-22.** Starting only the `mongo` service from `origin/dev`'s own
@@ -1369,12 +1311,13 @@ loss to the person it happens to.
 > **first** full suite run (WiredTiger error 24, `Fatal assertion 23089`, exit 14; one run, not repeated).
 > The same service from `bf2/ops` `03fba725` gives 64000 and ran three consecutive full suites clean.
 >
-> So there is a one-block code landing site, in the file most self-hosters actually use. The fix is
-> that file **first** and documentation second — the reverse of what this entry said. Corroborating
+> So there is a one-block code landing site, in the file most self-hosters actually use: the fix is
+> that file first and documentation second. **Merged 2026-09-23** via PR #8753 (merge `3a38c6f2`):
+> `ulimits` on the bundled compose file's `mongo` service. Corroborating
 > detail: five harnesses under `docs/60-research/` already pass
 > `--ulimit nofile=64000:64000`, because their authors hit this and worked around it silently.
 
-**Reproduced 2026-09-21 on `mongod 7.0.43`, by accident, which is the most useful part of it.**
+**Reproduced 2026-09-21 on `mongod 7.0.43`, unplanned.**
 Running one branch's full test suite (`bf/auth`, ~2 200 tests) against a plain
 `docker run -d mongo:7` with no `ulimits` killed the server outright. The sequence, from the
 container log: the startup warning `Soft rlimits for open file descriptors too low`
@@ -1383,7 +1326,7 @@ container log: the startup warning `Soft rlimits for open file descriptors too l
 files", error_code: 24`, then `Fatal assertion 23089 msgid 50853` at
 `wiredtiger_util.cpp:772`, then `aborting after fassert() failure`. Container exit code **14**.
 
-Three things this adds to the entry. It is **not version-specific to the 4.4/5.0 images the
+Three things this establishes. It is **not version-specific to the 4.4/5.0 images the
 shipped compose files pin** — 7.0.43 does it too. **One ordinary test run is enough**; no tenant
 scale, no 50 databases, which is how EXP-MT-040b had reached it. And the failure is a **dead
 server, not a failed request**: two other worktrees pointing at that mongod then failed their
@@ -1438,7 +1381,7 @@ The drift report now finds **zero ORPHAN rows** across every collection. The han
 was missing entries — 148 of them — but it was not carrying stale ones, and the claim that the
 drift "runs both ways" is not supported. Write-up: [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).
 
-### BF-13 · v3 paging loses documents when the sort chain ties — **FIXED 2026-09-15**
+### BF-13 · v3 paging loses documents when the sort chain ties — **merged 2026-09-18** (PR #8738)
 
 `parseSort` appends `identifier`, `created_at` and `date` as tiebreaks. When **all** of them tie
 — documents with no `identifier`, sharing one `created_at` and one `date`, as a bulk import
@@ -1467,19 +1410,18 @@ tied `created_at`, tied `date`. Any one of them differing makes it safe.
 typically lose nothing, and a tool paging `devicestatus` to reconstruct controller behaviour
 loses records silently — on the collection replay fidelity depends on.
 
-*Evidence*: [ordering and pagination](../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.md) §3.
-**Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
-before treating as settled.
+*Evidence*: [ordering and pagination](../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.md) §3,
+reproduced synthetically against `mongod` 7.0.43.
 
-*Fix, shipped*: `bf/reads` `5a5269a3` (PR #8738) — `sort._id = sortDirection`, as recorded. **Now reproduced
+*Fix, merged via PR #8738*: `bf/reads` `5a5269a3` — `sort._id = sortDirection`. **Reproduced
 through the real v3 HTTP path** (`GET /api/v3/devicestatus?limit=3&skip=N`): five of twelve
-documents never returned, three returned more than once. Still synthetic in its fixture, not a
-capture from a live site. The test file carries a separate assertion whose only job is to check
+documents never returned, three returned more than once. The fixture is synthetic, not a capture
+from a live site. The test file carries a separate assertion whose only job is to check
 that the fixture really does tie on all three keys — with the fix reverted **and** the fixture's
 `date` varied, the paging assertions pass vacuously, and that guard is the only thing that fails.
 [Report](../../60-research/remedial/bf01-13-14-15-read-defects-2026-09-15.md) §3.
 
-### BF-16 · `food.hidden` has no type; the server filter and the client disagree — **FIXED 2026-09-15**
+### BF-16 · `food.hidden` has no type; the server filter and the client disagree — **merged 2026-09-20** (PR #8735)
 
 The `food` collection stores quick picks with a `hidden` flag, and the quick-pick list filters on
 it. The two ends of that round trip do not agree on what the value is:
@@ -1509,33 +1451,24 @@ normalise on write) rather than picking a side, since both spellings are already
 wherever a non-jQuery client has ever written. Do not "fix" the client to send JSON without
 fixing the filter first; that is the change that breaks it.
 
-**Secondary consequence, same root cause.** Form encoding stringifies *every* non-string value in
-a food document, not just the booleans — `carbs`, `portion`, `fat`, `protein`, `energy`, `gi` and
-`position`. `listquickpicks` sorts `{ position: 1 }`, and a lexicographic sort of `'0' … '10'`
-orders `'10'` between `'1'` and `'2'`. A user with eleven or more visible quick picks sees them in
-the wrong order. Unlike the `hidden` mismatch this one fires on the **shipping** path, with the
-built-in editor and no third-party client involved.
-
-~~*Not reproduced against a live instance.*~~ **Reproduced 2026-09-15**, over HTTP against a live
-MongoDB. The premise holds exactly as read: a form-encoded write stores `hidden: 'false'` and
-`position: '1'`; the same document sent as `application/json` stores `false` and `2`. That is now
-a test (`tests/api.food.quickpicks.test.js`), written as an assertion about the *premise* rather
-than about the fix, so that if the transport ever stops doing this the filter can be simplified.
-
-**The "secondary consequence" was wrong, and wrong in an instructive way.** It said the
-lexicographic `position` sort "fires on the shipping path, with the built-in editor and no
-third-party client involved". Neither half survives running the code:
+**Secondary consequence, same root cause, reaching nobody.** Form encoding stringifies *every*
+non-string value in a food document, not just the booleans — `carbs`, `portion`, `fat`, `protein`,
+`energy`, `gi` and `position` — and `listquickpicks` sorts `{ position: 1 }`, so `'10'` orders
+between `'1'` and `'2'`. That sort reaches no user:
 
 * **The built-in editor never calls `/api/v1/food/quickpicks`.** It reads `/api/v1/food.json` and
   sorts the quick picks numerically itself — `lib/food/food.js:94`, `parseInt` on both sides.
 * **Nothing else in the tree calls it either.** `3457de5b` (2017) moved the bolus calculator off
-  that endpoint and onto `client.sbx.data.food`, and removed its only consumer. The endpoint has
-  been public API with no in-tree caller for eight years.
+  that endpoint and onto `client.sbx.data.food`, and removed its only consumer.
 
-So the string sort was real and reached nobody, while **the order users actually see was broken
-by a different mechanism entirely** — the bolus calculator does not sort at all. That is
-[BF-35](#bf-35--the-quick-pick-chooser-resolves-the-wrong-record--fixed-2026-09-15), found by
-going to look.
+The order users actually see was broken by a different mechanism — the bolus calculator does not
+sort at all. That is [BF-35](#bf-35--the-quick-pick-chooser-resolves-the-wrong-record--merged-2026-09-20-pr-8735).
+
+**Reproduced 2026-09-15**, over HTTP against a live MongoDB: a form-encoded write stores
+`hidden: 'false'` and `position: '1'`; the same document sent as `application/json` stores `false`
+and `2`. That is a test (`tests/api.food.quickpicks.test.js`), written as an assertion about the
+*premise* rather than about the fix, so that if the transport ever stops doing this the filter can
+be simplified.
 
 *Fix*: one predicate, in `lib/food/quickpick.js`, used by every reader — because "accept both on
 read" only works if all the readers agree on what both are.
@@ -1547,59 +1480,33 @@ read" only works if all the readers agree on what both are.
 | `lib/food/food.js` `restoreBoolValue` | `record[key] === 'true'` — **turned a real boolean `true` into `false`**, silently un-hiding a hidden pick every time the editor loaded | `quickpick.isTrue(record[key])` |
 | `lib/client/boluscalc.js` | did not consider `hidden` at all | hidden picks stay out of the chooser, either spelling |
 
-`restoreBoolValue` was the one this entry did not name and is the only one of the four that was
-losing a user's setting rather than failing to read it.
+`restoreBoolValue` is the only one of the four that was losing a user's setting rather than
+failing to read it.
 
 **The model does not change.** `specs/nsschema/food.model.json` declares `hidden` and
 `hideafteruse` as `["boolean", "string"]` with `type_undetermined`, and that is still exactly
 right: the fix does not settle the type, it makes every reader accept both, which is what an
 undetermined type calls for.
 
-**The anchors did their job and now have to move — and they still name no owner, flagged
-2026-09-15.** `make schema-code-drift` will fail the day `bf/food` reaches a checked tree, first
-against `externals/work/crm-seam` and then against `externals/cgm-remote-monitor-official`. That is
-scheduled breakage in this repository's own quality-control system, caused by a fix landing
-correctly. **It belongs to whoever lands `bf/food`**, in the same sitting, and it is recorded here
-so that person does not meet it as a surprise. `tools/nsschema/code_model.py`
-`SOURCE_ASSERTIONS` pins `lib/server/food.js`'s quoted `'false'` and `lib/food/food.js`'s
-`record[key] === 'true';`. Both are gone on `bf/food`, so `make schema-code-drift` will fail the
-day that branch reaches a tree the checker reads (`externals/work/crm-seam`, then
-`externals/cgm-remote-monitor-official`). ~~**They are deliberately left alone until then**, because
-they are still true of both of those trees today. When the branch lands, replace them with the
-two that carry the new invariant — `$nin: [ true, 'true' ]` and `quickpick.isTrue` — and add one
-for `lib/food/quickpick.js` `isTrue`.~~
+**Schema-drift anchors.** `tools/nsschema/code_model.py` `SOURCE_ASSERTIONS` pins
+`lib/server/food.js`'s quoted `'false'` and `lib/food/food.js`'s `record[key] === 'true';`. Since
+2026-09-16 each of the two anchors accepts **exactly two spellings, the pre-fix one and the post-fix
+one**, and `lib/food/quickpick.js` `isTrue` is in `SOURCE_ASSERTIONS_IF_PRESENT`, which arms itself
+when the file appears in a source root. `make schema-code-drift` exits 0 against
+`externals/work/crm-seam`, `externals/cgm-remote-monitor-official` and `externals/work/crm-bf-food`.
+Ablated three ways, each break confirmed before the check was run: narrowing the filter to
+`{ hidden: false }` fails; rewriting `restoreBoolValue` to `Boolean(...)` fails; renaming
+`quickpick.isTrue` fails.
 
-**DONE 2026-09-16, and done differently from what this paragraph prescribed — read why.** The
-instruction above was to *replace* the two anchors when the branch lands. Replacing them is wrong
-at this moment and would have broken the check it exists to protect: `bf/food` has **not** merged,
-so both `SOURCE_ROOTS` still carry the pre-fix text, and a flip would fail
-`make schema-code-drift` against every tree that exists today. The scheduled breakage is real but
-it arrives on **merge**, not on branch-preparation, and nothing should be left un-checked across
-that window.
-
-What was done instead: each of the two anchors now accepts **exactly two spellings, the pre-fix
-one and the post-fix one, and nothing else**, and `lib/food/quickpick.js` `isTrue` was added to a
-new `SOURCE_ASSERTIONS_IF_PRESENT` tuple that arms itself the moment the file appears in a source
-root. **Measured:** `make schema-code-drift` now exits 0 against `externals/work/crm-seam`,
-`externals/cgm-remote-monitor-official` **and** `externals/work/crm-bf-food` — the last of which
-failed on exactly these two anchors before the change.
-
-**The widening is one known-good spelling, not a loosening — ablated three ways, each break
-confirmed to land before the check was run:** narrowing the filter to `{ hidden: false }`, which is
-the precise danger this entry names — **fails**; rewriting `restoreBoolValue` to `Boolean(...)`, a
-third spelling — **fails**; renaming `quickpick.isTrue` — **fails**. Restoring all three returns
-exit 0, so each failure was caused by its own break.
-
-**What is still owed, and it is now the merge's job rather than the branch's:** once `bf/food` is
-in both `SOURCE_ROOTS`, delete the pre-fix arm of each anchor and move the `quickpick.js` entry up
-into `SOURCE_ASSERTIONS`. Keeping the pre-fix arm after that point would let a revert pass
-silently, which is the mirror image of the problem solved here. The comment in
+**Owed**: once `bf/food` (in `origin/dev` since 2026-09-20, PR #8735) is in both `SOURCE_ROOTS`,
+delete the pre-fix arm of each anchor and move the `quickpick.js` entry into `SOURCE_ASSERTIONS`;
+keeping the pre-fix arm after that lets a revert pass silently. The comment in
 `tools/nsschema/code_model.py` says so at the site.
 
 *Evidence*: `specs/nsschema/food.model.json` (`type_undetermined_why`);
 `tests/api.food.quickpicks.test.js` (live), `tests/boluscalc.quickpick.test.js` (jsdom).
 
-### BF-35 · The quick-pick chooser resolves the wrong record — **FIXED 2026-09-15**
+### BF-35 · The quick-pick chooser resolves the wrong record — **merged 2026-09-20** (PR #8735)
 
 Found while checking BF-16's claim about the built-in editor. It is the more serious of the two
 and it is not in the place BF-16 was looking.
@@ -1664,13 +1571,12 @@ numeric comparator (1), `isTrue`'s boolean arm (3), the server filter (1), the s
 
 *Evidence*: `tests/boluscalc.quickpick.test.js`.
 
-### BF-36 · The delta merge read past the end of the array it was splicing — **FIXED 2026-09-15**
+### BF-36 · The delta merge read past the end of the array it was splicing — **merged 2026-09-18** (PR #8734)
 
-Found by taking BF-35 as a question rather than an answer: **it surfaced under an eslint
-`security/detect-object-injection` suppression annotated "verified false positive", so somebody
-had examined that exact line, correctly cleared it of what the linter flagged, and not seen the
-indexing bug beside it.** There are 34 such suppressions in `lib/`. Reading all of them found
-one more.
+Found by auditing the eslint suppressions after BF-35, which surfaced under a
+`security/detect-object-injection` suppression annotated "verified false positive": the line had
+been correctly cleared of what the linter flagged, with the indexing bug beside it. There are 34
+such suppressions in `lib/`; reading all of them found this one more.
 
 `mergeTreatmentUpdate` walks the received items against the cached array while **splicing and
 pushing that same array**, and captured the cached length once, before the walk:
@@ -1710,13 +1616,9 @@ file, already does exactly that**, and its purge walks backwards for the same re
 functions had drifted apart, and both are now pinned so they cannot silently do so again. Both
 were exported with the comment `//expose for tests` and had none; they have twelve.
 
-*Ablation, and two wrong attempts worth recording.* The first revert put the length capture
-*inside* the outer loop, where it is recomputed every iteration — not the defect, and the tests
-rightly kept passing. The second edited the first matching loop in the file, which belongs to
-`mergeDataUpdate`. Scoped to `mergeTreatmentUpdate` and with both halves applied together, the
-shipped shape fails exactly the two regression tests with exactly the production error. **A
-revert that does not reproduce the bug proves nothing about the test** — it was the arm that
-kept passing that said so.
+*Ablation*: the shipped shape restored in `mergeTreatmentUpdate` (length captured once, outside
+the outer loop, with the splice) fails exactly the two regression tests with exactly the
+production error.
 
 *What the rest of the audit found*: nothing. The other 32 suppressions index the array their
 bound came from, or guard a keyed lookup with `hasOwnProperty`. The instructive contrast is in
@@ -1727,7 +1629,7 @@ outcome.
 
 *Evidence*: `tests/receiveddata.merge.test.js`.
 
-### BF-37 · A bare flag in the URL stops the page loading — **FIXED 2026-09-15**
+### BF-37 · A bare flag in the URL stops the page loading — **merged 2026-09-20** (PR #8736)
 
 The third finding from the suppression audit, and the one that reaches the most people.
 
@@ -1766,7 +1668,7 @@ separate latent issue for any token containing `=`, and is deliberately left alo
 
 *Evidence*: `tests/browser-utils.queryparms.test.js`.
 
-### BF-38 · `%1` ate `%10` — **FIXED 2026-09-15**, latent
+### BF-38 · `%1` ate `%10` — **merged 2026-09-20** (PR #8736), latent
 
 `lib/language.js` `translate` substitutes `%1 … %n` by looping forwards and replacing each
 globally. `%1` is a prefix of `%10`:
@@ -1789,10 +1691,9 @@ substituter — which is the expensive part.
 
 *Evidence*: `tests/language.test.js`.
 
-### BF-39 · `queryParms` turned an underscore into a space — **FIXED 2026-09-15**, no live effect
+### BF-39 · `queryParms` turned an underscore into a space — **merged 2026-09-20** (PR #8736), no live effect
 
-Follow-up to BF-37, which deliberately left the *value handling* alone. It deserved an answer
-rather than a note.
+Follow-up to BF-37, which deliberately left the *value handling* alone.
 
 The replacement was `/[_\+]/g → ' '`. **The `+` half is correct** — `+` means space in a query
 string. **The `_` half is not correct in any encoding**, and it corrupts access tokens.
@@ -1811,7 +1712,7 @@ with both spellings: **both return 200**. `findSubject` (`storage.js:279-289`) s
 takes the **last** segment as the prefix, and matches `subject.digest.indexOf(prefix) === 0` —
 so the corruption lands entirely in the part nothing reads.
 
-**So this is not a live defect, and the row says so.** It is a corruption that happens to be
+**So this is not a live defect.** It is a corruption that happens to be
 absorbed — the same shape as BF-16's quick-pick filter working only by an accident of transport.
 Two ends disagree and a third thing hides it. The corruption is real, the leniency is real, and
 nobody chose the pairing.
@@ -1834,8 +1735,8 @@ function is ever asked for are an access token and `mute`.
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
 
-> **Fixed 2026-09-15** on `bf/auth` (`64db1f35`), and **reproduced against a running instance**
-> first — the chain below holds link for link on `dev`. One edit through the stock endpoints puts
+> **Fixed 2026-09-15** on `bf/auth` (`64db1f35`), carried by `bf2/auth-hardening`, in review as
+> PR #8754 (head `e32f7a1c`). **Reproduced against a running instance** first — the chain below holds link for link on `dev`. One edit through the stock endpoints puts
 > the token on disk, and the token read straight out of the collection authenticates (HTTP 200).
 > The `notes` erasure reproduces in the same edit.
 >
@@ -1851,23 +1752,22 @@ function is ever asked for are an access token and `mute`.
 > Remediation is rotation, and it is the operator's decision. No migration was written. See
 > [the report](../../60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md) §2.3.
 >
-> **A rename is not a rotation — added 2026-09-16, and it corrects three documents.** Only the
+> **A rename is not a rotation.** Only the
 > `abbrev` prefix of a token comes from `name`. `checkToken` splits on `-`, keeps the **last**
 > segment, and matches it against `subject.digest`, which is `getSubjectHash(subject._id)` — a
 > function of `_id` and the enclave key alone. **The name is never checked**, so an exposed token
 > keeps authenticating after a rename. Measured at `lib/authorization/storage.js:326` on `bf/auth`
 > and `:288` on `origin/dev`: not a branch artifact. Rotation means **delete-and-recreate** (new
-> `_id`) or **`API_SECRET`**, and those are the only two. The report §2.3 and the 15.0.9 release
-> notes both listed rename as a third option and are corrected;
-> `tools/queue/gates/bf17-remediation-note.js` is the regression guard.
+> `_id`) or **`API_SECRET`**, and those are the only two.
+> `tools/queue/gates/bf17-remediation-note.js` guards the operator documents against listing rename
+> as a third option.
 >
 > **The stored row is not rewritten by the upgrade.** `reload()` drops the derived fields from the
 > in-memory record only. The row clears when that subject is next saved through the admin path,
 > because `save` writes an allow-list through `replaceOne` — a self-healing path that is
-> **operator-driven, not automatic**. Recorded here because the first drafts of both operator
-> documents overclaimed it as automatic.
+> **operator-driven, not automatic**.
 >
-> **One thing this entry missed**: `created_at` is not served by `GET /subjects` either, so an
+> **Also**: `created_at` is not served by `GET /subjects` either, so an
 > edit also gives the document a brand-new `created_at`. Data loss, not a security problem, and
 > not fixed — one more field in the `pick` would round-trip it.
 
@@ -1914,9 +1814,9 @@ handler is the smaller change and closes the exposure; it leaves `notes` broken.
 deployment that has edited subjects already has tokens on disk, so a fix should also clear the
 field on the next reload rather than only stopping new writes.
 
-~~*Not reproduced against a live instance.*~~ **Superseded — see the reproduction recorded above in this section (2026-09-15). This line describes the entry as first written and is kept for the reading trail, not as current provenance.** The chain is read from the released
-`cgm-remote-monitor` source in `externals/cgm-remote-monitor-official`; every link is a literal
-in that tree. **Not a regression from the storage-seam work** — the seam changed `save` from
+The chain was first read from the released `cgm-remote-monitor` source in
+`externals/cgm-remote-monitor-official`, where every link is a literal, and then reproduced live
+(above). **Not a regression from the storage-seam work** — the seam changed `save` from
 `replaceOne` to a one-operation `bulkUpsert` with `mode: 'replace'`, which is the same wholesale
 replacement.
 
@@ -1925,22 +1825,23 @@ that the field is `secret`/`credential` so no emitter or exporter can treat it a
 
 ### BF-30 · The auth-failure delay is keyed on something the caller chooses
 
-> **Fixed 2026-09-15** on `bf/auth` (`a26ba416`), **reproduced against a running server**, and
-> **two claims below are corrected by that reproduction**. Full working in
-> [the report](../../60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md) §1.
+> **Fixed 2026-09-15** on `bf/auth` (`a26ba416`), carried by `bf2/auth-hardening`, in review as
+> PR #8754 (head `e32f7a1c`; the maintainer will next push `b5f61f19`). **Reproduced against a
+> running server.** Full working in
+> [the report](../../60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md) §1. Three facts from
+> that reproduction qualify the reading below:
 >
-> **1. `TRUST_PROXY` does not exist on `dev`.** It is a seam-branch construct, and so is
-> `createClientIP`. (`lib/server/env.js:43` on `dev` is `env.HOSTNAME = readHostname();`.) What
-> `dev` actually does is *weaker*: `getRemoteIP` calls `forwarded(req, req.headers)` —
-> `forwarded-for`'s third argument is the proxy whitelist and it is not passed, in **six**
-> separate copies of that function, verified 2026-09-15: `lib/authorization/index.js:10`,
-> `lib/api3/security.js:11`, `lib/api3/alarmSocket.js:7`, `lib/api3/storageSocket.js:7`,
-> `lib/server/websocket.js:9`, `lib/api/status.js:25`. So the
-> address is client-controlled unconditionally, with no default to narrow and nothing an operator
-> can configure. Fix option 3 below is therefore not available on `dev`.
+> **1. `TRUST_PROXY` does not exist on `dev` or 15.0.8.** `lib/server/env.js:43` on `dev` is
+> `env.HOSTNAME = readHostname();`; `TRUST_PROXY` and `createClientIP` were seam-branch constructs,
+> and PR #8754 adds the setting. What `dev` does is weaker: `getRemoteIP` calls
+> `forwarded(req, req.headers)` — `forwarded-for`'s third argument is the proxy whitelist and it is
+> not passed, in **six** separate copies of that function (2026-09-15):
+> `lib/authorization/index.js:10`, `lib/api3/security.js:11`, `lib/api3/alarmSocket.js:7`,
+> `lib/api3/storageSocket.js:7`, `lib/server/websocket.js:9`, `lib/api/status.js:25`. So the
+> address is client-controlled unconditionally, with nothing an operator can configure.
 >
-> **2. Fix option 1 — key on the credential — was implemented and measured, and it is a net
-> regression.** It fixes the rotating-address case and *removes* the throttle from the case the
+> **2. Keying on the credential alone is a net regression** (fix option 1 below, implemented and
+> measured). It fixes the rotating-address case and removes the throttle from the case the
 > shipping code did cover: a brute force varies the credential by definition, so a counter keyed
 > only on the credential is fresh on every guess. Measured at 200 ms configured delay, four
 > guesses from one fixed address: 200/200/200 ms shipping, 4/3/2 ms under credential keying.
@@ -1950,16 +1851,19 @@ that the field is `secret`/`credential` so no emitter or exporter can treat it a
 > `now + DELAY_ON_FAIL`. The defect is that the throttle never *engages*, not that it fails to
 > grow.
 >
-> What landed: the delay is keyed on both the socket peer address (unforgeable, carries the
-> throttle) and a salted digest of the attempted credential, taking the longer wait. The wait
-> moved from before resolution to the failure path, which is the load-bearing part — behind a
-> platform proxy the peer address is shared, and delaying every request on a shared key is the
-> self-inflicted denial of service this entry rightly warns about. Delaying only failures means a
-> request that authenticates never waits on a neighbour. Option 2 (bound the list) landed too,
-> with the two namespaces bounded separately so a flood of made-up credentials cannot evict the
-> peer entry throttling the flooder; the sweep was also a `setTimeout`, so it had been running
-> once and never again.
-
+> **The fix in PR #8754** (read from head `e32f7a1c`, `lib/authorization/index.js` and
+> `delaylist.js`): the wait comes **before** the credential check, as in earlier releases (commit
+> `f6f361b1`), so a request from a throttled address or credential learns nothing until the delay
+> has passed. Failures are counted under two keys, the client address as this deployment resolves
+> it and a salted digest of the attempted credential, and the longer wait applies. The list is
+> bounded, with the two namespaces bounded separately so a flood of made-up credentials cannot
+> evict the address entry throttling the flooder, and it is swept on a schedule (on `dev` the sweep
+> was a `setTimeout` that ran once). The address key is only as good as `TRUST_PROXY`: with it
+> unset, the default, the address still comes from request headers any caller can set, the
+> behaviour is unchanged from 15.0.8, and a boot warning says the throttle does not protect against
+> guessing until `TRUST_PROXY` is set. Commit `9c6cde72`, in the pending `b5f61f19` and not on the
+> pushed head, makes explicit `TRUST_PROXY` settings accept forwarded addresses that carry a port
+> (the form Azure App Service is reported to send); unset is unchanged.
 
 Found while verifying T3.1's decision to read `req.headers.host` rather than `req.hostname`.
 That decision is correct, and checking *why* turned up a larger consequence of the same root
@@ -2011,8 +1915,8 @@ untrustworthy.
    deployment-compatibility change and it does not fix (1) for deployments that legitimately
    must trust the header.
 
-~~*Not reproduced against a live server.*~~ **Superseded — this entry was reproduced live on 2026-09-15; see above. Kept as the original reading trail.** Both measurements above are of the shipping functions in
-`externals/work/crm-seam`, called directly; the chain from `data.ip` to `shouldDelayRequest` is
+Both measurements above are of the shipping functions in `externals/work/crm-seam`, called
+directly, and the defect was then reproduced live (above); the chain from `data.ip` to `shouldDelayRequest` is
 read from `lib/authorization/index.js:140-206`. **Not a regression from any work in this
 programme** — `delaylist.js` and the `TRUST_PROXY` default both predate it.
 
@@ -2020,7 +1924,7 @@ programme** — `delaylist.js` and the `TRUST_PROXY` default both predate it.
 `req.headers.host` directly and refusing to honour a configured alternative header unless
 `TRUST_PROXY` is set. That is the pattern the fix above generalises.
 
-### BF-31 · One request re-languages the whole process, alarms included
+### BF-31 · One request re-languages the whole process (alarm text is not affected)
 
 Found while fixing a blind spot in `tools/qc/tenant-shared-state.js` (see
 [the audit](../../60-research/tenancy/tenant-shared-state-audit-2026-09-15.md) §4a): the tool could not see
@@ -2037,19 +1941,17 @@ moment.locale(locale);
 
 `language.set` assigns `language.lang` on that shared instance — it is a persistent mutation, not
 a per-call option — and `moment.locale` is a global mutation of the library. So **one
-authenticated request changes the language for every subsequent request and every notification
-in the process**, until another request changes it back.
+authenticated request changes `language.lang` and `moment`'s global locale for every subsequent
+request in the process**, until another request changes it back.
 
-`lib/server/bootevent.js:212` carries it into the alarm path: `ctx.levels.translate =
-ctx.language.translate`, so level names (`Urgent`, `Warning`) are translated through the same
-shared instance that the Google Home handler just re-pointed.
+`lib/server/bootevent.js:212` sets `ctx.levels.translate = ctx.language.translate`, so level
+names (`Urgent`, `Warning`) go through the same shared instance — but the catalogue is loaded once
+at boot and never reloaded, so they do not change (measured, below).
 
-**Severity, read honestly.** The route is mounted only `if (ctx.googleHome)`
+**Severity.** The route is mounted only `if (ctx.googleHome)`
 (`lib/api/index.js:74`), so it is opt-in, and the caller needs `api:*:read` — which in a family
-deployment is everyone holding the token. The consequence in ordinary use is a display bug. The
-consequence in the alarm path is that a notification can arrive in a language the recipient does
-not read, which for an alarm is a usability failure with a safety edge rather than a cosmetic
-one.
+deployment is everyone holding the token. The consequence is a cross-request state leak in the
+assistants' own answers (relative times, speech code); alarm text is not affected.
 
 *Fix*: the locale is a property of the **request**, not of the server. Resolve it per request and
 pass it to the handler, rather than setting it on the shared instance; `moment.locale` has a
@@ -2061,8 +1963,8 @@ cache, since a language file is 45–60 KB and one per tenant is the wrong shape
 ~~*Not reproduced against a live server.*~~ **Superseded — reproduced 2026-09-15; see the block below. Kept as the original reading trail.** `language.set`'s persistence and the `levels.translate`
 assignment were read and exercised directly; the Google Home route was not driven end to end.
 
-**Reproduced and fixed 2026-09-15**, `bf/alarms` `5dcf783f` — and **the heading of this entry is
-wrong**. Alarms are *not* included. `language.set` assigns `lang` and `speechCode` and nothing
+**Reproduced 2026-09-15; merged 2026-09-20** via PR #8739 (merge `7a5561f4`; `bf/alarms`
+`5dcf783f`). Alarm text is *not* affected. `language.set` assigns `lang` and `speechCode` and nothing
 else; the translation catalogue is read once at boot by `loadLocalization` and is never reloaded
 on the server, so `levels.toDisplay(URGENT)` still returns `Urgent` after a German request, as
 does every other translated string. Measured before and after one `de-DE` request: `lang`
@@ -2075,8 +1977,8 @@ handlers: no notification message built in `lib/plugins` passes a date through `
 `buildMessage` concatenates displays). So the real consequence is a cross-request state leak in
 the assistant integration, **not alarm text**, and the severity is lowered accordingly.
 
-**Also, the entry names one route and there are two** — `lib/api/alexa/index.js:28` carries the
-identical two lines. Both are fixed.
+**There are two routes**: `lib/api/alexa/index.js:28` carries the identical two lines. Both are
+fixed.
 
 **What was deliberately not done.** The prescribed fix — resolve the locale per request and pass
 it to the handler — is blocked structurally: every virtual-assistant handler captures
@@ -2092,7 +1994,7 @@ closure that captured the boot-time value.
 
 *Evidence*: [BF-28/29/31 alarm delivery](../../60-research/remedial/bf28-29-31-alarm-delivery-2026-09-15.md) §3.
 
-### BF-32 · `$exists` was inverted by type coercion — **FIXED 2026-09-15**
+### BF-32 · type coercion was applied to operator operands — **merged 2026-09-18** (PR #8737)
 
 Found while fixing BF-02/BF-03 (plan T0.5): `walk_prop` applied the walker's conversion to
 **every leaf** of a field's query fragment, including operands that are not values drawn from the
@@ -2103,45 +2005,31 @@ find[sgv][$exists]=true   ->  { sgv: { $exists: NaN } }
 find[sgv][$regex]=^1      ->  { sgv: { $regex: NaN } }
 ```
 
-> ### The consequence claimed here is REFUTED — measured 2026-09-15. Read this before quoting it.
+> **`$exists=true` was not inverted.** MongoDB does not apply JavaScript truthiness. Measured
+> 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43, identical on all seven):
+> `{$exists: NaN}` returns the documents that **have** the field — MongoDB's numeric truthiness is
+> `value != 0`, and `NaN != 0`. `{$exists: "false"}` and even `{$exists: ""}` are truthy for the
+> same reason. So on 15.0.8 `find[sgv][$exists]=true` answers correctly, by accident; graded **low**.
 >
-> The sentence that used to stand here said: *"`NaN` is falsy, so `$exists=true` returned exactly
-> the documents that do not have the field."* **MongoDB does not apply JavaScript truthiness.**
-> Measured against seven live `mongod` instances (3.6.8 and 7.0.43, identical on all seven):
-> `{$exists: NaN}` returns the documents that **have** the field — because MongoDB's numeric
-> truthiness is `value != 0`, and `NaN != 0`. `{$exists: "false"}` and even `{$exists: ""}` are
-> truthy for the same reason.
+> **Oracle limit**: `mingo`, the differential oracle decision D8 names, is a JavaScript
+> reimplementation and applies JavaScript truthiness, so it reports `[2]` for `NaN` where MongoDB
+> reports `[1]`. It remains fit for comparing *operator* semantics on well-typed operands; a claim
+> about a malformed operand must be taken from a server.
 >
-> So on today's release `find[sgv][$exists]=true` was **answering correctly, by accident**, and
-> this entry's grade of *medium — inverted answer* was wrong. Re-graded **low**.
->
-> **How the wrong claim got in, and why it is worth recording**: it came from `mingo`, the
-> differential oracle decision D8 names. `mingo` is a JavaScript reimplementation and applies
-> JavaScript truthiness, so it reports `[2]` for `NaN` where MongoDB reports `[1]`. **The oracle
-> disagrees with the server on operand coercion**, which is a limit on D8's oracle that nothing had
-> recorded. It does not invalidate the oracle for its intended job — comparing *operator* semantics
-> on well-typed operands — but a claim about a malformed operand must be taken from a server.
->
-> **What is genuinely defective survives, in two parts**, and the second is a new entry:
+> **What is defective, in two parts:**
 >
 > - **`$regex` was the real breakage.** Measured on the same server, `{notes: {$regex: NaN}}`
 >   returns the error *"$regex has to be a string"* — an HTTP 500 — where `{$regex: 'ab'}` matches.
 >   On a coerced numeric field, `find[sgv][$regex]=^1` is a 500 today and an empty 200 after the
 >   fix. That is a real improvement.
-> - **`$exists=false` is wrong before *and* after this fix**, on every field, and is filed as
->   **BF-40**.
->
-> **This branch's `CHANGELOG.md` still carries the refuted sentence** and must be corrected before
-> the PR is opened — it is operator-facing text telling people to distrust queries that were
-> right. See the [PR sequencing](phase0-pr-sequencing-2026-09-15.md) branch D row.
+> - **`$exists=false` returns the wrong documents on 15.0.8**, on every field: **BF-40**.
 
 It was reachable on the 10 fields that carried a walker entry, which is why it had stayed
 invisible: those are the fields most likely to be present anyway. Generalising coercion to 158
-fields would have generalised this defect with it, which is how it surfaced — **and that argument
-is unaffected by the refutation above**: coercing an operand that is not a field value is wrong
-regardless of which way MongoDB happens to read the result, and the fix is right for that reason.
+fields would have generalised this defect with it, which is how it surfaced. Coercing an operand
+that is not a field value is wrong regardless of which way MongoDB happens to read the result.
 
-*Fix*: shipped with T0.5. `lib/server/query-coercion.js` leaves `$exists`, `$type`, `$regex`,
+*Fix*: merged with T0.5 via PR #8737 (merge `025f1310`). `lib/server/query-coercion.js` leaves `$exists`, `$type`, `$regex`,
 `$options`, `$where`, `$expr`, `$text`, `$comment` and `$jsonSchema` operands alone, while still
 converting every element of an `$in` list. Applied to explicit walker entries as well as
 schema-driven ones, so the pre-existing case is fixed too.
@@ -2150,7 +2038,7 @@ schema-driven ones, so the pre-existing case is fixed too.
 the original file before the change.
 **Not a regression from this programme** — both predate it.
 
-### BF-33 · v3's `?limit=` has the same hole — **FIXED 2026-09-15**
+### BF-33 · v3's `?limit=` has the same hole — **merged 2026-09-18** (PR #8738)
 
 Found while fixing **BF-14**, whose entry says to copy v3's validation rather than invent one.
 `lib/api3/generic/collection.js` `parseLimit` bounds-checks the raw string, then converts it with
@@ -2174,31 +2062,26 @@ So **an unbounded read is reachable through v3 by any client with read access**,
 the ceiling that exists to prevent exactly that. `?limit=0`, `-3`, `abc` and `1e400` were already
 `400` and still are.
 
-*Fix, shipped*: `bf/reads` `2ecfeb53` (PR #8738) — test the digits the client actually wrote, and
+*Fix, merged via PR #8738*: `bf/reads` `2ecfeb53` — test the digits the client actually wrote, and
 bounds-check the number that will be used rather than a different reading of the same string.
 `0x10`, `1e2` and `2.5` are now `400`.
 
 *Duplication, on purpose*: this and `lib/server/count.js` (BF-14) express the same rule twice, so
-that each commit lands or reverts alone. They should be unified once both are in — two readings of
-one rule is the root cause of this whole family.
+that each commit lands or reverts alone. Both are in `dev`; they should now be unified — two
+readings of one rule is the root cause of this whole family.
 
 *Evidence*: [report](../../60-research/remedial/bf01-13-14-15-read-defects-2026-09-15.md) §6, reproduced
 against a running server before the change.
 
 ## 2b. Detail — entries added 2026-09-15 (BF-40 … BF-67), and BF-27's missing section
 
-These were raised by the ground-truth and verification passes of 2026-09-15 and filed in one
-sitting by the reconciliation agent that holds the write lock on this file. **Each says which kind
-it is** — reproduced, or derived from source — because five of the eight claims this register has
-had to retract were the derived kind.
+These were raised by the ground-truth and verification passes of 2026-09-15 and later. **Each says
+which kind it is** — reproduced, or derived from source.
 
-### BF-40 · `$exists=false` returns the documents that *have* the field — and BF-32 was wrong about why
+### BF-40 · `$exists=false` returns the documents that *have* the field
 
-**This entry exists because a verifier disbelieved a measurement, and the verifier was right.**
-
-BF-32 says `{$exists: NaN}` is "falsy, returning exactly the documents that lack the field". That
-came from `mingo`, the D8 differential oracle, which applies **JavaScript** truthiness. MongoDB
-does not. Measured 2026-09-15 against **seven live `mongod` instances — 3.6.8 and 7.0.43 — with
+MongoDB reads a non-numeric `$exists` operand by its own truthiness, not JavaScript's (`mingo`, the
+D8 differential oracle, applies JavaScript's and gets this wrong; see BF-32). Measured 2026-09-15 against **seven live `mongod` instances — 3.6.8 and 7.0.43 — with
 identical results on all seven**, over `[{_id:1, sgv:100}, {_id:2}]`:
 
 | operand | documents returned | reading |
@@ -2214,7 +2097,7 @@ identical results on all seven**, over `[{_id:1, sgv:100}, {_id:2}]`:
 **Non-vacuity**: the probe distinguishes. `false` and `0` return `[2]`; everything else returns
 `[1]`. If it could not tell the branches apart, both columns would be equal.
 
-So the live defect is the one nobody filed:
+So:
 
 - **On today's release**, `find[sgv][$exists]=false` becomes `{$exists: NaN}` → returns the
   documents that **have** `sgv`. The exact opposite of the request, HTTP 200.
@@ -2223,22 +2106,14 @@ So the live defect is the one nobody filed:
 - **After `bf/coercion`**, the operand is left as `"false"` → **still** the wrong answer.
 - `$exists=true` is answered correctly before *and* after, by two different accidents.
 
-**Fix — WRITTEN AND REPRODUCED 2026-09-16, and it ships in `bf/coercion` (commit `b7234753`),
-not on a branch of its own. The fix this entry originally prescribed was in the wrong place, and
-would have read as though it closed the entry.**
+**Fix, merged 2026-09-18 via PR #8737** (merge `025f1310`; `bf/coercion` commit `b7234753`),
+reproduced 2026-09-16. It is a pass over the **finished query**, keyed on the operator, so it is
+independent of whether the field has a declared type; it also handles
+`{$not: {$exists: "false"}}` and an operand inside `$or`. A fix inside `isValueLeaf` would not do:
+`isValueLeaf` is only reached from inside `walk_prop`, which only runs for fields that have a
+typer, and `madeUpField`, `notes` and every field of `activity` never enter it (measured).
 
-The prescription was: route the operand through a boolean reader "at the point where `isValueLeaf`
-already special-cases the operator". **`isValueLeaf` is only reached from inside `walk_prop`, and
-`walk_prop` only runs for fields that have a typer.** Measured: `madeUpField`, `notes`, and every
-field of `activity` never enter it at all, so a fix there closes this for the handful of typed
-fields and leaves it open on the rest — while this entry's own text says the defect is wrong on
-*every* field.
-
-What was built instead: a pass over the **finished query**, keyed on the operator, so it is
-independent of whether the field has a declared type. That also handles `{$not: {$exists: "false"}}`
-and an operand inside `$or`, both of which the per-field walker would have missed.
-
-**The `""` question is decided, and not the way this entry assumed.** Four spellings are read —
+**The empty string is left alone.** Four spellings are read —
 `"true"`/`"1"` and `"false"`/`"0"`, case-insensitively. **The empty string is deliberately left
 alone.** `?find[x][$exists]` with no value parses to `''`, and after **BF-37** that is reachable;
 it is as easily "yes, I want this flag" as "no, I do not", and reading it either way would silently
@@ -2249,7 +2124,7 @@ unrecognised passes through for the same reason.
 `find[insulin][$exists]=false` returned the document **with** `insulin` before and the one
 **without** after; `$exists=true` returns the same document either way.
 
-**Why it is not a separate branch, measured rather than argued.** The fix needs the schema-coercion
+**Why it shipped with the schema-coercion commit.** The fix needs the schema-coercion
 commit ahead of it: on `origin/dev` the walker converts the operand to `NaN` before any later pass
 can read it, and `NaN` is truthy too. With only the `$exists` commit, these stay inverted —
 
@@ -2259,8 +2134,7 @@ can read it, and `NaN` is truthy too. With only the `$exists` commit, these stay
 
 — which is every field a `walker` names, and they are the fields anyone actually filters on.
 (`notes` and its neighbours survive because `parseRegEx` returns non-regex input unchanged rather
-than producing `NaN`.) A standalone branch would have been a fix that reads as complete and is not,
-so the two were combined into one PR of two commits. `tests/query.operands.test.js` holds twelve
+than producing `NaN`.) So the two are one PR of two commits. `tests/query.operands.test.js` holds twelve
 tests; it is in neither local brace list, so `npm test`.
 
 ### BF-41 · a reading dated in the future silently switches off the stale-data alarm (closed: does not reproduce)
@@ -2273,7 +2147,8 @@ and the push alarm on the server path. The original queue gate stubbed `sbx.last
 reproduced a state the shipping code never reaches; it was rewritten in `b248bb73`. No tolerance
 setting is added (maintainer, 2026-09-23). The residual is BF-95. Write-up:
 [bf41-future-reading-2026-09-23.md](../../60-research/remedial/bf41-future-reading-2026-09-23.md).
-The text below is kept as the original claim.
+
+**The claim as registered** (kept so it is not raised again):
 
 `lib/plugins/timeago.js`, read on `origin/dev`:
 
@@ -2287,56 +2162,41 @@ is false at every threshold, `checkStatus` returns `'current'`, and `lib/client/
 — `alarmTimeagoWarn && status === 'warn' || alarmTimeagoUrgent && status === 'urgent'` — is false
 too. Both alarm paths go quiet.
 
-**Which path is on by default, precisely** — this is where an earlier draft of the finding was
-wrong and the correction matters:
+**Which path is on by default:**
 
 | path | default | how a future reading silences it |
 |---|---|---|
 | **browser alarm** (`lib/client/index.js`) | **ON** — `alarmTimeagoWarn: true` / `alarmTimeagoUrgent: true`, 15 and 30 minutes (`lib/settings.js:27-30`) | `checkStatus` never leaves `'current'` |
 | **server push notification** (`timeago.checkNotifications`) | **opt-in** — returns immediately unless `sbx.extendedSettings.enableAlerts` | the `mills >= sbx.time` early return at `:26` |
 
-So the claim "the stale-data alarm is on by default and this turns it off" is **true of the
-browser alarm** and false of the push alarm. Say which.
-
-**Severity is high because of what causes a future timestamp**: a clock or timezone error at the
-uploader — which is also the class of fault most likely to have broken the feed in the first
-place. The detector goes quiet exactly when it is needed. **BF-44** is a concrete, shipping way to
-produce one.
+The claim was graded high because a future timestamp comes from a clock or timezone error at the
+uploader — the class of fault most likely to have broken the feed in the first place. **BF-44** is
+a shipping way to produce one.
 
 **Visible symptom, for an operator-facing note**: the "minutes ago" pill reads `future` when more
 than five minutes ahead and sticks at `1m` between zero and five (`timeago.inTheFuture`,
 `timeago.almostInTheFuture`).
 
-**Provenance: reproduced-negative, 2026-09-23.** The arithmetic above is right, but it leaves out
-where `lastSGVEntry` comes from. `lib/sandbox.js` `lastEntry` skips every entry later than
-`sbx.time` (`notInTheFuture`, since `556091bf`, 2015, in every tag from 0.10.0), so the timeago
-plugin never sees a future reading and the negative age cannot occur with data that came through
-the sandbox. `tools/remedial/bf3/bf41-real-sandbox.js` loads `ctx.ddata.sgvs`, builds the sandbox
-with `serverInit` (push path, alerts on) and `clientInit` (browser path) and asks both: with a real
-reading 40 minutes old plus one 2 hours ahead, both paths go `urgent`; with one 20 minutes old plus
-one 3 minutes ahead, both go `warn`. Identical on `origin/dev` `74fc6619` and `15.0.8`. With the
-`556091bf` filter replaced by `return true`, both cases go `current` with no push — the registered
-symptom — and the controls do not move, so the harness can see the defect when it is there.
+**Provenance: reproduced-negative, 2026-09-23.** `tools/remedial/bf3/bf41-real-sandbox.js` loads
+`ctx.ddata.sgvs`, builds the sandbox with `serverInit` (push path, alerts on) and `clientInit`
+(browser path) and asks both: with a real reading 40 minutes old plus one 2 hours ahead, both paths
+go `urgent`; with one 20 minutes old plus one 3 minutes ahead, both go `warn`. Identical on
+`origin/dev` `74fc6619` and `15.0.8`. With the `556091bf` filter replaced by `return true`, both
+cases go `current` with no push — the registered symptom — and the controls do not move, so the
+harness can see the defect when it is there.
 ([evidence](../../60-research/remedial/bf41-future-reading-2026-09-23.md))
-
-The earlier queue gate, `tools/queue/gates/timeago-future-reading.js`, replaced `sbx.lastSGVEntry`
-with a stub that returned the future reading. That skipped the one step that prevents the symptom,
-so it reproduced a state the shipping code does not reach. It was vacuous.
 
 **What does happen, measured.** (1) An uploader whose clock runs **ahead** makes each reading look
 newer than it is once the wall clock passes its timestamp, so the stale-data alarm comes late by
 about the size of the skew: with a clock one hour fast, the 15-minute warning comes about 75
-minutes after the feed stops. (2) When every loaded reading is in the future, or none is loaded,
-`checkStatus` takes the no-reading branch and assumes `current`: no usable reading means no alarm.
-Neither is the registered symptom.
+minutes after the feed stops. That is BF-95. (2) When every loaded reading is in the future, or
+none is loaded, `checkStatus` takes the no-reading branch and assumes `current`: no usable reading
+means no alarm (not filed). Neither is the registered symptom.
 
-**Fix — not built.** The maintainer's 2026-09-23 decision (ignore a reading more than a tolerance
-ahead of the clock, default 5 minutes) is what the shipping code already does with a tolerance of
-zero. Adding the tolerance would **loosen** the alarm: a real reading 20 minutes old plus one 3
-minutes ahead warns today and would stop warning. It changes nothing in the clock-ahead case. The
-options (close as not reproducing; build the tolerance and name the loosening; take on the
-clock-ahead delay; take on "no usable reading means no alarm") are in the evidence, for the
-maintainer. *This entry does not prescribe a fix.*
+**Decision (maintainer, 2026-09-23)**: closed as not reproducing (evidence §5, option 1); no
+tolerance setting is added. A tolerance would loosen the alarm — a real reading 20 minutes old plus
+one 3 minutes ahead warns today and would stop warning — and would change nothing in the
+clock-ahead case. The evidence §7 text ships as a 15.0.9 known issue.
 
 ### BF-42 · the connector every operator runs logs credentials unconditionally
 
@@ -2363,22 +2223,21 @@ entries, treatments, profiles and devicestatus — i.e. patient data.
 | pin | carried by | live / dynamic `console.*` | state |
 |---|---|---|---|
 | **v0.0.13 tag** (`b394411`) | **`origin/master`** and cuts 1, 2, 3 | 112 / 101 | leaking, no guard |
-| `234d47c8` | no current ref (`origin/dev` moved to the prerelease below) | 22 / 20 | **the leaking call sites are deleted**, not merely gated: an 18-file rewrite introducing `lib/logging.js` |
+| `234d47c8` | no current ref | 22 / 20 | **the leaking call sites are deleted**, not merely gated: an 18-file rewrite introducing `lib/logging.js` |
 | `c962a13f` | cut 4 | — | the three redaction commits, **but LibreLinkUp still leaks** at `lib/sources/librelinkup.js` (9 live sites, 8 dynamic; auth headers, response bodies, the session object carrying `authTicket`, and the transformed glucose batch) |
 | `b77e5bb` | cut 5 | 22 / 20 | contains both lines |
-| prerelease `0.1.0-dev.3` on npm (`next`) = connector `dev` `977da8a` (2026-09-23) | **`origin/dev`** (`ddd9b600`, exact pin via #8759); the full `0.1.0` is P0-TAG | not censused | carries `234d47c` and the three redaction commits; `test/privacy-canary.test.js` runs every source against a fake vendor whose credentials, tokens, cookies, bodies and errors carry one marker, and fails if the marker reaches any console method |
+| `0.1.0` on npm (`latest`, released 2026-09-24; tag `v0.1.0` on connector `main` `4dde1ec`, code identical to `977da8a` = `v0.1.0-dev.3`) | **`origin/dev`** `153e5658` (exact pin via PR #8762) | not censused | carries `234d47c` and the three redaction commits; `test/privacy-canary.test.js` runs every source against a fake vendor whose credentials, tokens, cookies, bodies and errors carry one marker, and fails if the marker reaches any console method |
 
-**Two corrections to widely-repeated statements, both load-bearing:**
+Two consequences of the table:
 
-1. "dev's pin makes debug logging opt-in, which narrows *when* the leaks happen but does not stop
-   them" — **inverted**. `234d47c8` deletes the leaking call sites. **`master`'s pin is the leaking
-   one**; `dev`'s prerelease pin carries the deletion.
-2. "cut 4 has all the redaction" — **incomplete**. LibreLinkUp is unredacted there.
+1. `234d47c8` **deletes** the leaking call sites rather than gating them behind a debug setting.
+   **`master`'s pin is the leaking one**; `dev`'s pin carries the deletion.
+2. Cut 4 does not have all the redaction: LibreLinkUp is unredacted there.
 
 **Standalone output.** `lib/outputs/nightscout.js` is **not reachable from cgm-remote-monitor** —
 the embedded path selects the `internal` output — so it affects standalone `nightscout-connect` CLI
 users only. At `v0.0.13` it prints its configuration, which carries the Nightscout API secret; in
-connector `dev` and `0.1.0-dev.1` it logs fixed debug messages only.
+connector `0.1.0` it logs fixed debug messages only.
 
 **Provenance: source census, not a live run.** No vendor account exists on this machine and the
 connector's own evidence states none has been used. The census is non-vacuous in the one way that
@@ -2386,26 +2245,26 @@ matters: the same scanner returns 112/101 on the leaking tree and 22/20 on the r
 it correctly reports cut 4's commented-out MiniMed block as 47 calls with **0** dynamic arguments,
 so it distinguishes deletion from commenting-out.
 
-**Fix**: move `master` and cuts 1-3 onto the full connector release `0.1.0` (P0-TAG), pinned by
-exact version from npm. The release must exist first — see the
+**Fix**: pin the full connector release `0.1.0` by exact version from npm. `origin/dev` does (PR
+#8762, merge `153e5658`, 2026-09-24), so the fix reaches Nightscout operators with 15.0.9; cuts
+1-3 pin v0.0.13 (BF-65). See the
 [connector pin consolidation](../../40-migration/connector-pin-consolidation-2026-09-15.md).
 
 ### BF-43 · a silent `overrides` constraint violation on the released artefact
 
 `origin/master:package.json` sets `overrides['nightscout-connect'] = {"axios": "1.16.0"}` while
-`nightscout-connect` v0.0.13 and connector `dev` `1946beb` (`0.1.0`) declare `dependencies.axios = "^1.18.1"`.
+`nightscout-connect` v0.0.13 and `0.1.0` declare `dependencies.axios = "^1.18.1"`.
 `semver.satisfies('1.16.0', '^1.18.1')` is **false**; `'1.20.0'` is true. `master`'s
 `package-lock.json` confirms the override takes effect —
 `node_modules/nightscout-connect/node_modules/axios` is 1.16.0.
 
 `overrides` exists precisely to suppress the `ERESOLVE` that would otherwise reject this, so
-nothing reports it. **The branches disagree four ways** and no programme document recorded it:
+nothing reports it. **The branches disagree four ways**:
 `1.16.0` on master, `1.20.0` on dev and cuts 1-4, **absent entirely** on cut 5.
 
 **Not reproduced as a runtime failure, and no specific axios API was identified** that the
 connector uses and 1.16.0 lacks. The defect asserted is the silent constraint violation, not a
-known break. Found by `tools/qc/connector-pin-agreement-gate.js` rule R5, which no human check had
-covered.
+known break. Found by `tools/qc/connector-pin-agreement-gate.js` rule R5.
 
 ### BF-44 · two MiniMed implementations disagree about what time a reading happened
 
@@ -2419,7 +2278,7 @@ absolute times to the same reading.
 Three arms diverge by exactly the offset (UTC+2 → +2 h, UTC−7 → −7 h, UTC+5:30 → +6 h) and two
 controls agree (UTC+0; and UTC+2 *with* a zone-bearing `lastConduitDateTime`).
 
-**Three corrections to the first statement of this finding, all narrowing it:**
+**Three qualifications, all narrowing it:**
 
 1. **The magnitude is not a clean function of the pump offset.** It is (pump offset − *server*
    timezone offset) whenever the payload's timestamp strings carry **no** zone designator — and the
@@ -2437,8 +2296,10 @@ controls agree (UTC+0; and UTC+2 *with* a zone-bearing `lastConduitDateTime`).
 Also: `pump.clock` is not parsed at all — `deviceStatusEntry` assigns `data['sMedicalDeviceTime']`
 verbatim, so a client doing `new Date(pump.clock)` can get `Invalid Date`.
 
-**Why it is high**: a forward shift files readings in the future, which is **BF-41** — the
-stale-data alarm goes quiet. Coverage is thin in the way that hides it: `lastConduitDateTime`
+**Why it matters**: a forward shift files readings in the future, which delays the stale-data
+alarm by about the size of the shift (**BF-95**; BF-41's "goes quiet" does not reproduce). It is
+graded low because the divergence needs readings from both paths and legacy mmconnect does not work
+(maintainer, 2026-09-22). Coverage is thin in the way that hides it: `lastConduitDateTime`
 appears **zero** times in `tests/fixtures/minimed-cutover.json` and in
 `tests/connect-minimed-cutover.test.js`, and the one connector test that sets the field passes a
 `Z`-suffixed value, which makes the rewrite a no-op — that test is a control, not coverage.
@@ -2490,10 +2351,7 @@ it deletes and that it cannot be undone** before any hosted deployment sets it.
 
 ### BF-47 · an ordinary subject edit destroys stored fields, on today's release
 
-This entry exists because a verifier refuted the framing of a finding about `bf/auth`, and the
-refutation moved the defect **from an unmerged branch onto the current release**.
-
-On `origin/dev` today:
+The defect is on the current release, not introduced by `bf/auth`. On `origin/dev` and 15.0.8:
 
 - `lib/authorization/endpoints.js:40` returns `pick(subject, ['_id','name','accessToken','roles'])`.
 - `lib/admin_plugins/subjects.js` `PUT`s that object straight back.
@@ -2515,10 +2373,12 @@ Keeping the derived `accessToken`/`accessTokenDigest`/`digest` out of the databa
 the point of that commit (BF-17). The narrower change that achieves the same security goal is to
 delete only `DERIVED_SUBJECT_FIELDS` and pass unknown fields through.
 
-**Derived from source on `origin/dev` and on `bf/auth`. Not reproduced against a deployment**, and
-no inventory exists of tools that store extra fields on subjects or roles. That inventory is the
-question to answer **before** merge, not after — this is the one irreversible change in the Phase 0
-batch.
+**Derived from source on `origin/dev` and on `bf/auth`. Not reproduced against a deployment.**
+**Maintainer decision 2026-09-23**: the allow-list is intended. A corpus check found no open-source
+client that stores other subject fields; the one it found sends a misspelled field (BF-89). On
+`dev` and 15.0.8 what remains is the admin page, which fetches subjects without `notes` and
+`created_at` and saves the whole subject back, clearing both; `bf/auth` (PR #8754) serves `notes`,
+and `created_at` is still lost (BF-17).
 
 ### BF-48 · four undocumented variables read straight from `process.env`
 
@@ -2527,11 +2387,11 @@ batch.
 which `findExtendedSettings` would populate as `extendedSettings.webhook` if the plugin asked.
 `grep -c WEBHOOK_ README.md` is **0**.
 
-**Mechanism corrected**: the reads are *inside* `module.exports = function webhookPlugin() { … }`,
+The reads are *inside* `module.exports = function webhookPlugin() { … }`,
 so they run when the factory is invoked (`lib/plugins/index.js:71` and `:106`), **not** at module
 load. The conclusion survives — the reads are of `process.env`, not of `ctx`, so per-tenant
 configuration still cannot reach them — but the fix is an ordinary call-site change, not a
-module-load rewrite, and it is smaller than the original statement implied.
+module-load rewrite.
 
 **Single-tenant impact**: undocumented and unconfigurable through any documented mechanism.
 **Multi-tenant impact**: every tenant's webhook posts to the same host. Not reproduced against a
@@ -2591,46 +2451,31 @@ the platform presumably ignores `8.11.1` as unavailable and falls back.
 ```
 
 The **level** is continuous — correct for as long as the reservoir is overdue, and that is what
-BF-28 fixed. The **notification request** is gated on exact equality, so it can be made only in the
-evaluation window where the age equals the threshold exactly. Miss that window — a restart, a
-skipped cycle, a gap in data — and the reminder never arrives.
+BF-28 fixed. The **notification request** is made only while `age === threshold` **and**
+`minFractions <= 20`, so the window is minutes 0–20 of the threshold hour. The server evaluates on
+every heartbeat (60 s) and every upload, so inside the window it asks about 20 times; the request
+is lost only when nothing evaluates during those minutes (a restart or deploy, a sleeping host, a
+stalled data load), and nothing later asks.
 
 `git show 8714093b -- lib/plugins/insulinage.js` confirms the only production change on `bf/alarms`
-is `insulinInfo.urgent` → `prefs.urgent` on the `>=` line; the `===` line is untouched, and the
-three sibling plugins (`cannulaage`, `sensorage`, `batteryage`) have the same shape. **They have
-shipped with it for years**, unmasked, because none of them had BF-28's separate defect.
+is `insulinInfo.urgent` → `prefs.urgent` on the `>=` line; the `===` line is untouched. The shape
+is the same in all four plugins (`insulinage`, `cannulaage`, `sensorage`, `batteryage`) and at all
+three levels (info, warn, urgent), and the three siblings have shipped with it for years.
 
-**Marked `unsettled` deliberately, like BF-09.** One-shot may be the intent — repeating a
-reservoir-change reminder every evaluation would be its own alarm-fatigue defect. What is not
-defensible is that the two lines use different comparisons without saying why.
+**Reproduced 2026-09-23** ([evidence](../../60-research/remedial/bf52-age-push-once-2026-09-23.md)):
+a sequence test that drives each plugin the way `bootevent.js` does is red on `74fc6619` (17
+failing) and on `15.0.8`.
 
-**Reproduced and fixed, 2026-09-23** ([evidence](../../60-research/remedial/bf52-age-push-once-2026-09-23.md)).
-Correction to the paragraphs above: the request is made while `age === threshold` **and**
-`minFractions <= 20`, so the window is minutes 0–20 of the threshold hour, not a single evaluation.
-The server evaluates on every heartbeat (60 s) and every upload, so inside the window it asks about
-20 times; the request is lost only when nothing evaluates during those minutes (a restart or deploy,
-a sleeping host, a stalled data load), and nothing later asks. The shape is the same in all four
-plugins and at all three levels (info, warn, urgent). A sequence test that drives each plugin the
-way `bootevent.js` does is red on `74fc6619` (17 failing) and on `15.0.8`.
-
-The maintainer decided on 2026-09-23 that the reminder is sent once even if the window is missed,
-which settles intent, so the grade moved from `unsettled` to `medium`. Local branch
-`bf3/age-push-once` `896629f8` (not pushed) adds `lib/plugins/agenotify.js`, which remembers per
-plugin instance and per change event which levels have been requested, and requests a missed level
-once. Nothing that fires today stops firing. Suite 2410/0/3 on Node 20 and 22; with the fix
-reverted, 17 red. One `sensorage` test expectation changed because it asserted the defect, and the
-README's `*_ENABLE_ALERTS` and `IAGE_URGENT` entries changed. For the reviewer: the record is in
-memory, so a restart re-sends one reminder for an item already overdue, and the first check after
-upgrading sends one for each overdue item. Destination release not decided.
-
-**Two things any release note for BF-28 must get right**, both from the semver review:
-
-- The push alarm is **opt-in and off by default** — `enableAlerts: sbx.extendedSettings.enableAlerts || false`,
-  `IAGE_ENABLE_ALERTS` defaults to false. A note saying operators will start receiving a new alarm
-  is wrong for most households.
-- What **does** reach everyone is the **pill**: `insulinInfo.level = levels.URGENT` is assigned in
-  the property producer, outside the alerts guard, so the on-screen Insulin Age pill turns
-  urgent-red once the reservoir passes `IAGE_URGENT`, on every deployment, with no opt-in.
+**Decided 2026-09-23 (maintainer)**: the reminder is sent once even if the window is missed, which
+makes the current behaviour a defect (graded `medium`). **Fixed** on local branch
+`bf3/age-push-once` `896629f8` (not pushed): `lib/plugins/agenotify.js` remembers, per plugin
+instance and per change event, which levels have been requested, and requests a missed level once.
+Nothing that fires today stops firing. Suite 2410/0/3 on Node 20 and 22; with the fix reverted, 17
+red. One `sensorage` test expectation changed because it asserted the defect, and the README's
+`*_ENABLE_ALERTS` and `IAGE_URGENT` entries changed. For the reviewer: the record is in memory, so a
+restart re-sends one reminder for an item already overdue, and the first check after upgrading
+sends one for each overdue item. **Deferred (maintainer, 2026-09-23)**: not in 15.0.9; it ships in
+a later release, paired with BF-92, after delivery through `pushnotify` and Pushover is measured.
 
 ### BF-53 · the documented test commands do not run the test under review
 
@@ -2658,7 +2503,7 @@ with no `mongod` running is already 6 failing.
 `mocha … ./tests/*.test.js` over all 159. The hole is in the local scripts and therefore in every
 contributor's and every agent's loop.
 
-**Also measured, correcting a second premise**: `npm run test:unit` is **not** database-free. With
+**Also measured**: `npm run test:unit` is **not** database-free. With
 no `mongod` reachable it fails 6 tests (`verifyauth` ×4, `API_SECRET` ×2) on pristine `dev`.
 
 **Fix — UNVERIFIED.** Either make the two scripts partition the 159 files, or add a `test:file`
@@ -2672,8 +2517,8 @@ lib/client/renderer.js:766        Math.min(Math.max(0, event.x), chart().charts.
 lib/client/renderer.js:772-773    Math.min(Math.max(0, event.y), chart().focusHeight)
 ```
 
-*Line numbers are `origin/dev` `74fc6619` (corrected 2026-09-23; this section used to cite
-`:764` and `:770-771`, which are `v15.0.8`'s, where the clamps read `d3.event`).*
+*Line numbers are `origin/dev` `74fc6619`; `v15.0.8` has the clamps at `:764` and `:770-771`,
+where they read `d3.event`.*
 
 **Reproduced by deliberate breakage** on an isolated copy of `origin/dev`: replacing both with the
 raw `event.x`/`event.y` — substitution confirmed applied, grep count 2 → 0 — leaves
@@ -2698,9 +2543,7 @@ COB key off.** These are also the exact lines the D3 6 event-object migration re
 `newTime` stays inside the chart window. Both currently pass with the clamps deleted, which is the
 whole point.
 
-**This also corrects a claim in the release-readiness document**, which says every statement about
-chart interaction "rests on jsdom and on whatever manual checking was done". It does not:
-`tests/dependency-d3.test.js` is 218 lines driving the real renderer and chart against the D3 7
+**Coverage that does exist.** `tests/dependency-d3.test.js` is 218 lines driving the real renderer and chart against the D3 7
 browser bundle, 24 passing, and verified non-vacuous by deliberate breakage at the migration's core
 hazard — reverting mouseover handlers to the D3-5 signature is caught, breaking `d3.pointer` in
 `chart.js` is caught. The real gap is narrower and sharper: jsdom's stubbed geometry (the fixture's
@@ -2737,9 +2580,8 @@ neither. It is still the strongest option.
 ### BF-56 · merging a cut silently reverts dev-only changes
 
 Root cause: cuts 1-4 are each **133 commits behind** `origin/dev` `74fc6619` and conflict against
-it in 7, 14, 16 and 18 paths (2026-09-22; queue `RT-REBASE` re-measures). (This refutes release-readiness §5's "the four cuts below are existing branch tips, so each
-costs zero rebase work today" — and refutes it *as written*, not as drift: the cut tips date to
-2026-09-05/06 and `dev`'s to 2026-09-09, so it was already false on 2026-09-14.)
+it in 7, 14, 16 and 18 paths (2026-09-22; queue `RT-REBASE` re-measures). The cut tips date to
+2026-09-05/06, so a rebase has been needed since `dev` moved on 2026-09-09.
 
 Two of the conflict hunks were read out of the written tree object:
 
@@ -2783,119 +2625,85 @@ its own review line before 15.0.9 is cut.
 
 ### BF-58 · a floating base image against a patch floor
 
-> **RE-GRADED `low` → `high` ON 2026-09-21, AND THE ENTRY'S OWN CAVEAT IS WHY.** This row said
-> *"not reproducible against a current image, which satisfies the floor"* and *"No image was
-> built"*. An image was built, and the current image does **not** satisfy the floor:
->
-> ```
-> $ docker run --rm node:22-alpine node --version
-> v22.22.0
-> $ docker run --rm -v "$PWD":/app:ro -w /app node:22-alpine \
->     node -e "require('./lib/server/runtime-policy.js')()"
-> ERROR: Node v22.22.0 is not supported. Nightscout requires Node ^22.23.2 || ^24.20.0.
-> exit 1
-> ```
->
-> `^22.23.2` is a very recent 22.x patch and the floating `node:22-alpine` tag has not reached
-> it. So **a container built today from cut 1's own Dockerfile exits 1 at boot**, and the same
-> holds for all five cuts: every one pins `node:22-alpine` and every one enforces
-> `^22.23.2 || ^24.20.0` (measured across all five refs). `origin/dev` is unaffected — its floor
-> is `>=20.x`, which v22.22.0 satisfies.
->
-> **Why this is worse than a broken build.** Pushing to `dev` or `master` fires `main.yml`'s
-> `docker-build` job and publishes to Docker Hub, so merging any cut *publishes* the
-> non-booting image rather than merely failing CI. The exposure is the whole containerised
-> install path on the first modernization release.
->
-> **Candidate fixes, all measured the same day:** `node:22.23.2-alpine` → v22.23.2 (exact floor,
-> pins away future drift), `node:24.20.0-alpine` → v24.20.0, `node:24-alpine` → v24.21.0,
-> `node:lts-alpine` → v24.21.0. Any of the four satisfies the floor today; the choice between an
-> exact pin and a floating major is the same trade this entry is about, one level up. **No fix is
-> claimed here** — one line in a Dockerfile, but it is the maintainer's call which tag.
->
-> **The boundary is exactly what it declares**, reproduced via `n exec` on six versions: 20.20.0,
-> 22.12.0, 22.22.0 and 24.15.0 are refused; 22.23.2 and 24.20.0 boot. Confirmed at the
-> user-facing level by running `lib/server/server.js` (the `npm start` entry) on each.
->
-> **REFRAMED 2026-09-21 AFTER THE MAINTAINER CHALLENGED THE PREMISE, and the reframing moves
-> the defect.** This entry, and the re-grade above, treated the floor as given and the image as
-> the thing out of line. Measured the other way round, with `runtime-policy.js` stubbed to a
-> no-op so actual compatibility could be seen instead of policy:
->
-> | Node | cut 4 unit suite | cut 1 Playwright suite |
-> |---|---|---|
-> | 24.20.0 | **310 passing / 0 failing** | — |
-> | 24.15.0 | **310 / 0** | — |
-> | 22.23.2 *(declared floor)* | **310 / 0** | — |
-> | 22.22.0 *(what `node:22-alpine` is)* | **310 / 0** | — |
-> | 22.12.0 | **310 / 0** | **21 / 0** |
-> | 20.20.0 *(a whole retired major)* | **310 / 0** | **21 / 0** |
-> | 18.20.8 | 295 / **15 failing** | — |
->
-> **Identical results across every version the floor rejects.** The only real break is at 18,
-> and it is not Nightscout's code: all 15 failures are `ERR_REQUIRE_ESM` from `sanitize-html`
-> requiring the ESM-only `htmlparser2`. `require(esm)` is unflagged in **22.12** and backported
-> to **20.19** — which is precisely where the measurements flip. So the dependency-derived floor
-> is about `^20.19 || ^22.12 || >=24`, and the declared `^22.23.2 || ^24.20.0` excludes a
-> working major line plus eleven working 22.x patches for no measured reason.
->
-> `docs/runtime-upgrade.md`, added by the same commit (`a95c2ce5`, Andy Low, 2026-09-05), says
-> so in as many words: *"These minimum patches reflect the supported release baseline at the
-> time of this change"* — latest-LTS-patch-at-time-of-writing, not a requirement. `22.23.2` was
-> 8 days old and `24.20.0` 10 days old when the floor was written. **The runtime policy is
-> self-imposed, so its cost is a choice**, and the maintainer's position is that historically
-> Node compatibility has been good and over-restricting has harmed this project.
->
-> **So the Dockerfile is not the defect.** The same document states the image should track
-> *"the official major tag"*, and under a justified floor `node:22-alpine` at v22.22.0 passes
-> 310/310. The floor and the documented image strategy are mutually incompatible, and the image
-> not booting is the symptom that made that visible. **Fixing the tag alone would hide the
-> finding rather than resolve it.** See queue item RT-NODE-FLOOR-TESTED for the change set.
+`Dockerfile` is `FROM node:22-alpine` for builder and runtime on `origin/dev` **and** on every
+cut, while cuts 1-5 declare `engines.node = "^22.23.2 || ^24.20.0"` and
+`lib/server/runtime-policy.js` calls `semver.satisfies(process.version, supported)` followed by
+`process.exit(1)`, invoked from `lib/server/server.js` before configuration load. `origin/dev` is
+unaffected — its floor is `>=20.x`.
 
+**Reproduced 2026-09-21 inside the image**: the floating tag resolved to a 22.x patch below the
+floor, so a container built from cut 1's own Dockerfile exits 1 at boot:
 
-`Dockerfile` is `FROM node:22-alpine` for builder and runtime on `origin/dev` **and** on
-`origin/chore/retire-jsdom`, while cut 1's `package.json` declares
-`engines.node = "^22.23.2 || ^24.20.0"` and `lib/server/runtime-policy.js` calls
-`semver.satisfies(process.version, supported)` followed by `process.exit(1)`, invoked from
-`lib/server/server.js` before configuration load.
+```
+$ docker run --rm node:22-alpine node --version
+v22.22.0
+$ docker run --rm -v "$PWD":/app:ro -w /app node:22-alpine \
+    node -e "require('./lib/server/runtime-policy.js')()"
+ERROR: Node v22.22.0 is not supported. Nightscout requires Node ^22.23.2 || ^24.20.0.
+exit 1
+```
 
-`node:22-alpine` tracks the latest 22.x and satisfies the floor today and going forward, so **this
-is not reproducible against a current image**. The exposure is cached, mirrored or explicitly
-pinned older 22.x layers. **No image was built** — rule 0 forbids pulling one — so the step from
-"engines requires 22.23.2" to "the container will not start" is read from source, not observed.
+The same holds for all five cuts (measured across all five refs). Pushing to `dev` or `master`
+fires `main.yml`'s `docker-build` job and publishes to Docker Hub, so merging a cut would *publish*
+the non-booting image rather than merely fail CI. The boundary is exactly what it declares,
+reproduced via `n exec` on six versions: 20.20.0, 22.12.0, 22.22.0 and 24.15.0 are refused;
+22.23.2 and 24.20.0 boot, confirmed through `lib/server/server.js` (the `npm start` entry).
 
-Measured by `tools/queue/gates/node-floor-consistency.js`, which reads both files out of the git
-object database. The same gate confirms the other six floor-stating files agree at major
-granularity, so this is the single disagreement.
+**The defect is the floor, not the image.** With `runtime-policy.js` stubbed to a no-op, measured
+2026-09-21:
 
-**Docker is the primary distribution path**, so the expected symptom — container starts, prints the
-runtime-policy message, exits — should be **named in the release notes** so an operator recognises
-it rather than assuming data loss.
+| Node | cut 4 unit suite | cut 1 Playwright suite |
+|---|---|---|
+| 24.20.0 | **310 passing / 0 failing** | — |
+| 24.15.0 | **310 / 0** | — |
+| 22.23.2 *(declared floor)* | **310 / 0** | — |
+| 22.22.0 *(what `node:22-alpine` was)* | **310 / 0** | — |
+| 22.12.0 | **310 / 0** | **21 / 0** |
+| 20.20.0 | **310 / 0** | **21 / 0** |
+| 18.20.8 | 295 / **15 failing** | — |
 
-**Partial mitigation already in CI, and it is worth recording**: from cut 1 onward the
-`docker-build-pr` job builds the image and then runs
+The only break is at 18, and all 15 failures are `ERR_REQUIRE_ESM` from `sanitize-html` requiring
+the ESM-only `htmlparser2`; `require(esm)` is unflagged in 22.12 and backported to 20.19. So the
+dependency-derived floor is about `^20.19 || ^22.12 || >=24`, and the declared floor excludes a
+working major line and eleven working 22.x patches. `docs/runtime-upgrade.md`, from the same commit
+(`a95c2ce5`, 2026-09-05), says the minimum patches *"reflect the supported release baseline at the
+time of this change"*, and states the image should track *"the official major tag"*: the floor and
+the documented image strategy are incompatible. The maintainer's position is that Node
+compatibility has historically been good and over-restricting has harmed the project; fixing the
+image tag alone would hide the finding. See queue item RT-NODE-FLOOR-TESTED.
+
+**Fixed 2026-09-21** on the local rebase branches `rt/cut1`…`rt/cut4` (`ed21961f` and its merges up
+the stack, not pushed): `engines.node` is `^22.12 || >=24` on the maintainer's decision, the
+Dockerfile is untouched, and `node:22-alpine` boots, verified inside the image.
+`tools/queue/gates/node-floor-consistency.js`, which reads both files out of the git object
+database, is 9/9 green against each prepared cut and red against the published refs.
+
+**Docker is the primary distribution path**, so the symptom — container starts, prints the
+runtime-policy message, exits — should be **named in the release notes** of any release carrying a
+patch floor, so an operator recognises it rather than assuming data loss.
+
+**Partial mitigation in CI**: from cut 1 onward the `docker-build-pr` job builds the image and runs
 `docker run --rm "$IMAGE" node -e "require('./lib/server/runtime-policy')(); …"` against it, plus a
-start-up smoke test. The residual gap is narrower: the `docker-build` job that **publishes** to
-Docker Hub on `master`/`dev` has no such step and builds with `no-cache: true`, so it re-resolves
-`node:22-alpine` at publish time without re-validating.
+start-up smoke test. The `docker-build` job that **publishes** to Docker Hub on `master`/`dev` has
+no such step and builds with `no-cache: true`, so it re-resolves `node:22-alpine` at publish time
+without re-validating.
 
 ### BF-59 · CI stops testing the floor it enforces
 
-> **CONFIRMED `low` ON 2026-09-21, by running the boundary rather than reasoning about it.** The
-> concern this entry states is that *"a regression precisely at the boundary the software refuses
-> to start below would not be caught"*. There is no such regression today: cut 4's unit suite is
+> **Measured 2026-09-21**: there is no regression at the boundary today. Cut 4's unit suite is
 > **310 passing / 0 failing on 22.23.2** — the exact floor cuts 3-5 dropped from the matrix — and
-> **310 passing on 24.20.0**. Cut 1, whose matrix does still carry both floors, gives the same
-> count on each. So the severity stands as lost coverage, not a live defect. Measured with
-> `n exec`, mongod 7.0.43, against the locally rebased `rt/cut1`…`rt/cut4` (RT-REBASE).
-
+> **310 passing on 24.20.0**; cut 1, whose matrix still carries both floors, gives the same count
+> on each. Measured with `n exec`, mongod 7.0.43, against the locally rebased `rt/cut1`…`rt/cut4`
+> (RT-REBASE). **Fixed 2026-09-21** on those branches (not pushed) by removing the subject: with
+> `engines` at minor precision (`^22.12 || >=24`) there is no patch boundary left to guard, so every
+> job tests `['22','24']`.
 
 Read from each ref's `main.yml` test-job matrix: cuts 1 and 2 use
 `node-version: ['22.23.2','22','24.20.0','24']`; cuts 3, 4 and 5 use `['22','24']`. The two version
 numbers the software refuses to start below are exercised by **no test job** from cut 3 on.
 
 `engines` is byte-identical across all five cuts, so this is **lost coverage rather than a changed
-requirement**. Not previously recorded in any programme document.
+requirement**.
 
 ### BF-60 · fifteen refs, one version string, two Node floors
 
@@ -2949,28 +2757,25 @@ Two things follow that no summary of cut 4 carries:
 2. **Concurrent multi-source CGM ingestion is removed** — two independent boot stages today become
    one `CONNECT_SOURCE` with nowhere for the second source to go.
 
-**This gate's own failure mode is recorded because it is the one this register exists to catch**: a
-first version of the reproduction passed flat `MMCONNECT_USER_NAME` names to the shims, which read
-`env.extendedSettings`, so every shape returned `{migrated:false}` — which means "no legacy
-credentials to migrate", not an error — and it reported four outages. Four red results for a reason
-unrelated to the property. It was caught only because an earlier pass said two of those shapes
-should be clean.
-
 **Decided 2026-09-23 (maintainer): the hard stop is intended.** These settings are usually a
 site's primary source of data, so a misconfigured one should stop the site with a page that says
 what to fix, the same convention `checkSettings` uses for `MONGODB_URI` and `API_SECRET`. What the
-decision still requires of cut 4:
+decision requires of the removal:
 
 1. **The fix the page names must be enough.** The 15.0.9-rc rehearsal (`cut-rehearsal-on-15.0.9-rc-2026-09-23.md`
    §4.5) measured that setting `CONNECT_COUNTRY_CODE` still leaves the error page unless `connect`
    is also in `ENABLE`. Either the migration enables `connect` or the message names both.
 2. **The messages must not say "retired in Nightscout 15.0.9".**
-3. **BF-63's renderer guard** stays (it is in the 15.0.9 candidate), so the page shows the message.
+3. **BF-63's renderer guard** stays (in `dev` via PR #8753), so the page shows the message.
 4. **The RT-5 gate's pass condition changes** from "no shape produces a boot error" to "each shape
    that stops the site names its fix, and applying that fix boots".
 
-The earlier recommendation, a deprecation release that keeps the legacy plugin running, is
-superseded: RT-4 was dropped the same day, with the notice in 15.0.9's release notes.
+**Fixed 2026-09-23** on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed), where the removal
+now lives (lifted onto cut 1): items 1, 2 and 4 are done; in the boot matrix each stopping shape's
+named fix boots 200/401/401; the rewritten gate is green there and red on `rh/cut4`
+([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)). RT-4, a
+deprecation release keeping the legacy plugin running, was dropped 2026-09-23; the deprecation
+notice is in 15.0.9's release notes.
 
 ### BF-62 · a setting the previous release told operators to set is now ignored
 
@@ -2982,8 +2787,9 @@ that logged it, so `DEXCOM_BRIDGE_USE_LEGACY` becomes accepted-and-ignored — a
 still migrated to Connect unconditionally, so **ingestion continues**. This is not a
 data-availability failure. What is discarded is the operator's expressed intent, silently.
 
-**Fix — UNVERIFIED.** Either honour it with a clear "no longer supported" boot error, or log that it
-is ignored. Doing neither is the defect.
+**Fixed 2026-09-23** on local `rh/cut1-retire-legacy` (`c043fb2d`, not pushed): the override is
+logged as ignored and Dexcom still migrates; regression test with break-it
+([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)).
 
 ### BF-63 · the page that reports a boot error crashes on cut 4's boot errors
 
@@ -3004,19 +2810,19 @@ throws `TypeError: Cannot convert undefined or null to object`.
 
 Three controls render and only the two cut-4 shapes throw.
 
-**Provenance measured, and it corrects an earlier draft of this finding in the project's favour**:
-`git diff origin/dev origin/chore/mime-exposure-review -- lib/server/booterror.js` is **empty**. The
-renderer is unchanged and pre-existing; what cut 4 adds is the only two `bootErrors.push` sites in
-the tree that omit `err` (`bootevent.js:330`, `:335`) — 7 such sites on master and dev, all passing
-`err`; 9 on cut 4. A reviewer sent to the wrong diff would have dismissed a real finding.
+**Provenance**: `git diff origin/dev origin/chore/mime-exposure-review -- lib/server/booterror.js`
+is **empty**. The renderer is unchanged and pre-existing; what cut 4 adds is the only two
+`bootErrors.push` sites in the tree that omit `err` (`bootevent.js:330`, `:335`) — 7 such sites on
+master and dev, all passing `err`; 9 on cut 4.
 
 **Filed §1b because the two reachable shapes exist only on the unmerged branch** — but note that the
 renderer weakness itself is in shipping code today, awaiting a caller.
 
-**Fix — UNVERIFIED, and it must be both halves**: pass `err` at both call sites, **and** make the
-renderer defensive, with a regression test asserting that a `desc`-only boot error renders as HTML.
-Fixing only the call sites leaves the next caller to rediscover it. This matters more than an
-ordinary crash because the message it destroys is the mitigation for **BF-61**.
+**Fix, both halves**: make the renderer defensive, with a regression test asserting that a
+`desc`-only boot error renders as HTML, **and** pass `err` at both call sites. This matters more
+than an ordinary crash because the message it destroys is the mitigation for **BF-61**. **Partly
+merged 2026-09-23**: the renderer half is in `dev` via PR #8753 (merge `3a38c6f2`); the other site,
+cut 4's `pick.js`, is on the modernization branch only.
 
 ### BF-64 · the adopted release train describes a set of releases that cannot be built
 
@@ -3036,9 +2842,16 @@ has most consistently said to slow down on. Corroborating symptom: the connector
 
 **No branch is wrong.** The defect is in the description of how to combine them. It must be resolved
 before Release 4's contents can be written down, and every document repeating the train needs the
-caveat until it is. Options, none chosen here: stop the train at cut 3; ship cut 5 and accept that
-the retirement lands with it; or revert cut 4's deletions out of cut 5, which is the only option
-that is not a prefix cut.
+caveat until it is. Options: stop the train at cut 3; ship cut 5 and accept that the retirement
+lands with it; or revert cut 4's deletions out of cut 5, which is the only option that is not a
+prefix cut.
+
+**Maintainer direction 2026-09-23**: mmconnect is deprecated and removed as early as possible (it
+does not work and carries deprecated dependencies), partly in the current cycle where appropriate;
+with RT-4 dropped, 15.0.9's notes are the deprecation notice, so holding cut 4 behind a separate
+release no longer applies. The removal is lifted onto cut 1 (local `rh/cut1-retire-legacy`, 8
+cherry-picks); cut 4's remainder has no CGM-path removal, and a trial merge conflicts only in
+legacy files and manifests ([cut 1 lift](../../60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md)).
 
 ### BF-65 · the train ships the leaking connector to upgraders first
 
@@ -3106,11 +2919,10 @@ shipping `lib/settings.js` with three controls (shipped defaults, a converted mm
 mg/dL set — none rewritten) and fails on the two rewrites above.
 
 **Fix — NONE PRESCRIBED.** Whether to refuse, to correct-and-announce, or to unit-check the input is
-a maintainer decision with a safety dimension, and this register has already shipped two prescribed
-fixes that turned out to be wrong. What is not defensible is the current combination: change the
+a maintainer decision with a safety dimension. What is not defensible is the current combination: change the
 number, tell only the log.
 
-**Why this is filed now**: it surfaced while reviewing the per-tenant configuration spec, whose
+**Hosted-tenancy consequence**: it surfaced while reviewing the per-tenant configuration spec, whose
 proposed `CHECK` constraint on stored thresholds was described as a backstop. It is not one — a
 partial override leaves the absent paths SQL `NULL`, the `AND` chain evaluates to `NULL` rather than
 `FALSE`, and PostgreSQL accepts the row. So under hosted tenancy the row would be stored *and then*
@@ -3119,10 +2931,9 @@ design inherits it unless T3.0 decides otherwise.
 
 ### BF-68 · `$type`'s operand is a type code, and exempting it from conversion broke a working request
 
-**This entry is a regression the fix introduced, found before the branch was opened.** It is filed
-because a defect a change creates is worth as much of the record as a defect it removes, and
-because the reasoning generalises: *"operands are not values, so leave them alone"* is very nearly
-right, and the exception is the whole entry.
+A regression introduced and repaired inside `bf/coercion` before PR #8737 was opened. The reasoning
+generalises: *"operands are not values, so leave them alone"* is very nearly right, and `$type` is
+the exception.
 
 `bf/coercion`'s first draft routed field values through a schema-driven converter and exempted
 every operator whose operand is not a field value — `$regex`, `$options`, `$text` and `$type` — on
@@ -3137,31 +2948,24 @@ Measured against live `mongod` **3.6.8 and 7.0.43, identical on both**:
 | `{$type: "2"}` (string) | **error: *"Unknown type name alias: 2"*** |
 | `{$type: "number"}` (alias) | valid |
 
-`origin/dev` converted `$type` along with everything else, so `find[sgv][$type]=2` **worked on the
-shipping release**. Exempting it would have turned that request into an **HTTP 500** — a request
-that worked before the fix and not after, which is the definition this programme uses for a
-regression, and it would have shipped inside a change whose entire purpose was to make filters
-answer correctly.
+15.0.8 converts `$type` along with everything else, so `find[sgv][$type]=2` **works on the
+shipping release**. Exempting it would have turned that request into an **HTTP 500**.
 
 **Fix.** `operandReaderFor` in `lib/server/query-coercion.js` gives each non-value operator its own
 reader rather than a blanket exemption. A digits-only `$type` operand becomes a number; anything
 else — `number`, `string`, `objectId` — passes through as the string MongoDB expects. `$regex`,
 `$options` and `$text` keep the blanket exemption, because for them it is correct.
 
-**Severity is low and stated honestly.** Numeric BSON type codes in a v1 filter are rare, and the
-alias spelling was correct throughout. **It never shipped**: it existed only between two drafts of
-`bf/coercion` and was repaired in `f829ea11` before PR #8737 was opened. It is recorded because the
-next person to add an operator exemption needs to know that the blanket form is wrong, and there is
-nothing in the code that would tell them.
+**Severity is low.** Numeric BSON type codes in a v1 filter are rare, and the alias spelling was
+correct throughout. **It never shipped**: it existed only between two drafts of `bf/coercion` and
+was repaired in `f829ea11` before PR #8737 was opened (merged 2026-09-18, merge `025f1310`). It is
+recorded because the next person to add an operator exemption needs to know that the blanket form
+is wrong.
 
 **Pinned by test.** `tests/query.operands.test.js` asserts both spellings, and the branch's own
 non-vacuity check confirms adding `$regex` to the reader map fails exactly the `$regex` test.
 
 ### BF-27 · one `env` object, and a secret that deletes itself once read
-
-*Written 2026-09-15. This was the only id in the register with a table row and no detail section —
-found by a programmatic set difference between the 40 table-row ids and the 39 detail headings.
-There was no second table and no stale heading; the section was simply never written.*
 
 `lib/server/env.js` builds its result onto a **module-scope** `env` object, so `config()` returns the
 same object to every caller. `setAPISecret()` reads `process.env.API_SECRET` and then **deletes it
@@ -3182,19 +2986,16 @@ is a live trap for T3.0's wiring step, not for an operator.
 the obvious local fix — return a fresh object per call — changes what 62 test files share.
 
 
-### BF-70 · the count endpoint took its aggregation pipeline from the URL — **FIXED 2026-09-18**
+### BF-70 · the count endpoint took its aggregation pipeline from the URL — **merged 2026-09-18** (PR #8743)
 
 > **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is an
-> **unauthenticated read oracle over arbitrary collections**, live on the shipping release, and
-> **this repository is public**. The working reproduction is deliberately **not committed** — not
-> here, not in the branch, not in the report. It is ~40 lines, held outside version control, and
-> reconstructable from the mechanism below by anyone who needs it; what is withheld is a
-> copy-paste recipe against other people's deployments. **The ordinary path for this stack — a
-> public PR carrying a full commit message — is the wrong path for this commit.** Someone has to
-> decide sequencing (fix first, publish after) and whether Nightscout's security contact process
-> is invoked. That decision is P0-K's blocking item and it is not an engineering question.
+> **unauthenticated read oracle over arbitrary collections**, live on the shipping release 15.0.8,
+> and **this repository is public**. The fix is public in `dev` (PR #8743). The working
+> reproduction is deliberately **not committed** — not here, not in the branch, not in the report;
+> it is held outside version control. What is withheld is a copy-paste recipe against other
+> people's deployments: describe the mechanism, never a request.
 
-**Found 2026-09-18 while tracing BF-04's blast radius, and it is worse than BF-04.**
+**Found 2026-09-18 while tracing BF-04's blast radius.**
 
 `lib/server/aggregate.js` built its aggregation as
 
@@ -3223,8 +3024,7 @@ an oracle over any collection in the database, including the auth collections.
 **Reproduced 2026-09-18**, `reproduced` not `derived`: through the booted v1 app against
 `mongod 7.0`, with no `api-secret` header, a value seeded into the auth collection was recovered
 character by character from the count alone. The same probe against `bf/operators` `52b7b640`
-returns HTTP 400 and recovers nothing — same machine, same database, same session. That
-before/after pair is the branch's strongest control, stronger than any unit ablation on it.
+returns HTTP 400 and recovers nothing — same machine, same database, same session.
 
 **Fix**: the parameter is **refused with 400, not dropped**. Dropping it silently would answer a
 different question under HTTP 200, which is the failure mode the whole `bf/operators` branch exists
@@ -3238,18 +3038,14 @@ passing, 3 pending, 0 failing.
 
 *Evidence*:
 [BF-04/BF-70 report](../../60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md) §3.
-Shipped in PR **#8743**; re-verified on the `dev` merge `9745cae2` — the probe still returns 400 and
-recovers nothing.
+Merged 2026-09-18 via PR **#8743** (merge `1a36f023`); re-verified on the branch's `dev` merge
+`9745cae2` — the probe still returns 400 and recovers nothing.
 
 
 ### BF-71 · the date window is dropped by any `dateString` key — and is not a control
 
-**This entry exists as much to correct the register as to record a defect.** Until now the only
-description of this behaviour in the programme was the note under BF-04, which called it "the
-date-window bypass `find[dateString][$ne]=x` — its headline full-history PHI dump, the advisory's
-own primary evidence", and left it as the larger of the two PoCs still open. That sentence was
-written from reading the code. Running it says something different, and the difference changes what
-should be done about it.
+The advisory calls this path its primary evidence and a full-history data dump. Run with a control,
+it is a correctness defect and not a privilege boundary (below).
 
 **The mechanism.** `enforceDateFilter()` applies its default bound only when nothing else has
 constrained the date:
@@ -3299,20 +3095,16 @@ size of that scan is what matters. Fix it as correctness: test `dateString` the 
 tested, or bound on whichever date field the query actually names.
 
 *Reproduced* 2026-09-21 on `dev` `59430336`, booted v1 app, `mongod 7.0.43`, no `api-secret`
-header, both role settings in one run. Probe held outside version control with BF-72's — see the
-disclosure note there, which does **not** apply to this entry: nothing about BF-71 is
-exploit-grade, which is the point of it.
+header, both role settings in one run. Probe held outside version control with BF-72's; nothing
+about BF-71 itself is exploit-grade.
 
-**Independently corroborated the same day, by a different session and a wider instrument.**
-`docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md` (untracked as this
-is written — do not link it until it is committed) booted one instance per configuration and
-tabulated fourteen anonymous requests across five `AUTH_DEFAULT_ROLES` settings. Its result for
-this entry matches: `GET /api/v1/count/entries/where` answers 200 under `readable` and **401
-under `denied`**, as does every other v1 and v2 data route including `status.json`. Two probes
-built for different purposes agreeing on the control is better evidence than either alone, and
-that document reaches the conclusion this entry does — the REST surface locks down, so the
-full-history read is the default's meaning and not a bypass. **It also grades this against the
-advisory it came from, `GHSA-r3gv-x7fw-j2v5`**, and finds the `$where` half is what survives.
+**Independently corroborated the same day** by
+[the advisory auth-configuration matrix](../../60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md),
+which booted one instance per configuration and tabulated fourteen anonymous requests across five
+`AUTH_DEFAULT_ROLES` settings: `GET /api/v1/count/entries/where` answers 200 under `readable` and
+**401 under `denied`**, as does every other v1 and v2 data route including `status.json`. It grades
+this against the advisory it came from, `GHSA-r3gv-x7fw-j2v5`, and finds the `$where` half is what
+survives.
 
 ### BF-72 · an unauthenticated `$regex` can spend minutes of database CPU
 
@@ -3320,11 +3112,10 @@ advisory it came from, `GHSA-r3gv-x7fw-j2v5`**, and finds the `$where` half is w
 > **one-request unauthenticated denial of service against a default install**, live on the
 > shipping release and on `dev`, and **this repository is public**. The mechanism is below; the
 > three patterns that produce it are **deliberately not written down here**, and the probe is held
-> outside version control twice over, as BF-70's is. The same sequencing question BF-70 raised
-> applies and has the same answer: it is not an engineering question.
+> outside version control twice over, as BF-70's is.
 
 **Found 2026-09-21 while re-measuring the advisory's third PoC.** It is not the defect the advisory
-describes there, and it is worse than the one it does.
+describes there.
 
 `$regex` (with `$options`) is in API v1's accept set **on purpose** — the 14-project client census
 found real clients sending it, and a documented text-search affordance depends on it. So this is not an
@@ -3365,25 +3156,17 @@ failure that matters.
 **On a fix, and what makes it hard.** The operator cannot simply be refused — clients use it, and
 a documented search affordance depends on it. The candidates are a pattern length cap, requiring a
 literal prefix, rejecting catastrophic-backtracking constructs, or moving to a linear-time engine; each trades
-capability for cost and **none of them has been measured**, so no fix is claimed here. The honest
-state is: reproduced, unfixed, and the remedy is a decision about the search affordance's contract.
+capability for cost and **none of them has been measured**, so no fix is claimed here. State:
+reproduced, unfixed, and the remedy is a decision about the search affordance's contract.
 
 *Reproduced* 2026-09-21 on `dev` `59430336`; unchanged on `origin/master` by inspection — the
 allowlist admits `$regex` on both refs and the route exists on both — **not** separately timed
-there, and that gap is stated rather than papered over.
+there.
 
-**Context this entry does not own, and a reader grading severity should have it.**
-`docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md` (untracked as this
-is written) measured five draft GitHub advisories against every documented
-`AUTH_DEFAULT_ROLES` setting, and found **two socket-surface disclosures that no configuration
-stops** — `loadRetro` returning a full device-status document, and an `/alarm` notification
-carrying a treatment's dose and notes, both delivered to an unauthenticated client on an
-instance whose equivalent REST routes answer 401. Those are authorization defects and they are
-**not in this register yet**; they were measured by a different session and are not reproduced
-here, so no entry is filed for them on this pass rather than filing one from someone else's
-numbers. If they are graded, they outrank BF-72: BF-72 costs availability, those disclose
-patient data. Recorded here so the gap is visible from inside the register rather than only
-from that document.
+**Severity context.** The two socket-surface disclosures that no configuration stops, measured
+in [the advisory auth-configuration matrix](../../60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md),
+are **BF-79** (`loadRetro`) and **BF-75** (`/alarm` delivery). Both disclose patient data and
+outrank this availability defect; both are merged to `dev` and still present on 15.0.8.
 
 ### BF-73 · the production error page hands back a stack trace and absolute paths
 
@@ -3410,19 +3193,17 @@ includes the exception message in the `<title>` and an `<ul id="stacktrace">` li
 **absolute filesystem paths**. With `NODE_ENV=production` explicitly set, the instance still
 returns it.
 
-**Why it is filed now rather than as ancient history.** The hardening that closes the two XSS
+**Why it matters now.** The hardening that closes the two XSS
 advisories added a new uncaught exception in `lib/server/purifier.js`, and that throw propagates
 out of the v1 REST path uncaught (trigger held in the evidence doc's non-public probe). Measured on `dev` `59430336`: the response
 body named `lib/server/purifier.js` by absolute path along with the deployment's directory
-layout. So a fix for one class of defect created a convenient trigger for another, which is the
-kind of coupling this register exists to notice.
+layout. So a fix for one class of defect created a convenient trigger for another.
 
 **Scope, measured rather than assumed.** Seven malformed-query probes against the *unauthenticated*
 v1 read surface on `dev` returned either 400 or a handled `{"status":500,"message":"Mongo Error"}`
 JSON body — **none** leaked a stack. So this is not an unauthenticated finding on the evidence
-gathered; it costs a write credential (`api-secret`, or a v3 token with create). That bounds the
-severity and the bound is stated rather than assumed in either direction: no exhaustive search for
-an unauthenticated trigger was made.
+gathered; it costs a write credential (`api-secret`, or a v3 token with create). No exhaustive
+search for an unauthenticated trigger was made.
 
 **Remedy, and why no patch is attached.** Restore the `NODE_ENV` guard, or replace `errorhandler`
 with a handler that logs server-side and returns a bare 500. Either is one line. It is not written
@@ -3433,7 +3214,7 @@ production, and restoring the guard takes that away from every operator who has 
 it. That is a decision about the deployment's contract, not a typo, and it belongs to whoever owns
 that contract. Filed, reproduced, unfixed.
 
-Evidence: `docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md` §5.2 and §6.1.
+Evidence: [GHSA XSS pair verification](../../60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md) §5.2 and §6.1.
 
 ### BF-74 · API v3 `settings` writes skip the purifier that every other collection gets
 
@@ -3470,17 +3251,15 @@ it at render time is theirs. The finding here is the asymmetry, not a demonstrat
 **No fix is proposed, deliberately.** `settings` holds UI configuration, and `sanitize-html`'s
 serializer rewrites entities; running it over configuration values could corrupt them in ways that
 are worse than the gap. Whether to purify, to purify selectively, or to document the collection as
-unsanitized is a decision about the collection's contract, and nobody has made it. Adding
-`'settings'` to the array without that decision would be exactly the reflex this register asks
-people not to have.
+unsanitized is a decision about the collection's contract, and nobody has made it.
 
-Evidence: `docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md` §2.1, §4 and §6.2.
+Evidence: [GHSA XSS pair verification](../../60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md) §2.1, §4 and §6.2.
 
 ### BF-75 · the `/alarm` namespace broadcasts medical data to every socket connected to it
 
 > **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is a
-> **live unauthenticated disclosure of medical data on the shipping release** and on `dev`, with no
-> patched version, and **this repository is public**. The mechanism is below because an operator
+> **live unauthenticated disclosure of medical data on the shipping release 15.0.8**, with no
+> released patched version (the fix is in `dev`, PR #8745), and **this repository is public**. The mechanism is below because an operator
 > cannot act on a defect they cannot recognise and the fix is three lines they can read. The
 > **probes, the seeding script and the harness are held outside version control** and are not
 > reproduced here or in the evidence document.
@@ -3545,8 +3324,7 @@ membership on one question only: do this socket's resolved shiros include `api:*
 `applyReadEntitlement` joins or leaves `AlarmReceivers` accordingly, and the five emits target
 that room.
 
-**The shape was the open question and it is now decided: shape B, 2026-09-21, by Ben West.** The
-socket is admitted at *connection* time if the deployment's anonymous default role already
+**Decided 2026-09-21 (Ben West): shape B.** The socket is admitted at *connection* time if the deployment's anonymous default role already
 permits reading — the same entitlement `AUTH_DEFAULT_ROLES` grants the REST surface to the same
 anonymous caller — and re-evaluated on every `subscribe`. On `denied` the anonymous default
 permits nothing, so the bypass closes exactly as under the stricter shape. On the shipped
@@ -3587,9 +3365,11 @@ and a no-permission token are refused the stream on `denied`, with the same toke
 outcome rather than a generic error, including one that reverts the connect-time admission and
 turns exactly the five shape-B delivery cases red. Live positive control in both arms with
 liveness asserted for every negative cell via the main namespace's `clients` event. Suite
-2311 → **2362** passing, 3 pending, 0 failing.
+2311 → **2362** passing, 3 pending, 0 failing. **Merged 2026-09-21** via PR #8745 (merge
+`2b22c0ce`); origin's branch tip `a198e308` carries an integration merge of `dev` added on the way
+in and was not re-measured.
 
-Evidence: `docs/60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md`.
+Evidence: [GHSA-8849 alarm socket](../../60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md).
 
 ### BF-76 · a read-only token can silence every alarm on the instance, indefinitely
 
@@ -3611,12 +3391,13 @@ from the socket message with **no upper bound**.
 global ack; with the new guard removed, the ablation reproduces exactly that (`expected 1 to be
 0`), and with it in place the read-only token is ignored while an admin token still works.
 
-The authorization gap is fixed on `bf/alarm-socket-scope` as a separate commit. **The unbounded
+The authorization gap is fixed on `bf/alarm-socket-scope` as a separate commit, merged 2026-09-21
+via PR #8745 (merge `2b22c0ce`). **The unbounded
 `silenceTime` is deliberately left open** — what a legitimately authorized client should be allowed
 to ask for is a product decision about a safety function, and it should not ride along on an
 authorization fix.
 
-Evidence: `docs/60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md` §5a, §10, §11.
+Evidence: [GHSA-8849 alarm socket](../../60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md) §5a, §10, §11.
 
 ### BF-77 · the "readable by world" warning is switched off by the setting that widens access
 
@@ -3666,7 +3447,8 @@ in the configuration that is simultaneously world-readable and world-writable �
 lost *because* of the second half, which is the part that would have made a reader want the
 warning more, not less.
 
-**Fixed locally on `bf/readable-warning`, `74731433`, off `dev` `59430336`. Not pushed.**
+**Merged 2026-09-21** via PR #8746 (merge `74fc6619`; `bf/readable-warning` `74731433`, off `dev`
+`59430336`).
 
 The decision moved out of `checkSettings` into a pure `worldReadableNotify(settings)` at module
 scope in `lib/server/bootevent.js`, which returns the notice or `null` and is exported so a test
@@ -3684,8 +3466,8 @@ change: the split is character-identical, empty element included, so `rolesToShi
 produces (`AUTH_DEFAULT_ROLES` unset plus `TREATMENTS_AUTH=off` → `' careportal'` → `['',
 'careportal']`) never equals a role name, so `indexOf` needs no special case.
 
-**The second notice was written, and it is the part that needs a human.** Plain `readable` keeps
-its existing title and message byte for byte. `readable careportal` gets:
+**The second notice** (wording approved by the maintainer 2026-09-21). Plain `readable` keeps its
+existing title and message byte for byte. `readable careportal` gets:
 
 > **Nightscout readable by world and open to treatment entry**
 >
@@ -3772,10 +3554,9 @@ documentation says that one is a boundary and the other is a prompt.
    found a real unauthenticated-disclosure defect that nobody inside the project had, reported it
    responsibly, and wrote a fix. That fix gates on `AUTHENTICATION_PROMPT_ON_LOAD`, so on a
    hardened instance with that flag at its default it closes nothing — measured on their branch,
-   a never-subscribing socket still received alarms while REST answered 401 in the same run. This
-   is the single strongest piece of evidence in the register that the naming is the problem: the
-   person who made the mistake had just demonstrated they understood the subsystem better than we
-   did.
+   a never-subscribing socket still received alarms while REST answered 401 in the same run. A
+   reviewer who understood the subsystem well enough to find the defect still picked the wrong
+   setting, which is the evidence that the naming is the problem.
 2. **The `/alarm` protocol is not specified anywhere.** Not in `swagger.yaml`, not in
    `swagger.json`, nothing under `docs/`. Anyone who built a client against it read the wire. That
    is what made the BF-75 fix a judgement call rather than a lookup — the maintainer had to choose
@@ -3789,8 +3570,7 @@ documentation says that one is a boundary and the other is a prompt.
 `careportal` role, which is true, but not that it does so by *appending to `AUTH_DEFAULT_ROLES`* —
 which is the mechanism behind BF-77 and is invisible to a reader of either entry alone.
 
-**What would fix it** is documentation, and it is cheaper than any of the code it would have
-prevented:
+**What would fix it** is documentation:
 
 - state, next to both settings, that `AUTH_DEFAULT_ROLES` is the boundary and
   `AUTHENTICATION_PROMPT_ON_LOAD` is a client prompt that grants nothing;
@@ -3805,7 +3585,7 @@ prevented:
 **No branch.** This is prose in `README.md` and the swagger documents, and the wording is a
 maintainer's to write.
 
-*Related*: [BF-75](#), [BF-77](#), [BF-78](#), and
+*Related*: BF-75, BF-77, BF-78, and
 [the reporter PR evaluation](../../60-research/remedial/ghsa-8849-reporter-pr-evaluation-2026-09-21.md),
 whose closing section is the long-form version of this entry.
 
@@ -3861,8 +3641,9 @@ not. Failing silently is the one option to rule out.
 ### BF-79 · `loadRetro` serves the retained devicestatus window to any socket
 
 > **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is a
-> **live unauthenticated disclosure of medical-device telemetry on the shipping release** and on
-> `dev`, with no patched version, and **this repository is public**. The mechanism is below because
+> **live unauthenticated disclosure of medical-device telemetry on the shipping release 15.0.8**,
+> with no released patched version (the fix is in `dev`, PR #8744), and **this repository is
+> public**. The mechanism is below because
 > an operator cannot act on a defect they cannot recognise and the fix is a handful of lines they
 > can read. The **probes, the seeding script and the harness are held outside version control** and
 > are not reproduced here or in the evidence document. All lab data was synthetic and canaried.
@@ -3976,8 +3757,9 @@ consequences and does not belong in a security commit.
 
 *Reproduced* 2026-09-21 on `v15.0.7`, `v15.0.8` and `dev` `59430336` against `mongod 7.0.43`, in
 both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`, with the REST control and the
-no-`loadRetro` socket control in the same run. Fix and 4 regression cases prepared on
-`bf/ws-loadretro-auth` (`9765e8cd`), **not pushed**. The ablation turns the two negative cases red
+no-`loadRetro` socket control in the same run. Fix and 4 regression cases on
+`bf/ws-loadretro-auth` (`9765e8cd`), **merged 2026-09-21** via PR #8744 (merge `a9acd313`) at that
+exact tip. The ablation turns the two negative cases red
 printing `{retroUpdate: true, canary: true, records: 1}` — the symptom itself, canaried devicestatus
 arriving at a socket the server had resolved as unable to read — while the two positive cases stay
 green. Suite 2 311 → 2 315 passing, 3 pending, 0 failing.
@@ -4042,7 +3824,10 @@ reconnect. Nothing tells either party this is happening.
    five-minute cadence. Defensible for `notification`, weaker for `urgent_alarm`.
 
 Option 1 looks right and is deliberately not taken here, because it changes a brute-force
-control and that belongs in its own change with its own review.
+control and that belongs in its own change with its own review. PR #8754 (open) keeps the wait
+before the credential check and keys it on the address as well as the credential, so an anonymous
+alarm socket behind a poisoned address is still admitted late (read from head `e32f7a1c`, not
+run).
 
 *Found while reviewing the BF-75 fix; see
 [the alarm socket report](../../60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md) and
@@ -4061,10 +3846,12 @@ has not been run, and how often CareLink emits a zero in the newest position is 
 stale-data alarm's behaviour while the zero is newest is also unmeasured.
 
 **Where the fix is.** Connector commit `8406edf` filters `sg === 0` and non-`SG` kinds before
-mapping. It is in connector `dev` (PR #64, 2026-09-22) and in prerelease `0.1.0-dev.1`, not in any
-full connector release or in the `234d47c` pin 15.0.9 ships, so it reaches operators through P0-TAG
-and P0-PIN. Nightscout is not a medical device; an operator relying on alarms
-should keep the device's own alarms on.
+mapping (connector PR #64, 2026-09-22). It is released in nightscout-connect `0.1.0` (npm,
+2026-09-24), which Nightscout `dev` pins exactly (PR #8762, merge `153e5658`); it has been in
+Nightscout `dev` through the connector prerelease pins since PR #8752 (2026-09-23). It reaches
+Nightscout operators with 15.0.9. The fix is read-derived too: it has not been run against CareLink.
+Nightscout is not a medical device; an operator relying on alarms should keep the device's own
+alarms on.
 
 
 ### BF-86 · an mmol/L low threshold on a mg/dL site is kept as-is, so the low alarm never fires
@@ -4102,9 +3889,9 @@ cgm-remote-monitor `74fc6619` with `AUTH_DEFAULT_ROLES=denied` and the connector
 sidecar copying into a second Nightscout: before the change the token carries no permissions and
 every poll ends in HTTP 401 with no entries; after it the subject is stored with `roles:
 ['readable']` and the seeded entry arrives. With `AUTH_DEFAULT_ROLES=readable` nothing changes. It
-merged into connector `dev` as PR #77 (`b4d8d29`) and is in prerelease `0.1.0-dev.2` (tag
-`v0.1.0-dev.2`, `fbd4e55`, npm `next`). It is in no full connector release and no
-cgm-remote-monitor pin. A site where an earlier connector already created the subject keeps a
+merged into connector `dev` as PR #77 (`b4d8d29`), is released in nightscout-connect `0.1.0`
+(2026-09-24), and is in Nightscout `dev` through the connector pin (PR #8759, 2026-09-23; exactly
+`0.1.0` since PR #8762). A site where an earlier connector already created the subject keeps a
 subject with no roles after upgrading, until that subject is given the readable role in the admin
 tools or deleted.
 
@@ -4120,21 +3907,34 @@ skipped.
 run ([browser evidence](../../60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md)),
 which had the server's `/alarm` delivery gate forced open.
 
-**Corrected 2026-09-23** ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md)). Forcing is not
-needed: any opt-in device alert (for example `PUMP_ENABLE_ALERTS`) at a site with no stored CGM
+**Reachable without forcing** ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md), 2026-09-23): any opt-in device alert (for example `PUMP_ENABLE_ALERTS`) at a site with no stored CGM
 reading reaches it, on 15.0.8 and on `dev`; on 15.0.8 a page that may not read data also receives
-alarms (BF-75). So it is not latent, and the grade is re-stated as **low — reachable**: the throw's
-own cost is the skipped `chart.update(false)` and any listener on the same event registered after
-the page's own. The earlier sentence here, "no alarm is lost by the throw, since the branch it sits
-in does not sound one", was true only in a narrow sense and is withdrawn: **the throw loses no alarm
-only because the page has already dropped the alarm, since with no reading it presents no server
-alarm at all (BF-92).** That, not the throw, is the safety-relevant behaviour, and fixing the throw
+alarms (BF-75). So it is not latent; graded **low — reachable**: the throw's own cost is the skipped
+`chart.update(false)` and any listener on the same event registered after the page's own. **The
+throw loses no alarm only because the page has already dropped the alarm, since with no reading it
+presents no server alarm at all (BF-92).** That, not the throw, is the safety-relevant behaviour, and fixing the throw
 does not change it.
 
-**Fixed on local branch `bf3/alarm-no-reading` `92544d8f`** (one commit on `74fc6619`, not pushed).
+**Merged 2026-09-23** via PR #8755 (merge `728351e3`; branch `bf3/alarm-no-reading` `92544d8f`,
+one commit on `74fc6619`).
 Two guards are needed in each handler, not one: the log argument, and `chart.update`, because a page
 that has never received data has no chart and throws a second time once the first is guarded. The
 alarm decision is unchanged. Suite 2390/0/3 on Node 20 and 22, exactly +4.
+
+### BF-91 · connector `capture` mode cannot load its trace module for two sources
+
+`lib/sources/nightscout.js:190` and `lib/sources/dexcomshare.js:243` both
+`require('../../trace-axios')`. From `lib/sources/` that resolves to a repository-root file that
+does not exist; the module is `lib/trace-axios.js`. Sources one directory deeper (`glooko/`,
+`minimedcarelink/`) resolve the same string correctly. So `capture --source nightscout` (or
+`dexcomshare`) crashes with `MODULE_NOT_FOUND`, on connector `v0.0.13` and `dev` `1946beb`.
+
+**Reproduced** 2026-09-23 by running `capture --source nightscout`, and confirmed from the trees:
+no `trace-axios` at either root. **Severity: low** — only the standalone `capture` command, used to
+record test fixtures, loads it; the plugin path Nightscout embeds and `forever` mode never do.
+
+**Fixed** on `fix/trace-axios-path` `894b132`, with a test that fails on any unresolvable relative
+require; merged as connector PR #78 and released in nightscout-connect `0.1.0`.
 
 ### BF-92 · a page with no glucose reading never presents a server alarm, including device alarms
 
@@ -4150,11 +3950,9 @@ emit one `alarm` and one `urgent_alarm`. With 12 in-range readings on the page, 
 `URGENT: Pump Reservoir Low`, the page showed the urgent alarm and one audio element played. With no
 reading, nothing was presented. ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md) §1, §4.)
 
-**Severity: high if unintended.** A person who relies on an open Nightscout page for device alarms
-gets none from a page showing `---`. Whether a page with no reading should present device alarms is
-a **clinical-behaviour decision for the maintainer**, and it should not ride along on BF-90's crash
-fix. *No fix is prescribed.* Operator guidance meanwhile: keep the alarms on the devices themselves
-switched on.
+**Severity: high.** A person who relies on an open Nightscout page for device alarms gets none
+from a page showing `---`. It did not ride along on BF-90's crash fix. *No fix is prescribed.*
+Operator guidance meanwhile: keep the alarms on the devices themselves switched on.
 
 **Maintainer position 2026-09-23.** Non-glucose alarms (pump, loop, age) should present on a page
 with no reading. The change ships in a later release, not 15.0.9, paired with BF-52; 15.0.9 carries
@@ -4250,10 +4048,16 @@ so one duplicate profile now fails the whole poll and the backoff grows toward i
 | (g) | `v0.0.13` | — | never more than 5 min |
 
 Measured 2026-09-23 over 4 h 23 min, synthetic data, with no records lost and no duplicates
-([evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). Workaround until
-fixed: `CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus`. The fix must keep `808ab1c`'s
-rule that a write which really failed is not reported as success; only an already-stored record
-stops being an error.
+([evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). Workaround on the
+affected prereleases: `CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus`.
+
+**Fixed in connector PR #79** (merge `977da8a`, 2026-09-23): `f6359b4` skips profiles the sink
+already stores instead of failing the poll, `1d2ebc8` reads only the profiles a poll needs, and
+`de3cee1` copies a changed source profile to the sink when the sink can replace it in place
+(update-on-change works only against a sink that has PR #8758). Released in nightscout-connect
+`0.1.0` (2026-09-24), pinned exactly by Nightscout `dev` (PR #8762). Lab-run: `9dbef9e`, whose
+`lib/` is identical to `de3cee1`, ran 80 minutes on 2026-09-23 and 46 minutes against the 15.0.9
+candidate sinks ([evidence](../../60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md)).
 
 ### BF-98 · the BF-89 fix does not repair an existing reader subject
 
@@ -4261,16 +4065,19 @@ The connector finds its `nightscout-connect-reader` subject on the source by nam
 without checking its roles, on `v0.0.13` (what 15.0.8 installs, `lib/sources/nightscout.js:75-77`)
 and on `0.1.0-dev.2` alike. Released connectors create it with `role` rather than `roles`, so a source with
 `AUTH_DEFAULT_ROLES=denied` keeps answering 401 after the upgrade. Reproduced 2026-09-23 in the soak's
-control (c). The maintainer chose a warning over a repair: the connector says once, in plain words, which
-subject is wrong and how to fix it (add `readable`, or delete it so it is re-created), and never
-writes to the source site.
+control (c). The maintainer chose a warning over a repair (2026-09-23): the connector says once, in
+plain words, which subject is wrong and how to fix it (add `readable`, or delete it so it is
+re-created), and never writes to the source site. The warning is connector `f924de2`, merged via
+connector PR #79 and released in nightscout-connect `0.1.0`; the 0.1.0 and 15.0.9 release notes
+carry the same steps.
 
 ### BF-99 · a profile posted with its own `_id` cannot be edited, deleted or found by it
 
 `create()` stores a 24-hex `_id` as a string; `save()`, `remove()` and `find[_id]` convert to
 ObjectId. So on 15.0.8 and `dev`, a PUT of that profile inserts a second document beside the stale
 one, and DELETE removes only the new twin. Nightscout-to-Nightscout connector sinks hold these copies
-for every profile they have synced. The fix on `bf/profile-object-id` stores hex `_id`s as ObjectId,
+for every profile they have synced. The fix, in review as PR #8758 (`bf/object-id-crud` head
+`6d120fa2`, commit `09566345`), stores hex `_id`s as ObjectId,
 as `treatments.js` already does, and makes PUT, DELETE and `find[_id]` match both forms, so existing
 string copies are replaced on their next edit rather than duplicated. A POST that re-sends an id
 already stored as a string keeps today's duplicate-key refusal instead of adding an ObjectId copy.
@@ -4280,22 +4087,21 @@ Non-hex `_id`s are already refused with 400 by the v1 routes and are unchanged.
 
 The same create-without-conversion pattern, reproduced on both trees: devicestatus and activity
 `find[_id]` return nothing, food and activity PUT add an ObjectId duplicate, and DELETE by id keeps
-the string document in all three. Fixed on `bf/object-id-other-collections` and in
-`bf/object-id-consistency` by the same rule as BF-99, through one shared helper,
-`lib/server/object-id-forms.js`. devicestatus gets no create guard, because it would add a read to
+the string document in all three. Fixed in PR #8758 (`bf/object-id-crud` `6d120fa2`, commit
+`80993afc`) by the same rule as BF-99, through one shared helper, `lib/server/object-id-forms.js`. devicestatus gets no create guard, because it would add a read to
 every connector batch.
 
 ### BF-101 · API v3 id filters miss string `_id`s
 
 `filterForOne` and `identifyingFilter` match only ObjectId, so a v1-stored string `_id` is
-unreachable by v3 id lookup and dedup. Reproduced through the v3 routes; fixed on
-`bf/api3-string-id` and in `bf/object-id-consistency` by one `$eq` branch per form of the id, which
-keeps the `_id` index in use.
+unreachable by v3 id lookup and dedup. Reproduced through the v3 routes; fixed in PR #8758
+(`bf/object-id-crud` `6d120fa2`, commits `597e2899` and `44ac9047`) by one `$eq` branch per form of
+the id, which keeps the `_id` index in use.
 
 ### BF-102 · treatments and entries stored by 15.0.6 or earlier with a hex `_id` string
 
 REQ-SYNC-072 (15.0.7) made new treatments and entries store a hex `_id` as ObjectId, but did not
-make lookups match the ones already stored as strings. `bf/object-id-consistency` commit d moves
+make lookups match the ones already stored as strings. PR #8758 commit `5581c5e4` moves
 both collections onto the shared helper and matches both forms; the UUID-to-`identifier` rule is
 unchanged. The non-hex rule still differs by collection (UUID to `identifier` for treatments and
 entries; kept or refused with 400 elsewhere) and is documented, not unified.
@@ -4307,7 +4113,7 @@ carries `mills` and `date` at the original time plus `mgdl` / `scaled`. The serv
 `ddata` keeps a stored `mills` rather than deriving it from `created_at`, so IOB, COB and the chart all
 use the pre-move time. Found by hand in the 15.0.9 manual-check lab; identical on 15.0.8. The plain
 Move sends only `created_at`, so it neither causes nor repairs the damage. Fixed on the browser side in
-#8760 (merged 2026-09-24): a split no longer copies the page-added fields, and a move or a Reports-editor
+PR #8760 (merged 2026-09-24, merge `ddd9b600`): a split no longer copies the page-added fields, and a move or a Reports-editor
 save clears them on the stored record, which repairs records split earlier. A raw v1 PUT can still leave a
 stale `mills`; the server-side options were measured and not built
 ([fix evidence](../../60-research/remedial/bf103-fix-2026-09-23.md)).
@@ -4319,7 +4125,8 @@ authorization, `lib/api3/alarmSocket.js` logs that credential: the `accessToken`
 the whole subscribe message. The log is readable by whoever runs or supports the site, and by anyone
 it is shared with. Reproduced on `dev` and `v15.0.8` by the backport triage
 ([triage](../../60-research/remedial/modernization-backport-triage-2026-09-22.md)); fixed on the
-modernization branch by `31c354d8` and brought to `dev` unchanged by PR #8751. Operators who have
+modernization branch by `31c354d8` and brought to `dev` unchanged by PR #8751 (merged 2026-09-23,
+merge `4011193e`). Operators who have
 shared server logs from a site whose alarm clients failed to authorize should treat those credentials
 as exposed; the 15.0.9 release notes should say so.
 
@@ -4332,7 +4139,7 @@ through those routes. It matters only where anonymous read is denied and collect
 issued. Reproduced on `dev` and `v15.0.8` by the backport triage
 ([triage](../../60-research/remedial/modernization-backport-triage-2026-09-22.md)); fixed on the
 modernization branch by `d3ac8026` (a per-collection read check) and brought to `dev` unchanged by
-PR #8751.
+PR #8751 (merged 2026-09-23, merge `4011193e`).
 
 ### BF-106 · the schema coercion drops activity's numeric `date` filter
 
@@ -4363,8 +4170,7 @@ reads client source and cannot see filters built at runtime.
 
 ### BF-107 · a failed treatments query ends the process
 
-Filed for the record: it was reported upstream as issue #8675 and fixed on `dev` by PR #8697 on
-2026-09-06, but no register entry named it, so the release's exposure count left it out.
+Reported upstream as issue #8675; merged to `dev` via PR #8697 (merge `0ab266a3`) on 2026-09-06.
 `serveTreatments` in `lib/api/treatments/index.js` receives `(req, res, err, results)` and never
 checks `err`; on a failed query `results` is `null`, `results.forEach` throws, and the uncaught
 `TypeError` exits Node. On `dev` the handler answers HTTP 500 with the JSON status body.
@@ -4407,15 +4213,13 @@ values.
 2. **Prefer landing these independently.** Each one is small, each ships to every current
    operator, and none needs a tenancy decision.
 3. **Release-note the behaviour changes.** BF-02 and BF-03 change what queries return. That is
-   the point, and it should arrive as a documented fix. **Done 2026-09-15** — the note is in
+   the point, and it should arrive as a documented fix. The note is in
    cgm-remote-monitor's `CHANGELOG.md` under `[Unreleased] / Fixed`, naming the collections and
    fields whose results change, with before/after examples.
 4. **Keep severities honest.** "Wrong answer with HTTP 200" is worse than "slow", and both are
    worse than "noisy". The table is sorted by that, not by effort.
 5. **Allocate an id by reading the highest in §1/§1b at the moment you write it** — never the one
-   your brief quoted. Three ids were allocated twice in a single day, and a fourth collision was
-   avoided only because the two sessions happened not to write at the same minute. The renumbering
-   note at the top of this file is what that cost.
+   your brief quoted, because concurrent sessions file here.
 6. **Check it is not a restatement before you file it.** BF-12 is closed as `invalid` and is kept
    rather than deleted precisely because a deleted wrong entry gets raised again. Several of the
    entries filed on 2026-09-15 began as separate proposals and were merged into one, or folded into
@@ -4425,10 +4229,8 @@ values.
    §1 means *present in what an operator runs today*, which is `master` / 15.0.8 — not `dev`, not a
    cut branch, not an unmerged `bf/*` branch. That test is the only thing making §1 mean anything,
    and widening it would cost more than the entries it would admit.
-8. **Say whether a prescribed fix has been run.** Two fixes this register prescribed were wrong
-   when somebody finally ran them (BF-30's, and BF-21's "implement replace" — replace was already
-   implemented). An unrun prescription on a high-severity entry is a liability, not progress, so it
-   is now marked **UNVERIFIED** in place rather than left to look settled.
+8. **Say whether a prescribed fix has been run.** An unrun prescription is marked **UNVERIFIED**
+   in place rather than left to look settled.
 
 ## 4. Where this file sits
 
@@ -4452,4 +4254,28 @@ values.
 
 `overrides.qs = "6.15.1"` and `overrides.request.qs = "6.15.1"` were added by `5ab0af7a` ("Remediate runtime dependency CVEs", 2026-05-10), when 6.15.1 was the remedy. Since then the connector raised its own floor to `^6.15.3` and three advisories were published whose ranges include 6.15.1. `overrides` suppresses the `ERESOLVE` that would report the connector's range, so nothing says so — the BF-43 mechanism with a different package. Because the override is at the root, the single resolved copy is also the one express's and body-parser's query-string parsing uses, so the question is wider than the connector.
 
-**Not reproduced as a runtime failure or an exploit.** What is asserted is the silent range violation and the advisory ranges. The likely remedy is moving both override values to 6.16.0 (the only version outside all three ranges); that changes the parser every request passes through, so it needs the full suite and should be measured against Nightscout's documented query shapes before it ships.
+**Not reproduced as a runtime failure or an exploit.** What is asserted is the silent range violation and the advisory ranges.
+
+**Merged 2026-09-23** via PR #8749 (merge `9fd4600e`; `bf/qs-6.16` `46b20b38`): both override values are 6.16.0, the only version outside all three ranges. The documented query shapes parse identically and the suite is unchanged; only malformed bracket keys change. It changes the parser every request passes through.
+
+### BF-88 · the modernization branch's `TRUST_PROXY`-unset default changes the client address in four cases
+
+`395f3207` ("Restore proxy compatibility by default", `lib/server/client-ip.js` on
+`origin/chore/nightscout-modernization` `b1bdaca0`) does not reproduce the address `forwarded-for`
+gives on `origin/dev` `74fc6619` in four cases: an IPv6 entry after the first in a comma-and-space
+`X-Forwarded-For` chain; an IPv4 address with a non-numeric port suffix; a request with no socket
+remote address; and a request carrying more than one forwarding-header family (dev's precedence
+depends on which family earlier requests used; the branch's order is fixed).
+
+**Reproduced** by a differential probe. `bf2/auth-hardening` `8b975b41` pins dev's behaviour for the
+unset default, and restoring `395f3207`'s `client-ip.js` there fails exactly 7 of 48
+`tests/client-ip.test.js` cases (re-run 2026-09-22). **Severity: low** — edge-case inputs, but the
+address is the failed-authentication delay's key and the setting is presented as
+compatibility-preserving, so an upgrader has no warning.
+
+**Decided 2026-09-23 (maintainer):** the cuts keep 15.0.9's unset default, `forwarded-for` as on
+`dev`; `395f3207`'s fixed-precedence normalisation is not taken, and cut 5's four
+`tests/client-ip.test.js` expectations are replaced by 15.0.9's when the cuts are rebased. No flag
+for the other normalisation: with `TRUST_PROXY` unset the forwarding headers come from any peer, so
+neither answer is a security boundary; an address list (`proxy-addr`) is the deterministic path.
+The unset path is revisited when `TRUST_PROXY`'s default is flipped.
