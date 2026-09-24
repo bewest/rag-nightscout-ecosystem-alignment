@@ -151,11 +151,15 @@ security advisories are published.
    database — or a backup, snapshot or copy of it — could use it. **Fixing the code does not
    remove copies already written and does not retire those tokens.** Read
    [Access tokens stored in plain text](#access-tokens-stored-in-plain-text).
-7. **The failed-login delay no longer slows down the wrong people.** After a failed login,
-   Nightscout makes the next attempt wait. It used to make *every* request wait, including ones
-   with the correct password, so on a site behind a shared proxy one misconfigured uploader
-   could slow down everyone. Now only failed attempts wait, and the list of recent failures is
-   cleared regularly and has a size limit. **On its own this does not stop someone who is
+7. **The failed-login delay also follows the password, and its list no longer grows forever.**
+   After a failed login, Nightscout makes the next request from that address wait before it
+   checks the password, as it always has, so a correct guess made during the wait is answered no
+   sooner than a wrong one. The wait now also follows the password or token that failed,
+   wherever it is tried from, and the list of recent failures is cleared regularly and has a
+   size limit. Every request from an address with recent failures waits, including ones with
+   the correct password; once `TRUST_PROXY` is set to match your site, that address is the
+   visitor's own, so only devices that really share an address (one home network, or a mobile
+   carrier's shared address) share a wait. **On its own this does not stop someone who is
    guessing passwords from avoiding the delay**, because the address it counts attempts against
    is read from information any visitor can supply. That is closed only once you set
    `TRUST_PROXY` — see the next section.
@@ -172,7 +176,8 @@ ever edited a user on the admin page, read the token section below.
 <!-- PENDING: #8754 merge -->
 ### The new `TRUST_PROXY` setting
 
-Nightscout counts failed logins per visitor address. Today it takes that address from labels
+Nightscout counts failed logins per visitor address, and per password or token tried. Today it
+takes that address from labels
 attached to the request (called *forwarded headers*), **whoever attached them**. A proxy
 normally adds these labels, but a visitor can add them too. `TRUST_PROXY` tells Nightscout whose
 labels to believe:
@@ -184,6 +189,18 @@ labels to believe:
 | your proxy's IP address(es) or ranges, comma-separated (for example `10.0.0.5` or `10.0.0.0/24`) | forwarded headers only when they come from those addresses | sites behind a proxy whose address you know |
 | a whole number of proxies, such as `1` | forwarded headers from that many proxies closest to Nightscout | sites behind a known number of proxies whose addresses change |
 | `true` | every forwarded address; the visitor is taken to be the left-most one | only sites where every proxy in front of Nightscout rewrites these labels |
+
+**Which value to use.** Most sites behind a proxy or a hosting service need a number. Each proxy
+adds the address it received the request from to the end of the list of labels, after anything
+the visitor wrote there. Counting back from Nightscout to the proxy you trust is what separates
+the visitor's real address from whatever the visitor wrote: `1` if one proxy or hosting service
+sits in front of Nightscout, `2` if there are two (for example Cloudflare in front of your own
+proxy). Too small a number gives everyone your proxy's address, so one failing uploader slows
+everybody; too large a number believes what the visitor wrote. To check, send one deliberately
+wrong password from your phone on mobile data: the "Failed authentication" message on the admin
+page should show your phone's address. Nightscout's README links to a proxy configuration guide
+with a table of the value for common hosting services. On Azure App Service use `1`: Azure writes
+the visitor's address with a port number on the end, and Nightscout now accepts that form.
 
 Once it is set, the failed-login delay counts attempts against an address a visitor cannot make
 up, and it starts doing its job. **While it is unset, Nightscout writes a message to its log at
@@ -652,8 +669,9 @@ software library updates.
 - Any report or filtered view you rely on — expect numbers to change; that is the fix.
 - The IAGE box, if you use insulin age: it may now show URGENT.
 - Bookmarked links that contain an underscore.
-- If you set `TRUST_PROXY`: your site still loads over https, and the startup warning about the
-  failed-login delay is gone from the log.
+- If you set `TRUST_PROXY`: your site still loads over https, the startup warning about the
+  failed-login delay is gone from the log, and one wrong password sent from your phone shows your
+  phone's address in the "Failed authentication" message.
 - If you moved from `MMCONNECT_` or `BRIDGE_` settings: readings arrive through the connector.
 - If you changed your CGM account password: the new password is in Nightscout's connector
   settings, and readings arrive.
