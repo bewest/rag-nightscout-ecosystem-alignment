@@ -2860,7 +2860,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a known issue. Branch being built by session -36b (worktree externals/work/crm-bf-split-drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59. Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
+**Notes.** DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag; edit-the-time is unmeasured). Branch being built by session -36b (worktree externals/work/crm-bf-split-drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59. Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
 
 ### `BFQ-97` &mdash; BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
 
