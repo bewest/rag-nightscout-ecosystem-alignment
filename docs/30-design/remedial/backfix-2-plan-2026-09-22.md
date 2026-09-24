@@ -135,7 +135,9 @@ after the pin to exact `0.1.0`.
 **Checked by hand** on the combined rc `ec70aab0` (2026-09-23): the treatment drag (RT-D3) with mouse in mg/dL and
 mmol/L and with touch, the same as 15.0.8; alarms under `AUTH_DEFAULT_ROLES=denied` and with
 `AUTHENTICATION_PROMPT_ON_LOAD`; BF-90, BF-69, #8729, #8732 and the COB display. The drag check found BF-103
-(a split drag keeps the old time), which is on 15.0.8 too.
+(a split drag keeps the old time), which is on 15.0.8 too. `ec70aab0` also carried #8754, which changes
+`lib/api3/alarmSocket.js`; every other client file these checks use is identical on `dev` `4011193e`
+([record](../../60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md)).
 
 ### Backfix 2 (into 15.0.9, decided 2026-09-23; see §1a)
 

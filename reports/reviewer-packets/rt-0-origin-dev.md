@@ -117,6 +117,7 @@ dev descends from master with no divergence to reconcile
 - [`docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`](../../docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
 - [`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`](../../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
 - [`docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`](../../docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
+- [`docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`](../../docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md)
 
 ## Notes carried on the item
 
@@ -126,8 +127,10 @@ and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f,
 3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-
 run is owed unless #8754 or #8758 changes head. Manual checks passed on
 ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
-AUTHENTICATION_PROMPT_ON_LOAD. Still before the tag - connector v0.1.0 and a
-pin to exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 -
+AUTHENTICATION_PROMPT_ON_LOAD (ec70aab0 also carried #8754, which changes
+lib/api3/alarmSocket.js and is not on 4011193e; every other client file those
+checks use is identical). Still before the tag - connector v0.1.0 and a pin to
+exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 -
 COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0 (local only)
 on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs - #8748
 d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752 adf5120c,
