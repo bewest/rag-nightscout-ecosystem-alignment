@@ -92,36 +92,36 @@
       "alias": "nightguard",
       "name": "nightguard",
       "url": "https://github.com/nightscout/nightguard.git",
-      "ref": "9ea3dea75eb0923bb5aaf73b86b691a02c0f4335",
+      "ref": "75404bd204e01c49bb73cf19f9ee54ab62a193df",
       "description": "Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout",
-      "frozen_at": "2026-07-16T11:08:50.008100",
+      "frozen_at": "2026-09-23T22:15:18.504854",
       "frozen_from": "master"
     },
     {
       "alias": "xdrip4ios",
       "name": "xdripswift",
       "url": "https://github.com/JohanDegraeve/xdripswift.git",
-      "ref": "96b6afe2fd1b64b402f5d5c106072f21a36574eb",
+      "ref": "c268542e64626c564e626658fa9a6b90a059ada4",
       "description": "xDrip4iOS - iOS app for CGM data management and Nightscout sync",
-      "frozen_at": "2026-06-17T14:54:13.941040",
+      "frozen_at": "2026-09-23T22:15:19.036789",
       "frozen_from": "master"
     },
     {
       "alias": "xdrip",
       "name": "xDrip",
       "url": "https://github.com/NightscoutFoundation/xDrip.git",
-      "ref": "1e86d9a2a52577ed2c30fbf7b69d75fd56e6918f",
+      "ref": "1ed760048a0a1b3ddb78a4e717c84a7a7997af1b",
       "description": "xDrip+ Android app for CGM data collection and Nightscout sync",
-      "frozen_at": "2026-07-16T11:08:51.655802",
+      "frozen_at": "2026-09-23T22:15:19.633413",
       "frozen_from": "master"
     },
     {
       "alias": "diable",
       "name": "DiaBLE",
       "url": "https://github.com/gui-dos/DiaBLE.git",
-      "ref": "a7db070504f25295789a85afb78e3f05e96e1301",
+      "ref": "e6a909c88faeada49f461d30834174cd95db4042",
       "description": "DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS",
-      "frozen_at": "2026-07-16T11:08:52.454415",
+      "frozen_at": "2026-09-23T22:15:20.041225",
       "frozen_from": "main"
     },
     {
@@ -137,19 +137,19 @@
       "alias": "loopfollow",
       "name": "LoopFollow",
       "url": "https://github.com/loopandlearn/LoopFollow.git",
-      "ref": "9d2cea6bee785e42df3013bf25de8da57084ec39",
+      "ref": "4a74b781ad6836dd77eccc03bb08a42749dd59a6",
       "description": "LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout",
-      "frozen_at": "2026-07-03T13:55:59.797569",
+      "frozen_at": "2026-09-23T22:15:20.514005",
       "frozen_from": "main"
     },
     {
       "alias": "loopcaregiver",
       "name": "LoopCaregiver",
       "url": "https://github.com/LoopKit/LoopCaregiver.git",
-      "ref": "8ce464bf8c0c8296c350fba920222d2a270544e5",
+      "ref": "230571838ca93ad2efa65f1787202ec30c66e275",
       "description": "LoopCaregiver iOS companion app for remote bolus, carbs, and override control via Nightscout",
       "submodules": true,
-      "frozen_at": "2026-06-17T14:54:18.205594",
+      "frozen_at": "2026-09-23T22:15:21.011268",
       "frozen_from": "dev"
     },
     {
@@ -180,9 +180,9 @@
       "alias": "tconnectsync",
       "name": "tconnectsync",
       "url": "https://github.com/jwoglom/tconnectsync.git",
-      "ref": "7f88d88ea4146e55be07fb2558e706c441a24a73",
+      "ref": "7c4b2f4ddb560835c227aa75edd7dc3b57740d37",
       "description": "Tandem t:connect to Nightscout sync tool (Python)",
-      "frozen_at": "2026-07-16T11:09:01.509403",
+      "frozen_at": "2026-09-23T22:15:21.433069",
       "frozen_from": "master"
     },
     {
