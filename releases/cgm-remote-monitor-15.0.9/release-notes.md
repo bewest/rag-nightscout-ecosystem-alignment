@@ -219,20 +219,10 @@ routine while it is sorted out.**
 
 ### Asking for a number of records (`count`)
 
-<!-- OPEN BEFORE THE TAG (2026-09-23): this section describes the rule on dev, and two real clients
-     meet it in ways that may make it a compatibility break. See the semver policy, section 3.2,
-     "Evidence added 2026-09-23". Reproduced end to end on 15.0.8, dev and the candidate (see
-     docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). Do not publish these notes
-     until the maintainer has decided the count rule.
-     - oref0 (OpenAPS) sends count as "1?<credential>" on its latest-treatment lookup; 15.0.8 read it
-       as 1, and this release answers 400.
-     - GluPredKit sends count=0 to mean "no limit"; this release answers with an empty list.
-     If the rule ships as it stands, add to this section, in plain words: which clients are affected,
-     what they will see, and that OpenAPS users should update oref0 once it has a fix. The replay
-     found NO duplicate treatments (the upsert is idempotent), so insulin and carbs on board are not
-     counted twice; the rig re-uploads a day of treatments on every loop, and an edit made in
-     Nightscout to one of them is overwritten on the next loop. If the rule changes, rewrite the table
-     to match. -->
+<!-- PENDING: count-compat merge. This section describes bf/count-client-compat (RT-COUNT-COMPAT,
+     decided 2026-09-24), which is not yet a PR, and dev has none of it. Until it merges, dev answers
+     count=0 with an empty list and "1?..." with 400. Decided: tolerate the two shapes real clients
+     send (oref0, GluPredKit) and keep 15.0.9 a patch; see the semver policy, section 3.2. -->
 
 Apps add `count` to a request to say how many records they want back, for example "the last 10
 readings". On 15.0.8, a request for **zero** records could send back your **entire** history,
@@ -241,16 +231,23 @@ in this release:
 
 | The request | 15.0.9 answers |
 |---|---|
-| a read with `count=0` | an **empty list**: no records, and no error. It never returns your whole history. (On 15.0.8, device status reports gave the last 10 for `count=0`; they now give none.) |
+| a read with `count=0` and a date range (a "from" and a "to" on the same date field). GluPredKit asks this way. | **everything in that range**, as 15.0.8 did, with a deprecation warning. (Device status reports gave only the last 10 here on 15.0.8; they now give everything in the range.) |
+| a read with `count=0` and no date range | the **usual default**, as if no count had been given, with a deprecation warning. On 15.0.8 this could return your whole history. |
+| a read with a whole number followed by `?` and other text, such as `1?token=…`. OpenAPS (oref0) asks for its latest treatment this way. | the number is read as the count, as 15.0.8 did, with a deprecation warning. What follows the `?` is not logged. |
 | a read with an ordinary count such as `10` or `288` | as before |
 | a read with no `count` | the usual default (for glucose readings, the last 10), as before |
-| a read with a count that is not a plain whole number: `abc`, `-3`, `2.5`, `1e2`, `0x10`, or a number too large to handle exactly | an error, "Bad count" (HTTP 400) |
+| a read with a count that is not a plain whole number: `abc`, `-3`, `2.5`, `1e2`, `0x10`, or a number too large to handle exactly (followed by `?` or not) | an error, "Bad count" (HTTP 400) |
 | a save or an update that carries a `count` | carried out normally; `count` is ignored |
-| a delete that carries `count=0` or a count that is not a plain whole number | **refused** with an error, and **nothing is deleted** |
+| a delete that carries `count=0` or a count that is not a plain whole number, including a number followed by `?` | **refused** with an error, and **nothing is deleted** |
 | a delete that carries a valid count such as `2` | carried out as before. **The count does not limit a delete**: it still deletes every record the request matches. |
 
 The newer API (version 3) keeps its own rule: a `limit` of `0`, or one that is not a whole
 number within the site's maximum, gets an error.
+
+The "deprecation warning" is two extra headers on the answer (`Deprecation: true` and a
+`Warning` that says what to send instead), plus one line in the server log the first time it
+happens. Nothing changes for the app today. A future major release may refuse these two forms,
+so app authors should send a plain whole number of 1 or more.
 
 ### Filter conditions
 

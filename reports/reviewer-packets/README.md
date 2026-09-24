@@ -32,7 +32,7 @@ repository.
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`RT-COUNT-COMPAT`](rt-count-compat.md) | &mdash; | `needs-decision` | Two real clients meet the 15.0.9 count rule: a correction or a compatibility break? |
+| [`RT-COUNT-COMPAT`](rt-count-compat-bf-count-client-compat.md) | &mdash; | `ready-to-push` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 

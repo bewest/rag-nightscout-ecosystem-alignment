@@ -223,6 +223,12 @@ the user-facing form. Facts the notes must not lose:
   72 h) for everyone. The notification still requires `IAGE_ENABLE_ALERTS` (default off) and
   fires only when `age === IAGE_URGENT` and `minFractions <= 20` — once, with no catch-up.
   Past the threshold the level had been understated as WARN the whole time.
+- **`?count=` for real clients (bf/count-client-compat `b4ead206`, not yet a PR; RT-COUNT-COMPAT,
+  decided 2026-09-24).** Amends the next bullet on v1 GET/HEAD: `N?<anything>` reads `N` (oref0);
+  `count=0` with a `find` bounding one date field from both sides reads a limit of 2147483647
+  (GluPredKit), and without one reads as no count. Both set `Deprecation: true` and a 299
+  `Warning`, logged once per process without the value. DELETE is unchanged. Until it merges, dev
+  behaves as the next bullet says.
 - **`?count=` (#8738 amended by #8748).** On v1: `count=0` / `00` on a read answers `200 []`;
   `abc`, `1e2`, `-3`, `0x10`, `2.5` and integers above `Number.MAX_SAFE_INTEGER` answer
   `400 Bad count`; POST and PUT ignore `count`; DELETE with `0` or a malformed count answers 400

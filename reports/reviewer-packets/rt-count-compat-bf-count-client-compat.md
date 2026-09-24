@@ -13,16 +13,15 @@
 
 # Review packet — RT-COUNT-COMPAT
 
-**Two real clients meet the 15.0.9 count rule: a correction or a compatibility
-break?**
+**Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch**
 
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `` |
+| branch | `bf/count-client-compat` |
 | base | `origin/dev@ddd9b600` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=RT-COUNT-COMPAT` is the measurement |
-| semver | `n/a` |
+| claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-COUNT-COMPAT` is the measurement |
+| semver | `patch` |
 
 ## What this changes
 
@@ -31,15 +30,18 @@ lib/api/index.js validateCount), and the number 15.0.9 ships under.
 
 ## Why that semver
 
-this item decides whether the count rule is patch, minor or major
+Decided 2026-09-24 - the shapes real clients send are read as 15.0.8 read
+them, so no input a real client sends is narrowed (section 3.2's test); only
+shapes no known client sends stay refused.
 
 ## What an operator would notice
 
-> Some apps ask Nightscout for records in a way this release reads more
-> strictly than 15.0.8 did. OpenAPS (oref0) asks for its latest treatment
-> with a malformed count and would get an error; GluPredKit asks for "zero"
-> records meaning "all of them" and would get none. What changes, and how
-> the release notes describe it, is being decided before 15.0.9 ships.
+> OpenAPS (oref0) and GluPredKit keep working with 15.0.9 as they did with
+> 15.0.8. OpenAPS asks for its latest treatment with extra text after the
+> number, and 15.0.9 reads the number, as 15.0.8 did. GluPredKit asks for
+> "zero" records over a date range meaning "everything in the range", and
+> gets everything in the range. Both answers carry a deprecation warning,
+> because a future major release may refuse these shapes.
 
 ## Who should review this, and why
 
@@ -54,9 +56,13 @@ the oref0 side
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- Reproduced end to end on 15.0.8, dev ddd9b600 and the candidate tree
-  2ce67b27 with a control in each run (consumer-replay lab, -6a,
-  2026-09-23). Nothing gates the decision itself; it is the maintainer's.
+- The branch is local (not pushed), so no gate can read it from a remote.
+  Evidence is the count suite (49/49) and the full suite on Node 20 / mongo
+  7 only (2466/0/3), with two break-it controls, and the consumer-replay
+  lab's P1 and P2 re-run on the branch in both auth modes. Not yet run -
+  Node 22 / 24 and mongo 4.4, and a combined run with #8754 and #8758; a
+  real OpenAPS rig or GluPredKit install (the lab replays their requests,
+  not the programs).
 
 ## Evidence
 
@@ -64,7 +70,29 @@ the oref0 side
 
 ## Notes carried on the item
 
-2026-09-23 - REPLAY VERDICTS (-6a lab; docs/60-research/remedial/consumer-
+PREPARED 2026-09-24 - bf/count-client-compat b4ead206 on dev ddd9b600 (local,
+not pushed): lib/server/count.js (leadingCount, hasDateWindow, NO_LIMIT_COUNT)
+and lib/api/index.js (validateCount rewrites the two shapes on GET/HEAD before
+checking). count=0 inside a two-sided date window becomes a limit of
+2147483647, the largest 32-bit limit; outside one it is dropped so the
+endpoint default applies (activity has no default, so it reads unbounded
+there, as it already does with no count). Deletes are unchanged. Count suite
+49/49; full suite Node 20.20.0 / mongo 7 2466/0/3 (dev 2453 + 13). Break-it -
+tolerance off: 18 new tests fail; window rule alone off: the 2 entries window
+tests fail (the other collections hold fewer than their default). -6a's replay
+lab as slot d, readable and denied - P1 oref0 200 in hashed and token modes,
+the cull keeps 1 of 57; P2 GluPredKit 1 / 137 / 576, equal to 15.0.8 and the
+count=100000 control. Only Node 20 / mongo 7 run so far; the combined run owes
+the other cells. DECIDED 2026-09-24 (maintainer, -59) - tolerate the shapes
+real clients send and keep 15.0.9 a patch. oref0's "N?..." reads N (only
+digits followed by ?; abc, -3, 2.5, 1e2, 0x10 stay 400, with or without a ?).
+count=0 on a read was re-decided the same day, after 15.0.8's code showed it
+had meant NO limit (a truthy "0" reached .limit(0)) and the entries default of
+10 would cut GluPredKit's 576 to 10 without an error: no limit when the find
+bounds one date field from both sides, the endpoint default otherwise. Both
+answered with Deprecation: true and a 299 Warning, logged once per process,
+without the value (oref0's contains its credential). 2026-09-23 - REPLAY
+VERDICTS (-6a lab; docs/60-research/remedial/consumer-
 impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both
 auth modes under readable and denied; the plain count=1 control is 200
 everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57

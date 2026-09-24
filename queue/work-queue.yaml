@@ -2034,7 +2034,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
-      2026-09-23 - the merged rule may be reopened before the tag: oref0 and GluPredKit send count shapes it refuses or answers empty. Tracked as RT-COUNT-COMPAT (a semver and compatibility decision, not a defect).
+      2026-09-24 - amended again for oref0 and GluPredKit (count=1?... reads 1; count=0 in a date window reads the window, otherwise the default). See RT-COUNT-COMPAT.
       MERGED 2026-09-23 into dev (now 4011193e); NOT RELEASED. #8748 as 42c5e21e (head fc2d25ca). CI and CodeQL green on the merge commit.
       2026-09-23 - CodeQL on #8748 reported 2 high alerts, both in the test file: the write suites built the api-secret header with sha1(API_SECRET) at run time. d19043b2 (local, not pushed) uses the precomputed header value the other API tests use; test-only, 36/36.
       OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev).
@@ -2098,37 +2098,46 @@ items:
       PR body (gh pr create --fill).
 
   - id: RT-COUNT-COMPAT
-    title: "Two real clients meet the 15.0.9 count rule: a correction or a compatibility break?"
+    title: "Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/count-client-compat
     base: origin/dev@ddd9b600
-    worktree: externals/cgm-remote-monitor-official
-    state: needs-decision
+    worktree: externals/work/crm-count-compat-59
+    state: ready-to-push
     blast_radius: >
       The v1 count rule from #8738 as amended by #8748 (lib/server/count.js,
       lib/api/index.js validateCount), and the number 15.0.9 ships under.
     review: maintainer - a semver and compatibility decision, with a safety
       dimension on the oref0 side
     operator_visible: >
-      Some apps ask Nightscout for records in a way this release reads more
-      strictly than 15.0.8 did. OpenAPS (oref0) asks for its latest treatment
-      with a malformed count and would get an error; GluPredKit asks for "zero"
-      records meaning "all of them" and would get none. What changes, and how
-      the release notes describe it, is being decided before 15.0.9 ships.
-    semver: n/a
-    semver_reason: this item decides whether the count rule is patch, minor or major
+      OpenAPS (oref0) and GluPredKit keep working with 15.0.9 as they did with
+      15.0.8. OpenAPS asks for its latest treatment with extra text after the
+      number, and 15.0.9 reads the number, as 15.0.8 did. GluPredKit asks for
+      "zero" records over a date range meaning "everything in the range", and
+      gets everything in the range. Both answers carry a deprecation warning,
+      because a future major release may refuse these shapes.
+    semver: patch
+    semver_reason: >
+      Decided 2026-09-24 - the shapes real clients send are read as 15.0.8
+      read them, so no input a real client sends is narrowed (section 3.2's
+      test); only shapes no known client sends stay refused.
     register: []
     gates:
       - no-gate: >
-          Reproduced end to end on 15.0.8, dev ddd9b600 and the candidate tree
-          2ce67b27 with a control in each run (consumer-replay lab, -6a,
-          2026-09-23). Nothing gates the decision itself; it is the
-          maintainer's.
+          The branch is local (not pushed), so no gate can read it from a
+          remote. Evidence is the count suite (49/49) and the full suite on Node
+          20 / mongo 7 only (2466/0/3), with two break-it controls, and the
+          consumer-replay lab's P1 and P2 re-run on the branch in both auth
+          modes. Not yet run - Node 22 / 24 and mongo 4.4, and a combined run
+          with #8754 and #8758; a real OpenAPS rig or GluPredKit install (the
+          lab replays their requests, not the programs).
     blocks_on: []
     evidence:
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      PREPARED 2026-09-24 - bf/count-client-compat b4ead206 on dev ddd9b600 (local, not pushed): lib/server/count.js (leadingCount, hasDateWindow, NO_LIMIT_COUNT) and lib/api/index.js (validateCount rewrites the two shapes on GET/HEAD before checking). count=0 inside a two-sided date window becomes a limit of 2147483647, the largest 32-bit limit; outside one it is dropped so the endpoint default applies (activity has no default, so it reads unbounded there, as it already does with no count). Deletes are unchanged. Count suite 49/49; full suite Node 20.20.0 / mongo 7 2466/0/3 (dev 2453 + 13). Break-it - tolerance off: 18 new tests fail; window rule alone off: the 2 entries window tests fail (the other collections hold fewer than their default). -6a's replay lab as slot d, readable and denied - P1 oref0 200 in hashed and token modes, the cull keeps 1 of 57; P2 GluPredKit 1 / 137 / 576, equal to 15.0.8 and the count=100000 control. Only Node 20 / mongo 7 run so far; the combined run owes the other cells.
+      DECIDED 2026-09-24 (maintainer, -59) - tolerate the shapes real clients send and keep 15.0.9 a patch. oref0's "N?..." reads N (only digits followed by ?; abc, -3, 2.5, 1e2, 0x10 stay 400, with or without a ?). count=0 on a read was re-decided the same day, after 15.0.8's code showed it had meant NO limit (a truthy "0" reached .limit(0)) and the entries default of 10 would cut GluPredKit's 576 to 10 without an error: no limit when the find bounds one date field from both sides, the endpoint default otherwise. Both answered with Deprecation: true and a 299 Warning, logged once per process, without the value (oref0's contains its credential).
       2026-09-23 - REPLAY VERDICTS (-6a lab; docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both auth modes under readable and denied; the plain count=1 control is 200 everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57 treatments per loop instead of 1. NO DUPLICATES: 137 records after each of three posts, because the created_at+eventType upsert is idempotent. A Nightscout-side edit to a rig treatment from the last 24 h is overwritten on the next loop; that replace also happens on 15.0.8, but only 15.0.9 makes the rig re-post every loop. GluPredKit: count=0 returns [] for profile, treatments and entries on dev and the candidate (15.0.8: 1 / 137 / 576 in a 50 h window); the count=100000 control is full on all three.
       Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer
       instruction to document it as a compatibility and semver item, not a

@@ -391,8 +391,8 @@ only).
 **Evidence added 2026-09-23, after 15.0.9's rule was amended by #8748.** *Reproduced end to end on
 15.0.8 (`92d08342`), `dev` (`ddd9b600`) and the 15.0.9 candidate (tree `2ce67b27`), mongod 7.0.43, Node
 22.23.2, each request with its well-formed control in the same run
-([consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md)). Nothing below is
-decided.* 15.0.9's rule is now: a read with
+([consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md)). The decision is
+recorded at the end of this addendum.* 15.0.9's rule is now: a read with
 `count=0` answers an empty list; a read with any other count that is not a plain whole number answers
 400; saves and updates ignore `count`; a delete with an unreadable count is refused. Two real clients
 meet that rule in ways the table above did not foresee:
@@ -430,6 +430,30 @@ way 15.0.8 did, and/or keep `count=0` as the default limit with a deprecation wa
 above) so 15.0.9 stays a patch; or keep the rule and number the release as a major. On the oref0
 side, the measured cost is load (a day of treatments per loop) and reverted Nightscout-side edits,
 not double-counted therapy.
+
+**Decided 2026-09-24: tolerate the shapes real clients send, and keep 15.0.9 a patch.**
+*(Maintainer. Implemented on `bf/count-client-compat` `b4ead206`, on `dev` `ddd9b600`; not yet a
+pull request.)* On v1 reads only:
+
+- **A whole number followed by `?`** is read as that number, as 15.0.8's `parseInt` read it.
+  Only that shape is tolerated: `abc`, `-3`, `2.5`, `1e2` and `0x10` are still refused, with or
+  without a `?` after them. What follows the `?` is never logged or echoed, because oref0's
+  contains its credential.
+- **`count=0` with a `find` that bounds one date field from both sides** reads everything in
+  the window. It was first decided as "the endpoint's default limit". It was changed the same day
+  because, on 15.0.8, the string `"0"` reached `.limit(0)`, which means no limit. So GluPredKit
+  received everything in its window, and the entries default of 10 would have cut its 576 entries
+  to 10 without an error.
+- **`count=0` without such a window** reads as though no count had been given, which is the
+  endpoint's default. This keeps the guard against an accidental whole-collection read. Where
+  15.0.8 returned the whole collection here, 15.0.9 returns the default; no client in the census
+  sends it.
+
+Both tolerated shapes are answered with `Deprecation: true` and a `299` `Warning`, and are
+logged once per process. Deletes are unchanged. Measured with the consumer-replay lab on the
+branch: oref0 gets 200 in both auth modes and uploads 1 treatment per loop, not 57; GluPredKit
+gets 1 profile, 137 treatments and 576 entries, the same as 15.0.8. By this section's test, no
+input a real client sends is narrowed, so the change is a patch.
 
 **The asymmetry with v3 `?limit=0x10`, which this policy keeps.** v3's limit is a documented
 closed contract: `API3_MAX_LIMIT` is described in `lib/api3/swagger.json` (verified by grep at
