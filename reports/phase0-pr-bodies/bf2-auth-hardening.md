@@ -26,7 +26,7 @@ and ends with one fix to the admin page's save:
 | part | what it is | how it got here |
 |---|---|---|
 | `bf/auth` (BF-17, BF-47) | an access token was written into the database in readable form when a subject was edited | `git merge --no-ff`, ancestry kept |
-| `bf/throttle` (BF-30) | the failed-login delay was charged to the wrong request, and its list was never cleared | `git merge --no-ff`, ancestry kept |
+| `bf/throttle` (BF-30) | the failed-login list was never cleared, had no size limit, held the secrets tried, and counted only the address; the wait stays before the credential check, as on `dev` (`f6f361b1`) | `git merge --no-ff`, ancestry kept, plus `f6f361b1` |
 | `TRUST_PROXY` | a setting that tells Nightscout which proxy in front of it to trust | cherry-picked from `chore/nightscout-modernization` (#8605), `06c83f2f` and `395f3207`, plus one port commit |
 | `bf2/subject-edit-keeps-fields` (BF-47) | editing a subject or role on the admin page wiped its `notes` and replaced its `created_at` | one commit, `7103f657`, on `29e6430e` |
 
@@ -69,13 +69,18 @@ who could read your database (a backup, a snapshot, a copy you shared for suppor
 From this change on, tokens are never written. **Fixing the code does not remove copies already
 written, and does not retire those tokens** — see the next section.
 
-### 2. The failed-login delay no longer slows down the wrong people
+### 2. The failed-login delay also follows the password, and its list is bounded
 
-After a failed login, Nightscout makes the next attempt wait. It used to make **every** request
-wait — including ones with the correct password — so on a site behind a shared proxy, one
-misconfigured uploader could slow down everyone. Now only the failed attempt waits. The list of
-recent failures is also cleared on a schedule and has a size limit; before, it was cleared once and
-then grew for as long as Nightscout ran.
+After a failed login, Nightscout makes the next request from that address wait before it checks
+the password, as every earlier release does, so a correct guess made during the wait is answered
+no sooner than a wrong one. The wait now also follows the password or token that failed, wherever
+it is tried from. The list of recent failures is cleared on a schedule and has a size limit;
+before, it was cleared once and then grew for as long as Nightscout ran.
+
+Every request from an address with recent failures waits, including ones with the correct
+password. With `TRUST_PROXY` set to match the site, that address is the visitor's own, so only
+people who really share an address (one home network, or a mobile carrier's shared address) share
+a wait.
 
 ### 3. A new setting, `TRUST_PROXY`, and a warning in your log until you set it
 
@@ -91,6 +96,14 @@ now behaves, and **with `TRUST_PROXY` unset it is still how this one behaves.**
 | not set (default) | forwarded headers from anyone — **exactly as today** | nobody needs to change anything to upgrade |
 | `false` | no forwarded headers at all; the address actually connecting, and whether that connection itself is https | sites that visitors reach directly, with no proxy in front |
 | your proxy's IP address(es) or ranges, comma-separated (for example `10.0.0.5` or `10.0.0.0/24`) | forwarded headers only when they come from those addresses | sites behind a proxy whose address you know |
+| a whole number of hops, such as `1` | the entry added by the proxy that many hops from Nightscout | sites behind a known number of proxies whose addresses change, which is most hosted sites |
+| `true` | every hop; the client is the left-most forwarded entry | only where every proxy in front rewrites the header |
+
+Behind a trusted proxy that adds its entry to a forwarded header the caller may already have
+filled in, the hop count back to that proxy is what makes the address trustworthy. The proxy guide
+(`docs/proposals/trusted-proxy-migration.md`) has a table of the value each kind of deployment
+needs. On Azure App Service, leave it unset for now: the client address arrives with a port, which
+the explicit settings refuse.
 
 Once it is set, the failed-login delay counts attempts against an address the caller cannot make
 up, and it starts doing its job.
