@@ -6,10 +6,10 @@
       "alias": "loop",
       "name": "LoopWorkspace",
       "url": "https://github.com/LoopKit/LoopWorkspace.git",
-      "ref": "4319ce521f84d42c01d9727037cbafc13d3d55cf",
+      "ref": "f8412858c59278d93b72f2905a9915b5101c9d82",
       "description": "Loop iOS app workspace with all dependencies",
       "submodules": true,
-      "frozen_at": "2026-06-17T14:54:01.192858",
+      "frozen_at": "2026-09-23T22:10:19.188163",
       "frozen_from": "main"
     },
     {
@@ -34,19 +34,19 @@
       "alias": "aaps",
       "name": "AndroidAPS",
       "url": "https://github.com/nightscout/AndroidAPS.git",
-      "ref": "598e2eb39c7e15876e4c42876a2162bffcb4fe5f",
+      "ref": "7e1d537d49ab14430fa3821484fb1be9af628b03",
       "description": "Android Artificial Pancreas System",
-      "frozen_at": "2026-09-11T11:24:51.463397",
-      "frozen_from": "master"
+      "frozen_at": "2026-09-23T22:11:27.180238",
+      "frozen_from": "dev"
     },
     {
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "40f097fddda733537aea986f63346aa405b628e3",
+      "ref": "e41c9db37fa946f14047f5b07cfcd3aa5dd9ef6b",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-09-11T11:24:52.208316",
+      "frozen_at": "2026-09-23T22:10:20.334764",
       "frozen_from": "dev"
     },
     {
@@ -128,10 +128,10 @@
       "alias": "xdrip-js",
       "name": "xdrip-js",
       "url": "https://github.com/xdrip-js/xdrip-js.git",
-      "ref": "0cd1c555bce9bcf3571639aa4fb8e3ce8b83335b",
+      "ref": "e30127358f1f5e547980e3fa25fa9f1984e3c72c",
       "description": "Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE",
-      "frozen_at": "2026-01-28T15:03:43.547752",
-      "frozen_from": "master"
+      "frozen_at": "2026-09-23T22:11:29.986197",
+      "frozen_from": "dev"
     },
     {
       "alias": "loopfollow",
@@ -155,18 +155,18 @@
     {
       "name": "nocturne",
       "url": "https://github.com/nightscout/nocturne.git",
-      "ref": "d9e1430975c7a05967cba66374392f75f08c858f",
+      "ref": "42275c812d9b942251a3309fea8066871940cfc2",
       "description": "C#/.NET rewrite of the Nightscout server/API (not a client app) with SvelteKit web frontend",
-      "frozen_at": "2026-09-11T11:24:58.935079",
+      "frozen_at": "2026-09-23T22:10:23.005582",
       "frozen_from": "main"
     },
     {
       "name": "share2nightscout-bridge",
       "url": "https://github.com/nightscout/share2nightscout-bridge.git",
-      "ref": "937142b3017341e87f87557b461cee78aea706db",
+      "ref": "518c85c4e5685e0164e21bd150fd0b3c477975ca",
       "description": "Dexcom Share to Nightscout bridge",
-      "frozen_at": "2026-06-17T14:54:27.926216",
-      "frozen_from": "dev"
+      "frozen_at": "2026-09-23T22:11:32.409440",
+      "frozen_from": "master"
     },
     {
       "name": "cgm-remote-monitor-official",
@@ -247,9 +247,9 @@
     {
       "name": "OmnipodKit",
       "url": "git@github.com:loopandlearn/OmnipodKit.git",
-      "ref": "aee61f93d8fc55f0539e6d2e599d4609fc908af1",
+      "ref": "4e923d77695cbff9983ef1c252a785d7af588300",
       "description": "Universal Omnipod pump manager (Eros/Dash/Omnipod5) shared by Loop and Trio",
-      "frozen_at": "2026-09-11T11:25:08.982582",
+      "frozen_at": "2026-09-23T22:10:29.815585",
       "frozen_from": "main"
     },
     {
@@ -263,10 +263,82 @@
     {
       "name": "trio-telemetry",
       "url": "git@github.com:nightscout/trio-telemetry.git",
-      "ref": "34b05295a43d1b50ef390cc83b8490b1cd82a2f1",
+      "ref": "681ea86752524b065b6eeeef50909b3ef1cf0bf0",
       "description": "Anonymous opt-out telemetry sink for Trio, authenticated via Apple App Attest",
-      "frozen_at": "2026-09-09T11:28:24.557562",
+      "frozen_at": "2026-09-23T22:10:32.283614",
       "frozen_from": "master"
+    },
+    {
+      "alias": "nightscoutkit",
+      "name": "NightscoutKit",
+      "url": "https://github.com/LoopKit/NightscoutKit.git",
+      "ref": "4ec9fd12a16b5d6c2de4f11870511361d42e1b7f",
+      "description": "LoopKit NightscoutKit - Swift Nightscout client library used by Loop",
+      "frozen_at": "2026-09-23T22:12:04.446441",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "glycemicgpt",
+      "name": "GlycemicGPT",
+      "url": "https://github.com/GlycemicGPT/GlycemicGPT",
+      "ref": "d1a9adb73e46abc0599e493a095e4ef887e08762",
+      "description": "GlycemicGPT - AI assistant that reads Nightscout data",
+      "frozen_at": "2026-09-23T22:12:18.138329",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "glooko2nightscout",
+      "name": "glooko2nightscout",
+      "url": "https://github.com/lsandini/glooko2nightscout.git",
+      "ref": "9ab8c6080bc34b022f1ccb24251dc8fd0f7fa9c4",
+      "description": "Glooko to Nightscout uploader",
+      "frozen_at": "2026-09-23T22:12:04.449553",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "glooko-nightscout-eu",
+      "name": "glooko-nightscout-eu",
+      "url": "https://github.com/itconor/glooko-nightscout-eu.git",
+      "ref": "2b7fbc45b8e6f90f9633738318c4c56ccdbe3552",
+      "description": "Glooko (EU) to Nightscout uploader",
+      "frozen_at": "2026-09-23T22:12:04.451022",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "glooko-reader",
+      "name": "glooko-reader",
+      "url": "https://github.com/spamsch/glooko-reader.git",
+      "ref": "22837f6c404365a7ab2f896f97040597c842c7d2",
+      "description": "Glooko data reader",
+      "frozen_at": "2026-09-23T22:12:04.452533",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "glookoservicekit",
+      "name": "GlookoServiceKit",
+      "url": "git@github.com:nightscout/GlookoServiceKit.git",
+      "ref": "8e2cad1cdf2cbcd5fa4ed7fd3cd37d1e0743f756",
+      "description": "Glooko service kit for Loop",
+      "frozen_at": "2026-09-23T22:12:04.453927",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "nightscout-cgm-skill",
+      "name": "nightscout-cgm-skill",
+      "url": "https://github.com/shanselman/nightscout-cgm-skill",
+      "ref": "91a53ea167955edbce9adc1ca9288730f7a81519",
+      "description": "Nightscout CGM skill - AI agent skill reading Nightscout",
+      "frozen_at": "2026-09-23T22:12:04.455442",
+      "frozen_from": "master"
+    },
+    {
+      "alias": "oref-digital-twin",
+      "name": "oref-digital-twin",
+      "url": "https://github.com/tim2000s/oref-digital-twin",
+      "ref": "a2e8610d5ffbea7db62d742c88ce6c21ecd8de30",
+      "description": "oref digital twin simulator",
+      "frozen_at": "2026-09-23T22:12:04.456838",
+      "frozen_from": "main"
     }
   ]
 }
