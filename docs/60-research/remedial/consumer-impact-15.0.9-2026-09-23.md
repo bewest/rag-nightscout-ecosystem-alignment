@@ -7,6 +7,12 @@
 [backfix register](../../30-design/remedial/nightscout-backfix-register.md). Nothing here is
 medical advice.*
 
+**Status 2026-09-24:** §2.1 and §2.2 are decided (`RT-COUNT-COMPAT`). A leading whole number is read
+as 15.0.8 did, so oref0's `1?…` reads 1. A read with `count=0` returns everything in the window when
+the find bounds a date field from both sides, and the endpoint default otherwise, with a deprecation
+warning. The fix is on `bf/count-client-compat` (`b4ead206`, not yet merged), and it reproduces 15.0.8
+for both clients in this lab. The queue item holds the current state.
+
 **Method, and what kind of evidence each claim is.**
 
 1. **Change inventory**, read-derived: every one of the 59 first-parent merges from 15.0.8 to `dev`,
