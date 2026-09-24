@@ -2121,14 +2121,15 @@ items:
     register: []
     gates:
       - no-gate: >
-          Evidence is read from client source and reproduced at the parser
-          level; an end-to-end replay on 15.0.8, dev and the candidate tree
-          2ce67b27 is running (-6a), including whether the resulting oref0
-          re-upload stores duplicate treatments. The decision waits on it.
+          Reproduced end to end on 15.0.8, dev ddd9b600 and the candidate tree
+          2ce67b27 with a control in each run (consumer-replay lab, -6a,
+          2026-09-23). Nothing gates the decision itself; it is the
+          maintainer's.
     blocks_on: []
     evidence:
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-09-23 - REPLAY VERDICTS (-6a lab; docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both auth modes under readable and denied; the plain count=1 control is 200 everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57 treatments per loop instead of 1. NO DUPLICATES: 137 records after each of three posts, because the created_at+eventType upsert is idempotent. A Nightscout-side edit to a rig treatment from the last 24 h is overwritten on the next loop; that replace also happens on 15.0.8, but only 15.0.9 makes the rig re-post every loop. GluPredKit: count=0 returns [] for profile, treatments and entries on dev and the candidate (15.0.8: 1 / 137 / 576 in a 50 h window); the count=100000 control is full on all three.
       Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer
       instruction to document it as a compatibility and semver item, not a
       backfix. oref0 (dev d219baf9, master 88cf032a) sends count as
@@ -7169,6 +7170,119 @@ items:
       Graded medium to high in the register. Not a 15.0.9 blocker as
       recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
 
+  - id: BFQ-106
+    title: BF-106 - a numeric date filter on API v1 activity matches nothing on dev
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: origin/dev
+    base: origin/dev@ddd9b600
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/query.js default_options, or the activity entry in the coercion
+      schema. Read path only; nothing is written or deleted differently.
+    review: maintainer
+    operator_visible: >
+      On 15.0.9 as it stands, a tool that asks the older API for activity
+      records by their numeric date gets an empty list instead of the
+      records it got on 15.0.8. Nothing stored changes, and the Nightscout
+      pages do not use this filter.
+    semver: patch
+    semver_reason: restores a 15.0.8 read behaviour that the coercion change removed
+    register: [BF-106]
+    gates:
+      - run: node tools/queue/gates/bf106-activity-date-coercion.js
+        kind: static
+        describe: >
+          Builds the activity query with origin/dev's own query.js and
+          activity.js and checks that a find[date][$gte] bound is a number.
+          Its control is origin/master (15.0.8), where the bound is a number.
+          RED while BF-106 is present.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
+    notes: >
+      2026-09-23 - FILED (maintainer's go-ahead, session -6a) after the consumer-replay lab
+      reproduced it: 7 records on v15.0.8, 0 on dev ddd9b600 and on the candidate (tree
+      2ce67b27), with the created_at control at 7 on all three. Whether it goes into 15.0.9
+      is the maintainer's call.
+  - id: BFQ-107
+    title: BF-107 - a failed treatments query ends the Nightscout process on 15.0.8
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: fix/treatments-query-errors-8675
+    base: origin/dev
+    state: merged-upstream
+    pr: [8697]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/treatments/index.js serveTreatments: the query error is
+      answered with HTTP 500 JSON instead of throwing on null results.
+    review: maintainer
+    operator_visible: >
+      On 15.0.8 one kind of failed treatment search stops the whole Nightscout
+      server, so the site, its glucose display and its alarms go offline until
+      it restarts. 15.0.9 answers that search with an error instead. Until you
+      upgrade, keep your CGM app's or pump's own alarms on.
+    semver: patch
+    semver_reason: a crash fix
+    register: [BF-107]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 origin/dev
+        kind: static
+        describe: >
+          #8697's merge 0ab266a3 is contained in origin/dev.
+      - no-gate: >
+          Reproduced in the consumer-replay lab on 2026-09-23 (15.0.8 exits,
+          dev and the candidate answer 200). The trigger is kept out of this
+          public repository because the defect is live on the shipping
+          release.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
+    notes: >
+      2026-09-23 - FILED (session -6a) after the consumer-replay lab. Upstream
+      issue #8675 and PR #8697 (merged 2026-09-06) predate the entry; the register
+      had no id for it, so the exposure count left it out.
+  - id: BFQ-108
+    title: BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: origin/dev
+    base: origin/dev@ddd9b600
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/query.js enforceDateFilter, the ISO rewrite of date
+      operator values.
+    review: maintainer
+    operator_visible: >
+      If you use xDrip4iOS, readings it asks Nightscout to delete in bulk
+      stay on your site. Nothing is lost or changed; the extra readings are
+      ones the app meant to remove.
+    semver: patch
+    semver_reason: a bug fix; the request answers 500 today
+    register: [BF-108]
+    gates:
+      - run: node tools/queue/gates/bf108-date-in-list.js
+        kind: static
+        describe: >
+          Builds the entries query from origin/dev's own query.js with a
+          two-timestamp find[date][$in]; its control is the same filter with
+          one timestamp. RED on v15.0.8, dev ddd9b600 and the candidate
+          1067e668. No ref carrying a fix exists yet, so the gate has never
+          been seen green.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
+    notes: >
+      2026-09-23 - FILED (session -6a) after the consumer-replay lab reproduced it on
+      all three builds with a one-value control. xdripswift c268542e
+      NightscoutSyncManager.swift:794-806 is the client that sends it.
   - id: BFQ-97
     title: BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
     parcel: register-open

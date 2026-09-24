@@ -388,9 +388,11 @@ number (§8.1). If it ships as written and the major reading stands, the release
 `?count=0` and the write-path scope, which the branch's CHANGELOG does not (it lists read routes
 only).
 
-**Evidence added 2026-09-23, after 15.0.9's rule was amended by #8748.** *Read from client source and
-partly reproduced at the parser level; an end-to-end replay on 15.0.8, `dev` and the 15.0.9 candidate
-tree `2ce67b27` is running (session -6a). Nothing below is decided.* 15.0.9's rule is now: a read with
+**Evidence added 2026-09-23, after 15.0.9's rule was amended by #8748.** *Reproduced end to end on
+15.0.8 (`92d08342`), `dev` (`ddd9b600`) and the 15.0.9 candidate (tree `2ce67b27`), mongod 7.0.43, Node
+22.23.2, each request with its well-formed control in the same run
+([consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md)). Nothing below is
+decided.* 15.0.9's rule is now: a read with
 `count=0` answers an empty list; a read with any other count that is not a plain whole number answers
 400; saves and updates ignore `count`; a delete with an unreadable count is refused. Two real clients
 meet that rule in ways the table above did not foresee:
@@ -400,16 +402,22 @@ meet that rule in ways the table above did not foresee:
   to `ns-get.sh`; that script treats its credential argument as a query and appends `'?'${QUERY}`, so
   `count` arrives as `1?<credential>` (hashed-secret mode) or `1?token=<t>` (token mode). The same code
   is on oref0 `dev` `d219baf9` and `master` `88cf032a` (`bin/nightscout.sh:164`, `bin/ns-get.sh:9,29-35`).
-  15.0.8's `parseInt` reads it as 1; 15.0.9 answers 400 (reproduced with `qs` 6.14, 6.15 and 6.16 and
-  `dev`'s `parseCount`). The consequence read from oref0's source is an empty "latest treatment" time,
-  after which oref0 keeps and re-uploads its last 24 hours of treatments on every loop. **Whether
-  Nightscout then stores duplicate treatments, which would count insulin and carbs twice, is exactly
-  what the replay is measuring**, and it decides how serious this is. The defect is in the client, and
-  it also puts the credential in a URL on 15.0.8 (mechanism only here).
+  15.0.8 answers 200 with the latest treatment; `dev` and the candidate answer 400 "Bad count" in both
+  modes, under `readable` and `denied`, while the plain `count=1` control answers 200 on all three.
+  Run through oref0's own `jq`/`date` pipeline, the 400 leaves the "latest treatment" time empty, so the
+  cull keeps the whole 24-hour pump history: **57 treatments re-uploaded on every loop instead of 1**.
+  **Nightscout does not store duplicates**: three posts of that batch left the collection at 137 each
+  time, because the treatments upsert on `created_at` and `eventType` is idempotent, so insulin and
+  carbs are not counted twice. The cost is elsewhere. **An edit made in Nightscout to a rig-uploaded
+  treatment from the last 24 hours is overwritten on the next loop** (measured: a `notes` edit is gone
+  after the re-post, `_id` unchanged). That replace-on-repost already happens on 15.0.8; what 15.0.9
+  adds is that the rig re-posts those records every loop. The defect is in the client, and it also
+  puts the credential in a URL on 15.0.8 (mechanism only here).
 - **GluPredKit sends a literal `count=0` meaning "no limit".** `glupredkit/parsers/nightscout.py:66-91`
-  sends `count: 0` with a date window for profiles, treatments and entries. 15.0.8 returned everything
-  in the window (`limit(0)` is unbounded); 15.0.9 returns an empty list, and GluPredKit's resampling
-  then raises. GluPredKit was not in the census above, which is why the census found no literal
+  sends `count: 0` with a date window for profiles, treatments and entries. Measured over a 50-hour
+  window: 15.0.8 returns 1 profile, 137 treatments and 576 entries; `dev` and the candidate return an
+  empty list for all three, and the `count=100000` control returns the full set everywhere.
+  GluPredKit's resampling then raises (read from its source). GluPredKit was not in the census above, which is why the census found no literal
   `count=0`.
 
 **What this means under this policy's own test.** The table's "could a real client send it?" answers
@@ -419,8 +427,9 @@ sends is **major**. The choices this puts to the maintainer before 15.0.9 is tag
 keep the rule and ship it under 15.0.9 as a declared correction, naming both clients in the release
 notes; tolerate the specific shapes real clients send (for example, read a leading whole number the
 way 15.0.8 did, and/or keep `count=0` as the default limit with a deprecation warning, as recommended
-above) so 15.0.9 stays a patch; or keep the rule and number the release as a major. The replay's
-verdict on duplicates should come first.
+above) so 15.0.9 stays a patch; or keep the rule and number the release as a major. On the oref0
+side, the measured cost is load (a day of treatments per loop) and reverted Nightscout-side edits,
+not double-counted therapy.
 
 **The asymmetry with v3 `?limit=0x10`, which this policy keeps.** v3's limit is a documented
 closed contract: `API3_MAX_LIMIT` is described in `lib/api3/swagger.json` (verified by grep at

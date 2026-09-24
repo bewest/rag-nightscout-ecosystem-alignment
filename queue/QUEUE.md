@@ -31,23 +31,23 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 112 |
-| runnable gates | 181 |
-| explicit `no-gate:` markers | 158 |
+| items | 115 |
+| runnable gates | 184 |
+| explicit `no-gate:` markers | 159 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 158 of the 339 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 343 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE, BFQ-106, BFQ-108 |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 16 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 3 | BFQ-47, BF2-AUTH, BFQ-102 |
-| `merged-upstream` | 28 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-4, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-97, BFQ-98 |
+| `merged-upstream` | 29 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-4, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 9 | P0-TAG, RT-COUNT-COMPAT, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -84,6 +84,8 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **ADV-XSS-META** GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
 - **ADV-CONFIG** The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81)
 - **BFQ-103** BF-103 - a split drag stores the old time, so IOB and COB ignore the move
+- **BFQ-107** BF-107 - a failed treatments query ends the Nightscout process on 15.0.8
+- **BFQ-108** BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing
 - **BFQ-98** BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
 - **BFQ-99** bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted
 - **BFQ-100** BF-100 - devicestatus, food and activity store a hex _id as a string
@@ -1162,13 +1164,13 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; Evidence is read from client source and reproduced at the parser level; an end-to-end replay on 15.0.8, dev and the candidate tree 2ce67b27 is running (-6a), including whether the resulting oref0 re-upload stores duplicate treatments. The decision waits on it.
+- **NO GATE** &mdash; Reproduced end to end on 15.0.8, dev ddd9b600 and the candidate tree 2ce67b27 with a control in each run (consumer-replay lab, -6a, 2026-09-23). Nothing gates the decision itself; it is the maintainer's.
 
 **Evidence.**
 
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer instruction to document it as a compatibility and semver item, not a backfix. oref0 (dev d219baf9, master 88cf032a) sends count as "1?<credential>" from latest-openaps-treatment; 15.0.8 parseInt read 1, 15.0.9 answers 400. GluPredKit sends count=0 as "no limit"; 15.0.9 answers []. Under the semver policy rule (section 3.2) both make the narrowing major as written. Options, in outline - ship as a declared correction naming both clients; tolerate the shapes real clients send and keep 15.0.9 a patch; or number the release as a major. The release notes count section carries a hidden OPEN BEFORE THE TAG note.
+**Notes.** 2026-09-23 - REPLAY VERDICTS (-6a lab; docs/60-research/remedial/consumer- impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both auth modes under readable and denied; the plain count=1 control is 200 everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57 treatments per loop instead of 1. NO DUPLICATES: 137 records after each of three posts, because the created_at+eventType upsert is idempotent. A Nightscout-side edit to a rig treatment from the last 24 h is overwritten on the next loop; that replace also happens on 15.0.8, but only 15.0.9 makes the rig re-post every loop. GluPredKit: count=0 returns [] for profile, treatments and entries on dev and the candidate (15.0.8: 1 / 137 / 576 in a 50 h window); the count=100000 control is full on all three. Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer instruction to document it as a compatibility and semver item, not a backfix. oref0 (dev d219baf9, master 88cf032a) sends count as "1?<credential>" from latest-openaps-treatment; 15.0.8 parseInt read 1, 15.0.9 answers 400. GluPredKit sends count=0 as "no limit"; 15.0.9 answers []. Under the semver policy rule (section 3.2) both make the narrowing major as written. Options, in outline - ship as a declared correction naming both clients; tolerate the shapes real clients send and keep 15.0.9 a patch; or number the release as a major. The release notes count section carries a hidden OPEN BEFORE THE TAG note.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
@@ -1554,7 +1556,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 45 items
+`parcel: register-open` &mdash; 48 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1601,6 +1603,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
 | `BFQ-103` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | `merged-upstream` | `bf/split-drag-time` | patch | 0 run + 1 no-gate |
+| `BFQ-106` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | `not-started` | `origin/dev` | patch | 1 run |
+| `BFQ-107` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 | `merged-upstream` | `fix/treatments-query-errors-8675` | patch | 1 run + 1 no-gate |
+| `BFQ-108` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing | `not-started` | `origin/dev` | patch | 1 run |
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `merged-upstream` | `fix/profile-sync-bounded-update` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `merged-upstream` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `blocked` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
@@ -2897,6 +2902,102 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
 **Notes.** 2026-09-24 - #8760 MERGED into dev as ddd9b600 (01:43Z), CI and CodeQL green. 2026-09-23 - VERIFIED BY HAND on #8760 8d797ba4 (the maintainer, manual lab port 15204, Chrome, mouse): Move carbs and Move insulin land at the new time with no console errors and survive a reload; plain move, cancel and both edge limits unchanged; a plain move of a pre-damaged record (stale mills, date string, mgdl, scaled) cleared mills, mgdl and scaled and set date to the new created_at as a number. Stored split records carry none of the page fields. Not shown live: COB for the repaired record (its new time was past absorption). Record: docs/60-research/remedial/manual- lab-15.0.9-rc-2026-09-23.md. 2026-09-23 - OPEN upstream as #8760 (head 8d797ba4, verified with ls-remote). BUILT 2026-09-23, CLEAN by the plan section 1a conditions, so it goes into 15.0.9: browser probe red on dev and green on the branch for split, plain move of a damaged record (both stored shapes), split of a damaged record and a v3 record (e.g. COB 0 vs 25 on dev, equal on the branch); dependency-d3 21/3 on dev, 24/0 on the branch; suite 2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run bundle); 9 of 9 break-its caught by the browser probe (7 by unit tests); merge-tree clean with #8754 8211f8e2 and #8758 6d120fa2. The split copy drops page-added mills, endmills, mgdl, scaled, cuttedby, cutting and a Date-typed date; a move clears them on the stored record and sets a disagreeing stored date to the new time (API v3 and AAPS use date). A raw v1 PUT still leaves a stale mills (server- side, not in scope). Server-side options measured, not built: ddata preferring created_at retimes other collections too; stripping on websocket dbAdd leaves existing records stale. Read-only repair query in the evidence section 8. Evidence docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body reports/phase0-pr-bodies/bf-split-drag-time.md. DECIDED 2026-09-23 (maintainer): into 15.0.9 if bf/split-drag-time comes back clean (plan section 1a, "BF-103"); otherwise a known issue (advice: avoid splitting by drag; edit- the-time is unmeasured). Branch being built by session -36b (worktree externals/work/crm-bf-split-drag). Filed 2026-09-23 by -6d (register 0c022da5); queue item added by -59. Graded medium to high in the register. Not a 15.0.9 blocker as recorded; it is on 15.0.8 too. Scope for 15.0.9 is the maintainer's.
+
+### `BFQ-106` &mdash; BF-106 - a numeric date filter on API v1 activity matches nothing on dev
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@ddd9b600` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| register | `BF-106` |
+
+**Blast radius.** lib/server/query.js default_options, or the activity entry in the coercion schema. Read path only; nothing is written or deleted differently.
+
+**What an operator sees.** On 15.0.9 as it stands, a tool that asks the older API for activity records by their numeric date gets an empty list instead of the records it got on 15.0.8. Nothing stored changes, and the Nightscout pages do not use this filter.
+
+**Why `patch`.** restores a 15.0.8 read behaviour that the coercion change removed
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/bf106-activity-date-coercion.js`
+  - Builds the activity query with origin/dev's own query.js and activity.js and checks that a find[date][$gte] bound is a number. Its control is origin/master (15.0.8), where the bound is a number. RED while BF-106 is present.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md`
+
+**Notes.** 2026-09-23 - FILED (maintainer's go-ahead, session -6a) after the consumer- replay lab reproduced it: 7 records on v15.0.8, 0 on dev ddd9b600 and on the candidate (tree 2ce67b27), with the created_at control at 7 on all three. Whether it goes into 15.0.9 is the maintainer's call.
+
+### `BFQ-107` &mdash; BF-107 - a failed treatments query ends the Nightscout process on 15.0.8
+
+| | |
+|---|---|
+| state (claimed) | `merged-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `fix/treatments-query-errors-8675` |
+| base | `origin/dev` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-107` |
+
+**Blast radius.** lib/api/treatments/index.js serveTreatments: the query error is answered with HTTP 500 JSON instead of throwing on null results.
+
+**What an operator sees.** On 15.0.8 one kind of failed treatment search stops the whole Nightscout server, so the site, its glucose display and its alarms go offline until it restarts. 15.0.9 answers that search with an error instead. Until you upgrade, keep your CGM app's or pump's own alarms on.
+
+**Why `patch`.** a crash fix
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 origin/dev`
+  - #8697's merge 0ab266a3 is contained in origin/dev.
+- **NO GATE** &mdash; Reproduced in the consumer-replay lab on 2026-09-23 (15.0.8 exits, dev and the candidate answer 200). The trigger is kept out of this public repository because the defect is live on the shipping release.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md`
+
+**Notes.** 2026-09-23 - FILED (session -6a) after the consumer-replay lab. Upstream issue #8675 and PR #8697 (merged 2026-09-06) predate the entry; the register had no id for it, so the exposure count left it out.
+
+### `BFQ-108` &mdash; BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@ddd9b600` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-108` |
+
+**Blast radius.** lib/server/query.js enforceDateFilter, the ISO rewrite of date operator values.
+
+**What an operator sees.** If you use xDrip4iOS, readings it asks Nightscout to delete in bulk stay on your site. Nothing is lost or changed; the extra readings are ones the app meant to remove.
+
+**Why `patch`.** a bug fix; the request answers 500 today
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/bf108-date-in-list.js`
+  - Builds the entries query from origin/dev's own query.js with a two-timestamp find[date][$in]; its control is the same filter with one timestamp. RED on v15.0.8, dev ddd9b600 and the candidate 1067e668. No ref carrying a fix exists yet, so the gate has never been seen green.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md`
+
+**Notes.** 2026-09-23 - FILED (session -6a) after the consumer-replay lab reproduced it on all three builds with a one-value control. xdripswift c268542e NightscoutSyncManager.swift:794-806 is the client that sends it.
 
 ### `BFQ-97` &mdash; BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
 

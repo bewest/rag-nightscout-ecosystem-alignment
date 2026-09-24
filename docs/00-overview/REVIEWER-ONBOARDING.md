@@ -91,8 +91,8 @@ repaired on a branch that has not been merged; `merged` means merged into
 No programme fix is released: `origin/master` is 345 commits behind `dev`
 (2026-09-23) and the shipping tag is 15.0.8. The register's open count is therefore
 not "the defects still shipping". As computed from the register's §1 on 2026-09-23,
-**71 defects reach every self-hoster on 15.0.8**: of the 72 in §1, 23 are open (one of
-them, BF-80, exists only on `dev`), 41 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+**73 defects reach every self-hoster on 15.0.8**: of the 75 in §1, 25 are open (two of
+them, BF-80 and BF-106, exist only on `dev`), 42 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
 
 ---
 

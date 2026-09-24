@@ -48,12 +48,12 @@ and the release PR #8598 (`dev` → `master`) is open, now at `ddd9b600`, with n
 
 | question | answer, 2026-09-23 (`origin/dev` `ddd9b600`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **72** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **23 open, 41 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17, BF-30, BF-52, BF-99, BF-100, BF-101, BF-102). **71** reach an operator on 15.0.8 — BF-80 exists only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (its word-matching counts BF-07 as open) |
-| How much work is outstanding? | **50 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **75** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **25 open, 42 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17, BF-30, BF-52, BF-99, BF-100, BF-101, BF-102). **73** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (its word-matching counts BF-07 as open) |
+| How much work is outstanding? | **52 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
-One §1 count is an overstatement to know about: BF-80 is a cost of BF-75's fix, so it is present
-where that fix is (`dev`) and not on 15.0.8; it is filed in §1 because it will ship to every
-operator with the next release.
+Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
+cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
+§1 because they will ship to every operator with the next release.
 
 **Provenance.** Every status cell carries one marker, and the detail section says what was run
 against which ref.
@@ -178,6 +178,9 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-103** | **Splitting a treatment by drag (Move carbs / Move insulin) stores the new record with the old time in `mills` and `date`, so IOB and COB ignore the move.** The page shows and stores the new `created_at`; the moved half is drawn at the chart's top-left with `translate(undefined, …)` console errors | `lib/client/renderer.js` split cases copy the page's in-memory treatment (15.0.8 `:877`/`:904`, 15.0.9 rc `:879`/`:906`); `lib/data/ddata.js:39-40` derives `mills` from `created_at` only when `mills` is absent | **medium to high** — wrong IOB and COB with HTTP 200 after an ordinary UI action, feeding the Bolus Wizard and BWP; reach is limited to edit-mode users who drop a treatment carrying carbs and insulin in a split zone, and the display symptom is visible | yes | merged 2026-09-24 (#8760) — **reproduced** 2026-09-23 by hand in a browser on 15.0.8 and the 15.0.9 rc; the IOB/COB effect measured on the rc with a control (COB 0 vs 25 g, IOB 0 vs 2.49 U for the same record with and without the stale fields). Not a D3 regression: the handlers are identical on both trees ([evidence](../../60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md)). **merged** 2026-09-24 as #8760 (`8d797ba4`, merge `ddd9b600`), on the browser side: browser probe red on dev, green on the branch; suite 2453/0/3 on Node 20 and 22; 9 of 9 break-its red. A raw v1 PUT still leaves a stale `mills` ([fix evidence](../../60-research/remedial/bf103-fix-2026-09-23.md)) |
 | **BF-104** | When an `/alarm` subscription fails authorization, the API v3 alarm socket **writes the credential it was sent to the server log**: the access token, the JWT, or the whole subscribe message. Anyone who can read the log sees it | `lib/api3/alarmSocket.js` (three `console.log` calls on the failure paths) on `v15.0.8` and `origin/dev` before PR #8751 | **low–medium** — only failed credentials are logged, which are often mistyped or retired, but a near-miss secret or a token that later becomes valid is exposed to log readers | yes | **merged 2026-09-23** to `dev` via PR #8751 (`4011193e`, a content-identical cherry-pick of `31c354d8` from the modernization branch); NOT RELEASED (shipping tag 15.0.8; see the status legend). Reproduced on `dev` and `v15.0.8` by the backport triage |
 | **BF-105** | Two v1 routes under the entries router pick which collection to read from a path parameter, but the router checks only the **entries** read permission, so a credential scoped to entries can read **treatments and devicestatus** through them | `lib/api/entries/index.js` `prep_storage` on `v15.0.8` and `origin/dev` before PR #8751 | **medium** — matters only on sites that deny anonymous read and hand out collection-scoped tokens; on the default `readable` everything is readable anyway | yes | **merged 2026-09-23** to `dev` via PR #8751 (`4011193e`, a content-identical cherry-pick of `d3ac8026`); NOT RELEASED (shipping tag 15.0.8; see the status legend). Reproduced on `dev` and `v15.0.8` by the backport triage |
+| **BF-106** | A numeric `date` (or `sgv`) filter on API v1 `/activity` **matches nothing and answers 200**: the schema-driven coercion that fixed BF-03 names a `collection` on each storage and, when one is named, drops `query.js`'s default walker (`date`, `sgv` → `parseInt`). `activity`'s schema entry is empty, so the bound stays a string and never matches the stored number. `devicestatus` loses the same default for `sgv` only (its schema still types `date` and `mills`) | `lib/server/query.js` `default_options` (`opts.walker = opts.collection ? { } : …`) with `lib/server/activity.js` `queryOpts.collection = 'activity'`, on `origin/dev` `ddd9b600` and the 15.0.9 candidate; not on `v15.0.8` | **medium** — wrong answer with HTTP 200 for a read filter; no write or delete is affected, and no client in the [consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md) filters activity by `date` | yes (once 15.0.9 ships) | **open, found 2026-09-23** by the consumer survey. **Reproduced**: the same `GET /api/v1/activity.json?find[date][$gte]=<ms>` returns 7 records on `v15.0.8`, 0 on `dev` `ddd9b600` and 0 on the candidate, with the `find[created_at][$gte]` control at 7 on all three (mongod 7.0.43, Node 22.23.2); gate `tools/queue/gates/bf106-activity-date-coercion.js` |
+| **BF-107** | A v1 treatments read whose database query fails **ends the Nightscout process**: `serveTreatments` never checks the query error, so `results.forEach` throws on `null` and the uncaught `TypeError` exits Node. A client that retries on restart keeps the site down (issue #8675) | `lib/api/treatments/index.js` `serveTreatments` on `v15.0.8` | **high** — one request takes the whole site offline, glucose display and alarms included, on the default `readable` install; mechanism only here, because it is live on the shipping release | yes | **merged 2026-09-06** to `dev` via PR #8697 (`0ab266a3`: the handler returns HTTP 500 JSON on a query error); NOT RELEASED (shipping tag 15.0.8; see the status legend). **Reproduced** 2026-09-23 in the consumer-replay lab: the `v15.0.8` process exited on each of 3 runs, and `dev` `ddd9b600` and the candidate answered the same request 200 |
+| **BF-108** | A v1 filter that lists **two or more** timestamps under the date field (`find[date][$in][]=…`) **answers 500 and does nothing**: `enforceDateFilter` calls `.replace` on every operator value that `isNaN`, and a list is an array. xdripswift sends exactly this to delete readings in bulk (`DELETE /api/v1/entries.json?find[type]=sgv&find[date][$in][]=…`, chunks of 50), so those deletes have never removed anything; one-value lists and range deletes work | `lib/server/query.js` `enforceDateFilter` on `v15.0.8`, `origin/dev` `ddd9b600` and the 15.0.9 candidate | **medium** — readings a client asked to delete stay on the site with no error the user sees; nothing is lost or written wrongly | yes | **open, found 2026-09-23** by the consumer survey. **Reproduced**: 500 `dateString.replace is not a function` for 2, 5, 20, 21 and 50 values on all three builds, entries unchanged; the one-value and range-delete controls answer 200 and delete; gate `tools/queue/gates/bf108-date-in-list.js` |
 
 ## 1b. Pre-release findings
 
@@ -4379,6 +4382,71 @@ issued. Reproduced on `dev` and `v15.0.8` by the backport triage
 ([triage](../../60-research/remedial/modernization-backport-triage-2026-09-22.md)); fixed on the
 modernization branch by `d3ac8026` (a per-collection read check) and brought to `dev` unchanged by
 PR #8751.
+
+### BF-106 · the schema coercion drops activity's numeric `date` filter
+
+This is a cost of BF-03's fix (PR #8737), filed next to it so that it is not discovered by an
+operator. On 15.0.8 a storage module that set no `walker` inherited `query.js`'s default,
+`{ date: parseInt, sgv: parseInt }`. On `dev` the default is conditional:
+
+```js
+opts.walker = opts.collection ? { } : { date: parseInt, sgv: parseInt };
+```
+
+and every v1 storage now names its `collection`, so the schema is the only source of types. The
+`activity` schema has no numeric fields, so a `date` or `sgv` bound on `/api/v1/activity` reaches
+MongoDB as a string and matches no stored number. `devicestatus` loses the default for `sgv`
+only; its schema types `date` and `mills`. `profile` set `walker: {}` on 15.0.8 already, and
+`entries` and `treatments` are typed by their schemas, so none of the three changes.
+
+**Reproduced 2026-09-23** in the consumer-replay lab (three builds side by side, mongod 7.0.43,
+Node 22.23.2, seven seeded activity records with numeric `date`): `find[date][$gte]=<ms>` returns
+7 on `v15.0.8` and 0 on `dev` `ddd9b600` and on the 15.0.9 candidate; the `find[created_at][$gte]`
+control returns 7 on all three. The gate builds the query with each ref's own `query.js` and
+`activity.js` and checks the bound's type, with `v15.0.8` as its control.
+
+**Fix shape, not measured:** declare `date` (and `sgv`, if activity uploads carry it) as numeric in
+the activity schema, or keep the default walker's two fields when a collection's schema does not
+type them. No client in the survey filters activity by `date`, which bounds the impact; the survey
+reads client source and cannot see filters built at runtime.
+
+### BF-107 · a failed treatments query ends the process
+
+Filed for the record: it was reported upstream as issue #8675 and fixed on `dev` by PR #8697 on
+2026-09-06, but no register entry named it, so the release's exposure count left it out.
+`serveTreatments` in `lib/api/treatments/index.js` receives `(req, res, err, results)` and never
+checks `err`; on a failed query `results` is `null`, `results.forEach` throws, and the uncaught
+`TypeError` exits Node. On `dev` the handler answers HTTP 500 with the JSON status body.
+
+**Reproduced 2026-09-23** in the consumer-replay lab: a treatments read whose query the database
+rejects ended the `v15.0.8` process on each of three runs; `dev` `ddd9b600` and the 15.0.9
+candidate answered the same request 200. The request is not given here because the defect is live
+on the shipping release; it is kept with the lab's private notes.
+
+### BF-108 · a list of timestamps under the date field answers 500
+
+`enforceDateFilter` (`lib/server/query.js`) rewrites each value under the date field to an ISO
+string when it `isNaN`:
+
+```js
+let dateString = dateValue[key];
+if (isNaN(dateString)) {
+  dateString = dateString.replace(/…/, '$1+$2');
+```
+
+A `$in` list of two or more timestamps is an array, which `isNaN`, and an array has no `.replace`,
+so the query builder throws and the request answers 500. A one-element list is coerced to a number
+by `isNaN` and passes. xdripswift's bulk delete of readings (`NightscoutSyncManager.swift:794-806`
+at `c268542e`) sends `find[type]=sgv&find[date][$in][]=<ms>…` in chunks of 50, so it has never
+deleted anything; its range delete (`find[date][$gte]` with `find[date][$lte]`) works.
+
+**Reproduced 2026-09-23** in the consumer-replay lab on `v15.0.8`, `dev` `ddd9b600` and the
+candidate: GET and DELETE with 2, 5, 20, 21 and 50 values all answer 500, and the entries count is
+unchanged; the one-value and range controls answer 200. The gate reproduces the same exception
+from each ref's own `query.js`, with a one-value control.
+
+**Fix shape, not measured:** apply the ISO rewrite only to string values, and map it over array
+values.
 
 ## 3. How to use this register
 

@@ -54,10 +54,9 @@ the oref0 side
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- Evidence is read from client source and reproduced at the parser level; an
-  end-to-end replay on 15.0.8, dev and the candidate tree 2ce67b27 is
-  running (-6a), including whether the resulting oref0 re-upload stores
-  duplicate treatments. The decision waits on it.
+- Reproduced end to end on 15.0.8, dev ddd9b600 and the candidate tree
+  2ce67b27 with a control in each run (consumer-replay lab, -6a,
+  2026-09-23). Nothing gates the decision itself; it is the maintainer's.
 
 ## Evidence
 
@@ -65,16 +64,26 @@ the oref0 side
 
 ## Notes carried on the item
 
-Filed 2026-09-23 from the -6a consumer-impact survey, on the maintainer
-instruction to document it as a compatibility and semver item, not a backfix.
-oref0 (dev d219baf9, master 88cf032a) sends count as "1?<credential>" from
-latest-openaps-treatment; 15.0.8 parseInt read 1, 15.0.9 answers 400.
-GluPredKit sends count=0 as "no limit"; 15.0.9 answers []. Under the semver
-policy rule (section 3.2) both make the narrowing major as written. Options,
-in outline - ship as a declared correction naming both clients; tolerate the
-shapes real clients send and keep 15.0.9 a patch; or number the release as a
-major. The release notes count section carries a hidden OPEN BEFORE THE TAG
-note.
+2026-09-23 - REPLAY VERDICTS (-6a lab; docs/60-research/remedial/consumer-
+impact-15.0.9-2026-09-23.md). oref0: 15.0.8 200, dev and candidate 400 in both
+auth modes under readable and denied; the plain count=1 control is 200
+everywhere. Through oref0's own jq/date pipeline the rig re-uploads 57
+treatments per loop instead of 1. NO DUPLICATES: 137 records after each of
+three posts, because the created_at+eventType upsert is idempotent. A
+Nightscout-side edit to a rig treatment from the last 24 h is overwritten on
+the next loop; that replace also happens on 15.0.8, but only 15.0.9 makes the
+rig re-post every loop. GluPredKit: count=0 returns [] for profile, treatments
+and entries on dev and the candidate (15.0.8: 1 / 137 / 576 in a 50 h window);
+the count=100000 control is full on all three. Filed 2026-09-23 from the -6a
+consumer-impact survey, on the maintainer instruction to document it as a
+compatibility and semver item, not a backfix. oref0 (dev d219baf9, master
+88cf032a) sends count as "1?<credential>" from latest-openaps-treatment;
+15.0.8 parseInt read 1, 15.0.9 answers 400. GluPredKit sends count=0 as "no
+limit"; 15.0.9 answers []. Under the semver policy rule (section 3.2) both
+make the narrowing major as written. Options, in outline - ship as a declared
+correction naming both clients; tolerate the shapes real clients send and keep
+15.0.9 a patch; or number the release as a major. The release notes count
+section carries a hidden OPEN BEFORE THE TAG note.
 
 ---
 
