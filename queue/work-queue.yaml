@@ -8403,10 +8403,10 @@ items:
     title: "BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/object-id-crud
-    base: origin/dev@1f9a9d10
-    worktree: externals/work/crm-bf-object-id-crud
-    state: not-started
+    branch: wip/object-id-crud-fixes
+    base: official/bf/object-id-crud@6d120fa2
+    worktree: externals/work/crm-object-id-fixes
+    state: ready-to-push
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -8432,6 +8432,19 @@ items:
           dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT"
           leaves identifier=X n=2 where both controls leave n=1. Same for a
           non-hex identifier. No queue gate wraps the lab yet (OID-LAB).
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes is a fast-forward of #8758's head
+          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+      - no-gate: >
+          Fixed by a2c7eb39 on wip/object-id-crud-fixes (local, not pushed), four commits on
+          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
+          dev ddd9b600 and 6d120fa2: P-ID-10 on build f reads as v15.0.8 and dev (DELETE leaves v3-copy(invalid), GET 410; PUT leaves identifier=X n=1) and P-ID-2 still reads as 6d120fa2 (200). The fix is in modify.js, not utils.js: each write first finds its target with the read's sort ({identifier: -1}) and then writes by that document's _id; utils.js is unchanged. Every other cell of build f
+          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
+          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
+          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
+          and the new tests kept, 10 of them fail.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8445,6 +8458,9 @@ items:
       404), so a fix must keep P-ID-2 and change only which document a
       write takes. Fix shape, not measured: resolve the target with the
       sorted findOneFilter, then write by its exact _id.
+      Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the
+      maintainer's request ("fixes we can add to this PR"). Next step:
+      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
   - id: BFQ-110
     title: "BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there"
     parcel: register-open
@@ -8452,7 +8468,7 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: needs-decision
+    state: ready-to-push
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -8476,12 +8492,23 @@ items:
           leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id]
           returns 2 where they return 1. The v3 permanent DELETE leaves 1
           on all three. No queue gate wraps the lab yet (OID-LAB).
+      - no-gate: >
+          Decided 2026-09-24 (maintainer): deleting a record by its hex id
+          removes both copies of a twin. That is what #8758's body already
+          says ("Deleting such a record now removes it, including a copy left
+          by an earlier edit"), so no code changes. What is left is one line
+          of the body's advice, "If you see an old copy beside the one you
+          edited, you can now delete it", which deletes the edited copy too.
+          Proposed: "If you see an old copy beside the one you edited, edit
+          either one: the two become one record with that edit. Deleting
+          either one deletes both." The next step is a human edit of the PR
+          body and of the 15.0.9 release notes.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/object-id/results/object-id-2026-09-24.md
     notes: >
-      Needs a maintainer decision before #8758 merges: (a) when both forms
+      Decided 2026-09-24: behaviour kept (option b). Before the decision it read: (a) when both forms
       are stored, a delete by the hex removes only the string form, or (b)
       keep the behaviour and change the PR body and the release notes
       from "you can now delete it" to "edit the record; do not delete the
@@ -8494,9 +8521,10 @@ items:
     title: "BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
-    base: origin/dev@153e5658
-    state: not-started
+    branch: wip/object-id-crud-fixes
+    base: official/bf/object-id-crud@6d120fa2
+    worktree: externals/work/crm-object-id-fixes
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -8517,6 +8545,19 @@ items:
           string-stored and an ObjectId-stored treatment returns n=1, and
           its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and
           6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes is a fast-forward of #8758's head
+          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+      - no-gate: >
+          Fixed by 1c2d1afd on wip/object-id-crud-fixes (local, not pushed), four commits on
+          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
+          dev ddd9b600 and 6d120fa2: P-ID-11 on build f: GET n=2 and the DELETE leaves neither record (n=1 and the string record left on the other three). Every other cell of build f
+          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
+          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
+          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
+          and the new tests kept, 10 of them fail.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8525,13 +8566,17 @@ items:
       Open, found 2026-09-24 in the #8758 review; not a #8758 regression.
       Natural follow-up on the #8758 helper once it merges (expand each hex
       leaf of $in and $nin to its forms). Candidate for 15.0.10.
+      Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the
+      maintainer's request ("fixes we can add to this PR"). Next step:
+      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
   - id: BFQ-112
     title: "BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
-    base: origin/dev@153e5658
-    state: not-started
+    branch: wip/object-id-crud-fixes
+    base: official/bf/object-id-crud@6d120fa2
+    worktree: externals/work/crm-object-id-fixes
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: lib/authorization/storage.js create and remove.
@@ -8550,6 +8595,19 @@ items:
           /api/v2/authorization/subjects with a hex _id stores a string, and
           DELETE by that hex answers 200 and leaves it, on v15.0.8, dev
           ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes is a fast-forward of #8758's head
+          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+      - no-gate: >
+          Fixed by d2fd9ff6 on wip/object-id-crud-fixes (local, not pushed), four commits on
+          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
+          dev ddd9b600 and 6d120fa2: P-ID-12 on build f: the subject is stored as an ObjectId and DELETE removes it (string and left on the other three). A subject already stored as a string is removed too (tests/storage.shape-handling.test.js). Every other cell of build f
+          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
+          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
+          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
+          and the new tests kept, 10 of them fail.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8560,14 +8618,17 @@ items:
       not send _id, so reaching it needs a restore or a tool. The access
       token digests _id.toString(), the same for either form, so tokens
       are unaffected. Fix shape: toStoredId on create, idForms on remove.
+      Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the
+      maintainer's request ("fixes we can add to this PR"). Next step:
+      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
   - id: BFQ-113
     title: "BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/object-id-crud
-    base: origin/dev@1f9a9d10
-    worktree: externals/work/crm-bf-object-id-crud
-    state: not-started
+    branch: wip/object-id-crud-fixes
+    base: official/bf/object-id-crud@6d120fa2
+    worktree: externals/work/crm-object-id-fixes
+    state: ready-to-push
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -8579,7 +8640,7 @@ items:
     semver_reason: a defect in an unmerged fix, reachable only in-process
     register: [BF-113]
     gates:
-      - run: node tools/queue/gates/bf113-idforms-guard.js
+      - run: node tools/queue/gates/bf113-idforms-guard.js --ref wip/object-id-crud-fixes
         kind: static
         describe: >
           Loads official/bf/object-id-crud's object-id-forms.js and calls
@@ -8587,7 +8648,22 @@ items:
           give [ObjectId, hex]. RED on 6d120fa2 (three forms). Positive
           control run 2026-09-24: the same file with an isHexId guard in
           idForms, committed to a scratch repository under QUEUE_GATE_ROOT,
-          goes green.
+          goes green. On wip/object-id-crud-fixes dd2cf8f1 it is green;
+          without --ref it still measures the PR head and is red until
+          the push.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes is a fast-forward of #8758's head
+          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+      - no-gate: >
+          Fixed by dd2cf8f1 on wip/object-id-crud-fixes (local, not pushed), four commits on
+          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
+          dev ddd9b600 and 6d120fa2: no lab cell; the helper gate below. Every other cell of build f
+          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
+          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
+          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
+          and the new tests kept, 10 of them fail.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8597,6 +8673,9 @@ items:
       internal output) can pass one. The effect through profile.save and
       remove is read, not run. Small enough to fold into #8758 with
       BFQ-109.
+      Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the
+      maintainer's request ("fixes we can add to this PR"). Next step:
+      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
   - id: OID-LAB
     title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
     parcel: register-open

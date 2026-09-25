@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 17 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,9 +39,13 @@ that it was reviewed.
 | `RT-TRUST-ONE-SOURCE` | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
-| `BFQ-110` | `needs-decision` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and th | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-109` | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1 | &mdash; |
+| `BFQ-110` | `ready-to-push` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and th | &mdash; |
+| `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and b | &mdash; |
+| `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot | &mdash; |
+| `BFQ-113` | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers w | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `RT-LOOP-REMOTE-ADDRESS` | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |

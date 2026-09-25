@@ -28,7 +28,11 @@ repository.
 | [`P0-J`](p0-j-bf-throttle.md) | #8754 | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
-| [`BFQ-110`](bfq-110-bf-object-id-crud.md) | &mdash; | `needs-decision` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there |
+| [`BFQ-109`](bfq-109-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair |
+| [`BFQ-110`](bfq-110-bf-object-id-crud.md) | &mdash; | `ready-to-push` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there |
+| [`BFQ-111`](bfq-111-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes |
+| [`BFQ-112`](bfq-112-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it |
+| [`BFQ-113`](bfq-113-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |

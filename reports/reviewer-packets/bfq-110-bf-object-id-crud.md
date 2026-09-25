@@ -21,7 +21,7 @@ the PR's advice leads users there**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=BFQ-110` is the measurement |
+| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-110` is the measurement |
 | semver | `patch` |
 | register entries | `BF-110` |
 
@@ -60,6 +60,15 @@ maintainer
   v15.0.8 and dev ddd9b600 leave n=1; find[_id] returns 2 where they return
   1. The v3 permanent DELETE leaves 1 on all three. No queue gate wraps the
   lab yet (OID-LAB).
+- Decided 2026-09-24 (maintainer): deleting a record by its hex id removes
+  both copies of a twin. That is what #8758's body already says ("Deleting
+  such a record now removes it, including a copy left by an earlier edit"),
+  so no code changes. What is left is one line of the body's advice, "If you
+  see an old copy beside the one you edited, you can now delete it", which
+  deletes the edited copy too. Proposed: "If you see an old copy beside the
+  one you edited, edit either one: the two become one record with that edit.
+  Deleting either one deletes both." The next step is a human edit of the PR
+  body and of the 15.0.9 release notes.
 
 ## Evidence
 
@@ -69,14 +78,14 @@ maintainer
 
 ## Notes carried on the item
 
-Needs a maintainer decision before #8758 merges: (a) when both forms are
-stored, a delete by the hex removes only the string form, or (b) keep the
-behaviour and change the PR body and the release notes from "you can now
-delete it" to "edit the record; do not delete the old copy". Either way the
-release-note line "Nothing in your database changes until a record is edited
-or deleted" is also wrong for new records, which #8758 stores as ObjectId
-(P-ID-4, P-ID-5, P-ID-6); that wording belongs to BFQ-102. Size depends on how
-many twins exist (OID-PREVALENCE).
+Decided 2026-09-24: behaviour kept (option b). Before the decision it read:
+(a) when both forms are stored, a delete by the hex removes only the string
+form, or (b) keep the behaviour and change the PR body and the release notes
+from "you can now delete it" to "edit the record; do not delete the old copy".
+Either way the release-note line "Nothing in your database changes until a
+record is edited or deleted" is also wrong for new records, which #8758 stores
+as ObjectId (P-ID-4, P-ID-5, P-ID-6); that wording belongs to BFQ-102. Size
+depends on how many twins exist (OID-PREVALENCE).
 
 ---
 
