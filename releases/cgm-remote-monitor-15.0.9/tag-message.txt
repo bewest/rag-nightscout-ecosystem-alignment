@@ -1,7 +1,7 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete these five lines when the tag is
-cut. Still pending: #8758 (head 6c3ccce6 once pushed). Replace its head below
+cut. Still pending: #8758 (head e9dbb1fb once pushed). Replace its head below
 with its merge SHA into dev, and re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>).
 
@@ -24,7 +24,7 @@ Query and API correctness
   #8743 1a36f023  v1 query-operator allowlist; URL pipeline refused;
                   400 naming the operator (BF-04 BF-70)
   #8697 0ab266a3  failed treatments queries no longer crash the server
-  #8758 6c3ccce6  (pending) a record's own _id finds, edits and deletes
+  #8758 e9dbb1fb  (pending) a record's own _id finds, edits and deletes
                   it through API v1, v3 and the websocket (BFQ-102)
 
 Security

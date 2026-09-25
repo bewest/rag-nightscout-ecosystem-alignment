@@ -1,4 +1,4 @@
-<!-- Body for nightscout/cgm-remote-monitor#8758 at head 6c3ccce6 (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
+<!-- Body for nightscout/cgm-remote-monitor#8758 at head e9dbb1fb (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
 Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`), and three fixes from the 15.0.9 freeze review (part 4).
 
 ## Part 1: a record's own `_id` finds, edits and deletes it
@@ -340,6 +340,9 @@ Each commit carries its own tests. At `dd2cf8f1`, with `lib/` reverted to `6d120
 - A device status report sent again is recognised as already saved, and the other reports sent
   with it are saved. Before this part, the whole upload answered with an error and the reports
   after the repeated one were lost.
+- A record deleted by its ID stops showing straight away. Before this part, a record deleted through
+  the API stayed on newly opened pages, and could count in insulin and carbs on board there, until
+  the server restarted.
 - Deleting a record that is saved twice through an app that uses API v3, such as AndroidAPS,
   deletes both copies, so it no longer keeps showing. Where API v3 shows one copy, it is the one
   with the latest edit. The first half was also true on 15.0.8.
@@ -354,6 +357,7 @@ Each commit carries its own tests. At `dd2cf8f1`, with `lib/` reverted to `6d120
 
 | `cb7d4110` | From review of the three above. The every-form DELETE matched any document whose `_id` is the identifier, so it could also mark or remove a different record that has an identifier of its own; it now matches by `_id` only records without an identifier, as `identifyingFilter` does. And `dropEmptyId` dropped an Extended JSON `{"$oid": "<hex>"}` `_id`, as `mongoexport` writes it, so a restored record got a new id and a re-send stored a copy; it now becomes the ObjectId it names. Tests: two in `tests/api3.delete-every-form.test.js` (soft and permanent), and one unit and one HTTP test in `tests/api.empty-id.test.js`. |
 | `6c3ccce6` | A treatments POST batch deleted the string forms of the ids it matched by `_id` once, after all its writes. An item without `_id` matched by `created_at` and `eventType` could land on such a string copy and was deleted with it, behind a 200. Each write matched by `_id` now removes its string forms right after it, so a later item finds the one record and replaces it, as it does when no string copy exists; upserted ids are mapped back to their items past the added deletes. Tests: three in `tests/api.object-id.treatments-entries.test.js`. |
+| `e9dbb1fb` | Found by an A/B soak of this branch against 15.0.8, not by the suite: a v1 DELETE by `_id` removed the record from MongoDB but not from the in-memory cache, so unfiltered reads and newly opened pages kept showing it until a restart. `remove()` in entries, treatments and devicestatus reported `opts.find._id` to the cache, and this PR's `matchEitherForm` had rewritten that value in place into an either-form filter. Each now reports the id as asked, and `object-id-forms.cacheRemoval` makes the cache reload instead when both copies of a twin were removed (the cache drops only the first match), for an upper-case hex, or for a non-string id; websocket `dbRemove` uses the same rule. Tests: `tests/cache.remove-by-id.test.js` and one websocket case, red on `6c3ccce6`. |
 
 Not changed here: API v3 PUT/PATCH edit one copy and websocket `dbUpdate` edits both, and each
 leaves two records; websocket `dbAdd` and API v3 POST still store some unusable `_id` values
@@ -372,7 +376,7 @@ The narrower profile-only fix that this replaces is not being opened.
 
 ## Tests, re-run for this description
 
-At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from that commit). At `6c3ccce6`, the same six cells: 3097 passing, 0 failing, 3 pending, and 286 core, in all six (three more than `cb7d4110`, all from that commit).
+At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from that commit). At `6c3ccce6`, the same six cells: 3097 passing, 0 failing, 3 pending, and 286 core, in all six (three more than `cb7d4110`, all from that commit). At `e9dbb1fb`, the same six cells: 3106 passing, 0 failing, 3 pending, and 286 core, in all six (nine more than `6c3ccce6`); the soak's deleted-reading probe exits 0 on `e9dbb1fb` and 1 on `6c3ccce6`.
 At `ab7b22d6` (this branch with `dev` `4f705217` merged), Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. At `dd2cf8f1`, before the merge: 2875 passing, 0 failing, 3 pending.
 At `6d120fa2` (parts 1 and 2), Node 20.20.0: 2866 passing (`dev` `1f9a9d10` was 2386); of the 480 tests in the eleven new files, 259 fail with `dev`'s `lib/`, and the other 221 are invariants that pass on both.
 MongoDB needs a raised open-file limit for this suite (peak 1130 open files in `mongod` at `6d120fa2`); a container at Docker's default 1024 stops partway through.
