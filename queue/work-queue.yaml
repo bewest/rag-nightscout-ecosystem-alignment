@@ -2846,12 +2846,17 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, RT-PR-8730, BFQ-120, BFQ-126]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-09-25 - dev e3adc91d holds every PR decided for 15.0.9 except #8730,
+      which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin
+      sync reverts dev's corrected translations). #8770 (BF-134) merged as
+      e3adc91d. The final release-candidate run and the soak are on dev
+      e3adc91d itself.
       Waiting on four things and the maintainer's tag. dev is 4f705217
       (2026-09-24, merge of #8754) and declares 15.0.9; it pins
       nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 =
@@ -9686,6 +9691,9 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-09-25 - HELD OUT of 15.0.9 (maintainer). A reconciled branch keeping
+      dev's corrected strings is being prepared as an option
+      (i18n/crowdin-8730-reconciled), with Crowdin correction steps.
       2026-09-25 - NOT MERGEABLE AS IS (BF-132): the release-candidate pre-flight
       showed #8730 reverts dev's corrected translations (zh_TW ml -> grams,
       Carbs, sv_SE Days with food, a Russian status line; 4 language tests
@@ -9701,8 +9709,8 @@ items:
     branch: bf/loop-apns-shutdown
     base: origin/dev@96a2c948
     worktree: externals/work/crm-bf134-apns-shutdown
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8770]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/loop.js (+6/-2): build the APNs provider just before the send
@@ -9720,22 +9728,22 @@ items:
     semver_reason: a resource leak fix; no API or setting changes
     register: [BF-134]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official show bf/loop-apns-shutdown:lib/server/loop.js | grep -q 'provider.shutdown()'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d origin/dev
         kind: static
         describe: >
-          The branch's loop.js shuts its APNs provider down (origin/dev has no
-          shutdown call and fails this). A presence check; the test and the
-          probe decide. Point it at origin/dev once merged.
+          #8770's merge e3adc91d (2026-09-25) is contained in origin/dev.
       - no-gate: >
           Measured by a probe kept with the fix notes (a local HTTP/2 APNs
           stand-in counting open sessions and heartbeat intervals): 1/5/20 left
           open after 1/5/20 commands on v15.0.8 and dev, 0 on the branch.
           tests/loop-apns-connections.test.js is the in-repo check (3 fail on
           dev's loop.js).
-    blocks_on: [RT-PR-8419]
+    blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-09-25 - MERGED into dev as e3adc91d (#8770, head c068f935). Not
+      released; in 15.0.9 (the maintainer merged it for the release).
       2026-09-25 - Re-merged with dev 96a2c948 after #8419 (68937a77: the
       tests/loop-server.test.js conflict resolved by deletion; #8419's
       loopnotifications mock already has shutdown()), plus c068f935 (the new
