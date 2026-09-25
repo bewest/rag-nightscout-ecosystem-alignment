@@ -11,7 +11,7 @@ derived from this document has its own rules — §5.6.*
   is in 15.0.9's release notes), the legacy Dexcom and MiniMed bridge removal moves from cut 4
   onto cut 1 (`RT-1`), and BF-61's hard stop at boot is intended (`RT-5`). Still open: whether the
   cuts ship as separate releases or as one combined release
-  ([backfix-2 plan §1a](../remedial/backfix-2-plan-2026-09-22.md)), and register **BF-64** (cut 4
+  ([15.0.9 decisions](../../../releases/cgm-remote-monitor-15.0.9/decisions.md)), and register **BF-64** (cut 4
   is an ancestor of cut 5), which bears on how step 4 is built.
 - **15.0.9's number is decided: `15.0.9`** (maintainer, 2026-09-22, queue `RT-VERSION`). On
   2026-09-24 the maintainer decided that reads tolerate the `count` shapes oref0 and GluPredKit
@@ -946,6 +946,30 @@ their own or a family member's diabetes will read must:
   could affect therapy decisions;
 - state that Nightscout is not a medical device and its output is not medical advice.
 
+### 5.7 Compatibility flags
+
+**The rule** (maintainer, 2026-09-22): a fix where the old behaviour is itself the defect ships on
+by default. A compatibility flag, defaulting to today's behaviour, is used where a legitimate
+deployment may depend on the old behaviour, and it has a planned release in which its default
+flips. It applied first to client-address trust and the failed-authentication delay. Other areas
+are decided case by case and recorded in the registry below.
+
+**The registry.** Every compatibility flag, with the release in which its default is planned to
+flip. A flag without a planned flip is a permanent setting and is documented as one.
+
+| setting | default | hardened value | planned flip | introduced by |
+|---|---|---|---|---|
+| `TRUST_PROXY` | unset: forwarded headers are believed from any peer, which is 15.0.8's behaviour for client address, HTTPS detection and hostname; the failed-authentication delay keys on the result | `false`, a whole number of proxy hops, or an explicit list of proxy addresses/CIDRs | not yet planned | #8754 (`bf2/auth-hardening`), 15.0.9 |
+
+- **One flag, not two.** The throttle keys on the client address that `lib/server/client-ip.js`
+  resolves, so it follows `TRUST_PROXY` without a setting of its own. BF-30 is closed only when
+  `TRUST_PROXY` names a boundary; under the default, the boot message says the delay does not
+  protect against guessing passwords or tokens.
+- **The unset default is `dev`'s resolution**, not the modernization branch's (`395f3207` differs in
+  four edge cases, BF-88). The cuts keep this unset default too (maintainer, 2026-09-23; `RT-3`).
+- **Considered and not adopted:** a flag for the BF-47 subject-field allow-list. The maintainer
+  ruled the allow-list is the declared schema (2026-09-23).
+
 ---
 
 ## 6. An enforceable check
@@ -1321,8 +1345,8 @@ is the decision; the cut numbers are this policy's proposal for separate release
 the legacy-ingestion notice, and 15.0.9's MiniMed boot warning names every replacement setting
 (#8757). §3.5 records the removal decisions and how they stand against this policy.
 
-**Open: separate releases or one combined release.** The backfix-2 plan
-([§1a](../remedial/backfix-2-plan-2026-09-22.md), 2026-09-23) leaves open whether the cuts ship as
+**Open: separate releases or one combined release.** The
+[15.0.9 decisions](../../../releases/cgm-remote-monitor-15.0.9/decisions.md) (2026-09-23) leave open whether the cuts ship as
 the separate steps above or as one combined release (`16.0.0`); the
 [cut rehearsal](cut-rehearsal-on-15.0.9-rc-2026-09-23.md) §6–§7 measures both shapes and makes no
 recommendation.

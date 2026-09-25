@@ -10,8 +10,7 @@ Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `
 > unsettled.
 
 15.0.9 is **everything on `dev` at `4f705217`, plus one open PR**, #8758, that the maintainer has
-decided ships in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
-§1, §1a). Every PR merged to `dev` is `merged`; none is `released`. #8758 is `open`.
+decided ships in it ([decisions](decisions.md)). Every PR merged to `dev` is `merged`; none is `released`. #8758 is `open`.
 
 ## Identity
 

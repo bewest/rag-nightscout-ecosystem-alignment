@@ -50,6 +50,8 @@ releases/
                         defined, every safety caveat preserved. See "Audience".
     contents.md         which PRs and register entries make up the release;
                         the semver facts; what is unsettled.
+    decisions.md        optional; the maintainer's decisions that shape the
+                        release, each stated as it stands.
     verification-record.{json,md}   optional; see VERIFICATION-RECORDS.md
   _template/            copy this to start a new release directory
 ```

@@ -114,8 +114,8 @@ parcels:
       Decided 2026-09-23 (maintainer) to ship inside 15.0.9 rather than after
       it. bf2/backports (#8751) and bf2/ops (#8753) are merged into dev
       (2026-09-23); bf2/auth-hardening, with the subject-edit fix folded in as
-      its last commit, is open as #8754. Plan and flag rule:
-      docs/30-design/remedial/backfix-2-plan-2026-09-22.md.
+      its last commit, is open as #8754. Decisions: releases/cgm-remote-monitor-15.0.9/decisions.md;
+      flag rule: versioning policy section 5.7.
 
 items:
 
@@ -2169,7 +2169,7 @@ items:
       RT-COUNT-COMPAT).
 
       - 2026-09-23 (maintainer): each cut is renumbered when it is
-      rebased; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md.
+      rebased; see releases/cgm-remote-monitor-15.0.9/decisions.md.
 
       Given the governance gap (100 self-merged PRs, zero human reviews)
       the version number is the only warning an operator gets, so builds
@@ -2218,7 +2218,7 @@ items:
           design; they pin dev's rule.
     blocks_on: []
     evidence:
-      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
       Merged into dev by #8748 (42c5e21e, head fc2d25ca, 2026-09-23);
       not released. CI and CodeQL green on the merge commit. Amended on
@@ -2287,7 +2287,7 @@ items:
         describe: the branch merges into dev without conflict
     blocks_on: []
     evidence:
-      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
       Merged into dev by #8750 (1f9a9d10, 2026-09-23); not released. The
       README on dev says MongoDB 4.4 is deprecated, not unsupported, and
@@ -2906,8 +2906,8 @@ items:
       Decisions:
 
       - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it
-      then stood (backfix-2 plan section 1a,
-      docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0
+      then stood (releases/cgm-remote-monitor-15.0.9/decisions.md):
+      ?count=0
       answers an empty list (RT-COUNT0, later amended by
       RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the
       release notes and dropped in a later release; the legacy-ingestion
@@ -7709,7 +7709,7 @@ items:
           fails 4.
     blocks_on: []
     evidence:
-      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/decisions.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Merged into dev as 4f705217 on 2026-09-25T01:33Z, head bae655a0 (#8765 on 708af170; tree identical to 71987bb4's). On dev 4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Before the merge, head 708af170 (2026-09-24): e549e1a6 plus #8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0 on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores caregivers' addresses on remote overrides) comes in through a follow-up PR from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait back before the credential check, as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded address that carries a port, the form Azure App Service is reported to send; unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9. Destination
@@ -7793,7 +7793,7 @@ items:
           probe on dev, not by reading the diff. The probes live with the triage.
     blocks_on: []
     evidence:
-      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
       Merged into dev by #8751 (4011193e, 2026-09-23); not released. It
       reaches operators with 15.0.9 (RT-0). Register ids: BF-104
@@ -7862,7 +7862,7 @@ items:
           and RT-BOOTERROR, which read origin/dev and go green when this merges.
     blocks_on: []
     evidence:
-      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/decisions.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Merged into dev by #8753 (3a38c6f2, 2026-09-23); not released. CI

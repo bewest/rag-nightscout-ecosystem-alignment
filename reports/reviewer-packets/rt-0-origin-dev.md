@@ -178,23 +178,22 @@ alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD;
 docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag
 again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when
 they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries
-beyond dev as it then stood (backfix-2 plan section 1a,
-docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0 answers an
-empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is
-declared deprecated in the release notes and dropped in a later release; the
-legacy-ingestion notice goes in the release notes and RT-4's separate release
-is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease
-testing (done, #8762); RT-D3 is answered by a manual check plus an automated
-browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the
-maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via
--59): run the combined suite before the PRs merge and once more after the pin
-to exact 0.1.0, before the tag (both done; run 010 is the latter). -
-2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and
-GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9
-(session -6a). First on the adopted train. Every merged backfix in dev (the
-items in state merged-upstream) reaches operators only through this release;
-until it ships they are in code nobody runs. Merging to dev publishes a Docker
-Hub image, which is not a release.
+beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md):
+?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT);
+MongoDB 4.4 is declared deprecated in the release notes and dropped in a later
+release; the legacy-ingestion notice goes in the release notes and RT-4's
+separate release is dropped; nightscout-connect 0.1.0 is pinned only after
+longer prerelease testing (done, #8762); RT-D3 is answered by a manual check
+plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and
+the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23
+(maintainer, relayed via -59): run the combined suite before the PRs merge and
+once more after the pin to exact 0.1.0, before the tag (both done; run 010 is
+the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate
+oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for
+15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev
+(the items in state merged-upstream) reaches operators only through this
+release; until it ships they are in code nobody runs. Merging to dev publishes
+a Docker Hub image, which is not a release.
 
 ---
 
