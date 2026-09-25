@@ -5807,7 +5807,7 @@ items:
     branch: bf2/subject-edit-keeps-fields
     base: bf2/auth-hardening@29e6430e
     worktree: externals/work/crm-bf47
-    state: in-flight-upstream
+    state: merged-upstream
     ships_to_operators_today: true
     blast_radius: >
       lib/authorization/endpoints.js:40 pick(), lib/admin_plugins/subjects.js
@@ -5834,6 +5834,9 @@ items:
       capability removal on an HTTP surface.
     register: [BF-47]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev
+        kind: static
+        describe: The fix is in origin/dev. Fails while it is not.
       - run: 'git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields'
         kind: static
         describe: Built on bf2/auth-hardening, whose allow-list is the declared schema.
@@ -5854,11 +5857,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
-      In review as part of #8754 (BF2-AUTH): the fix, 7103f657, is a
-      commit on bf2/auth-hardening and is in #8754's head e32f7a1c
-      (2026-09-24). Nothing of BFQ-47 is pushed separately. Destination
-      15.0.9 (backfix-2 plan section 1a, 2026-09-23). Not merged; BF-47
-      is live on 15.0.8.
+      Merged into dev with #8754 (BF2-AUTH, merge 4f705217, 2026-09-25):
+      the fix, 7103f657, is #8754's last content commit and an ancestor of
+      origin/dev. Not released; it reaches operators with 15.0.9 (RT-0),
+      and BF-47 is live on 15.0.8 until then. Nothing of BFQ-47 was pushed
+      separately. Release decisions: releases/cgm-remote-monitor-15.0.9/decisions.md.
 
       Decisions:
 

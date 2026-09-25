@@ -1926,3 +1926,38 @@ controls:
       A syntax check with no property to invert; it says the scripts parse and
       nothing about what they measure. The harness's own controls (A/A, drop
       and leak faults) are recorded runs in results/proof-2026-09-25.md.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/master
+    control-kind: static
+    proves: >
+      7103f657 (BF-47's admin-page fix) is not in origin/master 92d08342
+      (15.0.8; measured 2026-09-25), so the same ancestry question exits 1.
+      Goes stale when 15.0.9 is released to master; re-author it then.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e origin/master
+    control-kind: static
+    proves: >
+      29e6430e (bf2/auth-hardening, the allow-list base) is not in
+      origin/master 92d08342 (15.0.8; measured 2026-09-25), so the same
+      ancestry question exits 1. Goes stale when 15.0.9 is released to
+      master; re-author it then.
+  - gate: |-
+      cd externals/work/crm-bf47 && TEST=authsubjects npm run test-single
+    cwd: .
+    control-exempt: >
+      No standing control: it depends on a MongoDB listener that is not
+      persistent on this machine. crm-bf47/my.test.env names mongod on port
+      27093, and nothing listened there on 2026-09-25. With nothing listening
+      the ablation still exits non-zero, because the before-all hook cannot
+      reach MongoDB, not because the fix was reverted, so vacuity.py would
+      report NON-VACUOUS for the wrong reason. The control was run by hand on
+      2026-09-23 with a mongod up: with 29e6430e's lib/authorization/storage.js
+      the 5 new cases fail and 8 pass. With a mongod on 27093 the control is:
+      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
+      bf2/subject-edit-keeps-fields 29e6430e externals/work/crm-bf47 authsubjects

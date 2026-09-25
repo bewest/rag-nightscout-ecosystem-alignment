@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 111 | 44 | 22 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 111 | 44 | 21 |
 | **Modernization** | `release-train` | 27 | 5 | 4 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **158** | **58** | **29** |
+| | **total** | **158** | **58** | **28** |
 
 <!-- END GENERATED: horizons -->
 
@@ -148,7 +148,7 @@ cover more than one `BF-`:
 | `BFQ-129` | `not-started` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
-| `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
+| `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
@@ -182,7 +182,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 | 1 | 4 |  | 5 | 3 | 7 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 34 | 1 | 5 | 12 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **79** |
+| `register-open` | 34 | 1 | 5 | 12 | 4 | 2 | 14 | 4 |  | 2 | 1 |  | **79** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 158 |
-| runnable gates | 229 |
+| runnable gates | 230 |
 | explicit `no-gate:` markers | 208 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 437 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 438 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,8 +46,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 14 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-118, BFQ-119, BFQ-130, BFQ-131 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 6 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730 |
-| `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
+| `in-flight-upstream` | 5 | BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730 |
+| `merged-upstream` | 39 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -1955,7 +1955,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
-| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `in-flight-upstream` | `bf2/subject-edit-keeps-fields` | major | 2 run + 1 no-gate |
+| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `merged-upstream` | `bf2/subject-edit-keeps-fields` | major | 3 run + 1 no-gate |
 | `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
 | `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `merged-upstream` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
@@ -2787,7 +2787,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/subject-edit-keeps-fields` |
 | base | `bf2/auth-hardening@29e6430e` |
@@ -2806,6 +2806,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev`
+  - The fix is in origin/dev. Fails while it is not.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields`
   - Built on bf2/auth-hardening, whose allow-list is the declared schema.
 - `[integration]` `cd externals/work/crm-bf47 && TEST=authsubjects npm run test-single`
@@ -2817,7 +2819,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-15.0.9-integration-record.md`
 
-**Notes.** In review as part of #8754 (BF2-AUTH): the fix, 7103f657, is a commit on bf2/auth-hardening and is in #8754's head e32f7a1c (2026-09-24). Nothing of BFQ-47 is pushed separately. Destination 15.0.9 (backfix-2 plan section 1a, 2026-09-23). Not merged; BF-47 is live on 15.0.8. Decisions: - 2026-09-23 (maintainer): the subject-field allow-list is intended and stays (option 2), with no compatibility flag. It is the declared schema for subjects (name, roles, notes, created_at) and roles (name, permissions, notes, created_at); fields outside it are not part of the contract. No open-source client in the corpus depends on storing other subject fields. - 2026-09-23 (maintainer): fold bf2/subject-edit-keeps-fields into the auth-hardening PR as its last commit (recorded in the PR body at b248bb73). What remains is the admin-page defect, which this fix addresses. Reproduced in a real browser, read back from mongo: on dev an admin-page subject edit sets notes to "" and replaces created_at with the edit time (the page fetches subjects without notes and created_at, then saves the whole subject back); with the allow-list alone notes survive but created_at is still replaced; the role editor keeps both on every base (its GET serves whole documents), so the admin-page defect is subjects only. The field loss already happens on the current release, not only with the allow-list. The fix is a server-side fill-in in storage.js save() for notes and created_at only: an absent notes key keeps the stored value, a present one (even '') is written, so clearing still works. roles is deliberately not filled in: the admin page sends no roles field when the last role is removed, and filling it would silently keep access. Suite 2462/0/3 -> 2467/0/3. Evidence: the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair; this unit's step added +5 and its three break-its are red.
+**Notes.** Merged into dev with #8754 (BF2-AUTH, merge 4f705217, 2026-09-25): the fix, 7103f657, is #8754's last content commit and an ancestor of origin/dev. Not released; it reaches operators with 15.0.9 (RT-0), and BF-47 is live on 15.0.8 until then. Nothing of BFQ-47 was pushed separately. Release decisions: releases/cgm-remote-monitor-15.0.9/decisions.md. Decisions: - 2026-09-23 (maintainer): the subject-field allow-list is intended and stays (option 2), with no compatibility flag. It is the declared schema for subjects (name, roles, notes, created_at) and roles (name, permissions, notes, created_at); fields outside it are not part of the contract. No open-source client in the corpus depends on storing other subject fields. - 2026-09-23 (maintainer): fold bf2/subject-edit-keeps-fields into the auth-hardening PR as its last commit (recorded in the PR body at b248bb73). What remains is the admin-page defect, which this fix addresses. Reproduced in a real browser, read back from mongo: on dev an admin-page subject edit sets notes to "" and replaces created_at with the edit time (the page fetches subjects without notes and created_at, then saves the whole subject back); with the allow-list alone notes survive but created_at is still replaced; the role editor keeps both on every base (its GET serves whole documents), so the admin-page defect is subjects only. The field loss already happens on the current release, not only with the allow-list. The fix is a server-side fill-in in storage.js save() for notes and created_at only: an absent notes key keeps the stored value, a present one (even '') is written, so clearing still works. roles is deliberately not filled in: the admin page sends no roles field when the last role is removed, and filling it would silently keep access. Suite 2462/0/3 -> 2467/0/3. Evidence: the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair; this unit's step added +5 and its three break-its are red.
 
 ### `BFQ-ENV` &mdash; BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
 

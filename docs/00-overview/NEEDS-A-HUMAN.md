@@ -60,11 +60,10 @@ that it was reviewed.
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 
-### Maintainer + a second human &mdash; 2 items
+### Maintainer + a second human &mdash; 1 item
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
 ### SAFETY reviewer &mdash; 1 item
