@@ -32,6 +32,18 @@ and ends with one fix to the admin page's save:
 
 No `CHANGELOG.md` edit. Merges clean into `dev`.
 
+**Folded in on 2026-09-24, after the table above was written** (maintainer). This file's
+header, commit list and counts still describe tip `7103f657`; the posting copy
+([bf2-auth-hardening.withheld.md](bf2-auth-hardening.withheld.md)) is current.
+
+| part | what it is | how it got here |
+|---|---|---|
+| #8763 `rt/trust-one-source` | every client-address consumer reads one `TRUST_PROXY` policy compiled per `env`; `client-ip.js` exports only `trustFor` and `clientIPFor`; API v3 logins key from `env`, not the mounted app's `trust proxy`. No behaviour change | merged into this branch as `708af170` (`d0a3d628`, `e3354218`) |
+| #8764 `rt/loop-remote-address` | the `remote-address` in Loop pushes follows `TRUST_PROXY` through `clientIPFor(env)` instead of the connecting address; the caregiver's address is then stored on remote overrides in treatments | merged into `rt/trust-one-source` (`efcd26b1`) two minutes after #8763 was merged, so it reaches this branch through a follow-up PR from `rt/trust-one-source` |
+
+Full suite on the tree with both (identical to `71987bb4`'s): 2577 passing, 0 failing, 3 pending,
+Node 24.15.0, MongoDB 7.
+
 > **Read this before the diff.** If you change nothing, Nightscout behaves exactly as it does
 > today. The stronger protection against password guessing applies **only once `TRUST_PROXY` is
 > set**. With it unset, a caller who changes both the password they try and the address they

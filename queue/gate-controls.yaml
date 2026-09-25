@@ -1767,15 +1767,16 @@ controls:
       pattern that could not match would pass here too.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-source >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/bf2/auth-hardening
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/trust-one-source >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
     control-kind: static
     proves: >
-      rt/cut4 and rt/trust-one-source were measured to conflict on
-      2026-09-24 (cut 4 carries its own client-ip.js) and merge-tree exits 1
-      on the pair.
+      e3354218 is not in origin/dev 153e5658 (measured 2026-09-24), so the
+      same ancestry question exits 1. This control goes stale when #8754
+      merges into dev; re-author it then rather than reading the gate as
+      vacuous.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null
@@ -1825,14 +1826,14 @@ controls:
       (req.connection.remoteAddress) and exits 1 (measured 2026-09-24).
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/rt/trust-one-source rt/loop-remote-address >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening official/rt/trust-one-source >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/loop-remote-address >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 official/rt/trust-one-source >/dev/null
     control-kind: static
     proves: >
-      rt/cut4 and rt/loop-remote-address were measured to conflict on
-      2026-09-24 and merge-tree exits 1 on the pair.
+      rt/cut4 and official/rt/trust-one-source (efcd26b1) were measured to
+      conflict on 2026-09-24 and merge-tree exits 1 on the pair.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/loop-remote-address >/dev/null

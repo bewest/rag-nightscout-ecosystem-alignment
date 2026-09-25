@@ -202,6 +202,14 @@ page should show your phone's address. Nightscout's README links to a proxy conf
 with a table of the value for common hosting services. On Azure App Service use `1`: Azure writes
 the visitor's address with a port number on the end, and Nightscout now accepts that form.
 
+**It also sets the address recorded for Loop remote commands.** When a caregiver sends Loop a
+temporary override, carbs or a bolus through Nightscout, Loop saves where the command came from on
+the override it records back in Nightscout. Before, on most hosted sites, that was your hosting
+service's address. Now it is the caregiver's address, worked out from this setting the same way
+as everywhere else. **That address is stored with each remote override in your Nightscout data,
+where anyone who can read your site's data can see it**, including visitors without a login if
+your site lets them read. Whether a command is accepted does not depend on it.
+
 Once it is set, the failed-login delay counts attempts against an address a visitor cannot make
 up, and it starts doing its job. **While it is unset, Nightscout writes a message to its log at
 startup saying the delay does not protect against guessing passwords or tokens.** Until you set
