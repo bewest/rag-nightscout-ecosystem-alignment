@@ -2410,7 +2410,7 @@ items:
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@e549e1a6
     worktree: externals/work/crm-trust-one-source
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       lib/server/client-ip.js, lib/api3/security.js, lib/server/app.js and
       the five modules that call createClientIP(env.trustProxy)
@@ -2479,6 +2479,11 @@ items:
       change makes inert for the client address as well as for Express.
       Lowest home is dev (base of the stack); if dev is frozen for 15.0.9,
       commit it on cut 1 and merge up.
+      Opened 2026-09-24 as draft #8763, head d0a3d628, base bf2/auth-hardening
+      (stacked on #8754); retarget to dev when #8754 merges. Test CI does not
+      run on it while the base is not dev (only auto-close ran). Real boot on
+      d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot
+      with the same error on both, TRUST_PROXY=1 listens on both.
 
   - id: RT-REBASE
     title: Cuts 1-4 are 133 commits behind dev and now all five conflict
