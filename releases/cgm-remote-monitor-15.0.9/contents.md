@@ -25,7 +25,7 @@ decided ships in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-pl
 | Diff on `dev` | 226 files, +18167/−1403 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
+| Open additions | #8758 (head `ab7b22d6`) — `gh pr view <n> --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `4f705217`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
@@ -34,11 +34,11 @@ decided ships in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-pl
 ### Open addition (not merged)
 
 Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
-`git diff --shortstat official/dev...<head>`. #8758's merge base with `dev` is `1f9a9d10` (#8750).
+`git diff --shortstat official/dev...<head>`. #8758's merge base with `dev` is `4f705217` (#8754), `dev`'s tip: #8758 is 0 commits behind (2026-09-25).
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| #8758 | `bf/object-id-crud` | `6d120fa2` | 13 | 24 files, +3163/−73 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
+| #8758 | `bf/object-id-crud` | `ab7b22d6` | 19 | 28 files, +3328/−80 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
 
 **#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
 changed profile only on a sink that has #8758.
@@ -228,7 +228,7 @@ does not copy them.
 
 ## Open items a releaser must settle
 
-1. **#8758** (`6d120fa2`): review and merge.
+1. **#8758** (`ab7b22d6`): review and merge.
 2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge` stay or go
    with it.
 3. **#8598 review.** The release PR has zero reviews and review is required.
