@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 116 |
+| items | 117 |
 | runnable gates | 186 |
-| explicit `no-gate:` markers | 159 |
+| explicit `no-gate:` markers | 160 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 345 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 346 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 36 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
+| `not-started` | 37 | RT-VERSION, RT-TRUST-ONE-SOURCE, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
@@ -982,7 +982,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 17 items
+`parcel: release-train` &mdash; 18 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -997,6 +997,7 @@ that costs.
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `merged-upstream` | `bf/count-zero-empty` | patch | 2 run |
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `merged-upstream` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
+| `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1194,6 +1195,35 @@ that costs.
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
 **Notes.** Merged into dev by #8761 (f1591069, head 516f971a, 2026-09-24); not released. CI green on the head (tests on Node 20/22/24 x MongoDB 4.4/5/6, CodeQL, npm and Docker validation). The combined run on dev f1591069 (which carries #8761) + the exact connector pin + #8754 ef3404fd + #8758 passes 3046/0/3 in all six Node x MongoDB cells (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md). Not run: a real OpenAPS rig or GluPredKit install (the lab replays their requests, not the programs). Decisions: - DECIDED 2026-09-24 (maintainer, -59) - tolerate the shapes real clients send and keep 15.0.9 a patch. oref0's "N?..." reads N (only digits followed by ?; abc, -3, 2.5, 1e2, 0x10 stay 400, with or without a ?). count=0 on a read was re-decided the same day, after 15.0.8's code showed it had meant NO limit (a truthy "0" reached .limit(0)) and the entries default of 10 would cut GluPredKit's 576 to 10 without an error: no limit when the find bounds one date field from both sides, the endpoint default otherwise. Both answered with Deprecation: true and a 299 Warning, logged once per process, without the value (oref0's contains its credential). - SETTINGS 2026-09-24 (maintainer - "one boolean per quirk") - API_V1_COUNT_LEADING_NUMBER and API_V1_COUNT_ZERO_WINDOW, both default true with a "switch to false in a future release" comment; false gives #8748's answer for that shape. README documents both. What ships: lib/server/count.js (leadingCount, hasDateWindow, NO_LIMIT_COUNT) and lib/api/index.js (validateCount rewrites the two shapes on GET/HEAD before checking). count=0 inside a two-sided date window becomes a limit of 2147483647, the largest 32-bit limit; outside one it is dropped so the endpoint default applies (activity has no default, so it reads unbounded there, as it already does with no count). Deletes are unchanged. Evidence at 516f971a: count suite 53/53, env suite green; full suite 2471/0/3 in all six Node 20/22/24 x MongoDB 4.4/7 cells; break-it with the settings ignored fails 3 of the 4 new setting tests (the fourth is a control); earlier break-its (tolerance off: 18 new tests fail; window rule off: the 2 entries window tests fail). One unexplained run of the count+env pair failed 8 array-length assertions; seven reruns and the six-cell matrix were green, and its log was not kept. -6a's replay lab as slot d, readable and denied: P1 oref0 200 in hashed and token modes, the cull keeps 1 of 57; P2 GluPredKit 1 / 137 / 576, equal to 15.0.8 and the count=100000 control. Why it was needed (docs/60-research/remedial/consumer- impact-15.0.9-2026-09-23.md): oref0 (dev d219baf9, master 88cf032a) sends count as "1?<credential>" from latest-openaps-treatment, which 15.0.8's parseInt read as 1 and #8748 answered with 400; through oref0's own jq/date pipeline the rig then re-uploads 57 treatments per loop instead of 1, with no duplicates (the created_at+eventType upsert is idempotent), but a Nightscout- side edit to a rig treatment from the last 24 h is overwritten on the next loop. GluPredKit sends count=0 meaning "no limit" (15.0.8: 1 / 137 / 576 in a 50 h window), which #8748 answered with []. Under the semver policy rule (section 3.2) both narrowings would have made the release major as written.
+
+### `RT-TRUST-ONE-SOURCE` &mdash; Every client-address consumer uses one TRUST_PROXY policy compiled from env
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `-` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BF2-AUTH` |
+
+**Blast radius.** lib/server/client-ip.js, lib/api3/security.js, lib/server/app.js and the five modules that call createClientIP(env.trustProxy) (authorization/index.js, api/status.js, server/websocket.js, api3/alarmSocket.js, api3/storageSocket.js); delaylist.js boot messages; the API v3 key tests in tests/client-ip.test.js.
+
+**What an operator sees.** Nothing changes for site owners. Every part of Nightscout that works out a visitor's address reads the TRUST_PROXY setting the same way, so a later change cannot make one part (API v3 logins) disagree with the rest.
+
+**Why `patch`.** Behaviour-neutral refactor: in production both routes already end in the same compiled function (measured 2026-09-24 at e549e1a6).
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Done means: lib/api3/security.js keys the failed-login delay from the policy compiled from opCtx.env (every API v3 operation already passes env), not from app.get('trust proxy fn') inherited through the mount; app.js sets Express's 'trust proxy' from that same compiled policy; the policy is compiled once per env; the API v3 key tests in tests/client-ip.test.js pass env instead of an app with trust proxy set; the inherits-from-parent test from e549e1a6 is replaced by one showing a v3 app with a different 'trust proxy' of its own does not change the key; break-it on each; full suite unchanged.
+
+**Evidence.**
+
+- `docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md`
+
+**Notes.** Target: cut 1 or cut 2 of the modernization train, or earlier on dev if it fits this release cycle (maintainer, 2026-09-24). Today two routes deliver the policy: five modules compile env.trustProxy themselves, and lib/api3/security.js alone reads the Express setting the v3 app inherits from app.js. e549e1a6 (on #8754) tests the inherited route and sets the API v3 fixture's parent as app.js does; it does not remove the second route. Cuts 1-3 do not touch client-ip.js or api3/security.js; cut 2 changes tests/fixtures/api3/instance.js in a different hunk (bound address family, 27da0f8a) and trial-merges with #8754's head without a conflict in these files. Cuts 4 and 5 carry their own client-ip.js (06c83f2f, 395f3207), already resolved to the candidate's file (BF-88); cut 5 also sets 'trust proxy' on the v1 and v3 apps (#8605), which this change makes inert for the client address as well as for Express. Lowest home is dev (base of the stack); if dev is frozen for 15.0.9, commit it on cut 1 and merge up.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
