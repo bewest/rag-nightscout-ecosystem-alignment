@@ -8729,6 +8729,181 @@ items:
       Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
       step: a human pushes ab7b22d6 and uploads
       reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+  - id: BFQ-115
+    title: "BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: wip/object-id-crud-fixes-2
+    base: official/bf/object-id-crud@ab7b22d6
+    worktree: externals/work/crm-6a-rc-cand
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/object-id-forms.js dropEmptyId (new); normalizeEntryId in
+      lib/server/entries.js and normalizeTreatmentId in
+      lib/server/treatments.js call it; null-_id guards in
+      lib/data/ddata.js, lib/data/dataloader.js, lib/data/calcdelta.js and
+      API v3 normalizeDoc (lib/api3/storage/mongoCollection/utils.js).
+    review: maintainer
+    operator_visible: >
+      A treatment or glucose entry sent without a usable record id now
+      gets one from the server. One kind of badly formed record could stop
+      a Nightscout site from running, and keep stopping it after every
+      restart; that can no longer happen, and a site that already holds
+      such a record keeps running.
+    semver: patch
+    semver_reason: a crash fix; a request that stored an unusable id now stores a server id
+    register: [BF-115]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
+          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" wip/object-id-crud-fixes-2 -- lib/server/object-id-forms.js
+        kind: static
+        describe: >
+          The fix (17add44b) is on the branch. A presence check only; its
+          control is the same grep on origin/bf/object-id-crud, which fails
+          until the push. tests/api.empty-id.test.js is what says the fix works.
+      - no-gate: >
+          The behaviour is held by tests/api.empty-id.test.js, which needs a booted
+          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
+          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
+          object-id test files pass together (578 passing); each fix hunk
+          reverted fails a named test (register detail). The full matrix
+          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - reports/consumer-impact-15.0.9/clients-8758.md
+    notes: >
+      Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1,
+      reproduced by the review). Live on 15.0.8; needs a credential that
+      can create treatments or entries; no corpus client sends such a
+      value. Put on #8758 at the maintainer's request (2026-09-25, this
+      session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores
+      '' and 0, and API v3 POST stores '', 0, false and {} as _id, without
+      a crash but unaddressable by any id route. Public-disclosure note:
+      the fix commit and its test show the value once pushed; the register
+      names the mechanism only.
+  - id: BFQ-116
+    title: "BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: wip/object-id-crud-fixes-2
+    base: official/bf/object-id-crud@ab7b22d6
+    worktree: externals/work/crm-6a-rc-cand
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/devicestatus.js create (withoutStoredIds replaces
+      storeIdsAsObjectIds; insertMany unordered with duplicate-key
+      acceptance for statuses sent with their own _id);
+      tests/api.devicestatus.resend-guard.test.js and the devicestatus row
+      of tests/api.crud-by-id.matrix.test.js change from 500 to 200
+      (CHANGED EXPECTATION).
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a defect in an unmerged fix
+    register: [BF-116]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
+          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" wip/object-id-crud-fixes-2 -- lib/server/devicestatus.js
+        kind: static
+        describe: >
+          The fix (c3a34bac) is on the branch. A presence check only; its
+          control is the same grep on origin/bf/object-id-crud, which fails
+          until the push. tests/api.devicestatus.resend-guard.test.js is what says the fix works.
+      - no-gate: >
+          The behaviour is held by tests/api.devicestatus.resend-guard.test.js, which needs a booted
+          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
+          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
+          object-id test files pass together (578 passing); each fix hunk
+          reverted fails a named test (register detail). The full matrix
+          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - reports/consumer-impact-15.0.9/clients-8758.md
+    notes: >
+      Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-2,
+      reproduced by the review). This reverses #8758's own design, which
+      refused a re-send with 500 as profile create does (BF-99); the
+      maintainer asked for it on #8758 (2026-09-25, this session). Profile
+      create still refuses a re-send with 500; making it match is not
+      done. No AID uploader in the corpus sends a devicestatus _id. Fix
+      c3a34bac.
+  - id: BFQ-117
+    title: "BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: wip/object-id-crud-fixes-2
+    base: official/bf/object-id-crud@ab7b22d6
+    worktree: externals/work/crm-6a-rc-cand
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/delete/operation.js;
+      lib/api3/storage/mongoCollection/{modify,find,index}.js
+      (updateEveryForm, deleteEveryForm, findEveryForm; sort {identifier:
+      -1, _id: -1}); lib/api3/storage/mongoCachedCollection/index.js;
+      tests/api3.delete-every-form.test.js (new); CHANGED EXPECTATION in
+      tests/api3.string-id.test.js (pair DELETE) and
+      tests/api3.storage.modify.test.js (sort).
+    review: maintainer
+    operator_visible: >
+      If a treatment was stored twice by an older Nightscout and you
+      delete it from an app that uses the newer API (for example
+      AndroidAPS), both copies are now deleted, so it no longer keeps
+      showing. When only one copy can be shown, the one holding the latest
+      edit is shown.
+    semver: patch
+    semver_reason: a bug fix in deletes and in which stored copy is read
+    register: [BF-117]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
+          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" wip/object-id-crud-fixes-2 -- lib/api3/generic/delete/operation.js
+        kind: static
+        describe: >
+          The fix (63dd716c) is on the branch. A presence check only; its
+          control is the same grep on origin/bf/object-id-crud, which fails
+          until the push. tests/api3.delete-every-form.test.js is what says the fix works.
+      - no-gate: >
+          The behaviour is held by tests/api3.delete-every-form.test.js, which needs a booted
+          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
+          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
+          object-id test files pass together (578 passing); each fix hunk
+          reverted fails a named test (register detail). The full matrix
+          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - reports/consumer-impact-15.0.9/clients-8758.md
+    notes: >
+      Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3;
+      the copy-picking regression found by the review, 40/40 trials). Put
+      on #8758 at the maintainer's request (2026-09-25, this session). Fix
+      63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and
+      websocket dbUpdate edits both, and each leaves two records, so
+      #8758's body and release-notes advice 'edit either one: the two
+      become one record' holds only for v1 PUT/POST; that wording is to be
+      corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm-
+      remote-monitor-15.0.9/release-notes.md). Also seen by the review,
+      not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No
+      such id' on both builds, and #8758 lets an upper-case id reach it.
   - id: BFQ-114
     title: "BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on"
     parcel: register-open

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 131 |
-| runnable gates | 201 |
-| explicit `no-gate:` markers | 178 |
+| items | 134 |
+| runnable gates | 207 |
+| explicit `no-gate:` markers | 181 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 178 of the 379 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 181 of the 388 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 40 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113 |
+| `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 5 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530 |
 | `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
@@ -94,6 +94,8 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-102** bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
 - **BFQ-111** BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes
 - **BFQ-112** BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
+- **BFQ-115** BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load
+- **BFQ-117** BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy
 - **BFQ-114** BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
 
 ---
@@ -1782,7 +1784,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 56 items
+`parcel: register-open` &mdash; 59 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1843,6 +1845,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
 | `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
 | `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 1 no-gate |
+| `BFQ-115` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -3590,6 +3595,111 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+
+### `BFQ-115` &mdash; BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/object-id-crud-fixes-2` |
+| base | `official/bf/object-id-crud@ab7b22d6` |
+| worktree | `externals/work/crm-6a-rc-cand` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-115` |
+
+**Blast radius.** lib/server/object-id-forms.js dropEmptyId (new); normalizeEntryId in lib/server/entries.js and normalizeTreatmentId in lib/server/treatments.js call it; null-_id guards in lib/data/ddata.js, lib/data/dataloader.js, lib/data/calcdelta.js and API v3 normalizeDoc (lib/api3/storage/mongoCollection/utils.js).
+
+**What an operator sees.** A treatment or glucose entry sent without a usable record id now gets one from the server. One kind of badly formed record could stop a Nightscout site from running, and keep stopping it after every restart; that can no longer happen, and a site that already holds such a record keeps running.
+
+**Why `patch`.** a crash fix; a request that stored an unusable id now stores a server id
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`
+  - wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" wip/object-id-crud-fixes-2 -- lib/server/object-id-forms.js`
+  - The fix (17add44b) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api.empty-id.test.js is what says the fix works.
+- **NO GATE** &mdash; The behaviour is held by tests/api.empty-id.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1, reproduced by the review). Live on 15.0.8; needs a credential that can create treatments or entries; no corpus client sends such a value. Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0, false and {} as _id, without a crash but unaddressable by any id route. Public-disclosure note: the fix commit and its test show the value once pushed; the register names the mechanism only.
+
+### `BFQ-116` &mdash; BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/object-id-crud-fixes-2` |
+| base | `official/bf/object-id-crud@ab7b22d6` |
+| worktree | `externals/work/crm-6a-rc-cand` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-116` |
+
+**Blast radius.** lib/server/devicestatus.js create (withoutStoredIds replaces storeIdsAsObjectIds; insertMany unordered with duplicate-key acceptance for statuses sent with their own _id); tests/api.devicestatus.resend-guard.test.js and the devicestatus row of tests/api.crud-by-id.matrix.test.js change from 500 to 200 (CHANGED EXPECTATION).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a defect in an unmerged fix
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`
+  - wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" wip/object-id-crud-fixes-2 -- lib/server/devicestatus.js`
+  - The fix (c3a34bac) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api.devicestatus.resend-guard.test.js is what says the fix works.
+- **NO GATE** &mdash; The behaviour is held by tests/api.devicestatus.resend-guard.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-2, reproduced by the review). This reverses #8758's own design, which refused a re-send with 500 as profile create does (BF-99); the maintainer asked for it on #8758 (2026-09-25, this session). Profile create still refuses a re-send with 500; making it match is not done. No AID uploader in the corpus sends a devicestatus _id. Fix c3a34bac.
+
+### `BFQ-117` &mdash; BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/object-id-crud-fixes-2` |
+| base | `official/bf/object-id-crud@ab7b22d6` |
+| worktree | `externals/work/crm-6a-rc-cand` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-117` |
+
+**Blast radius.** lib/api3/generic/delete/operation.js; lib/api3/storage/mongoCollection/{modify,find,index}.js (updateEveryForm, deleteEveryForm, findEveryForm; sort {identifier: -1, _id: -1}); lib/api3/storage/mongoCachedCollection/index.js; tests/api3.delete-every- form.test.js (new); CHANGED EXPECTATION in tests/api3.string-id.test.js (pair DELETE) and tests/api3.storage.modify.test.js (sort).
+
+**What an operator sees.** If a treatment was stored twice by an older Nightscout and you delete it from an app that uses the newer API (for example AndroidAPS), both copies are now deleted, so it no longer keeps showing. When only one copy can be shown, the one holding the latest edit is shown.
+
+**Why `patch`.** a bug fix in deletes and in which stored copy is read
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`
+  - wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" wip/object-id-crud-fixes-2 -- lib/api3/generic/delete/operation.js`
+  - The fix (63dd716c) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api3.delete-every-form.test.js is what says the fix works.
+- **NO GATE** &mdash; The behaviour is held by tests/api3.delete-every-form.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3; the copy- picking regression found by the review, 40/40 trials). Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and each leaves two records, so #8758's body and release-notes advice 'edit either one: the two become one record' holds only for v1 PUT/POST; that wording is to be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote- monitor-15.0.9/release-notes.md). Also seen by the review, not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper-case id reach it.
 
 ### `BFQ-114` &mdash; BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
 

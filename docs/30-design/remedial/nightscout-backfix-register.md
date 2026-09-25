@@ -81,7 +81,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-24 the highest is BF-113. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-25 the highest is BF-117. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -191,6 +191,8 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-111** | A v1 `find[_id][$in]` list **misses a record stored with a string `_id`**, for reads and for bulk deletes: `lib/server/query.js` turns each hex in the list into an ObjectId, and #8758's `matchEitherForm` widens only a plain equality. A DELETE by a list of a string-stored and an ObjectId-stored id answers 200 and removes only the ObjectId one | `lib/server/query.js` `updateIdQuery` (the `$in`/`$nin` leaves) on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` | **low** — the same records single-id lookups now reach (BF-99 to BF-102) stay out of list operations; no client in the corpus is known to send `find[_id][$in]` | yes | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `1c2d1afd` (2026-09-24) (queue BFQ-111). **Reproduced**: probe P-ID-11 on all three builds, with an ObjectId-stored record in the same list as control ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-112** | An auth subject created with its own 24-hex `_id` is **stored with the `_id` as a string, and DELETE by that id removes nothing** while answering 200. `createSubject` inserts `req.body` as given; `removeSubject` looks up `new ObjectID(_id)` only; `saveSubject` converts. Same class as BF-99, in `auth_subjects` | `lib/authorization/storage.js` `create` and `remove` on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` (#8758 does not touch it) | **low** — admin only (`admin:api:subjects:create`); reached by a restore of subjects or a tool that sends `_id`. The access token is derived from `_id.toString()`, so tokens are unaffected | yes | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `d2fd9ff6` (2026-09-24); after `dev` was merged in, create keeps only owned fields (#8754), so follow-up `ab7b22d6` (not pushed yet) keeps only the remove half (queue BFQ-112). **Reproduced**: probe P-ID-12 on all three builds: 200 and a string `_id`, then DELETE 200 with the subject still stored ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-114** | After an AndroidAPS user turns the loop off **with no end time** and later turns it back on, Nightscout **keeps treating the loop as deliberately offline**, so it **raises no "not looping" alert and no pump alert** until the old record leaves the treatments it loads. AAPS records the re-enable as a new "OpenAPS Offline" record (`CLOSED_LOOP`, duration 0) and does not shorten the earlier `DISABLED_LOOP` one, whose duration is open-ended (2147483647 min, or 10 years in AAPS dev). `findOfflineMarker` reads every such record as a time span and returns the newest that covers now, which is still the disable. Loop and Trio are not affected: neither sends "OpenAPS Offline", and each ends its own indefinite overrides (PR #8568, outside contributor) | `lib/plugins/openaps.js` `findOfflineMarker` (used by `statusLevel` and `lib/plugins/pump.js:335`); `lib/data/ddata.js` `processTreatments` does not close it; `v15.0.8` and `dev` `4f705217` | **high** — silences the two server alerts that say an AAPS loop or pump needs attention, with nothing shown to say so; bounded to AAPS users who used an open-ended disable. Keep the phone's and pump's own alerts on | yes | **open, filed 2026-09-25** from the open-PR triage. PR #8568 (open, 0 behind `dev`) infers the disable's end from the next running-mode record and clears the released-AAPS shape; it misses the AAPS-dev shape (`originalDuration` 0, 10-year duration) and the day-to-day report, which does not go through `processTreatments`. **Reproduced** ([probe](../../../tools/lab/aaps-offline/probe.js)): marker still on 5 h after re-enable on `v15.0.8` and `dev` for both shapes; on #8568 `de8efff0`, cleared for the released shape only; both controls behave on all three |
+| **BF-115** | An entry or treatment written with an **`_id` value that is not an id** is stored with that value, because entries and treatments are written with upserts and an upsert keeps the `_id` it is given. For one such value the request answers 500 but the record is written, and the code that loads records into memory expects every stored `_id` to be an id: **the server process stops at the next data load, and again within seconds of every restart**, until the record is removed from the database. Other such values are stored without a crash, but no id route can address the record afterwards | `lib/server/entries.js` `normalizeEntryId`, `lib/server/treatments.js` `normalizeTreatmentId` (v1 POST `/entries`, POST and PUT `/treatments`); the load in `lib/data/ddata.js` `processRawDataForRuntime` (also `dataloader.js`, `calcdelta.js`, API v3 `normalizeDoc`); `v15.0.8` `92d08342`, `dev` `4f705217` and #8758 `ab7b22d6` | **high** — one write takes a site down and keeps it down; needs a credential that can create treatments or entries. No client in the corpus sends such a value (the 2026-09-25 pass). Mechanism only here: the value is not named in this public file | yes | **open, found 2026-09-25** in the #8758 freeze pass (corpus replay, reproduced independently by the review). Fix on local branch `wip/object-id-crud-fixes-2` `17add44b` (not pushed), for #8758 (queue BFQ-115). **Reproduced** on `v15.0.8` and `ab7b22d6`: the request, the stored record, the stop at the next load and again after a restart; positive control, removing the record, and the server stays up. Fix break-its: dropping either normalizer's guard or the load guard fails a named test |
+| **BF-117** | An API v3 **DELETE of a record stored twice by its `_id`** (once as the 24-hex string, as 15.0.6 and earlier stored it, and once as the ObjectId a later edit added beside it) **marks or removes only one copy**; the other stays valid in v1 and v3 reads, so a treatment deleted from AndroidAPS keeps showing. On #8758 `ab7b22d6` v1 DELETE and websocket `dbRemove` remove both copies (BF-110), so v3 is the odd one out; and #8758's v3 reads and writes take the **string copy**, the older one, where 15.0.8 takes the ObjectId copy, which holds the edit | `lib/api3/generic/delete/operation.js`; `lib/api3/storage/mongoCollection/modify.js` `writeFilter`, `find.js` `findOne`/`findOneFilter` (sort by `identifier` only); `v15.0.8` `92d08342` (one copy deleted) and #8758 `ab7b22d6` (one copy deleted, and the string copy read and written) | **medium** — a deleted treatment reappears, and on #8758 v3 GET and PATCH show and edit the stale copy; bounded to records stored twice, whose number is not known (queue OID-PREVALENCE) | yes | **open, found 2026-09-25** in the #8758 freeze pass. Fix on local branch `wip/object-id-crud-fixes-2` `63dd716c` (not pushed), for #8758 (queue BFQ-117): DELETE covers every stored form; reads and writes sort `_id` descending too. **Reproduced** on both builds (corpus Q10/Q10b; review 40/40 trials of the copy picked, both storage orders, MongoDB 4.4 and 7). Not fixed there: v3 PUT/PATCH and websocket `dbUpdate` leave both copies (queue BFQ-117 notes) |
 
 ## 1b. Pre-release findings
 
@@ -239,6 +241,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-109** | On #8758, an API v3 **DELETE or PUT by identifier writes the v1 record when a v1/v3 pair exists**, and GET still shows the v3 copy. The pair is what a v3 PUT on a string-`_id` v1 record left on every release before #8758: `{_id: X}` plus `{_id: ObjectId, identifier: X}`. `filterForOne` gains `_id` branches; reads sort `identifier: -1` and return the v3 copy, but `replaceOne`/`updateOne`/`deleteOne` do not sort and take the v1 record. DELETE answers 200, marks the v1 record invalid, and GET keeps returning the v3 copy as valid; PUT replaces the v1 record and leaves two documents with `identifier: X` | #8758 `6d120fa2` `lib/api3/storage/mongoCollection/utils.js` `filterForOne` / `identifyingFilter`, used by `modify.js` | **medium** — pre-release; the delete looks done and the record stays; AndroidAPS 4.x addresses treatments this way. Not on 15.0.8 or `dev`, where the same requests hit the v3 copy | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `a2c7eb39` (2026-09-24) (queue BFQ-109). **Reproduced**: probe P-ID-10, hex and non-hex identifiers, on `v15.0.8`, `dev` `ddd9b600` and `6d120fa2`; reverting only `utils.js` on `6d120fa2` restores `dev`'s P-ID-10 cells and loses #8758's P-ID-2 fix, so both come from the same lines ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-110** | On #8758, **deleting a record by its hex id also deletes its twin**: where a string record and the ObjectId copy a PUT on 15.0.8 or earlier added beside it both exist, `find[_id]` returns both and v1 `DELETE /treatments/<hex>` and websocket `dbRemove` remove both. #8758's own user advice, "If you see an old copy beside the one you edited, you can now delete it", removes the edited copy too. Editing the record merges the pair into one | #8758 `6d120fa2` `lib/server/object-id-forms.js` `matchEitherForm` via `query.js`, `treatments.js` `remove`, `websocket.js` `dbRemove` | **medium** — pre-release; the copy with the user's edit is lost with the stale one, through the careportal, the web UI's Remove and oref0's `ns-dedupe-treatments.sh`. How many twins exist in real data is not known (queue OID-PREVALENCE) | **decided 2026-09-24 (maintainer): behaviour kept** — a delete by hex removes both copies, as #8758's body already says ("Deleting such a record now removes it, including a copy left by an earlier edit"). No code change; the body's advice "you can now delete it" is to be reworded to "edit either one" (queue BFQ-110). Found 2026-09-24 in the #8758 review. **Reproduced**: probe P-ID-7 on all three builds; 15.0.8 and `dev` leave one record, `6d120fa2` leaves none; v3 DELETE is unaffected ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-113** | On #8758, `idForms` **accepts any 12-character string**, although its comment says anything but an ObjectId or a 24-hex string throws: driver 5.9's `new ObjectId('abcdefghijkl')` succeeds, so `idForms` returns that ObjectId, its hex and the string. `profile.save` and the food, activity and profile `remove` pass non-hex ids to it without the `isHexId` guard `staleStringForms` has, so a 12-character id would upsert and delete by forms it does not name | #8758 `6d120fa2` `lib/server/object-id-forms.js` `idForms`, `lib/server/profile.js` `save`, `food.js`/`activity.js`/`profile.js` `remove` | **low** — pre-release; the v1 routes refuse non-hex ids, so only in-process callers (the connector's internal output) reach it | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `dd2cf8f1` (2026-09-24) (queue BFQ-113). **Reproduced** at the helper: `idForms('abcdefghijkl')` returns three forms on `6d120fa2` instead of throwing; the effect through `profile.save` and `remove` is read, not run |
+| **BF-116** | On #8758, a **devicestatus POST that re-sends a status under the `_id` it is stored with answers 500, and every new status after it in the same POST is lost**. #8758 stores a 24-hex `_id` as an ObjectId, so a re-send now collides with the stored record; the insert is ordered, so it stops at the collision. 15.0.8 stored the re-send as a second, string copy and the rest of the batch | #8758 `ab7b22d6` `lib/server/devicestatus.js` `create` (`storeIdsAsObjectIds`, `insertMany` ordered) | **medium** — pre-release; loop status silently missing for a client that re-sends; a client that retries on 500 re-sends statuses already stored. No AID uploader in the corpus sends a devicestatus `_id` (Loop sends `identifier`; Trio and AndroidAPS send none); a restore or echo tool would | **open, found 2026-09-25** in the #8758 freeze pass. Fix on local branch `wip/object-id-crud-fixes-2` `c3a34bac` (not pushed), for #8758 (queue BFQ-116): a re-send is answered with the stored `_id` and not written, the rest is stored, and a duplicate key is accepted only for a status sent with its own `_id`. **Reproduced** (corpus Q2b; ablation of `devicestatus.js` to `dev` restores 15.0.8's cells); the same 500 and loss already happen on 15.0.8 when the stored copy is a string |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -4331,6 +4334,84 @@ record from the same pump or uploader. It also needs the AAPS-dev shape (for exa
 `DISABLED_LOOP` with `originalDuration` 0 and a duration over some bound) and a test on the alert
 level. The day-to-day report (`lib/report_plugins/daytoday.js`) draws the bar from the raw records
 and would still show it open-ended.
+
+### BF-115 · an entry or treatment with an unusable `_id` is stored with it, and one such value stops the server
+
+entries and treatments are written with `updateOne`/`replaceOne` with `upsert: true`. An upsert that
+inserts keeps the `_id` in the update or replacement, unlike `insertOne`/`insertMany`, where the
+driver assigns one when the field is empty. `normalizeEntryId` and `normalizeTreatmentId` convert a
+24-hex string and drop a non-hex string, and leave any other value in place. The upsert filter then
+falls back to `sysTime` + `type` (entries) or `created_at` + `eventType` (treatments), and the
+insert writes the value as the record's `_id`. For one value the request also answers 500, but the
+record is already written. `ddata.processRawDataForRuntime` (`lib/data/ddata.js`, reached from
+`dataloader.js`) converts every loaded `_id` with `toString`, so the next load throws and the
+process ends; a restart loads the same record and ends again. `dataloader.js`, `calcdelta.js` and
+API v3 `normalizeDoc` make the same assumption.
+
+**Measured 2026-09-25** on `v15.0.8` `92d08342` and #8758 `ab7b22d6` (MongoDB 7.0.43, Node
+22.23.2): a sweep of 21 create paths × 5 unusable values. Three paths store the crashing value (v1
+POST `/entries`, POST `/treatments`, PUT `/treatments`); devicestatus, profile, food and activity
+POST and PUT, websocket `dbAdd` and API v3 POST assign an ObjectId for it. v1 entries and
+treatments also store three other unusable values with 200; websocket `dbAdd` stores two and API
+v3 POST four, without a crash. Positive control: with the record removed, the server stays up.
+
+**Fix (`17add44b`, local):** `object-id-forms.dropEmptyId` drops an `_id` that is empty or neither
+a string nor an ObjectId (an ObjectId from another copy of `bson`, by `_bsontype`, is kept);
+`normalizeEntryId` and `normalizeTreatmentId` call it. The four loaders accept a stored record
+without an id, so a site that already holds one keeps running. Test: `tests/api.empty-id.test.js`.
+Break-its: removing the call in either normalizer, or the `ddata` or `calcdelta` guard, fails a
+named test. **Not fixed:** websocket `dbAdd` and API v3 POST, which store an unusable value without
+a crash (queue BFQ-115 notes).
+
+### BF-116 · on #8758, a devicestatus re-send fails the POST and loses the rest of the batch
+
+#8758 stores a 24-hex devicestatus `_id` as the ObjectId it names and, once per batch, reads the
+string forms of those ids so that a re-send of a string-stored record keeps the string and collides
+(tests/api.devicestatus.resend-guard.test.js, "refused, as before"). A re-send of a record stored
+with the ObjectId, which is every record #8758 creates, now collides too. `insertMany` is ordered,
+so the POST answers 500 at the collision and nothing after it is stored. The same 500 and loss
+already happen on 15.0.8 for a string-stored record; on 15.0.8 the far more common ObjectId-stored
+record was stored again, as a string copy.
+
+**Measured 2026-09-25** (corpus Q2b, reproduced by the review): `[re-sent, new]` → 500 with the new
+status lost; `[new, re-sent]` → 500 with the new one stored; a re-send alone, in lower or upper
+case → 500; on 15.0.8 each is 200 with a string duplicate. Swapping `lib/server/devicestatus.js`
+back to `dev`'s gives 15.0.8's cells exactly. No AID uploader in the corpus sends a devicestatus
+`_id`: Loop sends `identifier` (NightscoutKit `DeviceStatus.swift`), Trio and AndroidAPS send
+none. A Loop-shaped status posted twice plus a retry is stored three times on both builds.
+
+**Fix (`c3a34bac`, local):** the read asks for every form of each id; a re-sent status is answered
+with the `_id` it is stored under (the ObjectId copy when both exist) and not written; the same new
+`_id` twice in a batch is stored once; the insert is unordered and accepts a duplicate-key error
+only for a status sent with its own `_id` (a retry that raced its first POST), and fails on any
+other error. #8758's resend-guard tests and CRUD matrix change from 500 to 200, marked `CHANGED
+EXPECTATION`. Break-it: an ordered insert fails the race test.
+
+### BF-117 · an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 takes the older copy
+
+`utils.filterForOne(identifier)` matches the v3 document with that identifier and v1 records whose
+`_id` is the identifier in any form, so it can match two copies of one record: the string `_id`
+record and the ObjectId one an edit on 15.0.8 or earlier added beside it. `markAsDeleted` and
+`deletePermanently` write one document (`writeFilter` → `updateOne`/`deleteOne`), so the other
+copy stays valid and is returned by v1 time-window reads and v3 search. On #8758 v1 DELETE and
+websocket `dbRemove` remove both copies (BF-110, decided). Which copy `findOne` and `writeFilter`
+take is decided by a sort on `identifier` alone, which the two v1 copies tie on: on #8758 the string
+copy in every trial, on 15.0.8 the ObjectId copy. On a real site the ObjectId copy is the one that
+holds the edit, so on #8758 v3 GET shows, and PATCH and PUT write, the stale copy.
+
+**Measured 2026-09-25:** corpus Q10/Q10b (both builds leave one copy valid; 15.0.8 the string one,
+`ab7b22d6` the ObjectId one); review, 40 trials in each storage order on MongoDB 4.4 and 7: `ab7b22d6`
+picks the string copy 40/40 for GET, PATCH, PUT and DELETE.
+
+**Fix (`63dd716c`, local):** DELETE uses `updateEveryForm`/`deleteEveryForm` (`updateMany`/`deleteMany`
+over `filterForOne`); `findOne`, `findOneFilter` and `writeFilter` sort `{identifier: -1, _id: -1}`,
+which takes the ObjectId copy. Tests: `tests/api3.delete-every-form.test.js` (GET and PATCH in both
+storage orders, soft and permanent DELETE, a control record); #8758's v1/v3 pair DELETE test and two
+sort-pinning helper tests change, marked `CHANGED EXPECTATION`. Break-its: each of the four changes
+reverted fails a named test; the read-sort test fails only with the ObjectId copy stored first,
+which is why both orders run. **Not fixed:** v3 PUT/PATCH and websocket `dbUpdate` edit one or both
+copies and leave two records, so #8758's advice "edit either one: the two become one record" holds
+only for v1 PUT/POST (queue BFQ-117 notes).
 
 ## 3. How to use this register
 

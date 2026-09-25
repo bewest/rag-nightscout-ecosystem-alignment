@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 88 | 28 | 15 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 91 | 28 | 18 |
 | **Modernization** | `release-train` | 23 | 3 | 3 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **131** | **40** | **21** |
+| | **total** | **134** | **40** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -132,6 +132,8 @@ cover more than one `BF-`:
 | `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
 | `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
+| `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
+| `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -168,7 +170,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
 | `release-train` | 3 |  | 4 |  | 5 | 2 | 7 | 1 |  |  |  | 1 | **23** |
-| `register-open` | 18 | 1 | 5 | 5 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **56** |
+| `register-open` | 18 | 1 | 5 | 8 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **59** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -209,14 +211,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 97 | 74% |
+| Maintainer | 100 | 75% |
 | SECURITY reviewer | 15 | 11% |
 | Maintainer + a second human | 7 | 5% |
-| SAFETY reviewer | 6 | 5% |
+| SAFETY reviewer | 6 | 4% |
 | Whoever edits it next | 3 | 2% |
-| Unassigned | 2 | 2% |
+| Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **131** | |
+| **total** | **134** | |
 
 <!-- END GENERATED: reviewer-load -->
 

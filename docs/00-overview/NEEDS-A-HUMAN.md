@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 20 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -47,6 +47,9 @@ that it was reviewed.
 | `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and b | &mdash; |
 | `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot | &mdash; |
 | `BFQ-113` | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers w | &mdash; |
+| `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
+| `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
+| `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
