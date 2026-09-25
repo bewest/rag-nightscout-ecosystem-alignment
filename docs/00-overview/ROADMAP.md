@@ -40,7 +40,6 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 |---|---|---|---|---|
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
 | `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | `in-flight-upstream` | Maintainer | #8758 |
-| `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | `in-flight-upstream` | Maintainer | #8568 |
 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `gate-not-met` | Maintainer | #8419 |
 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | Maintainer | #8730 |
 
@@ -94,7 +93,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 2 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `BFQ-102` |
 | 2 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | `BFQ-117` |
 | 2 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | `BFQ-102` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8730` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `RT-PR-8419`, `RT-PR-8730` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |

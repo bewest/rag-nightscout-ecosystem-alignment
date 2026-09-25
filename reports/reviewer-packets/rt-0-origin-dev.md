@@ -137,7 +137,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730`
+`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730`, `BFQ-120`, `BFQ-126`
 
 ## Evidence
 

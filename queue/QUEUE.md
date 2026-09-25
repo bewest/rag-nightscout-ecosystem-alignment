@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 159 |
-| runnable gates | 231 |
-| explicit `no-gate:` markers | 209 |
+| items | 160 |
+| runnable gates | 232 |
+| explicit `no-gate:` markers | 210 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 209 of the 440 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 210 of the 442 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,10 +44,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 14 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8419, RT-PR-8730 |
-| `ready-to-push` | 9 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-120, BFQ-126 |
+| `ready-to-push` | 8 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-134 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 7 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-114, BFQ-130, BFQ-131 |
-| `merged-upstream` | 42 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, RT-PR-8530, BFQ-118, BFQ-119 |
+| `in-flight-upstream` | 6 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 |
+| `merged-upstream` | 45 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-114, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -108,6 +108,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-126** BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)
 - **BFQ-127** BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
 - **BFQ-128** BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220)
+- **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
 
@@ -1346,7 +1347,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 (dev -> master) on 2026-09-24: open, mergeable, 27 checks green and 3 skipped, reviewDecision REVIEW_REQUIRED and zero reviews. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730`, `BFQ-120`, `BFQ-126` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent merges, 226 files, +18167/-1403. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. One open PR is planned to join it: #8758. Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1705,7 +1706,7 @@ that costs.
 
 - `docs/60-research/remedial/github-triage-2026-09-25.md`
 
-**Notes.** 2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on 24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an APNs client session left open (not verified). Test-only; a follow-up commit that closes it, or dropping #8419 from 15.0.9, is the maintainer's call. Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
+**Notes.** 2026-09-25 - FIX READY: pr8419-hook-cleanup e0245857 (+ dev merge 662b12fe, local) makes the fake APNs server destroy its open sessions before close; tests/loopnotifications.test.js 9 passing on Node 20.20.0, 22.23.2 and 24.20.0 (3 runs each before the dev merge, 1 each after). The root cause is BF-134 in lib/server/loop.js. Push to je-l's extend-api-tests (maintainer edits allowed), then merge #8419 BEFORE BF-134's branch, which conflicts on tests/loop-server.test.js (deleted by #8419; resolve by deletion). 2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on 24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an APNs client session left open (not verified). Test-only; a follow-up commit that closes it, or dropping #8419 from 15.0.9, is the maintainer's call. Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
 
 ### `RT-PR-8530` &mdash; #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9
 
@@ -1926,7 +1927,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 80 items
+`parcel: register-open` &mdash; 81 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1990,18 +1991,19 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-115` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
-| `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
+| `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `merged-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `merged-upstream` | `bf/mmol-partial-thresholds` | patch | 1 run + 2 no-gate |
 | `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `merged-upstream` | `bf/pump-warn-on-suspend` | patch | 1 run + 1 no-gate |
-| `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `ready-to-push` | `bf/clock-stale-offline` | patch | 1 run + 1 no-gate |
+| `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `merged-upstream` | `bf/clock-stale-offline` | patch | 1 run + 1 no-gate |
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `not-started` | `none yet` | minor | 1 run + 1 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244) | `not-started` | `none yet` | minor | 1 run + 2 no-gate |
 | `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
 | `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `not-started` | `-` | patch | 1 run + 1 no-gate |
-| `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `ready-to-push` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
+| `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
 | `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `ready-to-push` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `not-started` | `-` | patch | 1 run |
@@ -3875,7 +3877,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `fix-loop-status-timeline` |
 | base | `origin/dev@4f705217` |
@@ -3893,8 +3895,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q DISABLED_LOOP origin/dev -- lib/`
-  - FAILS today: nothing in origin/dev's lib/ handles an AAPS DISABLED_LOOP record. A presence check only; it goes green when handling lands, and the probe below is what says whether it works.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 origin/dev`
+  - #8568's merge 99689bf9 (2026-09-25) is contained in origin/dev.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/aaps-offline/probe.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8568 de8efff0 (the last clears the released-AAPS shape but not the AAPS-dev shape); both controls behave on all three. The fix is done when the probe exits 0 on the candidate.
 - **NO GATE** &mdash; Nothing tests the alert level itself or the day-to-day report, which reads raw records and still draws the disable open-ended. A test in tests/openaps.test.js asserting the level after a re-enable is the missing piece.
 
@@ -3903,7 +3905,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/aaps-offline/probe.js`
 
-**Notes.** Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open-PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Decided 2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to also match the AAPS-dev shape and add an alert-level test.
+**Notes.** 2026-09-25 - MERGED into dev as 99689bf9 (#8568), with the follow-up 1fd09446 for the AndroidAPS-dev shape. Not released; goes into 15.0.9. Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open- PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Decided 2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to also match the AAPS-dev shape and add an alert-level test.
 
 ### `BFQ-118` &mdash; BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729)
 
@@ -3976,7 +3978,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/clock-stale-offline` |
 | base | `origin/dev@ecb63223` |
@@ -3994,8 +3996,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q 'setInterval(refresh' bf/clock-stale-offline -- lib/client/clock-client.js`
-  - The branch's clock timer calls refresh(), which redraws from the last data before fetching (origin/dev still calls client.query directly and fails this). A presence check only; the probe below decides. Point it at origin/dev once merged.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 origin/dev`
+  - #8768's merge e2bbeb66 (2026-09-25) is contained in origin/dev.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/clock-stale-offline.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (30 minutes after the last successful fetch the face says "Just now", not stale, in-range colour); the online control shows "30 minutes ago" and stale on both. Done when the probe exits 0 on the candidate.
 
 **Evidence.**
@@ -4003,7 +4005,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/clock-stale-offline.js`
 
-**Notes.** 2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed), on dev ecb63223: the 20 s timer redraws from the last data before fetching, so age and stale state keep moving while fetches fail. 5 new tests (3 fail on dev's clock-client.js); probe exit 0 on the branch, 1 on dev; full suite 2593/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. For review: the Simple face (bn0-sg40) never goes stale; bn13-sg40 proposed. Filed 2026-09-25 from the GitHub triage (issue #7036, opened 2021-05-31). Issue #8186 (clock reading age out of sync) may share the mechanism and needs browser console output to tell. Issue #7377 (clock blank with a URL token) is what a failing first fetch looks like: with no successful fetch nothing is ever drawn. Candidate for the remaining 15.0.9 cleanup; the maintainer decides.
+**Notes.** 2026-09-25 - MERGED into dev as e2bbeb66 (#8768). Not released; goes into 15.0.9. 2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed), on dev ecb63223: the 20 s timer redraws from the last data before fetching, so age and stale state keep moving while fetches fail. 5 new tests (3 fail on dev's clock-client.js); probe exit 0 on the branch, 1 on dev; full suite 2593/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. For review: the Simple face (bn0-sg40) never goes stale; bn13-sg40 proposed. Filed 2026-09-25 from the GitHub triage (issue #7036, opened 2021-05-31). Issue #8186 (clock reading age out of sync) may share the mechanism and needs browser console output to tell. Issue #7377 (clock blank with a URL token) is what a failing first fetch looks like: with no successful fetch nothing is ever drawn. Candidate for the remaining 15.0.9 cleanup; the maintainer decides.
 
 ### `BFQ-121` &mdash; BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
 
@@ -4176,7 +4178,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/authsubject-nameless` |
 | base | `origin/dev@ecb63223` |
@@ -4194,8 +4196,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q 'NAME_REQUIRED' bf/authsubject-nameless -- lib/authorization/storage.js`
-  - The branch's storage.js refuses a subject or role without a usable name (NAME_REQUIRED; origin/dev has none and fails this). A presence check only; the held probe and tests/authsubjects.test.js decide. Point it at origin/dev once merged.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a origin/dev`
+  - #8769's merge fbaa4a2a (2026-09-25) is contained in origin/dev.
 - **NO GATE** &mdash; The behaviour is measured by a probe held outside this repository (the defect is live on 15.0.8), which boots a cgm-remote-monitor tree against a disposable MongoDB and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (process exits, reboot exits, removing the row restores it); the named-subject control keeps the server up. Exit 0 on a scratch copy of dev with a guarded token prefix. The fix is done when the probe exits 0 on the candidate.
 
 **Evidence.**
@@ -4203,7 +4205,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `a probe held outside this repository (the defect is live on 15.0.8)`
 
-**Notes.** 2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed), on dev ecb63223: create and save refuse a subject or role without a usable name (400), and reload skips a stored one with a log line, so a site already in this state boots. Roles had the same fault. 4 new tests (all fail on dev); the held probe exits 0 on the branch, 1 on dev; full suite 2592/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened 2021-09-21). Admin-only, so not a security defect, but live on 15.0.8 and persistent across restarts; the register text gives the mechanism only. The probe file holds the request and is kept out of public text until the maintainer decides.
+**Notes.** 2026-09-25 - MERGED into dev as fbaa4a2a (#8769). Not released; goes into 15.0.9. 2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed), on dev ecb63223: create and save refuse a subject or role without a usable name (400), and reload skips a stored one with a log line, so a site already in this state boots. Roles had the same fault. 4 new tests (all fail on dev); the held probe exits 0 on the branch, 1 on dev; full suite 2592/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened 2021-09-21). Admin-only, so not a security defect, but live on 15.0.8 and persistent across restarts; the register text gives the mechanism only. The probe file holds the request and is kept out of public text until the maintainer decides.
 
 ### `BFQ-127` &mdash; BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
 
@@ -4270,6 +4272,39 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/triage-2026-09/pebble-units.js`
 
 **Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened 2020-10-10). A past maintainer comment suggested deprecating /pebble instead; that is the maintainer's decision. No client in the externals corpora calls it.
+
+### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/loop-apns-shutdown` |
+| base | `origin/dev@fbaa4a2a` |
+| worktree | `externals/work/crm-bf134-apns-shutdown` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-134` |
+| blocks on | `RT-PR-8419` |
+
+**Blast radius.** lib/server/loop.js (+6/-2): build the APNs provider just before the send and shut it down when the send settles; tests/loop-apns-connections.test.js (new); a no-op shutdown() on the mocked provider in tests/loop-server.test.js (that file is deleted by #8419, so the branch is re-merged after #8419).
+
+**What an operator sees.** If you use Loop's remote commands through Nightscout (remote overrides, carbs or bolus), each command left a connection to Apple's push service open until Nightscout restarted, so a site that sends many commands kept more and more connections and memory. This release closes each one when its push is done. Nothing changes in how commands are sent.
+
+**Why `patch`.** a resource leak fix; no API or setting changes
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official show bf/loop-apns-shutdown:lib/server/loop.js | grep -q 'provider.shutdown()'`
+  - The branch's loop.js shuts its APNs provider down (origin/dev has no shutdown call and fails this). A presence check; the test and the probe decide. Point it at origin/dev once merged.
+- **NO GATE** &mdash; Measured by a probe kept with the fix notes (a local HTTP/2 APNs stand-in counting open sessions and heartbeat intervals): 1/5/20 left open after 1/5/20 commands on v15.0.8 and dev, 0 on the branch. tests/loop-apns-connections.test.js is the in-repo check (3 fail on dev's loop.js).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-09-25, found from #8419's test hang. Fixed on bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763, local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43). Whether it goes into 15.0.9 is the maintainer's decision.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 

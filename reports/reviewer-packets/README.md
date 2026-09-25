@@ -21,7 +21,6 @@ repository.
 
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
-| [`BFQ-114`](bfq-114-fix-loop-status-timeline.md) | #8568 | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
@@ -36,8 +35,7 @@ repository.
 | [`BFQ-111`](bfq-111-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes |
 | [`BFQ-112`](bfq-112-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it |
 | [`BFQ-113`](bfq-113-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms |
-| [`BFQ-120`](bfq-120-bf-clock-stale-offline.md) | &mdash; | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) |
-| [`BFQ-126`](bfq-126-bf-authsubject-nameless.md) | &mdash; | `ready-to-push` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) |
+| [`BFQ-134`](bfq-134-bf-loop-apns-shutdown.md) | &mdash; | `ready-to-push` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |

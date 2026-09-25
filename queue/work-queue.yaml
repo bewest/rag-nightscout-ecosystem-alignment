@@ -2846,7 +2846,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, RT-PR-8730]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, RT-PR-8730, BFQ-120, BFQ-126]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -8947,7 +8947,7 @@ items:
     repo: cgm-remote-monitor
     branch: fix-loop-status-timeline
     base: origin/dev@4f705217
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8568]
     ships_to_operators_today: true
     blast_radius: >
@@ -8968,12 +8968,10 @@ items:
     semver_reason: a bug fix in how existing records are read; nothing stored changes
     register: [BF-114]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q DISABLED_LOOP origin/dev -- lib/
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 origin/dev
         kind: static
         describe: >
-          FAILS today: nothing in origin/dev's lib/ handles an AAPS
-          DISABLED_LOOP record. A presence check only; it goes green when
-          handling lands, and the probe below is what says whether it works.
+          #8568's merge 99689bf9 (2026-09-25) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by tools/lab/aaps-offline/probe.js, which
           needs a cgm-remote-monitor tree with node_modules and so is not a
@@ -8991,6 +8989,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/aaps-offline/probe.js
     notes: >
+      2026-09-25 - MERGED into dev as 99689bf9 (#8568), with the follow-up 1fd09446 for the AndroidAPS-dev shape. Not released; goes into 15.0.9.
       Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed
       2026-09-25 from the open-PR triage. Loop's indefinite overrides
       (durationType indefinite) have been handled in lib/client/renderer.js
@@ -9031,6 +9030,13 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-09-25 - FIX READY: pr8419-hook-cleanup e0245857 (+ dev merge 662b12fe,
+      local) makes the fake APNs server destroy its open sessions before close;
+      tests/loopnotifications.test.js 9 passing on Node 20.20.0, 22.23.2 and
+      24.20.0 (3 runs each before the dev merge, 1 each after). The root cause is
+      BF-134 in lib/server/loop.js. Push to je-l's extend-api-tests (maintainer
+      edits allowed), then merge #8419 BEFORE BF-134's branch, which conflicts
+      on tests/loop-server.test.js (deleted by #8419; resolve by deletion).
       2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight
       (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook
       times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on
@@ -9215,8 +9221,8 @@ items:
     branch: bf/clock-stale-offline
     base: origin/dev@ecb63223
     worktree: externals/work/crm-bf120-clock-stale
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8768]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/clock-client.js (client.query error path, client.render,
@@ -9237,13 +9243,10 @@ items:
     semver_reason: a bug fix in how the clock page draws data it already has
     register: [BF-120]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q 'setInterval(refresh' bf/clock-stale-offline -- lib/client/clock-client.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 origin/dev
         kind: static
         describe: >
-          The branch's clock timer calls refresh(), which redraws from the last
-          data before fetching (origin/dev still calls client.query directly and
-          fails this). A presence check only; the probe below decides. Point it
-          at origin/dev once merged.
+          #8768's merge e2bbeb66 (2026-09-25) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/clock-stale-offline.js,
           which needs a cgm-remote-monitor tree with node_modules and so is not
@@ -9257,6 +9260,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-stale-offline.js
     notes: >
+      2026-09-25 - MERGED into dev as e2bbeb66 (#8768). Not released; goes into 15.0.9.
       2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed),
       on dev ecb63223: the 20 s timer redraws from the last data before fetching,
       so age and stale state keep moving while fetches fail. 5 new tests (3
@@ -9559,8 +9563,8 @@ items:
     branch: bf/authsubject-nameless
     base: origin/dev@ecb63223
     worktree: externals/work/crm-bf126-authsubject
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8769]
     ships_to_operators_today: true
     blast_radius: >
       lib/authorization/storage.js create/save validation and reload(),
@@ -9580,13 +9584,10 @@ items:
     semver_reason: a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
     register: [BF-126]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q 'NAME_REQUIRED' bf/authsubject-nameless -- lib/authorization/storage.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a origin/dev
         kind: static
         describe: >
-          The branch's storage.js refuses a subject or role without a usable
-          name (NAME_REQUIRED; origin/dev has none and fails this). A presence
-          check only; the held probe and tests/authsubjects.test.js decide.
-          Point it at origin/dev once merged.
+          #8769's merge fbaa4a2a (2026-09-25) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by a probe held outside this repository (the defect is live on 15.0.8),
           which boots a cgm-remote-monitor tree against a disposable MongoDB
@@ -9600,6 +9601,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - a probe held outside this repository (the defect is live on 15.0.8)
     notes: >
+      2026-09-25 - MERGED into dev as fbaa4a2a (#8769). Not released; goes into 15.0.9.
       2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed),
       on dev ecb63223: create and save refuse a subject or role without a
       usable name (400), and reload skips a stored one with a log line, so a
@@ -9759,6 +9761,52 @@ items:
       Opened by the Crowdin integration (sulkaharo), last updated
       2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9.
       Translations changed after it was opened are not in it.
+  - id: BFQ-134
+    title: "BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/loop-apns-shutdown
+    base: origin/dev@fbaa4a2a
+    worktree: externals/work/crm-bf134-apns-shutdown
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/loop.js (+6/-2): build the APNs provider just before the send
+      and shut it down when the send settles; tests/loop-apns-connections.test.js
+      (new); a no-op shutdown() on the mocked provider in tests/loop-server.test.js
+      (that file is deleted by #8419, so the branch is re-merged after #8419).
+    review: maintainer
+    operator_visible: >
+      If you use Loop's remote commands through Nightscout (remote overrides,
+      carbs or bolus), each command left a connection to Apple's push service
+      open until Nightscout restarted, so a site that sends many commands kept
+      more and more connections and memory. This release closes each one when
+      its push is done. Nothing changes in how commands are sent.
+    semver: patch
+    semver_reason: a resource leak fix; no API or setting changes
+    register: [BF-134]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official show bf/loop-apns-shutdown:lib/server/loop.js | grep -q 'provider.shutdown()'
+        kind: static
+        describe: >
+          The branch's loop.js shuts its APNs provider down (origin/dev has no
+          shutdown call and fails this). A presence check; the test and the
+          probe decide. Point it at origin/dev once merged.
+      - no-gate: >
+          Measured by a probe kept with the fix notes (a local HTTP/2 APNs
+          stand-in counting open sessions and heartbeat intervals): 1/5/20 left
+          open after 1/5/20 commands on v15.0.8 and dev, 0 on the branch.
+          tests/loop-apns-connections.test.js is the in-repo check (3 fail on
+          dev's loop.js).
+    blocks_on: [RT-PR-8419]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-09-25, found from #8419's test hang. Fixed on
+      bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763,
+      local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43).
+      Whether it goes into 15.0.9 is the maintainer's decision.
   - id: OID-LAB
     title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
     parcel: register-open
