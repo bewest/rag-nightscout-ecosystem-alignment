@@ -30,25 +30,14 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 9 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
-| `BFQ-115` | `in-flight-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | #8758 |
-| `BFQ-116` | `in-flight-upstream` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | #8758 |
-| `BFQ-117` | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | #8758 |
-| `BFQ-130` | `in-flight-upstream` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | #8758 |
-| `BFQ-131` | `in-flight-upstream` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | #8758 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-109` | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1 | &mdash; |
-| `BFQ-110` | `ready-to-push` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and th | &mdash; |
-| `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and b | &mdash; |
-| `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot | &mdash; |
-| `BFQ-113` | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers w | &mdash; |
 | `BFQ-134` | `ready-to-push` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat tim | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
@@ -85,12 +74,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
-| **#8758** | `BFQ-115` | `wip/object-id-crud-fixes-2` | BF-115 - an entry or treatment with an unusable _id is store | Maintainer |
-| **#8758** | `BFQ-116` | `wip/object-id-crud-fixes-2` | BF-116 - on #8758, a devicestatus re-send answers 500 and lo | Maintainer |
-| **#8758** | `BFQ-117` | `wip/object-id-crud-fixes-2` | BF-117 - an API v3 DELETE of a record stored twice leaves on | Maintainer |
-| **#8758** | `BFQ-130` | `wip/object-id-crud-fixes-2` | BF-130 - on #8758, a treatments batch can answer 200 and los | Maintainer |
-| **#8758** | `BFQ-131` | `wip/object-id-crud-fixes-2` | BF-131 - on #8758, a record deleted by _id stays in the in-m | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

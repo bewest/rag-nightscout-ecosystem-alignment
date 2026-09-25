@@ -8346,7 +8346,7 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -8371,12 +8371,17 @@ items:
     semver_reason: Bug fixes; no API or setting moves.
     register: [BF-99, BF-100, BF-101, BF-102]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev
+        kind: static
+        describe: >
+          Containment: 5581c5e4 is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green
-          on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending);
-          every hunk broken singly goes red. bf/object-id-crud: 2478, 2483, 2496, 2832,
-          2848, 2858, 2866, 2866 passing, 0 failing, 3 pending per commit on Node 20 and
-          22; matrix 336/336 on MongoDB 7 and 4.4 (dev: 176/336). No queue gate runs them yet.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
@@ -8421,8 +8426,8 @@ items:
       without an error (D3, as decided; worth one line in the notes).
       Two shipping defects in the same class that this PR does not touch:
       BF-111 (BFQ-111) and BF-112 (BFQ-112).
-
-
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-109
     title: "BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair"
     parcel: register-open
@@ -8430,8 +8435,8 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/api3/storage/mongoCollection/utils.js filterForOne and
@@ -8448,34 +8453,17 @@ items:
     semver_reason: a defect in an unmerged fix; no API or setting moves
     register: [BF-109]
     gates:
-      - run: node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-        kind: integration
-        describe: >
-          Runs one object-id lab probe (tools/lab/object-id) against the fix
-          branch in its own mongo:7 container and asserts the fixed cells.
-          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
-          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-      - no-gate: >
-          Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in
-          docker and the three worktrees, about 3 minutes; lab.sh up, run,
-          down). On 6d120fa2 "hex DELETE, then GET" reads "200 /
-          v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and
-          dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT"
-          leaves identifier=X n=2 where both controls leave n=1. Same for a
-          non-hex identifier. The lab gate above wraps it.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev
         kind: static
         describe: >
-          wip/object-id-crud-fixes is a fast-forward of #8758's head
-          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+          Containment: a2c7eb39 is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          Fixed by a2c7eb39 on wip/object-id-crud-fixes (local, not pushed), four commits on
-          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
-          dev ddd9b600 and 6d120fa2: P-ID-10 on build f reads as v15.0.8 and dev (DELETE leaves v3-copy(invalid), GET 410; PUT leaves identifier=X n=1) and P-ID-2 still reads as 6d120fa2 (200). The fix is in modify.js, not utils.js: each write first finds its target with the read's sort ({identifier: -1}) and then writes by that document's _id; utils.js is unchanged. Every other cell of build f
-          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
-          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
-          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
-          and the new tests kept, 10 of them fail.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8499,6 +8487,8 @@ items:
       Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
       step: a human pushes ab7b22d6 and uploads
       reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-110
     title: "BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there"
     parcel: register-open
@@ -8506,8 +8496,8 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/server/object-id-forms.js matchEitherForm through query.js,
@@ -8524,26 +8514,19 @@ items:
     semver_reason: a defect in an unmerged fix, and release-note wording
     register: [BF-110]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev
+        kind: static
+        describe: >
+          Containment: f1e8398b is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The corrected #8758 body (edit either
+          copy only through v1; deleting either copy deletes both) is on the
+          merged head's PR; the behaviour was kept by decision. It stays green;
+          the control (origin/master, 15.0.8) goes stale when 15.0.9 is
+          released.
       - no-gate: >
-          Measured by tools/lab/object-id (probe P-ID-7). On 6d120fa2 the v1
-          DELETE /treatments/<hex> and the websocket dbRemove of a twin
-          leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id]
-          returns 2 where they return 1. The v3 permanent DELETE leaves 1
-          on all three. No queue gate wraps the lab yet (OID-LAB).
-      - no-gate: >
-          Decided 2026-09-24 (maintainer): deleting a record by its hex id
-          removes both copies of a twin. That is what #8758's body already
-          says ("Deleting such a record now removes it, including a copy left
-          by an earlier edit"), so no code changes. What is left is one line
-          of the body's advice, "If you see an old copy beside the one you
-          edited, you can now delete it", which deletes the edited copy too.
-          Proposed: "If you see an old copy beside the one you edited, edit
-          either one: the two become one record with that edit. Deleting
-          either one deletes both." The next step is a human edit of the PR
-          body and of the 15.0.9 release notes. Both are prepared
-          2026-09-24: reports/phase0-pr-bodies/pr-8758-body.md (upload with
-          gh pr edit) and the #8758 section of
-          releases/cgm-remote-monitor-15.0.9/release-notes.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8558,6 +8541,8 @@ items:
       for new records, which #8758 stores as ObjectId (P-ID-4, P-ID-5,
       P-ID-6); that wording belongs to BFQ-102. Size depends on how many
       twins exist (OID-PREVALENCE).
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-111
     title: "BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes"
     parcel: register-open
@@ -8565,8 +8550,8 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/query.js updateIdQuery ($in/$nin leaves) and #8758's
@@ -8581,31 +8566,17 @@ items:
     semver_reason: a bug fix; the request answers 200 and misses records
     register: [BF-111]
     gates:
-      - run: node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-        kind: integration
-        describe: >
-          Runs one object-id lab probe (tools/lab/object-id) against the fix
-          branch in its own mongo:7 container and asserts the fixed cells.
-          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
-          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-      - no-gate: >
-          Measured by tools/lab/object-id (probe P-ID-11): a list of a
-          string-stored and an ObjectId-stored treatment returns n=1, and
-          its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and
-          6d120fa2. The lab gate above wraps it.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev
         kind: static
         describe: >
-          wip/object-id-crud-fixes is a fast-forward of #8758's head
-          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+          Containment: 1c2d1afd is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          Fixed by 1c2d1afd on wip/object-id-crud-fixes (local, not pushed), four commits on
-          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
-          dev ddd9b600 and 6d120fa2: P-ID-11 on build f: GET n=2 and the DELETE leaves neither record (n=1 and the string record left on the other three). Every other cell of build f
-          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
-          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
-          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
-          and the new tests kept, 10 of them fail.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8624,6 +8595,8 @@ items:
       Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
       step: a human pushes ab7b22d6 and uploads
       reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-112
     title: "BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it"
     parcel: register-open
@@ -8631,8 +8604,8 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8758]
     ships_to_operators_today: true
     blast_radius: lib/authorization/storage.js create and remove.
     review: maintainer
@@ -8645,31 +8618,17 @@ items:
     semver_reason: a bug fix; admin-only
     register: [BF-112]
     gates:
-      - run: node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-        kind: integration
-        describe: >
-          Runs one object-id lab probe (tools/lab/object-id) against the fix
-          branch in its own mongo:7 container and asserts the fixed cells.
-          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
-          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-      - no-gate: >
-          Measured by tools/lab/object-id (probe P-ID-12): POST
-          /api/v2/authorization/subjects with a hex _id stores a string, and
-          DELETE by that hex answers 200 and leaves it, on v15.0.8, dev
-          ddd9b600 and 6d120fa2. The lab gate above wraps it.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev
         kind: static
         describe: >
-          wip/object-id-crud-fixes is a fast-forward of #8758's head
-          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+          Containment: ab7b22d6 is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          Fixed by d2fd9ff6 on wip/object-id-crud-fixes (local, not pushed), four commits on
-          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
-          dev ddd9b600 and 6d120fa2: P-ID-12 on build f: the subject is stored as an ObjectId and DELETE removes it (string and left on the other three). A subject already stored as a string is removed too (tests/storage.shape-handling.test.js). Every other cell of build f
-          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
-          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
-          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
-          and the new tests kept, 10 of them fail.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8690,6 +8649,8 @@ items:
       Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
       step: a human pushes ab7b22d6 and uploads
       reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-113
     title: "BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms"
     parcel: register-open
@@ -8697,8 +8658,8 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/server/object-id-forms.js idForms; profile.js save; the remove()
@@ -8709,30 +8670,17 @@ items:
     semver_reason: a defect in an unmerged fix, reachable only in-process
     register: [BF-113]
     gates:
-      - run: node tools/queue/gates/bf113-idforms-guard.js --ref wip/object-id-crud-fixes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev
         kind: static
         describe: >
-          Loads official/bf/object-id-crud's object-id-forms.js and calls
-          idForms('abcdefghijkl'); its control is a 24-hex id, which must
-          give [ObjectId, hex]. RED on 6d120fa2 (three forms). Positive
-          control run 2026-09-24: the same file with an isHexId guard in
-          idForms, committed to a scratch repository under QUEUE_GATE_ROOT,
-          goes green. On wip/object-id-crud-fixes dd2cf8f1 it is green;
-          without --ref it still measures the PR head and is red until
-          the push.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
-        kind: static
-        describe: >
-          wip/object-id-crud-fixes is a fast-forward of #8758's head
-          (6d120fa2), so the push is to bf/object-id-crud with no rebase.
+          Containment: dd2cf8f1 is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          Fixed by dd2cf8f1 on wip/object-id-crud-fixes (local, not pushed), four commits on
-          6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8,
-          dev ddd9b600 and 6d120fa2: no lab cell; the helper gate below. Every other cell of build f
-          equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept.
-          Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing,
-          3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2
-          and the new tests kept, 10 of them fail.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8752,6 +8700,8 @@ items:
       Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
       step: a human pushes ab7b22d6 and uploads
       reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-115
     title: "BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load"
     parcel: register-open
@@ -8759,7 +8709,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -8779,25 +8729,17 @@ items:
     semver_reason: a crash fix; a request that stored an unusable id now stores a server id
     register: [BF-115]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev
         kind: static
         describe: >
-          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
-          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
-          freshness: it stays green after #8758 merges.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js
-        kind: static
-        describe: >
-          The fix (17add44b) is on the branch. A presence check only; its
-          control is the same grep on origin/bf/object-id-crud, which fails
-          until the push. tests/api.empty-id.test.js is what says the fix works.
+          Containment: 17add44b is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          The behaviour is held by tests/api.empty-id.test.js, which needs a booted
-          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
-          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
-          object-id test files pass together (578 passing); each fix hunk
-          reverted fails a named test (register detail). The full matrix
-          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8819,6 +8761,8 @@ items:
       ObjectId it names, so a mongoexport restore keeps its ids.
       Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
       tree cf590474; CI 13 of 13 jobs green on that head.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-116
     title: "BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch"
     parcel: register-open
@@ -8826,7 +8770,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -8842,25 +8786,17 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-116]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev
         kind: static
         describe: >
-          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
-          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
-          freshness: it stays green after #8758 merges.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js
-        kind: static
-        describe: >
-          The fix (c3a34bac) is on the branch. A presence check only; its
-          control is the same grep on origin/bf/object-id-crud, which fails
-          until the push. tests/api.devicestatus.resend-guard.test.js is what says the fix works.
+          Containment: c3a34bac is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          The behaviour is held by tests/api.devicestatus.resend-guard.test.js, which needs a booted
-          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
-          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
-          object-id test files pass together (578 passing); each fix hunk
-          reverted fails a named test (register detail). The full matrix
-          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8875,6 +8811,8 @@ items:
       c3a34bac.
       Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
       tree cf590474; CI 13 of 13 jobs green on that head.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-117
     title: "BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy"
     parcel: register-open
@@ -8882,7 +8820,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -8904,25 +8842,17 @@ items:
     semver_reason: a bug fix in deletes and in which stored copy is read
     register: [BF-117]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev
         kind: static
         describe: >
-          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
-          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
-          freshness: it stays green after #8758 merges.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js
-        kind: static
-        describe: >
-          The fix (63dd716c) is on the branch. A presence check only; its
-          control is the same grep on origin/bf/object-id-crud, which fails
-          until the push. tests/api3.delete-every-form.test.js is what says the fix works.
+          Containment: 63dd716c is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          The behaviour is held by tests/api3.delete-every-form.test.js, which needs a booted
-          server and a MongoDB, so it is not a queue gate. 2026-09-25 on
-          63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the
-          object-id test files pass together (578 passing); each fix hunk
-          reverted fails a named test (register detail). The full matrix
-          run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8941,6 +8871,8 @@ items:
       such id' on both builds, and #8758 lets an upper-case id reach it.
       Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
       tree cf590474; CI 13 of 13 jobs green on that head.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: BFQ-114
     title: "BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on"
     parcel: register-open
@@ -9944,7 +9876,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     ships_to_operators_today: true
@@ -9958,7 +9890,7 @@ items:
     semver_reason: an error status for a read that finds nothing becomes a not-found answer
     register: [BF-129]
     gates:
-      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" wip/object-id-crud-fixes-2 -- lib/api/entries/index.js'
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/dev -- lib/api/entries/index.js'
         kind: static
         describe: >
           FAILS today: the route still builds the "No such id" error that
@@ -9977,7 +9909,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10012,7 +9944,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10047,7 +9979,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10082,7 +10014,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10095,25 +10027,17 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-130]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev
         kind: static
         describe: >
-          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
-          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
-          freshness: it stays green after #8758 merges.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js
-        kind: static
-        describe: >
-          The fix (6c3ccce6) is on the branch. A presence check only; its
-          control is the same grep on origin/bf/object-id-crud, which fails
-          until the push. tests/api.object-id.treatments-entries.test.js is
-          what says the fix works.
+          Containment: 6c3ccce6 is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          The behaviour is held by tests/api.object-id.treatments-
-          entries.test.js (the reproduction is red on cb7d4110 and green on
-          6c3ccce6; removing the index map fails two tests), which needs a
-          booted server and a MongoDB. The full six-cell run on 6c3ccce6 is
-          recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -10127,12 +10051,14 @@ items:
       maintainer's request ("fix BF-130 first so I push once").
       Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
       tree cf590474; CI 13 of 13 jobs green on that head.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: OID-ENTRIES-REPLY-ID
     title: "On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@cb7d4110
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10161,7 +10087,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@cb7d4110
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10190,7 +10116,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@cb7d4110
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10223,7 +10149,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10237,25 +10163,17 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-131]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev
         kind: static
         describe: >
-          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
-          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
-          freshness: it stays green after #8758 merges.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js
-        kind: static
-        describe: >
-          The fix (e9dbb1fb) is on the branch. A presence check only; its
-          control is the same grep on origin/bf/object-id-crud, which fails
-          until the push. tests/cache.remove-by-id.test.js and
-          tools/lab/rc-soak/probe-deleted-entry.js say whether it works.
+          Containment: e9dbb1fb is in origin/dev since #8758 merged as 4d9ecc3b
+          (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It
+          stays green; the control (origin/master, 15.0.8) goes stale when
+          15.0.9 is released.
       - no-gate: >
-          The behaviour needs a booted server and a MongoDB: tests/cache.remove-
-          by-id.test.js (red on 6c3ccce6, green on e9dbb1fb, 2026-09-25, Node
-          22.23.2, MongoDB 7.0.43) and the soak probe (exit 1 on ab7b22d6, 0 on
-          92d08342 and 4f705217). The full six-cell run on e9dbb1fb is recorded
-          in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+          Behaviour is held by #8758's tests in dev (CI 13 of 13 green on
+          f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches
+          operators with 15.0.9 (RT-0).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -10269,6 +10187,8 @@ items:
       and could count in insulin and carbs on board there.
       Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
       tree cf590474; CI 13 of 13 jobs green on that head.
+      Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after
+      the maintainer's review; GitHub records no review on the PR.
   - id: RT-SOAK
     title: "tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak"
     parcel: release-train
@@ -10364,7 +10284,7 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >
@@ -10384,7 +10304,7 @@ items:
     semver_reason: an edit of a record stored twice leaves one record instead of two
     register: []
     gates:
-      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/api3/storage/mongoCollection/modify.js'
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'
         kind: static
         describe: >
           Holds while v3 replaceOne/updateOne remove no other stored form
@@ -10421,7 +10341,7 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: wip/object-id-crud-fixes-2@63dd716c
+    base: origin/dev@fbaa4a2a
     state: not-started
     pr: []
     blast_radius: >

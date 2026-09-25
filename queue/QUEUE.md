@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 160 |
-| runnable gates | 232 |
-| explicit `no-gate:` markers | 210 |
+| runnable gates | 225 |
+| explicit `no-gate:` markers | 206 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 210 of the 442 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 206 of the 431 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,10 +44,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 14 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8419, RT-PR-8730 |
-| `ready-to-push` | 8 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-134 |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-134 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 6 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 |
-| `merged-upstream` | 45 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-114, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126 |
+| `merged-upstream` | 56 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126, BFQ-130, BFQ-131 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -1869,7 +1868,7 @@ that costs.
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -1883,7 +1882,7 @@ that costs.
 
 **Gates.**
 
-- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/api3/storage/mongoCollection/modify.js'`
+- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'`
   - Holds while v3 replaceOne/updateOne remove no other stored form (the helper the v1 writes use for it is staleStringForms). A presence check only, inverted: it goes RED when the merge lands and must then be replaced by a behaviour gate.
 - **NO GATE** &mdash; Behaviour needs a booted server and a MongoDB. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits one copy and PUT replaces one, each leaving two records; on 63dd716c (BF-117 sort) both write the ObjectId copy (tests/api3.delete-every-form.test.js, PATCH in both storage orders) and still leave the string copy.
 
@@ -1901,7 +1900,7 @@ that costs.
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -1982,15 +1981,15 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `blocked` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
 | `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `blocked` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
 | `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `blocked` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
-| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `in-flight-upstream` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
-| `BFQ-109` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
-| `BFQ-110` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there | `ready-to-push` | `bf/object-id-crud` | patch | 0 run + 2 no-gate |
-| `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
-| `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
-| `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 1 no-gate |
-| `BFQ-115` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
-| `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
-| `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `merged-upstream` | `bf/object-id-crud` | patch | 1 run + 1 no-gate |
+| `BFQ-109` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair | `merged-upstream` | `wip/object-id-crud-fixes` | patch | 1 run + 1 no-gate |
+| `BFQ-110` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there | `merged-upstream` | `bf/object-id-crud` | patch | 1 run + 1 no-gate |
+| `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `merged-upstream` | `wip/object-id-crud-fixes` | patch | 1 run + 1 no-gate |
+| `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `merged-upstream` | `wip/object-id-crud-fixes` | patch | 1 run + 1 no-gate |
+| `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `merged-upstream` | `wip/object-id-crud-fixes` | patch | 1 run + 1 no-gate |
+| `BFQ-115` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
+| `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
+| `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `merged-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `merged-upstream` | `bf/mmol-partial-thresholds` | patch | 1 run + 2 no-gate |
 | `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `merged-upstream` | `bf/pump-warn-on-suspend` | patch | 1 run + 1 no-gate |
@@ -2010,11 +2009,11 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-PROFILE-RESEND` | Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `TEST-FLAKE-REPOST-FIND-COUNT` | tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-130` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-130` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
 | `OID-ENTRIES-REPLY-ID` | On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-NE-OPERATOR` | find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
 | `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
@@ -3566,7 +3565,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
@@ -3584,7 +3583,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. bf/object-id-crud: 2478, 2483, 2496, 2832, 2848, 2858, 2866, 2866 passing, 0 failing, 3 pending per commit on Node 20 and 22; matrix 336/336 on MongoDB 7 and 4.4 (dev: 176/336). No queue gate runs them yet.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev`
+  - Containment: 5581c5e4 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
@@ -3592,13 +3593,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 - `docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md`
 
-**Notes.** Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews (2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id- consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag. Evidence: the combined run rc-15.0.9-combined-010 (docs/30-design/remedial/rc-15.0.9-integration-record.md) includes 6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id matrix in each cell. Per-commit suites and the 336-cell matrix are in the no-gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. The narrow alternatives (BFQ-99 9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to land. It enables the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: - 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied: D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries POST answers the stored _id, D4 helper header. Review 2026-09-24 (tools/lab/object-id, 43 cells against v15.0.8, dev ddd9b600 and 6d120fa2): three pre-release findings on this head, BF-109 (BFQ-109, v3 writes take the v1 half of a pair), BF-110 (BFQ-110, a delete by hex removes both twins; the body's "you can now delete it" advice leads there; needs a decision) and BF-113 (BFQ-113, idForms accepts 12-character strings). The body's "Nothing in your database changes until a record is edited or deleted" is wrong for new records, which are now stored as ObjectId. The entries POST now answers the stored _id and drops a different sent _id without an error (D3, as decided; worth one line in the notes). Two shipping defects in the same class that this PR does not touch: BF-111 (BFQ-111) and BF-112 (BFQ-112).
+**Notes.** Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews (2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id- consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag. Evidence: the combined run rc-15.0.9-combined-010 (docs/30-design/remedial/rc-15.0.9-integration-record.md) includes 6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id matrix in each cell. Per-commit suites and the 336-cell matrix are in the no-gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. The narrow alternatives (BFQ-99 9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to land. It enables the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: - 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied: D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries POST answers the stored _id, D4 helper header. Review 2026-09-24 (tools/lab/object-id, 43 cells against v15.0.8, dev ddd9b600 and 6d120fa2): three pre-release findings on this head, BF-109 (BFQ-109, v3 writes take the v1 half of a pair), BF-110 (BFQ-110, a delete by hex removes both twins; the body's "you can now delete it" advice leads there; needs a decision) and BF-113 (BFQ-113, idForms accepts 12-character strings). The body's "Nothing in your database changes until a record is edited or deleted" is wrong for new records, which are now stored as ObjectId. The entries POST now answers the stored _id and drops a different sent _id without an error (D3, as decided; worth one line in the notes). Two shipping defects in the same class that this PR does not touch: BF-111 (BFQ-111) and BF-112 (BFQ-112). Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-109` &mdash; BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
 | base | `official/bf/object-id-crud@572bfc32` |
@@ -3616,25 +3617,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
-  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in docker and the three worktrees, about 3 minutes; lab.sh up, run, down). On 6d120fa2 "hex DELETE, then GET" reads "200 / v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT" leaves identifier=X n=2 where both controls leave n=1. Same for a non-hex identifier. The lab gate above wraps it.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
-  - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
-- **NO GATE** &mdash; Fixed by a2c7eb39 on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-10 on build f reads as v15.0.8 and dev (DELETE leaves v3-copy(invalid), GET 410; PUT leaves identifier=X n=1) and P-ID-2 still reads as 6d120fa2 (200). The fix is in modify.js, not utils.js: each write first finds its target with the read's sort ({identifier: -1}) and then writes by that document's _id; utils.js is unchanged. Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev`
+  - Containment: a2c7eb39 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the review of #8758, which it blocks in the review's judgement; whether it holds the merge is the maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's P-ID-2 fix (v3 GET/PATCH/DELETE of a string- _id record back to 404), so a fix must keep P-ID-2 and change only which document a write takes. Fix shape, not measured: resolve the target with the sorted findOneFilter, then write by its exact _id. Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body.
+**Notes.** Open, found 2026-09-24 in the review of #8758, which it blocks in the review's judgement; whether it holds the merge is the maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's P-ID-2 fix (v3 GET/PATCH/DELETE of a string- _id record back to 404), so a fix must keep P-ID-2 and change only which document a write takes. Fix shape, not measured: resolve the target with the sorted findOneFilter, then write by its exact _id. Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-110` &mdash; BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
@@ -3652,21 +3650,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-7). On 6d120fa2 the v1 DELETE /treatments/<hex> and the websocket dbRemove of a twin leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id] returns 2 where they return 1. The v3 permanent DELETE leaves 1 on all three. No queue gate wraps the lab yet (OID-LAB).
-- **NO GATE** &mdash; Decided 2026-09-24 (maintainer): deleting a record by its hex id removes both copies of a twin. That is what #8758's body already says ("Deleting such a record now removes it, including a copy left by an earlier edit"), so no code changes. What is left is one line of the body's advice, "If you see an old copy beside the one you edited, you can now delete it", which deletes the edited copy too. Proposed: "If you see an old copy beside the one you edited, edit either one: the two become one record with that edit. Deleting either one deletes both." The next step is a human edit of the PR body and of the 15.0.9 release notes. Both are prepared 2026-09-24: reports/phase0-pr-bodies/pr-8758-body.md (upload with gh pr edit) and the #8758 section of releases/cgm-remote-monitor-15.0.9/release-notes.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev`
+  - Containment: f1e8398b is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The corrected #8758 body (edit either copy only through v1; deleting either copy deletes both) is on the merged head's PR; the behaviour was kept by decision. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Decided 2026-09-24: behaviour kept (option b). Before the decision it read: (a) when both forms are stored, a delete by the hex removes only the string form, or (b) keep the behaviour and change the PR body and the release notes from "you can now delete it" to "edit the record; do not delete the old copy". Either way the release-note line "Nothing in your database changes until a record is edited or deleted" is also wrong for new records, which #8758 stores as ObjectId (P-ID-4, P-ID-5, P-ID-6); that wording belongs to BFQ-102. Size depends on how many twins exist (OID-PREVALENCE).
+**Notes.** Decided 2026-09-24: behaviour kept (option b). Before the decision it read: (a) when both forms are stored, a delete by the hex removes only the string form, or (b) keep the behaviour and change the PR body and the release notes from "you can now delete it" to "edit the record; do not delete the old copy". Either way the release-note line "Nothing in your database changes until a record is edited or deleted" is also wrong for new records, which #8758 stores as ObjectId (P-ID-4, P-ID-5, P-ID-6); that wording belongs to BFQ-102. Size depends on how many twins exist (OID-PREVALENCE). Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-111` &mdash; BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
 | base | `official/bf/object-id-crud@572bfc32` |
@@ -3684,25 +3683,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
-  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-11): a list of a string-stored and an ObjectId-stored treatment returns n=1, and its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and 6d120fa2. The lab gate above wraps it.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
-  - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
-- **NO GATE** &mdash; Fixed by 1c2d1afd on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-11 on build f: GET n=2 and the DELETE leaves neither record (n=1 and the string record left on the other three). Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev`
+  - Containment: 1c2d1afd is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural follow-up on the #8758 helper once it merges (expand each hex leaf of $in and $nin to its forms). Candidate for 15.0.10. Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body.
+**Notes.** Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural follow-up on the #8758 helper once it merges (expand each hex leaf of $in and $nin to its forms). Candidate for 15.0.10. Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-112` &mdash; BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
 | base | `official/bf/object-id-crud@572bfc32` |
@@ -3720,25 +3716,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
-  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-12): POST /api/v2/authorization/subjects with a hex _id stores a string, and DELETE by that hex answers 200 and leaves it, on v15.0.8, dev ddd9b600 and 6d120fa2. The lab gate above wraps it.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
-  - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
-- **NO GATE** &mdash; Fixed by d2fd9ff6 on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-12 on build f: the subject is stored as an ObjectId and DELETE removes it (string and left on the other three). A subject already stored as a string is removed too (tests/storage.shape-handling.test.js). Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev`
+  - Containment: ab7b22d6 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review; same class as BF-99 in auth_subjects, which #8758 does not touch. The web admin page does not send _id, so reaching it needs a restore or a tool. The access token digests _id.toString(), the same for either form, so tokens are unaffected. Fix shape: toStoredId on create, idForms on remove. Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+**Notes.** Open, found 2026-09-24 in the #8758 review; same class as BF-99 in auth_subjects, which #8758 does not touch. The web admin page does not send _id, so reaching it needs a restore or a tool. The access token digests _id.toString(), the same for either form, so tokens are unaffected. Fix shape: toStoredId on create, idForms on remove. Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-113` &mdash; BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
 | base | `official/bf/object-id-crud@572bfc32` |
@@ -3756,23 +3749,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/bf113-idforms-guard.js --ref wip/object-id-crud-fixes`
-  - Loads official/bf/object-id-crud's object-id-forms.js and calls idForms('abcdefghijkl'); its control is a 24-hex id, which must give [ObjectId, hex]. RED on 6d120fa2 (three forms). Positive control run 2026-09-24: the same file with an isHexId guard in idForms, committed to a scratch repository under QUEUE_GATE_ROOT, goes green. On wip/object-id-crud-fixes dd2cf8f1 it is green; without --ref it still measures the PR head and is red until the push.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
-  - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
-- **NO GATE** &mdash; Fixed by dd2cf8f1 on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: no lab cell; the helper gate below. Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev`
+  - Containment: dd2cf8f1 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+**Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-115` &mdash; BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
@@ -3790,24 +3781,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`
-  - The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green after #8758 merges.
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js`
-  - The fix (17add44b) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api.empty-id.test.js is what says the fix works.
-- **NO GATE** &mdash; The behaviour is held by tests/api.empty-id.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev`
+  - Containment: 17add44b is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1, reproduced by the review). Live on 15.0.8; needs a credential that can create treatments or entries; no corpus client sends such a value. Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0, false and {} as _id, without a crash but unaddressable by any id route. Public-disclosure note: the fix commit and its test show the value once pushed; the register names the mechanism only. The client-unchanged gate names lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js is in the browser bundle, so a browser data-load hand check is owed before the tag. cb7d4110 adds: an Extended JSON {$oid} _id becomes the ObjectId it names, so a mongoexport restore keeps its ids. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1, reproduced by the review). Live on 15.0.8; needs a credential that can create treatments or entries; no corpus client sends such a value. Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0, false and {} as _id, without a crash but unaddressable by any id route. Public-disclosure note: the fix commit and its test show the value once pushed; the register names the mechanism only. The client-unchanged gate names lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js is in the browser bundle, so a browser data-load hand check is owed before the tag. cb7d4110 adds: an Extended JSON {$oid} _id becomes the ObjectId it names, so a mongoexport restore keeps its ids. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-116` &mdash; BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
@@ -3825,24 +3814,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`
-  - The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green after #8758 merges.
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js`
-  - The fix (c3a34bac) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api.devicestatus.resend-guard.test.js is what says the fix works.
-- **NO GATE** &mdash; The behaviour is held by tests/api.devicestatus.resend-guard.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev`
+  - Containment: c3a34bac is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-2, reproduced by the review). This reverses #8758's own design, which refused a re-send with 500 as profile create does (BF-99); the maintainer asked for it on #8758 (2026-09-25, this session). Profile create still refuses a re-send with 500; making it match is not done. No AID uploader in the corpus sends a devicestatus _id. Fix c3a34bac. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-2, reproduced by the review). This reverses #8758's own design, which refused a re-send with 500 as profile create does (BF-99); the maintainer asked for it on #8758 (2026-09-25, this session). Profile create still refuses a re-send with 500; making it match is not done. No AID uploader in the corpus sends a devicestatus _id. Fix c3a34bac. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-117` &mdash; BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
@@ -3860,18 +3847,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`
-  - The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green after #8758 merges.
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js`
-  - The fix (63dd716c) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api3.delete-every-form.test.js is what says the fix works.
-- **NO GATE** &mdash; The behaviour is held by tests/api3.delete-every-form.test.js, which needs a booted server and a MongoDB, so it is not a queue gate. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43 (read from the server): the object-id test files pass together (578 passing); each fix hunk reverted fails a named test (register detail). The full matrix run is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev`
+  - Containment: 63dd716c is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3; the copy- picking regression found by the review, 40/40 trials). Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and each leaves two records, so #8758's body and release-notes advice 'edit either one: the two become one record' holds only for v1 PUT/POST; that wording is to be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote- monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT- MERGE. Also seen by the review, not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper- case id reach it. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3; the copy- picking regression found by the review, 40/40 trials). Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and each leaves two records, so #8758's body and release-notes advice 'edit either one: the two become one record' holds only for v1 PUT/POST; that wording is to be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote- monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT- MERGE. Also seen by the review, not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper- case id reach it. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-114` &mdash; BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
 
@@ -4372,7 +4357,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4387,7 +4372,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" wip/object-id-crud-fixes-2 -- lib/api/entries/index.js'`
+- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/dev -- lib/api/entries/index.js'`
   - FAILS today: the route still builds the "No such id" error that the formatter answers with 500. A presence check only; the fix is done when a test shows an unknown id answers 404 or 200 [].
 
 **Evidence.**
@@ -4403,7 +4388,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4433,7 +4418,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4462,7 +4447,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
@@ -4488,7 +4473,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
@@ -4506,17 +4491,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`
-  - The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green after #8758 merges.
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js`
-  - The fix (6c3ccce6) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/api.object-id.treatments-entries.test.js is what says the fix works.
-- **NO GATE** &mdash; The behaviour is held by tests/api.object-id.treatments- entries.test.js (the reproduction is red on cb7d4110 and green on 6c3ccce6; removing the index map fails two tests), which needs a booted server and a MongoDB. The full six-cell run on 6c3ccce6 is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev`
+  - Containment: 6c3ccce6 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Open, found 2026-09-25 by the #8758 freeze review, queued at the maintainer's request. New in #8758 and a silent 200 drop, so it is a candidate to fold into #8758 before the tag, like BF-115 to BF-117; the reach is narrow. The food and activity batch paths use the same trailing delete and should be checked for the same shape. Fixed 2026-09-25 as 6c3ccce6 on wip/object-id-crud-fixes-2 at the maintainer's request ("fix BF-130 first so I push once"). Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+**Notes.** Open, found 2026-09-25 by the #8758 freeze review, queued at the maintainer's request. New in #8758 and a silent 200 drop, so it is a candidate to fold into #8758 before the tag, like BF-115 to BF-117; the reach is narrow. The food and activity batch paths use the same trailing delete and should be checked for the same shape. Fixed 2026-09-25 as 6c3ccce6 on wip/object-id-crud-fixes-2 at the maintainer's request ("fix BF-130 first so I push once"). Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `OID-ENTRIES-REPLY-ID` &mdash; On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id
 
@@ -4525,7 +4508,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4554,7 +4537,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4583,7 +4566,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| base | `origin/dev@fbaa4a2a` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
@@ -4609,7 +4592,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
@@ -4627,18 +4610,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`
-  - The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green after #8758 merges.
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js`
-  - The fix (e9dbb1fb) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/cache.remove-by-id.test.js and tools/lab/rc-soak/probe-deleted-entry.js say whether it works.
-- **NO GATE** &mdash; The behaviour needs a booted server and a MongoDB: tests/cache.remove- by-id.test.js (red on 6c3ccce6, green on e9dbb1fb, 2026-09-25, Node 22.23.2, MongoDB 7.0.43) and the soak probe (exit 1 on ab7b22d6, 0 on 92d08342 and 4f705217). The full six-cell run on e9dbb1fb is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev`
+  - Containment: e9dbb1fb is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.
+- **NO GATE** &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/rc-soak/probe-deleted-entry.js`
 
-**Notes.** Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK), after runs 011 to 014 of the full suite were green: the suite never read the cache after a delete. Fixed the same day as e9dbb1fb before the push, at the maintainer's request to push once. Safety-visible: a deleted bolus or carbs entry kept being shown on newly opened pages and could count in insulin and carbs on board there. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+**Notes.** Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK), after runs 011 to 014 of the full suite were green: the suite never read the cache after a delete. Fixed the same day as e9dbb1fb before the push, at the maintainer's request to push once. Safety-visible: a deleted bolus or carbs entry kept being shown on newly opened pages and could count in insulin and carbs on board there. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
 ### `BFQ-133` &mdash; BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
 

@@ -1848,7 +1848,7 @@ controls:
       #8758's pushed head deletes one form, so the grep exits 1 there until
       the push.
   - gate: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" wip/object-id-crud-fixes-2 -- lib/api/entries/index.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/dev -- lib/api/entries/index.js'
     cwd: .
     control: |-
       sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/master -- lib/api/entries/index.js'
@@ -1858,10 +1858,10 @@ controls:
       there as it does on the candidate today: the grep does match the text
       it looks for. The gate is red until BF-129 is fixed.
   - gate: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/api3/storage/mongoCollection/modify.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'
     cwd: .
     control: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/server/treatments.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/server/treatments.js'
     control-kind: static
     proves: >
       The same inverted grep over a file that does use staleStringForms (the
@@ -1961,3 +1961,104 @@ controls:
       the 5 new cases fail and 8 pass. With a mongod on 27093 the control is:
       tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
       bf2/subject-edit-keeps-fields 29e6430e externals/work/crm-bf47 authsubjects
+
+  # --- #8758 merged 2026-09-25 (4d9ecc3b): containment gates (session -6a) ---
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain 5581c5e4, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain a2c7eb39, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain f1e8398b, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain 1c2d1afd, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain ab7b22d6, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain dd2cf8f1, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain 17add44b, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain c3a34bac, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain 63dd716c, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain 6c3ccce6, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/master
+    control-kind: static
+    proves: >
+      origin/master (15.0.8) does not contain e9dbb1fb, so the same ancestry
+      question exits 1 there. Goes stale when 15.0.9 is released.

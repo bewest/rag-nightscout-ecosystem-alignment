@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 113 | 43 | 19 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 113 | 43 | 8 |
 | **Modernization** | `release-train` | 27 | 5 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **160** | **57** | **23** |
+| | **total** | **160** | **57** | **12** |
 
 <!-- END GENERATED: horizons -->
 
@@ -125,15 +125,15 @@ cover more than one `BF-`:
 | `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
-| `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
+| `BFQ-102` | `merged-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
 | `BFQ-103` | `merged-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
 | `BFQ-107` | `merged-upstream` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 |
 | `BFQ-108` | `not-started` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timesta |
-| `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
-| `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
+| `BFQ-111` | `merged-upstream` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
+| `BFQ-112` | `merged-upstream` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
 | `BFQ-114` | `merged-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
-| `BFQ-115` | `in-flight-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
-| `BFQ-117` | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
+| `BFQ-115` | `merged-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
+| `BFQ-117` | `merged-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
 | `BFQ-118` | `merged-upstream` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
 | `BFQ-119` | `merged-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `merged-upstream` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
@@ -180,14 +180,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 6 |  | 5 |  | 8 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 33 | 1 | 5 | 6 | 4 | 6 | 19 | 4 |  | 2 | 1 |  | **81** |
-| `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  | 1 | 1 |  | 16 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 | 1 | 6 |  | 5 | 8 | 1 |  |  |  | 1 | **27** |
+| `register-open` | 33 | 1 | 5 | 1 | 4 | 30 | 4 |  | 2 | 1 |  | **81** |
+| `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 
