@@ -36,6 +36,8 @@ repository.
 | [`BFQ-115`](bfq-115-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load |
 | [`BFQ-116`](bfq-116-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch |
 | [`BFQ-117`](bfq-117-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy |
+| [`BFQ-120`](bfq-120-bf-clock-stale-offline.md) | &mdash; | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) |
+| [`BFQ-126`](bfq-126-bf-authsubject-nameless.md) | &mdash; | `ready-to-push` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) |
 | [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
 | [`BFQ-131`](bfq-131-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |

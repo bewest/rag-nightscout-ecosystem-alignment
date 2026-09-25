@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 22 items
+### Maintainer &mdash; 24 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -50,6 +50,8 @@ that it was reviewed.
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
 | `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
+| `BFQ-120` | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fail | &mdash; |
+| `BFQ-126` | `ready-to-push` | BF-126 - an authorization subject without a name ends the server at every boot ( | &mdash; |
 | `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
 | `BFQ-131` | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |

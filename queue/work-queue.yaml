@@ -9196,9 +9196,10 @@ items:
     title: "BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
-    base: origin/dev@4f705217
-    state: not-started
+    branch: bf/clock-stale-offline
+    base: origin/dev@ecb63223
+    worktree: externals/work/crm-bf120-clock-stale
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -9220,13 +9221,13 @@ items:
     semver_reason: a bug fix in how the clock page draws data it already has
     register: [BF-120]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/client/clock-client.js | grep -A2 gotError | grep -q render'
+      - run: git -C externals/cgm-remote-monitor-official grep -q 'setInterval(refresh' bf/clock-stale-offline -- lib/client/clock-client.js
         kind: static
         describe: >
-          FAILS today: origin/dev's clock-client.js fetch error handler only
-          logs and does not redraw. A presence check only. It goes green if
-          the error path calls render, but a fix that re-renders on a separate
-          timer instead would leave it red, so the probe below decides.
+          The branch's clock timer calls refresh(), which redraws from the last
+          data before fetching (origin/dev still calls client.query directly and
+          fails this). A presence check only; the probe below decides. Point it
+          at origin/dev once merged.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/clock-stale-offline.js,
           which needs a cgm-remote-monitor tree with node_modules and so is not
@@ -9240,6 +9241,12 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-stale-offline.js
     notes: >
+      2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed),
+      on dev ecb63223: the 20 s timer redraws from the last data before fetching,
+      so age and stale state keep moving while fetches fail. 5 new tests (3
+      fail on dev's clock-client.js); probe exit 0 on the branch, 1 on dev; full
+      suite 2593/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. For review:
+      the Simple face (bn0-sg40) never goes stale; bn13-sg40 proposed.
       Filed 2026-09-25 from the GitHub triage (issue #7036, opened
       2021-05-31). Issue #8186 (clock reading age out of sync) may share the
       mechanism and needs browser console output to tell. Issue #7377
@@ -9533,9 +9540,10 @@ items:
     title: "BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@4f705217
-    state: not-started
+    branch: bf/authsubject-nameless
+    base: origin/dev@ecb63223
+    worktree: externals/work/crm-bf126-authsubject
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -9556,13 +9564,13 @@ items:
     semver_reason: a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
     register: [BF-126]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/authorization/storage.js && ! git -C externals/cgm-remote-monitor-official grep -qF "var abbrev = subject.name.toLowerCase()" origin/dev -- lib/authorization/storage.js'
+      - run: git -C externals/cgm-remote-monitor-official grep -q 'NAME_REQUIRED' bf/authsubject-nameless -- lib/authorization/storage.js
         kind: static
         describe: >
-          FAILS today: origin/dev's reload() still derives the token prefix
-          from subject.name without a guard. A presence check only; it goes
-          green when that line changes, and the probe below is what says
-          whether the server then survives.
+          The branch's storage.js refuses a subject or role without a usable
+          name (NAME_REQUIRED; origin/dev has none and fails this). A presence
+          check only; the held probe and tests/authsubjects.test.js decide.
+          Point it at origin/dev once merged.
       - no-gate: >
           The behaviour is measured by a probe held outside this repository (the defect is live on 15.0.8),
           which boots a cgm-remote-monitor tree against a disposable MongoDB
@@ -9576,6 +9584,12 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - a probe held outside this repository (the defect is live on 15.0.8)
     notes: >
+      2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed),
+      on dev ecb63223: create and save refuse a subject or role without a
+      usable name (400), and reload skips a stored one with a log line, so a
+      site already in this state boots. Roles had the same fault. 4 new tests
+      (all fail on dev); the held probe exits 0 on the branch, 1 on dev; full
+      suite 2592/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43.
       Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened
       2021-09-21). Admin-only, so not a security defect, but live on 15.0.8
       and persistent across restarts; the register text gives the mechanism

@@ -41,10 +41,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 12 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 |
+| `ready-to-push` | 14 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-120, BFQ-126, BFQ-130, BFQ-131 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 4 | BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8730 |
 | `merged-upstream` | 42 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, RT-PR-8530, BFQ-118, BFQ-119 |
@@ -1990,13 +1990,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `merged-upstream` | `bf/mmol-partial-thresholds` | patch | 1 run + 2 no-gate |
 | `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `merged-upstream` | `bf/pump-warn-on-suspend` | patch | 1 run + 1 no-gate |
-| `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
+| `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `ready-to-push` | `bf/clock-stale-offline` | patch | 1 run + 1 no-gate |
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `not-started` | `none yet` | minor | 1 run + 1 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244) | `not-started` | `none yet` | minor | 1 run + 2 no-gate |
 | `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
 | `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `not-started` | `-` | patch | 1 run + 1 no-gate |
-| `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `ready-to-push` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
 | `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220) | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
@@ -3972,11 +3972,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/clock-stale-offline` |
+| base | `origin/dev@ecb63223` |
+| worktree | `externals/work/crm-bf120-clock-stale` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -3990,8 +3990,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/client/clock-client.js | grep -A2 gotError | grep -q render'`
-  - FAILS today: origin/dev's clock-client.js fetch error handler only logs and does not redraw. A presence check only. It goes green if the error path calls render, but a fix that re-renders on a separate timer instead would leave it red, so the probe below decides.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q 'setInterval(refresh' bf/clock-stale-offline -- lib/client/clock-client.js`
+  - The branch's clock timer calls refresh(), which redraws from the last data before fetching (origin/dev still calls client.query directly and fails this). A presence check only; the probe below decides. Point it at origin/dev once merged.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/clock-stale-offline.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (30 minutes after the last successful fetch the face says "Just now", not stale, in-range colour); the online control shows "30 minutes ago" and stale on both. Done when the probe exits 0 on the candidate.
 
 **Evidence.**
@@ -3999,7 +3999,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/clock-stale-offline.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7036, opened 2021-05-31). Issue #8186 (clock reading age out of sync) may share the mechanism and needs browser console output to tell. Issue #7377 (clock blank with a URL token) is what a failing first fetch looks like: with no successful fetch nothing is ever drawn. Candidate for the remaining 15.0.9 cleanup; the maintainer decides.
+**Notes.** 2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed), on dev ecb63223: the 20 s timer redraws from the last data before fetching, so age and stale state keep moving while fetches fail. 5 new tests (3 fail on dev's clock-client.js); probe exit 0 on the branch, 1 on dev; full suite 2593/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. For review: the Simple face (bn0-sg40) never goes stale; bn13-sg40 proposed. Filed 2026-09-25 from the GitHub triage (issue #7036, opened 2021-05-31). Issue #8186 (clock reading age out of sync) may share the mechanism and needs browser console output to tell. Issue #7377 (clock blank with a URL token) is what a failing first fetch looks like: with no successful fetch nothing is ever drawn. Candidate for the remaining 15.0.9 cleanup; the maintainer decides.
 
 ### `BFQ-121` &mdash; BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
 
@@ -4172,11 +4172,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/authsubject-nameless` |
+| base | `origin/dev@ecb63223` |
+| worktree | `externals/work/crm-bf126-authsubject` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -4190,8 +4190,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/authorization/storage.js && ! git -C externals/cgm-remote-monitor-official grep -qF "var abbrev = subject.name.toLowerCase()" origin/dev -- lib/authorization/storage.js'`
-  - FAILS today: origin/dev's reload() still derives the token prefix from subject.name without a guard. A presence check only; it goes green when that line changes, and the probe below is what says whether the server then survives.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q 'NAME_REQUIRED' bf/authsubject-nameless -- lib/authorization/storage.js`
+  - The branch's storage.js refuses a subject or role without a usable name (NAME_REQUIRED; origin/dev has none and fails this). A presence check only; the held probe and tests/authsubjects.test.js decide. Point it at origin/dev once merged.
 - **NO GATE** &mdash; The behaviour is measured by a probe held outside this repository (the defect is live on 15.0.8), which boots a cgm-remote-monitor tree against a disposable MongoDB and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (process exits, reboot exits, removing the row restores it); the named-subject control keeps the server up. Exit 0 on a scratch copy of dev with a guarded token prefix. The fix is done when the probe exits 0 on the candidate.
 
 **Evidence.**
@@ -4199,7 +4199,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `a probe held outside this repository (the defect is live on 15.0.8)`
 
-**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened 2021-09-21). Admin-only, so not a security defect, but live on 15.0.8 and persistent across restarts; the register text gives the mechanism only. The probe file holds the request and is kept out of public text until the maintainer decides.
+**Notes.** 2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed), on dev ecb63223: create and save refuse a subject or role without a usable name (400), and reload skips a stored one with a log line, so a site already in this state boots. Roles had the same fault. 4 new tests (all fail on dev); the held probe exits 0 on the branch, 1 on dev; full suite 2592/3/0 vs dev 2588/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened 2021-09-21). Admin-only, so not a security defect, but live on 15.0.8 and persistent across restarts; the register text gives the mechanism only. The probe file holds the request and is kept out of public text until the maintainer decides.
 
 ### `BFQ-127` &mdash; BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
 
