@@ -21,6 +21,7 @@ Made by the maintainer on 2026-09-25.
 | **Carry into 15.0.9** | #8568 (lejcey): an AAPS open-ended loop disable keeps the loop and pump alerts off after the loop is back on. The contributor is asked to also match the AAPS-dev shape and add an alert-level test | register BF-114, queue `BFQ-114` |
 | | #8419 (je-l): tests for Loop push notifications and websockets | queue `RT-PR-8419` |
 | | #8530 (alanshurafa): a 48-hour option in the focus range selector | queue `RT-PR-8530` |
+| | #8730 (Crowdin, opened by sulkaharo): translation updates, 32 files; merges cleanly with `dev` `4f705217` and #8758 | queue `RT-PR-8730` |
 | **Do not carry** | #8522 (stevoh6): with it merged, 13 existing tests fail on `dev` (§5.4) | — |
 | **File in the register** | the 11 confirmed defects in §6: #5622, #7036, #7110, #8104, #6220, #5940, #7377, #7729, #7771, #8185, #8244. Filed 2026-09-25 as BF-118 to BF-128, each reproduced on 15.0.8 and dev with a control (probes in `tools/lab/triage-2026-09/`, except #7110's, held outside the repository) | register |
 | **Direction** | these defects continue the backfix effort, methodically and completely, one at a time | — |
@@ -126,7 +127,7 @@ programme work; **c** independent. File overlap with #8605 alone is not counted 
 | PR | title | author | rel. | recommendation |
 |---|---|---|---|---|
 | #8758 | a record's own _id finds, edits and deletes it | bewest | b | leave: the open 15.0.9 PR |
-| #8730 | Crowdin updates | sulkaharo (Crowdin) | b | carry into 15.0.9 or the next Crowdin sync; no draft needed |
+| #8730 | Crowdin updates | sulkaharo (Crowdin) | b | carry into 15.0.9 (decided 2026-09-25); no draft needed |
 | #8605 | modernize runtime, dependencies, memory | AndyLow91 | b | leave: programme vehicle |
 | #8598 | new dev branch post 15.0.8 release | AndyLow91 | b | leave: dev → master release PR |
 | **#8568** | fix loop status timeline | lejcey | c | **carried into 15.0.9** (decided) |
