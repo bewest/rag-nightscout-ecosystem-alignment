@@ -372,7 +372,7 @@ The narrower profile-only fix that this replaces is not being opened.
 
 ## Tests, re-run for this description
 
-At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from that commit). At `6c3ccce6` the full suite is being run.
+At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from that commit). At `6c3ccce6`, the same six cells: 3097 passing, 0 failing, 3 pending, and 286 core, in all six (three more than `cb7d4110`, all from that commit).
 At `ab7b22d6` (this branch with `dev` `4f705217` merged), Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. At `dd2cf8f1`, before the merge: 2875 passing, 0 failing, 3 pending.
 At `6d120fa2` (parts 1 and 2), Node 20.20.0: 2866 passing (`dev` `1f9a9d10` was 2386); of the 480 tests in the eleven new files, 259 fail with `dev`'s `lib/`, and the other 221 are invariants that pass on both.
 MongoDB needs a raised open-file limit for this suite (peak 1130 open files in `mongod` at `6d120fa2`); a container at Docker's default 1024 stops partway through.

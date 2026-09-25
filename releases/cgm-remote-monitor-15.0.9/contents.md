@@ -26,7 +26,7 @@ translations). Every PR merged to `dev` is `merged`; none is `released`. The car
 | Diff on `dev` | 226 files, +18167/−1403 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8758 (head `ab7b22d6`) — `gh pr view <n> --json state,headRefOid` |
+| Open additions | #8758 (PR head `ab7b22d6`; `6c3ccce6`, five commits on it, prepared locally to push) — `gh pr view <n> --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `4f705217`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
@@ -39,7 +39,7 @@ Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| #8758 | `bf/object-id-crud` | `ab7b22d6` | 19 | 28 files, +3328/−80 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
+| #8758 | `bf/object-id-crud` | `6c3ccce6` (local; the PR shows `ab7b22d6` until pushed) | 24 | 37 files, +4016/−103 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
 
 **#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
 changed profile only on a sink that has #8758.
@@ -355,9 +355,11 @@ the user-facing form. Facts the notes must not lose:
   × MongoDB 4.4/5.0/6.0). Without #8758.
 - Freeze candidate, 2026-09-25
   ([15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)):
-  `dev` `4f705217` + #8758 `ab7b22d6`, tree `25ab7afc` (#8758 is 0 behind `dev`). CI's `test-ci`
-  gives 3066 passing, 0 failing, 3 pending, and `test:core` gives 286, on Node 20.20.0, 22.23.2 and
-  24.20.0 × MongoDB 4.4.24 and 7.0.43. The `lib/api2` browser checks are owed (#8764).
+  `dev` `4f705217` + #8758 with its freeze-review fixes, `6c3ccce6` (local, tree `fd3e5c94`, run
+  014). CI's `test-ci` gives 3097 passing, 0 failing, 3 pending, and `test:core` gives 286, on Node
+  20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server. Not
+  the release candidate: the merge with #8568, #8419, #8530 and #8730 is not built. Browser checks
+  are owed for `lib/api2` (#8764) and for the data load in `lib/data/ddata.js` (BF-115).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 
