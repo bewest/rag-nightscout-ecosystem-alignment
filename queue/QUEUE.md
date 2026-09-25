@@ -4282,7 +4282,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d origin/dev`
   - #8770's merge e3adc91d (2026-09-25) is contained in origin/dev.
-- **NO GATE** &mdash; Measured by a probe kept with the fix notes (a local HTTP/2 APNs stand-in counting open sessions and heartbeat intervals): 1/5/20 left open after 1/5/20 commands on v15.0.8 and dev, 0 on the branch. tests/loop-apns-connections.test.js is the in-repo check (3 fail on dev's loop.js).
+- **NO GATE** &mdash; Measured by tools/lab/apns-shutdown/probe.js (a local HTTP/2 APNs stand-in counting open sessions and heartbeat intervals): 1/5/20 left open after 1/5/20 commands on v15.0.8 and dev, 0 on the branch. tests/loop-apns-connections.test.js is the in-repo check (3 fail on dev's loop.js).
 
 **Evidence.**
 

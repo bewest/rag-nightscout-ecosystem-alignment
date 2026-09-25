@@ -5287,7 +5287,7 @@ keeps it open with a heartbeat ping every 60 s (`config.heartBeat` 60000, an `un
 destroys the session but not the client, so the interval, which holds the client and its signed
 token, stays.
 
-**Reproduced 2026-09-25** on `v15.0.8` `92d08342` and `dev` `4d9ecc3b` with a probe that points
+**Reproduced 2026-09-25** on `v15.0.8` `92d08342` and `dev` `4d9ecc3b` with [`tools/lab/apns-shutdown/probe.js`](../../../tools/lab/apns-shutdown/probe.js), which points
 `loop.js` at a local HTTP/2 APNs stand-in (as the #8419 tests do) and counts sessions and live
 heartbeat intervals: after 1, 5 and 20 remote commands, 1, 5 and 20 of each remain; after the
 stand-in sends GOAWAY, 0 sessions remain but 20 intervals are still live. Controls: one push
