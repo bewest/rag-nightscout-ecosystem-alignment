@@ -273,6 +273,7 @@ measurement.
 | claim | authority |
 |---|---|
 | what "done" means for these documents | [`DEFINITION-OF-DONE.md`](DEFINITION-OF-DONE.md) |
+| the order of the work ahead | [`ROADMAP.md`](ROADMAP.md) |
 | item state, gates, review routing | `queue/work-queue.yaml` (source of truth) |
 | defect facts and `BF-` ids | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) |
 | what 15.0.9 contains and whether it is ready | [`../30-design/modernization/release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md) |

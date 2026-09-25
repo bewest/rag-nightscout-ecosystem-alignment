@@ -1042,7 +1042,7 @@ I have not edited any of these; per the brief they go to the reconciliation agen
    task that does not exist cannot be scheduled or checked. Either add T2.6 (the remaining
    collections on PostgreSQL) to the plan, or repoint the deadline at a task that exists.
    Verified 2026-09-15: `grep -n 'T2\.6'` finds the register at lines 214 and 260, three reports
-   under `docs/60-research/`, and the new `post-phase0-roadmap-2026-09-15.md`, which also gates
+   under `docs/60-research/`, and the new [post-phase0-roadmap-2026-09-15.md](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/post-phase0-roadmap-2026-09-15.md), which also gates
    work on T2.6 while calling it "unscheduled" — five documents scheduling against a task that
    no document defines. `grep -oE 'T2\.[0-9a-z]+'` on the execution plan returns only T2.0-T2.5
    and T2.1a.

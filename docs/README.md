@@ -8,6 +8,7 @@ This directory contains analysis, research, and decisions extracted from the Nig
 |---|---|
 | new, and considering reviewing | [`00-overview/REVIEWER-ONBOARDING.md`](00-overview/REVIEWER-ONBOARDING.md) |
 | asking "where is the work" | [`00-overview/PROGRAMME-STATUS.md`](00-overview/PROGRAMME-STATUS.md) |
+| asking "what comes next, in what order" | [`00-overview/ROADMAP.md`](00-overview/ROADMAP.md) |
 | asking "what is blocked on me" | [`00-overview/NEEDS-A-HUMAN.md`](00-overview/NEEDS-A-HUMAN.md) |
 | picking up one pull request | [`../reports/reviewer-packets/`](../reports/reviewer-packets/) |
 | looking for item state | [`../queue/QUEUE.md`](../queue/QUEUE.md) (generated; the source is `queue/work-queue.yaml`) |

@@ -1330,7 +1330,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 (dev -> master) on 2026-09-24: open, mergeable, 27 checks green and 3 skipped, reviewDecision REVIEW_REQUIRED and zero reviews. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent merges, 226 files, +18167/-1403. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. One open PR is planned to join it: #8758. Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1500,7 +1500,7 @@ that costs.
 | semver | `major` |
 | review | maintainer, a human reviewer, AND a deliberate hold. Its own evidence document says "No real Dexcom account or live database has been used and no live migration is claimed." |
 | register | `BF-61`, `BF-62` |
-| blocks on | `RT-4` |
+| blocks on | `RT-3` |
 
 **Blast radius.** 79 commits, prod 66 files +324/-511. DELETES TWO CGM INGESTION PATHS (legacy Dexcom Share and MiniMed CareLink), trusted proxies, DOMPurify, Moment/tz. Caveat: the maintainer stated on 2026-09-21 that mmconnect has been broken for some time (operational knowledge, not measured here) and that legacy Dexcom Share is intended to map to nightscout-connect, so whether both deleted paths are working today is not established.
 
@@ -1522,7 +1522,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** Blocked on RT-4's gate and held on the adopted train. The legacy bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge of the rehearsal rh/cut4 into the lifted cut 1 conflicts only in legacy files and manifests. The published cut 4 is 175 commits behind dev 153e5658 with 22 conflicting paths (RT-REBASE, 2026-09-24). Decisions: - 2026-09-23 (maintainer): BF-61's hard stop is intended. MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Under that decision the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not name a release number, and cut4-total-outage.js passes only when each stopping shape names a fix that boots. All three are done on rh/cut1-retire-legacy c043fb2d, where the gate is green (it is red on rh/cut4). - 2026-09-23 (maintainer): deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies); RT-4's separate release is dropped. If a Connect migration misbehaves, the symptom is that a user's glucose data stops arriving: a data-availability failure for someone managing diabetes, which is why this cut is the one to slow down on.
+**Notes.** Last on the adopted train, after RT-3 (policy §8.3). The legacy bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge of the rehearsal rh/cut4 into the lifted cut 1 conflicts only in legacy files and manifests. The published cut 4 is 175 commits behind dev 153e5658 with 22 conflicting paths (RT-REBASE, 2026-09-24). Decisions: - 2026-09-23 (maintainer): BF-61's hard stop is intended. MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Under that decision the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not name a release number, and cut4-total-outage.js passes only when each stopping shape names a fix that boots. All three are done on rh/cut1-retire-legacy c043fb2d, where the gate is green (it is red on rh/cut4). - 2026-09-23 (maintainer): deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies); RT-4's separate release is dropped. If a Connect migration misbehaves, the symptom is that a user's glucose data stops arriving: a data-availability failure for someone managing diabetes, which is why this cut is the one to slow down on.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 

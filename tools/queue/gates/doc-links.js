@@ -121,9 +121,6 @@ const PLANNED = new Map([
    + 'docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md exists and may '
    + 'already BE this deliverable under another name. Not assumed here - deciding '
    + 'that is the item\'s work, not this gate\'s.'],
-  ['docs/60-research/seam-tips-pre-R5.txt',
-   'post-phase0-roadmap L477 tells an operator to CREATE this with git for-each-ref '
-   + 'before the R5 rebase, as the rollback record. Absent until that rebase starts.'],
   ['reports/schema-census/impact-smoke.json',
    'the declared --out of `make schema-impact-smoke` (Makefile L761-763).'],
 ]);

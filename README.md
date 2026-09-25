@@ -8,6 +8,7 @@ Three parallel horizons: **remedial** (defects that already ship), **modernizati
 (the release train) and **multitenant** (bulk hosting). One queue spans all three.
 
 - **[docs/00-overview/PROGRAMME-STATUS.md](docs/00-overview/PROGRAMME-STATUS.md)** — where the work is and what it is waiting for
+- **[docs/00-overview/ROADMAP.md](docs/00-overview/ROADMAP.md)** — what comes next, and in what order
 - **[docs/00-overview/NEEDS-A-HUMAN.md](docs/00-overview/NEEDS-A-HUMAN.md)** — the items where no further engineering advances anything
 - **[docs/00-overview/REVIEWER-ONBOARDING.md](docs/00-overview/REVIEWER-ONBOARDING.md)** — read this first if you are considering reviewing
 - **[reports/reviewer-packets/](reports/reviewer-packets/)** — one bounded packet per open pull request

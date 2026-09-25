@@ -246,6 +246,58 @@ def block_open_prs(doc):
     return "\n".join(out)
 
 
+# States that take an item off the road ahead: its work is merged, finished,
+# withdrawn or answered. Everything else is still in front of someone.
+OFF_THE_ROAD = {"merged-upstream", "done", "closed", "answered"}
+
+
+def _road(doc, parcel):
+    """Open items of one parcel, grouped into waves by their open blockers.
+
+    An item's wave is one more than the highest wave among the blockers it is
+    still waiting on; an item waiting on nothing open is wave 1. A blocker in
+    another parcel counts, and is named, but is not itself listed. A cycle in
+    blocks_on would be a manifest error that validate.py already refuses.
+    """
+    by_id = {i["id"]: i for i in doc["items"]}
+    open_ids = {i["id"] for i in doc["items"] if i["state"] not in OFF_THE_ROAD}
+    wave = {}
+
+    def wave_of(item_id, seen=()):
+        if item_id in wave:
+            return wave[item_id]
+        waits = [b for b in by_id[item_id].get("blocks_on") or [] if b in open_ids]
+        w = 1 + max([wave_of(b, seen + (item_id,)) for b in waits if b not in seen] or [0])
+        wave[item_id] = w
+        return w
+
+    rows = [i for i in doc["items"] if i["parcel"] == parcel and i["id"] in open_ids]
+    for item in rows:
+        wave_of(item["id"])
+    return sorted(rows, key=lambda i: (wave[i["id"]], i["id"])), wave, open_ids
+
+
+def _block_road(doc, parcel):
+    rows, wave, open_ids = _road(doc, parcel)
+    out = ["| wave | id | what | claimed state | waits on |",
+           "|---:|---|---|---|---|"]
+    for item in rows:
+        waits = [b for b in item.get("blocks_on") or [] if b in open_ids]
+        out.append("| %d | `%s` | %s | `%s` | %s |"
+                   % (wave[item["id"]], item["id"], _flow(item["title"], 80),
+                      item["state"],
+                      ", ".join("`%s`" % b for b in waits) or "&mdash;"))
+    return "\n".join(out)
+
+
+def block_road_release_train(doc):
+    return _block_road(doc, "release-train")
+
+
+def block_road_tenancy(doc):
+    return _block_road(doc, "tenancy")
+
+
 def block_provenance(doc):
     meta = doc["meta"]
     against = meta.get("measured_against", {})
@@ -267,6 +319,8 @@ BLOCKS = {
     "reviewer-load": block_reviewer_load,
     "operator-exposure": block_operator_exposure,
     "open-prs": block_open_prs,
+    "road-release-train": block_road_release_train,
+    "road-tenancy": block_road_tenancy,
     "provenance": block_provenance,
 }
 

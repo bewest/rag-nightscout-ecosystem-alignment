@@ -7,10 +7,11 @@ reviewers of PR #8598. Snapshot, 2026-09-22, against `origin/dev` `74fc6619`,
 (version decided as 15.0.9, RT-D3 answered, connector `0.1.0` released and pinned by #8762,
 backfix 2 folded into 15.0.9). What is still before the tag is in queue item `RT-0` in
 [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and in
-[PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md); the latest combined run is
-[15.0.9 integration record](../remedial/rc-15.0.9-integration-record.md). It replaced
+[PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md); test evidence is in the
+[15.0.9 integration record](../remedial/rc-15.0.9-integration-record.md), and the current order of
+the work after 15.0.9 (§5) is on the [roadmap](../../00-overview/ROADMAP.md). It replaced
 [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readiness-2026-09-14.md)
-for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md) for ordering.*
+for 15.0.9.*
 
 ## 1. Verdict
 

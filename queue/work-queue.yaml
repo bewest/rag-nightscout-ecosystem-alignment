@@ -2847,7 +2847,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530]
     evidence:
       - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -3270,12 +3270,12 @@ items:
           still migrated so ingestion continues; only the operator's expressed
           intent is discarded silently. Nothing checks for accepted-and-ignored
           settings.
-    blocks_on: [RT-4]
+    blocks_on: [RT-3]
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: >
-      Blocked on RT-4's gate and held on the adopted train. The legacy
+      Last on the adopted train, after RT-3 (policy §8.3). The legacy
       bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is
       trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a
       trial merge of the rehearsal rh/cut4 into the lifted cut 1

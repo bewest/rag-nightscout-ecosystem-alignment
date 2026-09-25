@@ -99,7 +99,7 @@ decision was, this plan wins.**
 | [`queue/README.md`](../../../queue/README.md), [`queue/QUEUE.md`](../../../queue/QUEUE.md), `queue/work-queue.yaml` | the live index of every work item, with a gate per item | **item state** |
 | this plan | decisions, their evidence, and task definitions | **decisions**, and what a task means |
 | [backfix register](../remedial/nightscout-backfix-register.md) | every defect found, with provenance | **defect facts and ids** |
-| [post-Phase-0 roadmap](../post-phase0-roadmap-2026-09-15.md) | the work areas the maintainer selected, in order | ordering after Phase 0 |
+| [roadmap](../../00-overview/ROADMAP.md) | the order of the work ahead, generated from the queue's blockers | nothing; it links to where each order is decided |
 | [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
 | [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
 | [semver and release versioning policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
@@ -559,6 +559,32 @@ alone does not close this.
 
 ---
 
+### 2.11 Deployment metadata: a recommendation, not a decision
+
+Operator-supplied deployment metadata, such as a support contact, is not yet decided. The
+recommendation: **two fields with different owners, never merged into one.**
+
+- **A platform-level value is required**, and it must be servable with no tenant binding. A support
+  contact is needed exactly when something is broken: an unknown slug, a suspended tenant, a
+  database outage, the boot-error page. Those are the cases where a tenant record cannot be read.
+- **A tenant-level value takes precedence when present.** Under `single` the one value comes from
+  the environment, unchanged (D1). Under `multi`, D15 rules out env-sourced configuration, so the
+  platform value is a deployment row and the tenant value is a tenant row.
+- **Render both, labelled.** "Ask the person who set up your site" and "ask the company hosting it"
+  are different actions, and someone whose glucose data has stopped arriving needs to know which is
+  which.
+- **A tenant-supplied contact is often a private person's contact details**, for example a parent
+  who runs a site for a child. Treat it as tenant-controlled personal data: not on any
+  unauthenticated endpoint by default, not in logs, and not in any export that crosses a tenant
+  boundary. The platform contact is an organisational address and carries no such constraint.
+- It is a low-risk first consumer of the per-tenant configuration table (`T30-SCHEMA-CONFIG`),
+  because it is tenant-administrable but not a secret.
+
+Wherever this metadata is rendered (a boot-error page, a suspended-tenant response, a push
+notification), the text is user-facing. It must say plainly which party to contact and for what,
+and it must not suggest that contacting anyone replaces the person's own care team when the
+problem concerns their therapy rather than the software.
+
 ## 3. D8 — the query surface
 
 ### 3.1 v3 is closed, v1 is open
@@ -685,6 +711,25 @@ stands until the maintainer decides otherwise.
 **Caveat:** #8605 (the modernization integration PR) has zero human reviews across its production
 lines, all by one author. That blocks *shipping* the stack, not *developing* against it. This plan
 does not constitute a review of it.
+
+**Refreshing the seam, when it is done.** The chain is 16 linear branches, which is the nearest
+thing to an irreversible operation in this programme.
+
+- Before starting, record every seam tip in a committed file:
+  `git for-each-ref --format='%(refname:short) %(objectname)' refs/heads/seam/`. Rollback is
+  `git reset --hard <recorded tip>` per branch. `ORIG_HEAD` does not survive a multi-branch rebase,
+  and reflogs expire.
+- Decide per-branch rebase or squash before starting. A squash discards the per-branch history that
+  explains why each conflict was resolved the way it was. If squashing, tag the pre-squash tips
+  first.
+- `lib/server/query.js` carries two fixes for the same `$exists` operand defect: the seam's
+  `coerceExistsArguments()` (`e0564167`) and `dev`'s schema-driven `lib/server/query-coercion`
+  (#8737, BF-32). The schema-driven one covers more operators. Whether it covers the ordering the
+  seam's version handles has **not been measured**, so measure it before dropping either. BF-04's
+  operator allowlist sits in the same output path, so a careless resolution can re-open a security
+  fix.
+- The conflict count in `SEAM-REFRESH` is measured against the tip only. A per-branch rebase may
+  meet conflicts the tip does not show.
 
 ---
 
@@ -1278,6 +1323,9 @@ row is the record).
 | **Active fraction (15 %)** is an assumption | — | Drives options A and B far harder than C; a real hoster's figure would sharpen the model |
 | **Vendor rate limits** (EXP-MT-051) | — | Needs real credentials; the 9,700-account figure is a ceiling. `CONNECT_START_JITTER_MS` exists (T0.4), but the window to set it is exactly this unmeasured number |
 | **Reconnect storms, `UNLISTEN` churn** | T4.3 | The interesting realtime case |
+| **Per-tenant plugin-registry memory** | `T33-REM` | Decides between the two fixes for the `language` half of the `ctx` hazard (§7a) |
+| **No standing gate that the two backends agree on `bulkUpsert` mode** | `BFQ-21` | Today they agree only because `entries`, the one collection with a PostgreSQL schema, asks for the mode PostgreSQL hard-codes (register BF-21). The gate needed: parse every `bulkUpsert` call through its closing parenthesis (a line `grep` misses options on the continuation line). Fail if a collection with a PostgreSQL schema asks for a mode the adapter does not implement, or if any call passes no options. Break-it: flip `entries.js:168` to `replace` and see it fail |
+| **Whether per-tenant alarm thresholds are tenant-overridable or hoster-pinned** | `T30-RESEARCH`, maintainer | `T44` cannot build a per-tenant evaluation loop without the answer. A hoster pinning thresholds limits what a tenant can be alerted about, so this is a safety policy question, not an engineering one |
 
 ## 7a. What stands between here and alarms being ON under `multi`
 
@@ -1321,6 +1369,22 @@ boot per tenant means **the last tenant to boot sets level names process-wide**.
 Census over `lib/plugins/*.js`: 22 files touch these objects, 21 capture at init, `ar2.js` is mixed,
 and `treatmentnotify.js` is 0-capture / 9-`sbx` — the one already doing it right, and one of the three
 able to withhold an alarm (§7b).
+
+**Two ways to fix the `language` half.** A captured `translate` is not frozen: it reads its
+language instance's catalogue at call time. Only *which instance* it reads is fixed at init. So:
+
+1. **A per-tenant plugin registry.** `lib/plugins/index.js` is a factory
+   (`require('../plugins')(ctx)`), so one registry per tenant gives each tenant's plugins a closure
+   over that tenant's own language instance. No plugin source file changes. Its cost is per-tenant
+   registry memory, which is **unmeasured**: §7b measured the per-evaluation slice, and that
+   figure does not bound registry residency. Measure it before choosing (`T33-REM`).
+2. **Move the 21 capturing plugins to `sbx.*` reads.** This is the fallback if the registry is too
+   expensive.
+
+For `levels`, the smaller fix is to make it **stateless** (`toDisplay(level, translate)`), rather
+than turn it into a factory. A function with no stored state cannot be re-pointed wrongly, and a
+factory still admits the boot-time mutation. For `moment`, do not attempt a per-tenant instance:
+`moment-timezone` has no factory, so a tenant's locale has to be passed at each call.
 
 > **Safety caveat.** `lib/levels.js` and `lib/client/index.js` are single-tenant shipping code — the
 > alarm-level rendering path every self-hoster runs. A multitenancy-motivated refactor that changes

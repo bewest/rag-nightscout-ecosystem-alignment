@@ -25,7 +25,7 @@ All eight asks are met in substance. Sizes and structure verified by reading, no
 |---|-----|----------|---------|
 | 1 | Executable work queue, generated view | `queue/work-queue.yaml` (2506 L), `queue/QUEUE.md` (2000 L, generated), `queue/README.md`, `tools/queue/{manifest,validate,emit,status}.py`, 13 gate scripts | **Met mechanically, thin in coverage.** See §B, §C |
 | 2 | Phase 0 prepared, nothing pushed | 9 `bf/*` branches + connect `release/v0.0.14` + tag; `reports/phase0-pr-bodies/` | **Met for the branches. PR bodies cover 7 of 10** — see below |
-| 3 | Post-Phase-0 roadmap | `docs/30-design/post-phase0-roadmap-2026-09-15.md` (901 L) | **Met, and it argues against the brief's ordering** rather than restating it |
+| 3 | Post-Phase-0 roadmap | [`post-phase0-roadmap-2026-09-15.md`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/post-phase0-roadmap-2026-09-15.md) (901 L) | **Met, and it argues against the brief's ordering** rather than restating it |
 | 4 | Maintainer release brief | `docs/30-design/remedial/maintainer-release-brief-2026-09-15.md` (1230 L) | **Met, strongest artefact in the set** |
 | 5 | Tenant-owner config surface (T3.0 schema) | `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md` (1866 L) | **Met** — data model, env mapping, credential model, bootstrap, authz boundary |
 | 6 | Four migration plans | `docs/40-migration/` ×4 (1470 / 1045 / 1534 / 1181 L) | **Met** |
