@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 12 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,6 +39,7 @@ that it was reviewed.
 | `RT-TRUST-ONE-SOURCE` | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
+| `BFQ-110` | `needs-decision` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and th | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |

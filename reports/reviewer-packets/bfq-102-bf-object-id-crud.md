@@ -96,7 +96,17 @@ draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: -
 consistent working CRUD across the API (plan section 1a, "15.0.9 ID
 consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied:
 D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries
-POST answers the stored _id, D4 helper header.
+POST answers the stored _id, D4 helper header. Review 2026-09-24
+(tools/lab/object-id, 43 cells against v15.0.8, dev ddd9b600 and 6d120fa2):
+three pre-release findings on this head, BF-109 (BFQ-109, v3 writes take the
+v1 half of a pair), BF-110 (BFQ-110, a delete by hex removes both twins; the
+body's "you can now delete it" advice leads there; needs a decision) and
+BF-113 (BFQ-113, idForms accepts 12-character strings). The body's "Nothing in
+your database changes until a record is edited or deleted" is wrong for new
+records, which are now stored as ObjectId. The entries POST now answers the
+stored _id and drops a different sent _id without an error (D3, as decided;
+worth one line in the notes). Two shipping defects in the same class that this
+PR does not touch: BF-111 (BFQ-111) and BF-112 (BFQ-112).
 
 ---
 

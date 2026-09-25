@@ -28,10 +28,13 @@ repository.
 | [`P0-J`](p0-j-bf-throttle.md) | #8754 | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
+| [`BFQ-110`](bfq-110-bf-object-id-crud.md) | &mdash; | `needs-decision` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
+| [`RT-LOOP-REMOTE-ADDRESS`](rt-loop-remote-address-rt-loop-remote-address.md) | &mdash; | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label |
+| [`RT-TRUST-ONE-SOURCE`](rt-trust-one-source-rt-trust-one-source.md) | &mdash; | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 

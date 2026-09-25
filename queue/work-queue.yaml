@@ -8385,4 +8385,383 @@ items:
       devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3
       entries POST answers the stored _id, D4 helper header.
 
+      Review 2026-09-24 (tools/lab/object-id, 43 cells against v15.0.8,
+      dev ddd9b600 and 6d120fa2): three pre-release findings on this head,
+      BF-109 (BFQ-109, v3 writes take the v1 half of a pair), BF-110
+      (BFQ-110, a delete by hex removes both twins; the body's "you can
+      now delete it" advice leads there; needs a decision) and BF-113
+      (BFQ-113, idForms accepts 12-character strings). The body's "Nothing
+      in your database changes until a record is edited or deleted" is
+      wrong for new records, which are now stored as ObjectId. The entries
+      POST now answers the stored _id and drops a different sent _id
+      without an error (D3, as decided; worth one line in the notes).
+      Two shipping defects in the same class that this PR does not touch:
+      BF-111 (BFQ-111) and BF-112 (BFQ-112).
 
+
+  - id: BFQ-109
+    title: "BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/object-id-crud
+    base: origin/dev@1f9a9d10
+    worktree: externals/work/crm-bf-object-id-crud
+    state: not-started
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/api3/storage/mongoCollection/utils.js filterForOne and
+      identifyingFilter as #8758 changes them, and the unsorted
+      replaceOne/updateOne/deleteOne in modify.js that use them.
+    review: maintainer
+    operator_visible: >
+      Only on the change that is not released yet (#8758). If your site has
+      a record that an app using API v3, such as AndroidAPS, once saved a
+      second copy of, deleting it from that app would report success and
+      the record would stay visible; changing it would leave two copies.
+      Nothing changes for anyone running 15.0.8 today.
+    semver: patch
+    semver_reason: a defect in an unmerged fix; no API or setting moves
+    register: [BF-109]
+    gates:
+      - no-gate: >
+          Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in
+          docker and the three worktrees, about 3 minutes; lab.sh up, run,
+          down). On 6d120fa2 "hex DELETE, then GET" reads "200 /
+          v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and
+          dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT"
+          leaves identifier=X n=2 where both controls leave n=1. Same for a
+          non-hex identifier. No queue gate wraps the lab yet (OID-LAB).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/object-id/results/object-id-2026-09-24.md
+    notes: >
+      Open, found 2026-09-24 in the review of #8758, which it blocks in
+      the review's judgement; whether it holds the merge is the
+      maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js
+      reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's
+      P-ID-2 fix (v3 GET/PATCH/DELETE of a string-_id record back to
+      404), so a fix must keep P-ID-2 and change only which document a
+      write takes. Fix shape, not measured: resolve the target with the
+      sorted findOneFilter, then write by its exact _id.
+  - id: BFQ-110
+    title: "BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/object-id-crud
+    base: origin/dev@1f9a9d10
+    worktree: externals/work/crm-bf-object-id-crud
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/object-id-forms.js matchEitherForm through query.js,
+      treatments.js remove and websocket.js dbRemove; the plain-language
+      copy in the #8758 body and the 15.0.9 release notes.
+    review: maintainer
+    operator_visible: >
+      Only on the change that is not released yet (#8758). If you edited a
+      treatment on 15.0.8 or earlier and it was saved twice, deleting the
+      old copy after upgrading would also delete the copy with your edit.
+      Edit the record instead: that merges the two into one. If you are
+      unsure which treatments are correct, check with your care team.
+    semver: patch
+    semver_reason: a defect in an unmerged fix, and release-note wording
+    register: [BF-110]
+    gates:
+      - no-gate: >
+          Measured by tools/lab/object-id (probe P-ID-7). On 6d120fa2 the v1
+          DELETE /treatments/<hex> and the websocket dbRemove of a twin
+          leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id]
+          returns 2 where they return 1. The v3 permanent DELETE leaves 1
+          on all three. No queue gate wraps the lab yet (OID-LAB).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/object-id/results/object-id-2026-09-24.md
+    notes: >
+      Needs a maintainer decision before #8758 merges: (a) when both forms
+      are stored, a delete by the hex removes only the string form, or (b)
+      keep the behaviour and change the PR body and the release notes
+      from "you can now delete it" to "edit the record; do not delete the
+      old copy". Either way the release-note line "Nothing in your
+      database changes until a record is edited or deleted" is also wrong
+      for new records, which #8758 stores as ObjectId (P-ID-4, P-ID-5,
+      P-ID-6); that wording belongs to BFQ-102. Size depends on how many
+      twins exist (OID-PREVALENCE).
+  - id: BFQ-111
+    title: "BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: origin/dev
+    base: origin/dev@153e5658
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/query.js updateIdQuery ($in/$nin leaves) and #8758's
+      matchEitherForm, which widens only a plain equality.
+    review: maintainer
+    operator_visible: >
+      An app that asks for, or deletes, several records at once by their
+      IDs can miss records saved by Nightscout 15.0.6 or earlier, or copied
+      in from another site, and delete nothing for those. No app we know of
+      does this today.
+    semver: patch
+    semver_reason: a bug fix; the request answers 200 and misses records
+    register: [BF-111]
+    gates:
+      - no-gate: >
+          Measured by tools/lab/object-id (probe P-ID-11): a list of a
+          string-stored and an ObjectId-stored treatment returns n=1, and
+          its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and
+          6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/object-id/results/object-id-2026-09-24.md
+    notes: >
+      Open, found 2026-09-24 in the #8758 review; not a #8758 regression.
+      Natural follow-up on the #8758 helper once it merges (expand each hex
+      leaf of $in and $nin to its forms). Candidate for 15.0.10.
+  - id: BFQ-112
+    title: "BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: origin/dev
+    base: origin/dev@153e5658
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: lib/authorization/storage.js create and remove.
+    review: maintainer
+    operator_visible: >
+      If an access entry (a "subject" on the admin page) was restored or
+      created by a tool that set its own ID, deleting it from the admin page
+      reports success but the entry stays, with its access. Check the list
+      after deleting.
+    semver: patch
+    semver_reason: a bug fix; admin-only
+    register: [BF-112]
+    gates:
+      - no-gate: >
+          Measured by tools/lab/object-id (probe P-ID-12): POST
+          /api/v2/authorization/subjects with a hex _id stores a string, and
+          DELETE by that hex answers 200 and leaves it, on v15.0.8, dev
+          ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/object-id/results/object-id-2026-09-24.md
+    notes: >
+      Open, found 2026-09-24 in the #8758 review; same class as BF-99 in
+      auth_subjects, which #8758 does not touch. The web admin page does
+      not send _id, so reaching it needs a restore or a tool. The access
+      token digests _id.toString(), the same for either form, so tokens
+      are unaffected. Fix shape: toStoredId on create, idForms on remove.
+  - id: BFQ-113
+    title: "BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/object-id-crud
+    base: origin/dev@1f9a9d10
+    worktree: externals/work/crm-bf-object-id-crud
+    state: not-started
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/object-id-forms.js idForms; profile.js save; the remove()
+      of food, activity and profile.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a defect in an unmerged fix, reachable only in-process
+    register: [BF-113]
+    gates:
+      - run: node tools/queue/gates/bf113-idforms-guard.js
+        kind: static
+        describe: >
+          Loads official/bf/object-id-crud's object-id-forms.js and calls
+          idForms('abcdefghijkl'); its control is a 24-hex id, which must
+          give [ObjectId, hex]. RED on 6d120fa2 (three forms). Positive
+          control run 2026-09-24: the same file with an isHexId guard in
+          idForms, committed to a scratch repository under QUEUE_GATE_ROOT,
+          goes green.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Open, found 2026-09-24 in the #8758 review. The v1 routes refuse
+      non-hex ids with 400; only in-process callers (the connector's
+      internal output) can pass one. The effect through profile.save and
+      remove is read, not run. Small enough to fold into #8758 with
+      BFQ-109.
+  - id: OID-LAB
+    title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
+    parcel: register-open
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: in-progress
+    pr: []
+    blast_radius: tools/lab/object-id and new gates under tools/queue/gates.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme tooling
+    register: []
+    gates:
+      - run: sh -c 'bash -n tools/lab/object-id/lab.sh && node --check tools/lab/object-id/probes.js'
+        kind: static
+        describe: The lab scripts parse. Says nothing about what they measure.
+    blocks_on: []
+    evidence:
+      - tools/lab/object-id/README.md
+      - tools/lab/object-id/results/object-id-2026-09-24.md
+    notes: >
+      The lab ran 2026-09-24 against v15.0.8 92d08342, dev ddd9b600 and
+      #8758 6d120fa2: 43 cells, repeated with identical results, and an
+      ablation build for P-ID-10. Owed: (1) an integration gate per BF
+      item that runs the lab and checks one cell, so BFQ-109 to BFQ-112 get
+      a runnable gate; (2) build b moved to dev 153e5658 (the local clone
+      lacks it; ddd9b600..153e5658 touches only count code and the
+      connector pin); (3) replays through real client code instead of
+      request shapes: P-ID-1 with tools/swift-nightscout-tests (Loop's
+      NightscoutKit), P-ID-2 through AndroidAPS core/nssdk
+      NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector
+      0.1.0 via tools/lab/connector-soak with a string-stored profile on
+      the sink, P-ID-9 tconnectsync profile replace-mode PUT; (4) P-ID-7
+      through oref0's ns-dedupe-treatments.sh itself.
+  - id: OID-PREVALENCE
+    title: "Count string _ids and twin pairs per collection in real data, counts only"
+    parcel: register-open
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: a counting script; output is counts per collection, never ids or records.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: research
+    register: [BF-110]
+    gates:
+      - no-gate: >
+          Nothing exists yet. It would be a mongo aggregate (or
+          tools/nsschema/corpus.py) over the corpora the programme holds
+          with permission, counting per collection: _id stored as a 24-hex
+          string, as another string, and hex values stored in both forms.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Sizes BF-110 (how many sites could lose an edit by deleting a twin)
+      and decides whether OID-MIGRATION is worth building. Health data:
+      the output is counts only, and nothing from the data enters this
+      repository.
+  - id: OID-MIGRATION
+    title: "Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@153e5658
+    state: not-started
+    pr: []
+    blast_radius: >
+      An admin tool or boot step per collection (profile, devicestatus,
+      food, activity, treatments, entries, auth_subjects), and later a flag
+      that turns off #8758's either-form lookups.
+    review: maintainer plus a human reviewer
+    operator_visible: >
+      Not written yet. It would be an optional step that tidies how older
+      records are stored, with a count of what it would change before it
+      changes anything and a reminder to back up first.
+    semver: minor
+    semver_reason: a new admin tool and, later, a setting
+    register: []
+    gates:
+      - no-gate: >
+          Design not started. #8758 fixes records on their next edit and
+          never otherwise, so without this every lookup by id checks two or
+          three forms for good and the upper-case string limit is
+          permanent.
+    blocks_on: [BFQ-102, OID-PREVALENCE]
+    evidence:
+      - tools/lab/object-id/README.md
+    notes: >
+      Needs: dry-run counts; handling of twins (keep the edited copy, see
+      BF-110); legacy UUID _ids in treatments (moved to identifier?); API
+      v3 srvModified and history for rewritten documents; a backup notice;
+      a metric of string forms remaining so the either-form lookups can be
+      retired. The modernization branch (RT-3, driver 7) carries the
+      BF-99 to BF-102 defect too (reproduced by #8758's author), so the
+      helper has to reach it through RT-REBASE.
+  - id: OID-STORAGE-HELPER
+    title: "One storage-level rule for writes by _id instead of six hand-written copies"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@153e5658
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/{profile,devicestatus,food,activity,treatments,entries}.js
+      and websocket.js, where #8758 writes "convert, then remove the string
+      twin" by hand in three styles.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: refactor; behaviour held by the CRUD-by-id matrix
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The drift it would remove is already measured: a
+          profile re-sent in upper case is stored twice while the same
+          devicestatus is refused (the #8758 review, 2026-09-24).
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Re-send behaviour differs by collection today: devicestatus and
+      profile create keep the legacy string and collide; treatments, food
+      and activity move it to an ObjectId. #8758's 336-cell matrix is the
+      regression net; the 11 new test files overlap it and could be folded
+      into it at the same time. Best done with OID-MIGRATION.
+  - id: OID-DOCS
+    title: "Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/backlogs/mongodb-upgrade-report.md,
+      docs/60-research/mongodb-update-readiness-report.md,
+      docs/10-domain/mongodb-storage-layer-analysis.md.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: sh -c '! grep -q "Current Driver.*mongodb-legacy" docs/10-domain/mongodb-storage-layer-analysis.md'
+        kind: static
+        describe: >
+          FAILS while the storage-layer analysis still calls mongodb-legacy
+          the current driver. RED on 2026-09-24.
+    blocks_on: []
+    evidence:
+      - docs/10-domain/mongodb-storage-layer-analysis.md
+    notes: >
+      Measured 2026-09-24 from tag package.json files: 15.0.3 to 15.0.6
+      use mongodb ^3.6.0 (locked 3.7.3); mongodb-legacy ^5.0.0 was on dev
+      only, 93ffb251 (2023-06-01) to 69b620dd (2026-04-19), and was never
+      tagged; 15.0.7 went to native mongodb ^5.9.2 with
+      lib/storage/run-with-callback.js. The driver upgrade, REQ-SYNC-072
+      and UUID_HANDLING first shipped in 15.0.7. The reports' phase tables
+      (Phase 2 next, Phase 5 pending) and "no insertMany usage" (dev uses
+      it since 9318a577) are stale. Mark them as snapshots, with a pointer
+      to the current state; do not rewrite their history.

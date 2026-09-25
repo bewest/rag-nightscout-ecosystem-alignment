@@ -31,23 +31,24 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 118 |
-| runnable gates | 195 |
-| explicit `no-gate:` markers | 160 |
+| items | 128 |
+| runnable gates | 198 |
+| explicit `no-gate:` markers | 167 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 355 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 167 of the 365 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 36 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
+| `not-started` | 44 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-109, BFQ-111, BFQ-112, BFQ-113, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-DOCS |
+| `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, RT-LOOP-REMOTE-ADDRESS, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 6 | P0-C, P0-J, RT-TRUST-ONE-SOURCE, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 33 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
-| `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 7 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-110 |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
@@ -91,6 +92,8 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-100** BF-100 - devicestatus, food and activity store a hex _id as a string
 - **BFQ-101** BF-101 - API v3 id filters miss records stored with a string _id
 - **BFQ-102** bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
+- **BFQ-111** BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes
+- **BFQ-112** BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
 
 ---
 
@@ -982,7 +985,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 19 items
+`parcel: release-train` &mdash; 21 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1010,6 +1013,8 @@ that costs.
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
+| `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -1657,11 +1662,69 @@ that costs.
 
 **Notes.** Merged into dev by #8751 (4011193e, 2026-09-23); not released. It reaches operators with 15.0.9 (RT-0). Register ids: BF-104 (alarm-subscription credentials in the server log) and BF-105 (two shared read routes skip the per-collection read permission). Body posted in the withheld style (reports/phase0-pr-bodies/bf2-backports.md). The two unbuilt findings (status credential in the URL, IMPORT_CONFIG diagnostics) stay follow-ups. Decisions: - 2026-09-23 (maintainer): the two backports (9c50788e, b5038500) ship in 15.0.9 rather than a later backfix, because their fix code is already public on the modernization branch and 15.0.8 users otherwise wait a release. Triage (docs/60-research/remedial/modernization-backport-triage-2026-09-22.md), measured 2026-09-22 over 11 candidates (6 named + 5 from a path/content sweep). Defect on dev and live on 15.0.8: 31c354d8 (alarm socket logs the submitted credential), d3ac8026 (a per-collection read grant not checked on two shared routes; bites scoped-token installs under denied), 973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not security. 71c42c9a not a defect; the Helmet pair and 479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. The backports carry the modernization commits' code verbatim (cherry-pick -x, tests adapted where dev's socket differs), so the later cut rebase sees agreement, not a second implementation. Suite on Node 22.23.2: dev 2386/0/3, branch 2398/0/3; with dev's lib the two new test files fail 7 of 12.
 
+### `OID-MIGRATION` &mdash; Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@153e5658` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer plus a human reviewer |
+| blocks on | `BFQ-102`, `OID-PREVALENCE` |
+
+**Blast radius.** An admin tool or boot step per collection (profile, devicestatus, food, activity, treatments, entries, auth_subjects), and later a flag that turns off #8758's either-form lookups.
+
+**What an operator sees.** Not written yet. It would be an optional step that tidies how older records are stored, with a count of what it would change before it changes anything and a reminder to back up first.
+
+**Why `minor`.** a new admin tool and, later, a setting
+
+**Gates.**
+
+- **NO GATE** &mdash; Design not started. #8758 fixes records on their next edit and never otherwise, so without this every lookup by id checks two or three forms for good and the upper-case string limit is permanent.
+
+**Evidence.**
+
+- `tools/lab/object-id/README.md`
+
+**Notes.** Needs: dry-run counts; handling of twins (keep the edited copy, see BF-110); legacy UUID _ids in treatments (moved to identifier?); API v3 srvModified and history for rewritten documents; a backup notice; a metric of string forms remaining so the either-form lookups can be retired. The modernization branch (RT-3, driver 7) carries the BF-99 to BF-102 defect too (reproduced by #8758's author), so the helper has to reach it through RT-REBASE.
+
+### `OID-STORAGE-HELPER` &mdash; One storage-level rule for writes by _id instead of six hand-written copies
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@153e5658` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** lib/server/{profile,devicestatus,food,activity,treatments,entries}.js and websocket.js, where #8758 writes "convert, then remove the string twin" by hand in three styles.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** refactor; behaviour held by the CRUD-by-id matrix
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The drift it would remove is already measured: a profile re-sent in upper case is stored twice while the same devicestatus is refused (the #8758 review, 2026-09-24).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION.
+
 ---
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 48 items
+`parcel: register-open` &mdash; 55 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1717,6 +1780,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `blocked` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
 | `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `blocked` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
 | `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `in-flight-upstream` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
+| `BFQ-109` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair | `not-started` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
+| `BFQ-110` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there | `needs-decision` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
+| `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `not-started` | `origin/dev` | patch | 0 run + 1 no-gate |
+| `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `not-started` | `origin/dev` | patch | 0 run + 1 no-gate |
+| `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `not-started` | `bf/object-id-crud` | patch | 1 run |
+| `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
+| `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -3292,7 +3362,221 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 - `docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md`
 
-**Notes.** Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews (2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id- consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag. Evidence: the combined run rc-15.0.9-combined-010 (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md) includes 6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id matrix in each cell. Per-commit suites and the 336-cell matrix are in the no- gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. The narrow alternatives (BFQ-99 9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to land. It enables the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: - 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied: D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries POST answers the stored _id, D4 helper header.
+**Notes.** Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews (2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id- consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag. Evidence: the combined run rc-15.0.9-combined-010 (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md) includes 6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id matrix in each cell. Per-commit suites and the 336-cell matrix are in the no- gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. The narrow alternatives (BFQ-99 9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to land. It enables the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: - 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied: D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries POST answers the stored _id, D4 helper header. Review 2026-09-24 (tools/lab/object-id, 43 cells against v15.0.8, dev ddd9b600 and 6d120fa2): three pre-release findings on this head, BF-109 (BFQ-109, v3 writes take the v1 half of a pair), BF-110 (BFQ-110, a delete by hex removes both twins; the body's "you can now delete it" advice leads there; needs a decision) and BF-113 (BFQ-113, idForms accepts 12-character strings). The body's "Nothing in your database changes until a record is edited or deleted" is wrong for new records, which are now stored as ObjectId. The entries POST now answers the stored _id and drops a different sent _id without an error (D3, as decided; worth one line in the notes). Two shipping defects in the same class that this PR does not touch: BF-111 (BFQ-111) and BF-112 (BFQ-112).
+
+### `BFQ-109` &mdash; BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/object-id-crud` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/work/crm-bf-object-id-crud` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-109` |
+
+**Blast radius.** lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter as #8758 changes them, and the unsorted replaceOne/updateOne/deleteOne in modify.js that use them.
+
+**What an operator sees.** Only on the change that is not released yet (#8758). If your site has a record that an app using API v3, such as AndroidAPS, once saved a second copy of, deleting it from that app would report success and the record would stay visible; changing it would leave two copies. Nothing changes for anyone running 15.0.8 today.
+
+**Why `patch`.** a defect in an unmerged fix; no API or setting moves
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in docker and the three worktrees, about 3 minutes; lab.sh up, run, down). On 6d120fa2 "hex DELETE, then GET" reads "200 / v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT" leaves identifier=X n=2 where both controls leave n=1. Same for a non-hex identifier. No queue gate wraps the lab yet (OID-LAB).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/object-id/results/object-id-2026-09-24.md`
+
+**Notes.** Open, found 2026-09-24 in the review of #8758, which it blocks in the review's judgement; whether it holds the merge is the maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's P-ID-2 fix (v3 GET/PATCH/DELETE of a string- _id record back to 404), so a fix must keep P-ID-2 and change only which document a write takes. Fix shape, not measured: resolve the target with the sorted findOneFilter, then write by its exact _id.
+
+### `BFQ-110` &mdash; BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/object-id-crud` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/work/crm-bf-object-id-crud` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-110` |
+
+**Blast radius.** lib/server/object-id-forms.js matchEitherForm through query.js, treatments.js remove and websocket.js dbRemove; the plain-language copy in the #8758 body and the 15.0.9 release notes.
+
+**What an operator sees.** Only on the change that is not released yet (#8758). If you edited a treatment on 15.0.8 or earlier and it was saved twice, deleting the old copy after upgrading would also delete the copy with your edit. Edit the record instead: that merges the two into one. If you are unsure which treatments are correct, check with your care team.
+
+**Why `patch`.** a defect in an unmerged fix, and release-note wording
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-7). On 6d120fa2 the v1 DELETE /treatments/<hex> and the websocket dbRemove of a twin leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id] returns 2 where they return 1. The v3 permanent DELETE leaves 1 on all three. No queue gate wraps the lab yet (OID-LAB).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/object-id/results/object-id-2026-09-24.md`
+
+**Notes.** Needs a maintainer decision before #8758 merges: (a) when both forms are stored, a delete by the hex removes only the string form, or (b) keep the behaviour and change the PR body and the release notes from "you can now delete it" to "edit the record; do not delete the old copy". Either way the release-note line "Nothing in your database changes until a record is edited or deleted" is also wrong for new records, which #8758 stores as ObjectId (P-ID-4, P-ID-5, P-ID-6); that wording belongs to BFQ-102. Size depends on how many twins exist (OID-PREVALENCE).
+
+### `BFQ-111` &mdash; BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@153e5658` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-111` |
+
+**Blast radius.** lib/server/query.js updateIdQuery ($in/$nin leaves) and #8758's matchEitherForm, which widens only a plain equality.
+
+**What an operator sees.** An app that asks for, or deletes, several records at once by their IDs can miss records saved by Nightscout 15.0.6 or earlier, or copied in from another site, and delete nothing for those. No app we know of does this today.
+
+**Why `patch`.** a bug fix; the request answers 200 and misses records
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-11): a list of a string-stored and an ObjectId-stored treatment returns n=1, and its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/object-id/results/object-id-2026-09-24.md`
+
+**Notes.** Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural follow-up on the #8758 helper once it merges (expand each hex leaf of $in and $nin to its forms). Candidate for 15.0.10.
+
+### `BFQ-112` &mdash; BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@153e5658` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-112` |
+
+**Blast radius.** lib/authorization/storage.js create and remove.
+
+**What an operator sees.** If an access entry (a "subject" on the admin page) was restored or created by a tool that set its own ID, deleting it from the admin page reports success but the entry stays, with its access. Check the list after deleting.
+
+**Why `patch`.** a bug fix; admin-only
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-12): POST /api/v2/authorization/subjects with a hex _id stores a string, and DELETE by that hex answers 200 and leaves it, on v15.0.8, dev ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/object-id/results/object-id-2026-09-24.md`
+
+**Notes.** Open, found 2026-09-24 in the #8758 review; same class as BF-99 in auth_subjects, which #8758 does not touch. The web admin page does not send _id, so reaching it needs a restore or a tool. The access token digests _id.toString(), the same for either form, so tokens are unaffected. Fix shape: toStoredId on create, idForms on remove.
+
+### `BFQ-113` &mdash; BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/object-id-crud` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/work/crm-bf-object-id-crud` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-113` |
+
+**Blast radius.** lib/server/object-id-forms.js idForms; profile.js save; the remove() of food, activity and profile.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a defect in an unmerged fix, reachable only in-process
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/bf113-idforms-guard.js`
+  - Loads official/bf/object-id-crud's object-id-forms.js and calls idForms('abcdefghijkl'); its control is a 24-hex id, which must give [ObjectId, hex]. RED on 6d120fa2 (three forms). Positive control run 2026-09-24: the same file with an isHexId guard in idForms, committed to a scratch repository under QUEUE_GATE_ROOT, goes green.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109.
+
+### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** tools/lab/object-id and new gates under tools/queue/gates.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme tooling
+
+**Gates.**
+
+- `[static]` `sh -c 'bash -n tools/lab/object-id/lab.sh && node --check tools/lab/object-id/probes.js'`
+  - The lab scripts parse. Says nothing about what they measure.
+
+**Evidence.**
+
+- `tools/lab/object-id/README.md`
+- `tools/lab/object-id/results/object-id-2026-09-24.md`
+
+**Notes.** The lab ran 2026-09-24 against v15.0.8 92d08342, dev ddd9b600 and #8758 6d120fa2: 43 cells, repeated with identical results, and an ablation build for P-ID-10. Owed: (1) an integration gate per BF item that runs the lab and checks one cell, so BFQ-109 to BFQ-112 get a runnable gate; (2) build b moved to dev 153e5658 (the local clone lacks it; ddd9b600..153e5658 touches only count code and the connector pin); (3) replays through real client code instead of request shapes: P-ID-1 with tools/swift-nightscout-tests (Loop's NightscoutKit), P-ID-2 through AndroidAPS core/nssdk NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector 0.1.0 via tools/lab/connector-soak with a string-stored profile on the sink, P-ID-9 tconnectsync profile replace- mode PUT; (4) P-ID-7 through oref0's ns-dedupe-treatments.sh itself.
+
+### `OID-PREVALENCE` &mdash; Count string _ids and twin pairs per collection in real data, counts only
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| register | `BF-110` |
+
+**Blast radius.** a counting script; output is counts per collection, never ids or records.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** research
+
+**Gates.**
+
+- **NO GATE** &mdash; Nothing exists yet. It would be a mongo aggregate (or tools/nsschema/corpus.py) over the corpora the programme holds with permission, counting per collection: _id stored as a 24-hex string, as another string, and hex values stored in both forms.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Sizes BF-110 (how many sites could lose an edit by deleting a twin) and decides whether OID-MIGRATION is worth building. Health data: the output is counts only, and nothing from the data enters this repository.
 
 ---
 
@@ -3884,7 +4168,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 9 items
+`parcel: docs-truth` &mdash; 10 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -3900,6 +4184,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOC-TESTSCRIPTS` | 52 test files match neither local test script | `not-started` | `origin/dev` | n/a | 1 run + 1 no-gate |
 | `DOC-VIEWS` | A reviewer-facing surface over the queue: three overview pages and a packet per PR | `done` | `main` | n/a | 2 run + 3 no-gate |
 | `DOC-LINKS` | Every path the programme's documents and tooling cite must resolve | `done` | `main` | n/a | 1 run + 2 no-gate |
+| `OID-DOCS` | Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy | `not-started` | `main` | n/a | 1 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -4184,6 +4469,35 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md`
 
 **Notes.** DECIDED 2026-09-23 (maintainer) - done. Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each confirmed to land before its result was read. A markdown link repointed to a nonexistent name - caught. A repo- root path in this manifest reverted to its pre-move spelling - caught. doc- branch-count.js's path.join reverted to the pre-move segments - caught. Empty- root negative control via QUEUE_GATE_ROOT exits 1 rather than passing on an empty tree.
+
+### `OID-DOCS` &mdash; Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/backlogs/mongodb-upgrade-report.md, docs/60-research/mongodb-update- readiness-report.md, docs/10-domain/mongodb-storage-layer-analysis.md.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -q "Current Driver.*mongodb-legacy" docs/10-domain/mongodb-storage-layer-analysis.md'`
+  - FAILS while the storage-layer analysis still calls mongodb-legacy the current driver. RED on 2026-09-24.
+
+**Evidence.**
+
+- `docs/10-domain/mongodb-storage-layer-analysis.md`
+
+**Notes.** Measured 2026-09-24 from tag package.json files: 15.0.3 to 15.0.6 use mongodb ^3.6.0 (locked 3.7.3); mongodb-legacy ^5.0.0 was on dev only, 93ffb251 (2023-06-01) to 69b620dd (2026-04-19), and was never tagged; 15.0.7 went to native mongodb ^5.9.2 with lib/storage/run-with-callback.js. The driver upgrade, REQ-SYNC-072 and UUID_HANDLING first shipped in 15.0.7. The reports' phase tables (Phase 2 next, Phase 5 pending) and "no insertMany usage" (dev uses it since 9318a577) are stale. Mark them as snapshots, with a pointer to the current state; do not rewrite their history.
 
 ---
 

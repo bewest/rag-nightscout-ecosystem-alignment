@@ -55,8 +55,8 @@ and the release PR #8598 (`dev` → `master`) is open at `153e5658`, with no rev
 
 | question | answer, 2026-09-24 (`origin/dev` `153e5658`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **75** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **24 open, 43 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17 and BF-30 in PR #8754; BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **73** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under merged) |
-| How much work is outstanding? | **49 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **77** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 43 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-17 and BF-30 in PR #8754; BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **75** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under merged) |
+| How much work is outstanding? | **54 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
 Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
 cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
@@ -81,7 +81,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-24 the highest is BF-108. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-24 the highest is BF-113. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -188,6 +188,8 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-106** | A numeric `date` (or `sgv`) filter on API v1 `/activity` **matches nothing and answers 200**: the schema-driven coercion that fixed BF-03 names a `collection` on each storage and, when one is named, drops `query.js`'s default walker (`date`, `sgv` → `parseInt`). `activity`'s schema entry is empty, so the bound stays a string and never matches the stored number. `devicestatus` loses the same default for `sgv` only (its schema still types `date` and `mills`) | `lib/server/query.js` `default_options` (`opts.walker = opts.collection ? { } : …`) with `lib/server/activity.js` `queryOpts.collection = 'activity'`, on `origin/dev` `ddd9b600` and the 15.0.9 candidate; not on `v15.0.8` | **medium** — wrong answer with HTTP 200 for a read filter; no write or delete is affected, and no client in the [consumer survey](../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md) filters activity by `date` | yes (once 15.0.9 ships) | **open, found 2026-09-23** by the consumer survey. **Reproduced**: the same `GET /api/v1/activity.json?find[date][$gte]=<ms>` returns 7 records on `v15.0.8`, 0 on `dev` `ddd9b600` and 0 on the candidate, with the `find[created_at][$gte]` control at 7 on all three (mongod 7.0.43, Node 22.23.2); gate `tools/queue/gates/bf106-activity-date-coercion.js` |
 | **BF-107** | A v1 treatments read whose database query fails **ends the Nightscout process**: `serveTreatments` never checks the query error, so `results.forEach` throws on `null` and the uncaught `TypeError` exits Node. A client that retries on restart keeps the site down (issue #8675) | `lib/api/treatments/index.js` `serveTreatments` on `v15.0.8` | **high** — one request takes the whole site offline, glucose display and alarms included, on the default `readable` install; mechanism only here, because it is live on the shipping release | yes | **merged 2026-09-06** (PR #8697, merge `0ab266a3`: the handler returns HTTP 500 JSON on a query error). **Reproduced** 2026-09-23 in the consumer-replay lab: the `v15.0.8` process exited on each of 3 runs, and `dev` `ddd9b600` and the candidate answered the same request 200 |
 | **BF-108** | A v1 filter that lists **two or more** timestamps under the date field (`find[date][$in][]=…`) **answers 500 and does nothing**: `enforceDateFilter` calls `.replace` on every operator value that `isNaN`, and a list is an array. xdripswift sends exactly this to delete readings in bulk (`DELETE /api/v1/entries.json?find[type]=sgv&find[date][$in][]=…`, chunks of 50), so those deletes have never removed anything; one-value lists and range deletes work | `lib/server/query.js` `enforceDateFilter` on `v15.0.8`, `origin/dev` `ddd9b600` and the 15.0.9 candidate | **medium** — readings a client asked to delete stay on the site with no error the user sees; nothing is lost or written wrongly | yes | **open, found 2026-09-23** by the consumer survey. **Reproduced**: 500 `dateString.replace is not a function` for 2, 5, 20, 21 and 50 values on all three builds, entries unchanged; the one-value and range-delete controls answer 200 and delete; gate `tools/queue/gates/bf108-date-in-list.js` |
+| **BF-111** | A v1 `find[_id][$in]` list **misses a record stored with a string `_id`**, for reads and for bulk deletes: `lib/server/query.js` turns each hex in the list into an ObjectId, and #8758's `matchEitherForm` widens only a plain equality. A DELETE by a list of a string-stored and an ObjectId-stored id answers 200 and removes only the ObjectId one | `lib/server/query.js` `updateIdQuery` (the `$in`/`$nin` leaves) on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` | **low** — the same records single-id lookups now reach (BF-99 to BF-102) stay out of list operations; no client in the corpus is known to send `find[_id][$in]` | yes | **open, found 2026-09-24** in the #8758 review. **Reproduced**: probe P-ID-11 on all three builds, with an ObjectId-stored record in the same list as control ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
+| **BF-112** | An auth subject created with its own 24-hex `_id` is **stored with the `_id` as a string, and DELETE by that id removes nothing** while answering 200. `createSubject` inserts `req.body` as given; `removeSubject` looks up `new ObjectID(_id)` only; `saveSubject` converts. Same class as BF-99, in `auth_subjects` | `lib/authorization/storage.js` `create` and `remove` on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` (#8758 does not touch it) | **low** — admin only (`admin:api:subjects:create`); reached by a restore of subjects or a tool that sends `_id`. The access token is derived from `_id.toString()`, so tokens are unaffected | yes | **open, found 2026-09-24** in the #8758 review. **Reproduced**: probe P-ID-12 on all three builds: 200 and a string `_id`, then DELETE 200 with the subject still stored ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 
 ## 1b. Pre-release findings
 
@@ -233,6 +235,9 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-88** | The modernization branch's `TRUST_PROXY`-unset default (`395f3207`, "Restore proxy compatibility by default") **does not reproduce today's client address** in four cases: an IPv6 entry after the first in a comma-and-space `X-Forwarded-For` chain, an IPv4 address with a non-numeric port suffix, a request with no socket remote address, and a request carrying more than one forwarding-header family (dev's precedence depends on which family earlier requests used; the branch's order is fixed) | `lib/server/client-ip.js` on `origin/chore/nightscout-modernization` `b1bdaca0` against `forwarded-for` on `origin/dev` `74fc6619` | **low** — edge-case inputs, but the address is the failed-authentication delay's key and the setting is presented as compatibility-preserving, so an upgrader has no warning | open — **decided 2026-09-23 (maintainer): the cuts keep 15.0.9's unset default** — `forwarded-for`, as on `dev`; `395f3207`'s fixed-precedence normalisation is not taken, and cut 5's four `tests/client-ip.test.js` expectations are replaced by 15.0.9's when the cuts are rebased (the rehearsal's resolution). **Reproduced** by a differential probe; `bf2/auth-hardening` `8b975b41` pins dev's behaviour for the unset default, and restoring `395f3207`'s `client-ip.js` there fails exactly 7 of 48 `tests/client-ip.test.js` cases (re-run 2026-09-22). No flag for the other normalisation: with `TRUST_PROXY` unset the forwarding headers come from any peer, so neither answer is a security boundary; an address list (`proxy-addr`) is the deterministic path. The unset path is revisited when `TRUST_PROXY`'s default is flipped |
 | **BF-96** | The headless client test fixture passes the bundle loader an **un-normalised path** (`tests/fixtures/../../node_modules/...`), so `benv-shim.js`'s `delete require.cache[filename]` misses the key Node stored the bundle under. A second headless suite in the same mocha process gets the cached bundle from the first, and `$` is undefined. `careportal` was the only headless suite, so nothing showed it before BF-90's test | `tests/fixtures/headless.js` and `tests/fixtures/benv-shim.js` on `origin/dev` `74fc6619` | **low** — test-only; a new headless suite fails for a reason unrelated to its subject, or passes against a stale bundle. Nothing an operator runs is affected | open — **reproduced** 2026-09-23 while writing BF-90's `tests/client.alarm-no-reading.test.js`, which clears the resolved key itself, with a comment ([evidence](../../60-research/remedial/bf90-alarm-no-reading-2026-09-23.md) §3). Found, not fixed: the one-line shim change (`path.resolve`) is left for a separate change |
 | **BF-97** | **On the connector 0.1.0 line, a Nightscout source that has a profile stalls every poll.** The Nightscout source re-fetches each profile with its source `_id` on every poll, so from the second poll the sink's insert fails with a duplicate key. Up to `v0.0.13` `lib/outputs/internal.js` logged that failure and resolved the batch; from `808ab1c` (2026-09-21) the write failure fails the whole poll, and the retry backoff grows toward its 30-minute cap. Nothing is lost, but the sink runs behind with no visible error. The failing insert also logs the whole profile document each time (that part is old, `v0.0.13` too) | connector `lib/outputs/internal.js` `safePersist` and `lib/outputs/nightscout.js` `recordingError` (`808ab1c`), on connector `dev` `fbd4e55` = `v0.1.0-dev.2`; not in `v0.0.13` or `234d47c` | **high** for the affected prereleases — a Nightscout-to-Nightscout sink ran 20–35 min behind for most of a 4 h 23 min run (55 min across an outage), with no error shown to followers. It never reached a Nightscout release: 15.0.8 pins `v0.0.13`, and `0.1.0` carries the fix | **merged 2026-09-23** in connector `dev` via connector PR #79 (merge `977da8a`: `f6359b4`, `1d2ebc8`, `de3cee1`); connector: released in nightscout-connect `0.1.0` (npm, 2026-09-24); Nightscout `dev` pins `0.1.0` exactly via PR #8762 (merge `153e5658`), and pinned `0.1.0-dev.3` via PR #8759 (merge `feafa533`) before that. Never in a Nightscout release: 15.0.8 pins `v0.0.13`. **Reproduced** 2026-09-23 by a lab soak; the one-variable control (profiles excluded with `CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus`) polls a steady 5 min, and `v0.0.13` and `234d47c` stay current ([evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). The fix was lab-run as `9dbef9e` (`lib/` identical to `de3cee1`) for 80 min and for 46 min against the 15.0.9 candidate sinks ([evidence](../../60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md)) |
+| **BF-109** | On #8758, an API v3 **DELETE or PUT by identifier writes the v1 record when a v1/v3 pair exists**, and GET still shows the v3 copy. The pair is what a v3 PUT on a string-`_id` v1 record left on every release before #8758: `{_id: X}` plus `{_id: ObjectId, identifier: X}`. `filterForOne` gains `_id` branches; reads sort `identifier: -1` and return the v3 copy, but `replaceOne`/`updateOne`/`deleteOne` do not sort and take the v1 record. DELETE answers 200, marks the v1 record invalid, and GET keeps returning the v3 copy as valid; PUT replaces the v1 record and leaves two documents with `identifier: X` | #8758 `6d120fa2` `lib/api3/storage/mongoCollection/utils.js` `filterForOne` / `identifyingFilter`, used by `modify.js` | **medium** — pre-release; the delete looks done and the record stays; AndroidAPS 4.x addresses treatments this way. Not on 15.0.8 or `dev`, where the same requests hit the v3 copy | **open, found 2026-09-24** in the #8758 review. **Reproduced**: probe P-ID-10, hex and non-hex identifiers, on `v15.0.8`, `dev` `ddd9b600` and `6d120fa2`; reverting only `utils.js` on `6d120fa2` restores `dev`'s P-ID-10 cells and loses #8758's P-ID-2 fix, so both come from the same lines ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
+| **BF-110** | On #8758, **deleting a record by its hex id also deletes its twin**: where a string record and the ObjectId copy a PUT on 15.0.8 or earlier added beside it both exist, `find[_id]` returns both and v1 `DELETE /treatments/<hex>` and websocket `dbRemove` remove both. #8758's own user advice, "If you see an old copy beside the one you edited, you can now delete it", removes the edited copy too. Editing the record merges the pair into one | #8758 `6d120fa2` `lib/server/object-id-forms.js` `matchEitherForm` via `query.js`, `treatments.js` `remove`, `websocket.js` `dbRemove` | **medium** — pre-release; the copy with the user's edit is lost with the stale one, through the careportal, the web UI's Remove and oref0's `ns-dedupe-treatments.sh`. How many twins exist in real data is not known (queue OID-PREVALENCE) | **open, found 2026-09-24** in the #8758 review; needs a maintainer decision: delete only the string form when both exist, or change the advice to "edit, do not delete". **Reproduced**: probe P-ID-7 on all three builds; 15.0.8 and `dev` leave one record, `6d120fa2` leaves none; v3 DELETE is unaffected ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
+| **BF-113** | On #8758, `idForms` **accepts any 12-character string**, although its comment says anything but an ObjectId or a 24-hex string throws: driver 5.9's `new ObjectId('abcdefghijkl')` succeeds, so `idForms` returns that ObjectId, its hex and the string. `profile.save` and the food, activity and profile `remove` pass non-hex ids to it without the `isHexId` guard `staleStringForms` has, so a 12-character id would upsert and delete by forms it does not name | #8758 `6d120fa2` `lib/server/object-id-forms.js` `idForms`, `lib/server/profile.js` `save`, `food.js`/`activity.js`/`profile.js` `remove` | **low** — pre-release; the v1 routes refuse non-hex ids, so only in-process callers (the connector's internal output) reach it | **open, found 2026-09-24** in the #8758 review. **Reproduced** at the helper: `idForms('abcdefghijkl')` returns three forms on `6d120fa2` instead of throwing; the effect through `profile.save` and `remove` is read, not run |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -4203,6 +4208,97 @@ from each ref's own `query.js`, with a one-value control.
 
 **Fix shape, not measured:** apply the ISO rewrite only to string values, and map it over array
 values.
+
+
+### BF-109 · on #8758, API v3 writes by identifier hit the v1 half of a v1/v3 pair
+
+Before #8758, API v3 could not see a v1 record whose `_id` was stored as a string (BF-101), so a v3
+PUT by that id created a second record: `{_id: X}` from v1, with no `identifier`, and
+`{_id: ObjectId, identifier: X}` from v3. Sites that ran such a PUT hold those pairs.
+
+#8758's `filterForOne` matches `identifier: X` **or** `_id` in each form of X. The read path
+(`find.js`, `findOneFilter`) sorts `{identifier: -1}` and returns the v3 copy. The write path in
+`modify.js` passes the same filter to `replaceOne`, `updateOne` and `deleteOne` with no sort, and
+MongoDB takes the first match in natural order, the older v1 record. `identifyingFilter` (the
+create/update lookup) matches both too: its `identifier: {$exists: false}` branch does not exclude
+the v1 record, which has no identifier.
+
+**Reproduced 2026-09-24**, probe P-ID-10 in `tools/lab/object-id`, with a 24-hex and a non-hex X,
+on `v15.0.8`, `dev` `ddd9b600` and `6d120fa2`:
+
+| request | 15.0.8, dev | #8758 |
+|---|---|---|
+| GET | the v3 copy | the v3 copy |
+| DELETE, then GET | v3 copy invalid; GET 410 | **v1 record invalid**; GET 200, v3 copy |
+| PUT | v3 copy replaced; one record with `identifier: X` | **v1 record replaced**; two records with `identifier: X` |
+
+Reverting only `lib/api3/storage/mongoCollection/utils.js` to `1f9a9d10` on `6d120fa2` restores
+the `dev` cells above and also restores the 404s #8758 fixes (P-ID-2), so the fix and this defect
+come from the same lines.
+
+**Fix shape, not measured:** resolve the target once with the sorted `findOneFilter` and write by
+that document's exact `_id`; or, when both halves match, prefer the one with `identifier`.
+
+### BF-110 · on #8758, deleting a record by its hex id also deletes its twin
+
+A PUT on 15.0.8 or earlier to a treatment whose `_id` is stored as a string upserted an ObjectId
+copy and left the string record (BF-102). #8758 makes every lookup by that hex match both forms,
+so `find[_id]` returns both, and a delete by the hex removes both: v1
+`DELETE /api/v1/treatments/<hex>` (the careportal, oref0's `ns-dedupe-treatments.sh`) and the
+websocket `dbRemove` (the web UI's Remove). An edit merges the pair: #8758's upsert by the ObjectId
+deletes the string form.
+
+The PR's plain-language copy tells users with such a pair that they "can now delete" the old copy.
+On #8758 that deletes the edited copy with it.
+
+**Reproduced 2026-09-24**, probe P-ID-7: `find[_id]` returns 1 record on `v15.0.8` and `dev`
+`ddd9b600`, 2 on `6d120fa2`; after the v1 DELETE or `dbRemove`, 1 record is left on 15.0.8 and
+dev and 0 on `6d120fa2`. The v3 permanent DELETE leaves 1 on all three.
+
+**Decision needed (maintainer):** (a) when both forms are stored, delete only the string form and
+keep the ObjectId copy, or (b) keep the behaviour and change the advice to "edit the record; do not
+delete the old copy". How many sites have twins is unmeasured (queue OID-PREVALENCE).
+
+### BF-111 · `find[_id][$in]` misses string-stored records
+
+`updateIdQuery` in `lib/server/query.js` converts each hex under `find[_id]` to an ObjectId,
+including the leaves of an `$in` or `$nin` list. #8758's `matchEitherForm` replaces a plain
+ObjectId equality with an `$in` of its forms, and leaves operator objects unchanged, so a list
+still asks only for ObjectIds.
+
+**Reproduced 2026-09-24**, probe P-ID-11: with one string-stored and one ObjectId-stored treatment,
+`GET ...?find[_id][$in][]=<string>&find[_id][$in][]=<oid>` returns 1 and the DELETE of the same
+list removes only the ObjectId record, on `v15.0.8`, `dev` `ddd9b600` and `6d120fa2`.
+
+**Fix shape, not measured:** expand each hex leaf of `$in` to its forms, and each leaf of `$nin`
+likewise, in `matchEitherForm`.
+
+### BF-112 · an auth subject created with a hex `_id` cannot be deleted by it
+
+`lib/authorization/storage.js` `create` inserts the posted subject as given, so a 24-hex `_id` is
+stored as a string; `remove` deletes `{_id: new ObjectID(_id)}` only. `save` converts through
+`normalizeRequiredObjectId`. Only an admin can create or delete subjects. The access token is a
+digest of `_id.toString()`, which is the same for either form.
+
+**Reproduced 2026-09-24**, probe P-ID-12: POST `/api/v2/authorization/subjects` with a hex `_id`
+answers 200 and stores a string; DELETE `/api/v2/authorization/subjects/<hex>` answers 200 and the
+subject is still stored, on `v15.0.8`, `dev` `ddd9b600` and `6d120fa2`.
+
+**Fix shape, not measured:** `toStoredId` on create and `idForms` on remove, as #8758 does for
+profile.
+
+### BF-113 · on #8758, `idForms` accepts a 12-character string
+
+`idForms(id)` builds `new ObjectID(id)` for anything that is not already an ObjectId. The header
+says anything but an ObjectId or a 24-hex string throws. Driver 5.9 also accepts a 12-byte string:
+`idForms('abcdefghijkl')` returns `[ObjectId('6162…6c'), '6162…6c', 'abcdefghijkl']` on
+`6d120fa2` (run). `staleStringForms` guards with `isHexId`; `profile.save` and the `remove` of
+food, activity and profile call `idForms`/`stringIdForms` on a non-hex id without that guard, so a
+12-character id would delete by the derived hex as well (read, not run). The v1 routes refuse
+non-hex ids with 400, so only callers inside the server reach it.
+
+**Fix shape, not measured:** guard with `isHexId` before `idForms` at those call sites, or make
+`idForms` throw on anything else, as its comment says.
 
 ## 3. How to use this register
 
