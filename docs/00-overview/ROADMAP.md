@@ -29,10 +29,34 @@ not measurements.
 ## 1. The next release: 15.0.9
 
 Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-0`, release PR
-#8598). Every later step waits behind it. The items still before the tag are in `RT-0` and on
-[NEEDS-A-HUMAN](NEEDS-A-HUMAN.md). The candidate's test evidence is in the
-[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md), and what the
-release contains is in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md).
+#8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
+`dev` until it is tagged.
+
+**What 15.0.9 still waits on**, generated from `RT-0`'s open blockers:
+
+<!-- BEGIN GENERATED: release-waits -->
+
+| id | what | claimed state | waiting for | PR |
+|---|---|---|---|---|
+| `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
+| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | `in-flight-upstream` | Maintainer | #8758 |
+| `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | `in-flight-upstream` | Maintainer | #8568 |
+| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | Maintainer | #8419 |
+| `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | `in-flight-upstream` | Maintainer | #8530 |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | Maintainer | #8730 |
+
+<!-- END GENERATED: release-waits -->
+
+Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
+the Loop remote-command browser checks that #8764 made necessary, the release notes, a review of
+#8598 by someone other than the author, and the maintainer's tag.
+
+| for | read |
+|---|---|
+| what 15.0.9 contains, what it leaves broken, and what a releaser must settle | [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
+| the decisions that shape it | [decisions.md](../../releases/cgm-remote-monitor-15.0.9/decisions.md) |
+| how the candidate was tested | [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md) |
+| the user-facing draft | [release-notes.md](../../releases/cgm-remote-monitor-15.0.9/release-notes.md) |
 
 ## 2. Modernization: the release train
 
@@ -64,13 +88,14 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | &mdash; |
 | 1 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | `in-flight-upstream` | &mdash; |
+| 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | &mdash; |
 | 1 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `BFQ-102`, `OID-PREVALENCE` |
 | 2 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `BFQ-102` |
 | 2 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | `BFQ-117` |
 | 2 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | `BFQ-102` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |

@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 21 items
+### Maintainer &mdash; 24 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,6 +38,7 @@ that it was reviewed.
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | #8568 |
 | `RT-PR-8419` | `in-flight-upstream` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | #8419 |
 | `RT-PR-8530` | `in-flight-upstream` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | #8530 |
+| `RT-PR-8730` | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 | #8730 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -50,6 +51,8 @@ that it was reviewed.
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
 | `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
+| `BFQ-118` | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so lo | &mdash; |
+| `BFQ-119` | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622 | &mdash; |
 | `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
@@ -90,6 +93,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8419** | `RT-PR-8419` | `extend-api-tests` | #8419 - tests for Loop push notifications and websockets (je | Maintainer |
 | **#8530** | `RT-PR-8530` | `feature/focus-range-48h-upstream` | #8530 - a 48-hour option in the focus range selector (alansh | Maintainer |
 | **#8568** | `BFQ-114` | `fix-loop-status-timeline` | BF-114 - an AAPS open-ended loop disable keeps loop and pump | Maintainer |
+| **#8730** | `RT-PR-8730` | `crowdin_incoming` | #8730 - Crowdin translation updates, carried into 15.0.9 | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
@@ -138,12 +142,11 @@ behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and pr
 include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is open. Its head is `dev`, now `153e5658`, and it has
-no approving review. Still before the tag: #8754 and #8758 (tested together with the `0.1.0` pin on
-current `dev`), the release notes, and that review. What 15.0.9 contains and whether it is ready:
-[`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
-(a 2026-09-22 snapshot; test evidence is in the
-[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
+still exposed to all of them. Release PR #8598 is open. Its head is `dev` `4f705217`, and it has
+no approving review. What 15.0.9 still waits on is generated from the queue in
+[ROADMAP §1](ROADMAP.md#1-the-next-release-1509); what it contains and leaves broken is in
+[contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and the test evidence is in the
+[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
 
 ### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
 

@@ -103,7 +103,7 @@ decision was, this plan wins.**
 | [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
 | [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
 | [semver and release versioning policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
-| [release readiness for 15.0.9](../modernization/release-readiness-15.0.9-2026-09-22.md) | the 15.0.9 decision (a 2026-09-22 snapshot; current state in queue `RT-0`) | the next release |
+| [15.0.9 contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md) and [decisions](../../../releases/cgm-remote-monitor-15.0.9/decisions.md) | what the next release contains, leaves broken and was decided on; what it still waits on is in [ROADMAP §1](../../00-overview/ROADMAP.md) | the next release |
 | [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | T3.0's research deliverable and proposed DDL | the per-tenant configuration surface |
 | [operator upgrade path](../../40-migration/operator-upgrade-path-2026-09-15.md) | what each release means for someone running a site | operator-facing upgrade guidance |
 | [legacy CGM ingestion → Connect](../../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the legacy-bridge migration, which is on cut 1 (queue `RT-1`) |

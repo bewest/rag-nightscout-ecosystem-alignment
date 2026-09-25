@@ -3,7 +3,7 @@
 > **Snapshot, 2026-09-15, against `origin/dev` `a8888f0d` and `origin/master` `92d08342` (15.0.8). Superseded in part: the later classification is the [versioning policy](../../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md), and 15.0.9's number was decided as 15.0.9 (RT-VERSION). Most Phase 0 branches classified here are merged into `dev` (#8733–#8746, unreleased); `bf/auth` is carried by #8754 (open) and the connector pin by #8762 (merged). The method, §7 and the cut analysis stand; counts such as §4's are point-in-time. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), `queue/work-queue.yaml`.**
 
 Date: 2026-09-15. Status: **draft evidence for maintainer decision.** Contributor-facing.
-Companion to [release readiness](../../30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
+Companion to [release readiness](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
 and [Phase 0 PR sequencing](../../30-design/remedial/phase0-pr-sequencing-2026-09-15.md).
 
 Nothing in this document was pushed, merged, tagged or published. It proposes version

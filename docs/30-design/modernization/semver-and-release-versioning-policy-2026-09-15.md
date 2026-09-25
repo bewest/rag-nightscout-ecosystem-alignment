@@ -32,7 +32,7 @@ date, and are labelled so.
 Related: the classification draft this policy builds on,
 [`gt4-semver-classification-2026-09-15.md`](../../60-research/modernization/gt4-semver-classification-2026-09-15.md)
 (where the two disagree, this document is the later position);
-[release readiness for 15.0.9](release-readiness-15.0.9-2026-09-22.md);
+[15.0.9 contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md);
 [backfix register](../remedial/nightscout-backfix-register.md) (defect facts);
 [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (item state);
 [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
@@ -1340,6 +1340,34 @@ is the decision; the cut numbers are this policy's proposal for separate release
 | 3 | `RT-2` | Cut 2 `chore/build-runtime-separation` — page bundles, narrowed D3, event bus, boot sequence, Babel 8 | `16.1.0` | minor (judgement; unmeasured against any third-party plugin) |
 | 4 | `RT-3` | Cuts 3 + 5 combined — MongoDB driver 7, jQuery UI; Express 5, Helmet, EJS, Axios, Mocha 12, Swagger. Cut 5 descends from cut 4, so as the branches stand this step also carries cut 4 (BF-64) | `17.0.0` | major (dependency majors; no measured contract break) |
 | 5 | `RT-5` | Cut 4 `chore/mime-exposure-review`, last — with the bridge removal on cut 1, its remainder is trusted proxies, DOMPurify, Moment/tz, MIME, webpack and ESLint | not proposed until BF-64 is resolved | — |
+
+**Why this order** (measured 2026-09-15 to 09-21; the stack is linear, so each cut is a prefix and
+everything before it ships with it):
+
+- **Cut 1 first and alone.** It is the smallest production change in the stack (21 files,
+  +91/−123 at 2026-09-21) and it delivers the real-browser test suite, which makes every later
+  step, and the D3 migration already in 15.0.9, verifiable in a browser. Its Node floor
+  `^22.12 || >=24` is a dependency bound, not an application one: the suite passes on Node 22.12
+  and later and on 20.20, and fails on 18 only with `ERR_REQUIRE_ESM` from `sanitize-html`. Node
+  20 is left out of range because it reached end of life on 2026-04-30.
+- **The legacy-bridge removal carries the data-availability risk**, and it now travels on cut 1.
+  Legacy MiniMed (mmconnect) does not work, so removing it removes nothing an operator has. The
+  legacy Dexcom bridge has been off by default since 15.0.8, but its mapping onto
+  `nightscout-connect` has not been exercised against a real account. If that migration
+  misbehaves, the symptom is that a person's glucose data stops arriving. That is why the removal
+  needs the real-account check below, a clear notice and a documented rollback.
+- **Rebasing costs more the longer the train waits.** Between 2026-09-15 and 09-21, cuts 1–4 went
+  from 59 to 124 commits behind `dev`, and every newly conflicting file on cuts 2–4 was one the
+  merged Phase 0 fixes touched. Nine of those conflicts are fixes the cuts predate (BF-01, BF-04,
+  BF-07, BF-16, BF-35, BF-36, BF-70), where resolving toward the cut would silently reintroduce a
+  fixed defect.
+
+**The open choice: separate releases or one combined major.** Against one combined release: a
+reviewer would be asked to approve 573 files without having reviewed the 100 PRs under them; it
+couples reversible changes to an irreversible one (removing an ingestion path) in one rollback
+unit; it turns every `dev` merge into a stack refresh while it is open; and it makes bisecting a
+field report across 495 commits nearly impossible. For it: five releases cost five cycles of
+notes, operator upgrades and community support, which is real work for a volunteer project.
 
 **No separate deprecation release** (maintainer, 2026-09-23, `RT-4`): 15.0.9's release notes carry
 the legacy-ingestion notice, and 15.0.9's MiniMed boot warning names every replacement setting

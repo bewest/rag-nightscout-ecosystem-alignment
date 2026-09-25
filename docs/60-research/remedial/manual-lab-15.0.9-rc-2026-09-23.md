@@ -4,7 +4,7 @@
 
 Audience: contributors and the maintainer. Contributor-facing and technical. Not medical advice.
 
-The maintainer ran every check below in Chrome, with an agent seeding each scenario and firing its triggers. This covers the checks the [15.0.9 release readiness](../../30-design/modernization/release-readiness-15.0.9-2026-09-22.md) §3.3 asks a person with a browser to do, and the paths the [automated browser evidence](../modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md) lists as not covered.
+The maintainer ran every check below in Chrome, with an agent seeding each scenario and firing its triggers. This covers the checks the [15.0.9 release readiness](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md) §3.3 asks a person with a browser to do, and the paths the [automated browser evidence](../modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md) lists as not covered.
 
 ## Summary
 

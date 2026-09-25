@@ -158,7 +158,7 @@ CI will fail on this PR until step 3 is done. **That failure is expected and is 
 
 - Backfix register: **BF-34** (backoff option precedence) — explicitly the *smaller* half of this
   change. The log-redaction commits are the reason to merge it.
-- `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md` §5 for the pinning objection.
+- [`cgm-remote-monitor-release-readiness-2026-09-14.md`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §5 for the pinning objection.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` for the four-pin measurement.
 - Verified 2026-09-15: `release/v0.0.14` is `649a7de`, the annotated tag `v0.0.14` points at it,
   `v0.0.13` (`b394411`, `origin/main`) **fast-forwards** to it — no divergence to reconcile — and

@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 155 |
-| runnable gates | 225 |
-| explicit `no-gate:` markers | 204 |
+| items | 156 |
+| runnable gates | 226 |
+| explicit `no-gate:` markers | 205 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 204 of the 429 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 205 of the 431 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 60 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 11 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-130 |
+| `ready-to-push` | 13 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-118, BFQ-119, BFQ-130 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 5 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530 |
+| `in-flight-upstream` | 6 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730 |
 | `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
@@ -699,7 +699,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Evidence.**
 
-- `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
+- `releases/cgm-remote-monitor-15.0.9/contents.md`
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
 **Notes.** Released. nightscout-connect 0.1.0 was released 2026-09-24: the maintainer merged #70 (dev -> main, merge commit 4dde1ec, after #80 merged into dev), tagged main v0.1.0 and approved the publish. npm `latest` is 0.1.0 with provenance, gitHead 4dde1ec. Its code equals 977da8a (v0.1.0-dev.3); `git diff 977da8a 4dde1ec` is docs/releasing.md only (#80: merge dev into main, then tag main). It carries every programme connector fix: BF-42, BF-85, BF-08/BF-34, BF-89, BF-91, BF-97, BF-98. npm `next` is still 0.1.0-dev.3. Nightscout dev pins it exactly (P0-PIN, #8762). #81 is in `pr:` because it is the standing dev -> main PR for the next cycle: connector dev 04102f9 declares 0.1.1. It is not part of 0.1.0. #79's final code (9dbef9e, whose lib/ equals de3cee1) was lab-run on 2026-09-23: 80 min on the first sinks and 46 min on the 15.0.9-candidate sinks (docs/60-research/remedial/connector-profile-sync.md). That is shorter than the 4 h 23 min dev.2 soak, and source outages and restarts were not repeated. Update-on-change works only against a sink that has #8758 (BFQ-102). Decisions: - 2026-09-23 (maintainer): tag 0.1.0 only after the needed connector fixes are in connector dev: BF-89 (P0-CONNECT- ROLE), BF-91 (BFQ-91), and the profile-sync stall found in the dev.2 soak (BF-97, BFQ-97) with a clear log warning when a reused reader subject has no roles (BF-98: warn clearly, don't repair; the release notes keep the manual steps). #54 and #52 are not required for 0.1.0. All of these are in 0.1.0. - 2026-09-22 (maintainer): tag 0.1.0 and pin it inside 15.0.9. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired; every commit on them is in connector dev, and no 0.0.14 exists.
@@ -1000,7 +1000,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 25 items
+`parcel: release-train` &mdash; 26 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1030,6 +1030,7 @@ that costs.
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `in-flight-upstream` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `in-flight-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | `crowdin_incoming` | patch | 1 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does | `not-started` | `-` | patch | 1 run + 1 no-gate |
@@ -1063,7 +1064,6 @@ that costs.
 **Evidence.**
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
-- `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
 **Notes.** Answered for 15.0.9 on 2026-09-24 (maintainer, session -6a): the treatment drag is safe to ship. Evidence: the automated Chrome probe tools/review/probes/rt-d3-drag-browser.js (docs/60-research/modernization/rt-d3-and-alarm-browser- evidence-2026-09-22.md, 7e86ab91: 15.0.8 and dev identical on every drag measured, 0 page errors, and deleting the clamps turns 2 of 19 checks red), and the hand check on the combined rc ec70aab0 (docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md: mouse in mg/dL and mmol/L, and touch, same as 15.0.8), repeated on #8760's head 8d797ba4. No repeat is needed while the release candidate's browser-side code matches 8d797ba4, which RT-0's client-unchanged-since-hand-check gate measures. The mocha suite cannot see the drag clamps: the unit gate passes on origin/dev (24 passing), and deleting the three clamps still leaves 24 passing. That gap is not a 15.0.9 question; it is RT-D3-SUITE, targeted at cut 1's real-browser suite. Found on the way, pre-existing on 15.0.8 and not a D3 regression: BF-103 (a split drag stored the old time, so IOB and COB ignored the move), fixed by #8760 (BFQ-103). Decisions: - 2026-09-23 (maintainer): answer it two ways, a manual check in a browser plus an automated browser test. - 2026-09-24 (maintainer, session -6a): answered for 15.0.9 on that evidence; the mocha gap moves to RT-D3-SUITE. The clamps bound a user-initiated rewrite of a treatment's created_at emitted over the socket, and a treatment's timestamp is what IOB/COB key off. They are the exact lines the D3 6 migration rewrote and the least covered lines it touched.
@@ -1344,7 +1344,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 (dev -> master) on 2026-09-24: open, mergeable, 27 checks green and 3 skipped, reviewDecision REVIEW_REQUIRED and zero reviews. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent merges, 226 files, +18167/-1403. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. One open PR is planned to join it: #8758. Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1363,12 +1363,11 @@ that costs.
 
 **Evidence.**
 
-- `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`
+- `releases/cgm-remote-monitor-15.0.9/contents.md`
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
-- `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** Waiting on four things and the maintainer's tag. dev is 4f705217 (2026-09-24, merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev -> master), head 4f705217: zero reviews, review required (measured 2026-09-25); CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev 4f705217 + #8758. - Three outside contributors' PRs, decided 2026-09-25 (maintainer) to carry into 15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests) and #8530 (RT-PR-8530, a 48-hour chart option). The combined run must include them. - The browser checks for the Loop remote- command path: client-unchanged-since-hand-check.js fails because #8764 (in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's careportal and from LoopCaregiver still need a 200 and a delivered push, by hand. - The release notes (releases/cgm-remote-monitor-15.0.9/release- notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers were removed when it merged (2026-09-25), and the sections marked PENDING for #8758 are finalised when it merges. - A human review of #8598, and the maintainer tagging. Evidence: the latest combined run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev 4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
+**Notes.** Waiting on four things and the maintainer's tag. dev is 4f705217 (2026-09-24, merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev -> master), head 4f705217: zero reviews, review required (measured 2026-09-25); CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev 4f705217 + #8758. - Four outside PRs, decided 2026-09-25 (maintainer) to carry into 15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests), #8530 (RT-PR-8530, a 48-hour chart option) and #8730 (RT-PR-8730, Crowdin translations). The combined run must include them. - The browser checks for the Loop remote-command path: client-unchanged-since-hand-check.js fails because #8764 (in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's careportal and from LoopCaregiver still need a 200 and a delivered push, by hand. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers were removed when it merged (2026-09-25), and the sections marked PENDING for #8758 are finalised when it merges. - A human review of #8598, and the maintainer tagging. Evidence: the latest combined run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev 4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual- lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy- ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 
@@ -1736,6 +1735,36 @@ that costs.
 
 **Notes.** Outside contributor (alanshurafa); the maintainer merged dev into it on 2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
 
+### `RT-PR-8730` &mdash; #8730 - Crowdin translation updates, carried into 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `crowdin_incoming` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** Translations only: 32 files under translations/, +518/-454. Head f99c0e54, 85 commits behind dev; merges cleanly with dev 4f705217 and with #8758 (measured 2026-09-25).
+
+**What an operator sees.** Updated wording in the languages the Crowdin volunteers translate.
+
+**Why `patch`.** translation text only
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null`
+  - #8730's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8730/head:refs/triage/pr-8730` first.
+- **NO GATE** &mdash; No test reads the translation files' content. A broken JSON file would fail the language loader's tests, which the combined run covers once #8730 is in it.
+
+**Evidence.**
+
+- `docs/60-research/remedial/github-triage-2026-09-25.md`
+
+**Notes.** Opened by the Crowdin integration (sulkaharo), last updated 2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9. Translations changed after it was opened are not in it.
+
 ### `OID-MIGRATION` &mdash; Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms
 
 | | |
@@ -1924,8 +1953,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
-| `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
-| `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `ready-to-push` | `bf/mmol-partial-thresholds` | patch | 1 run + 2 no-gate |
+| `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `ready-to-push` | `bf/pump-warn-on-suspend` | patch | 1 run + 1 no-gate |
 | `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `not-started` | `none yet` | minor | 1 run + 1 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244) | `not-started` | `none yet` | minor | 1 run + 2 no-gate |
@@ -3838,11 +3867,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
+| branch | `bf/mmol-partial-thresholds` |
 | base | `origin/dev@4f705217` |
-| worktree | `-` |
+| worktree | `externals/work/crm-bf118-mmol-thresholds` |
 | semver | `patch` |
 | review | maintainer, plus someone who runs an mmol/L site |
 | ships to operators today | **yes** |
@@ -3856,8 +3885,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'`
-  - FAILS today: origin/dev's lib/settings.js still decides the unit of all four thresholds from BG_HIGH alone. A presence check only; it goes green when that test changes (and stays red if the file cannot be read), and the probe below says whether the change converts a partial mmol set.
+- `[static]` `sh -c 's=$(git -C externals/cgm-remote-monitor-official show bf/mmol-partial-thresholds:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'`
+  - The branch no longer decides the unit of all four thresholds from BG_HIGH alone (origin/dev fails this until the fix merges; point it at origin/dev then). A presence check only, red if the file cannot be read; the probe below says whether a partial mmol set converts.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/mmol-partial-thresholds.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (stored 260/8.5/3.9/2.9 mg/dL; 45 mg/dL raises Warning HIGH, no low alarm); both controls raise Urgent LOW at 45 on both. Done when the probe exits 0 on the candidate.
 - **NO GATE** &mdash; tools/queue/gates/threshold-silent-rewrite.js (BF-67) does not cover this input: its mmol control sets all four thresholds. A partial-mmol arm belongs in tests/settings.test.js with the fix.
 
@@ -3866,17 +3895,17 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/mmol-partial-thresholds.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7729, opened 2022-11-30). Same design decision as BF-67 and BF-86 (how threshold numbers are validated and interpreted), and should be decided with them; the trigger (conversion keyed on BG_HIGH alone, on a correctly configured mmol site) and the false high warning are this entry's own. Open PR #8522 does not touch it.
+**Notes.** 2026-09-25 - FIXED on bf/mmol-partial-thresholds 93359650 (local, not pushed), on dev 4f705217: on an mmol site each threshold is read on its own (below 30 = mmol/L, converted; 30 or more = mg/dL, kept), one log line per conversion, README bullet. 8 new tests (6 fail on dev's settings.js with the symptom); probe exit 0 on the branch, 1 on dev; full suite 2585/3/0 vs dev 2577/3/0, Node 22.23.2, MongoDB 7.0.43. For the maintainer's review: the cut-off of 30, and one stored-value change (BG_HIGH=14 with BG_TARGET_TOP=180 now gives 252/180/80/55, not 3244/3243/1441/991). Filed 2026-09-25 from the GitHub triage (issue #7729, opened 2022-11-30). Same design decision as BF-67 and BF-86 (how threshold numbers are validated and interpreted), and should be decided with them; the trigger (conversion keyed on BG_HIGH alone, on a correctly configured mmol site) and the false high warning are this entry's own. Open PR #8522 does not touch it.
 
 ### `BFQ-119` &mdash; BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/pump-warn-on-suspend` |
 | base | `origin/dev@4f705217` |
-| worktree | `-` |
+| worktree | `externals/work/crm-bf119-pump-suspend` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -3890,8 +3919,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" origin/dev -- lib/plugins/pump.js'`
-  - FAILS today: origin/dev's updateStatus still tests warnOnSuspend on the wrong object. A presence check only; it goes green when that test is removed, and the probe below is what says whether the warning then fires without throwing.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/pump-warn-on-suspend:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" bf/pump-warn-on-suspend -- lib/plugins/pump.js'`
+  - The branch no longer tests warnOnSuspend on the wrong object. A presence check only (origin/dev fails it until the fix merges); the probe below is what says the warning fires without throwing. Point it at origin/dev once merged.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/pump-suspend.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (no Pump notification); both controls behave. Exit 0 on a scratch copy of dev with the fix sketch. The fix is done when the probe exits 0 on the candidate.
 
 **Evidence.**
@@ -3899,7 +3928,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/pump-suspend.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #5622, opened 2020-04-14). Fixing only the misplaced test would turn the silent miss into a TypeError on every suspended status, so both mistakes go in one change with a test that asserts the WARN notification.
+**Notes.** 2026-09-24/25 - FIXED on bf/pump-warn-on-suspend 7b239c01 (local, not pushed), on dev 4f705217: updateStatus takes prefs and builds result.status first; three tests in tests/pump.test.js (two fail on dev's pump.js). pump 13 passing; probe exit 0 on the branch, 1 on dev; full suite 2580/3/0 vs dev 2577/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25 from the GitHub issue triage (issue #5622, opened 2020-04-14). Fixing only the misplaced test would turn the silent miss into a TypeError on every suspended status, so both mistakes go in one change with a test that asserts the WARN notification.
 
 ### `BFQ-120` &mdash; BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036)
 

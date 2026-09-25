@@ -4,7 +4,7 @@
 
 Date: 2026-09-15. Audience: contributors and the maintainer. Status: measurement report.
 Companion to and **partial correction of**
-[cgm-remote-monitor release readiness](../../30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §2 and §5.
+[cgm-remote-monitor release readiness](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §2 and §5.
 
 ## Measurement basis
 

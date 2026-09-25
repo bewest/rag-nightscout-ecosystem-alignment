@@ -9,8 +9,10 @@ Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `4f705217`, plus one open PR**, #8758, that the maintainer has
-decided ships in it ([decisions](decisions.md)). Every PR merged to `dev` is `merged`; none is `released`. #8758 is `open`.
+15.0.9 is **everything on `dev` at `4f705217`, plus the open PRs the maintainer has decided ship in
+it** ([decisions](decisions.md)): #8758, and four outside contributors' PRs carried by decision on
+2026-09-25, #8568 (BF-114), #8419 (tests), #8530 (a 48-hour chart option) and #8730 (Crowdin
+translations). Every PR merged to `dev` is `merged`; none is `released`. The carried PRs are `open`.
 
 ## Identity
 
@@ -187,7 +189,7 @@ All merged 2026-09-05. #8749 (qs) is in the backfix table above.
 
 ## Version number: 15.0.9
 
-Decided 2026-09-22 (queue `RT-VERSION`; backfix-2 plan §1). The release is **15.0.9**, the number
+Decided 2026-09-22 (queue `RT-VERSION`; [decisions](decisions.md)). The release is **15.0.9**, the number
 `dev`'s `package.json` already carries. #8738 (as amended by #8748 and #8761), #8743 and #8754's
 subject/role field allow-list ship as **declared corrections** in the release notes.
 
@@ -210,32 +212,47 @@ The facts the classification rests on, for the record:
 - Dev-channel deployments already report `15.0.9` from `/api/v1/status`
   (`lib/server/env.js` → `lib/api/status.js`). The release notes say so.
 - The modernization cut branches also carry `15.0.9` in `package.json`; each cut is renumbered
-  when it is rebased (backfix-2 plan §1a, "cut numbering").
+  when it is rebased ([decisions](decisions.md)).
 
 ## What is NOT in 15.0.9
 
 | Item | State | Consequence |
 |---|---|---|
-| BF-86 / BF-67 — thresholds in the wrong units | open | carried as a known issue in the notes |
+| BF-72 — a class of expensive search request can occupy the database for minutes, with no credentials on a default install | open; no fix; disposition decided privately (`BFQ-72`) | described by mechanism only |
+| BF-86 / BF-67 — thresholds in the wrong units (a mmol/L low threshold on a mg/dL site is stored so the low alarm can never fire; an out-of-order threshold is silently rewritten) | open | carried as a known issue in the notes |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
-| A page with no reading does not sound server alarms | open; #8755 removes only the handler error | carried as a known issue |
-| `TRUST_PROXY` planned flip | none planned (flag registry, backfix-2 plan §4) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
-| Crowdin PR #8730 | open (`gh pr view 8730 --json state`) | translations after #8603 are not included |
+| BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
+| BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
+| BF-44 / BF-45 — MiniMed ingestion divergences | open, graded low: legacy mmconnect does not work, so only one path ingests in practice | the legacy bridges are removed on cut 1 |
+| `TRUST_PROXY` planned flip | none planned ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 
-Other `open` register entries that reach 15.0.9 are listed in the register's §1; this file
-does not copy them.
+Other `open` register entries that reach 15.0.9 are listed in the register's §1, and the queue
+items for everything present on 15.0.8 are in the operator-exposure table on
+[PROGRAMME-STATUS](../../docs/00-overview/PROGRAMME-STATUS.md#status-words-merged-is-not-released);
+this file does not copy them. Nightscout is not a medical device: an operator who relies on its
+alarms should always have a second way to see readings.
 
 ## Open items a releaser must settle
 
-1. **#8758** (`ab7b22d6`): review and merge.
-2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge` stay or go
-   with it.
+The queue-tracked items are listed, generated and current, in
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509) (queue `RT-0`'s open
+blockers: #8758, the carried outside PRs, `RT-VERSION`). Beside them:
+
+1. **The Loop remote-command browser checks.** #8764 changed `lib/api2/index.js` and
+   `lib/api2/notifications-v2.js` after the hand-checked `8d797ba4`, so a remote override, carbs
+   and bolus from careportal and from LoopCaregiver each need a 200 and a delivered push, by hand
+   (`client-unchanged-since-hand-check.js` is red until then).
+2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge` are finalised
+   when it merges.
 3. **#8598 review.** The release PR has zero reviews and review is required.
 4. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md`; 12 commits, `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
    [`../README.md`](../README.md#open-item-changelog-on-dev).
 5. **The tag**, by the maintainer.
+
+Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
+it is moot once #8598 merges.
 
 ## Known test gaps
 

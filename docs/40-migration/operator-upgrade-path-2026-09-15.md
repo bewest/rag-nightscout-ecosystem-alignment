@@ -1488,7 +1488,7 @@ exits 0; cut 5 is 154 commits past cut 4; `git cat-file -e` confirms `lib/plugin
 `lib/plugins/mmconnect.js` are present on `dev` and on cuts 1, 2 and 3 and absent on cuts 4 and 5,
 while `lib/server/mmconnect-connect-compat.js` is absent everywhere before cut 4 and present on
 cuts 4 and 5. The plan text section 0 contradicts was read at its source
-(`docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md:416`) and is quoted correctly.
+([`cgm-remote-monitor-release-readiness-2026-09-14.md:416`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md#L416)) and is quoted correctly.
 
 **Reproduced exactly, to the digit:** all seven `package.json` version/engines/driver/connector
 values in the section 6.3 matrix; both cut 1 diffstats (11 files +68/−54 incremental, 21 files

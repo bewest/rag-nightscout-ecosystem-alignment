@@ -25,6 +25,7 @@ repository.
 | [`RT-PR-8530`](rt-pr-8530-feature-focus-range-48h-upstream.md) | #8530 | `in-flight-upstream` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 |
 | [`BFQ-114`](bfq-114-fix-loop-status-timeline.md) | #8568 | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
+| [`RT-PR-8730`](rt-pr-8730-crowdin-incoming.md) | #8730 | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
@@ -36,6 +37,8 @@ repository.
 | [`BFQ-115`](bfq-115-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load |
 | [`BFQ-116`](bfq-116-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch |
 | [`BFQ-117`](bfq-117-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy |
+| [`BFQ-118`](bfq-118-bf-mmol-partial-thresholds.md) | &mdash; | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) |
+| [`BFQ-119`](bfq-119-bf-pump-warn-on-suspend.md) | &mdash; | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |

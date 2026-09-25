@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 110 | 46 | 19 |
-| **Modernization** | `release-train` | 25 | 5 | 3 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 110 | 44 | 21 |
+| **Modernization** | `release-train` | 26 | 5 | 4 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **155** | **60** | **25** |
+| | **total** | **156** | **58** | **28** |
 
 <!-- END GENERATED: horizons -->
 
@@ -134,8 +134,8 @@ cover more than one `BF-`:
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
-| `BFQ-118` | `not-started` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
-| `BFQ-119` | `not-started` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
+| `BFQ-118` | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
+| `BFQ-119` | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `not-started` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
 | `BFQ-121` | `not-started` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
 | `BFQ-122` | `not-started` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
@@ -181,8 +181,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 4 |  | 5 | 2 | 7 | 1 |  |  |  | 1 | **25** |
-| `register-open` | 36 | 1 | 5 | 9 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **78** |
+| `release-train` | 5 |  | 4 |  | 5 | 3 | 7 | 1 |  |  |  | 1 | **26** |
+| `register-open` | 34 | 1 | 5 | 11 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **78** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -223,14 +223,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 121 | 78% |
+| Maintainer | 122 | 78% |
 | SECURITY reviewer | 15 | 10% |
-| Maintainer + a second human | 7 | 5% |
+| Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 4% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **155** | |
+| **total** | **156** | |
 
 <!-- END GENERATED: reviewer-load -->
 
@@ -288,7 +288,8 @@ measurement.
 | the order of the work ahead | [`ROADMAP.md`](ROADMAP.md) |
 | item state, gates, review routing | `queue/work-queue.yaml` (source of truth) |
 | defect facts and `BF-` ids | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) |
-| what 15.0.9 contains and whether it is ready | [`../30-design/modernization/release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md) |
+| what 15.0.9 contains and leaves broken | [`../../releases/cgm-remote-monitor-15.0.9/contents.md`](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
+| what 15.0.9 still waits on | [`ROADMAP.md` §1](ROADMAP.md#1-the-next-release-1509) (generated) |
 | Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
 | the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
 | tenancy decisions D1–D17 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |

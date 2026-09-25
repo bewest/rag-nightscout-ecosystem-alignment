@@ -298,6 +298,36 @@ def block_road_tenancy(doc):
     return _block_road(doc, "tenancy")
 
 
+def block_release_waits(doc):
+    """What the next release (RT-0) still waits on: its open blockers, and theirs.
+
+    Only blockers still open are listed, so an item drops off this table the
+    moment its claimed state says it is merged, done, closed or answered.
+    """
+    by_id = {i["id"]: i for i in doc["items"]}
+    open_ids = {i["id"] for i in doc["items"] if i["state"] not in OFF_THE_ROAD}
+    seen, order, stack = set(), [], list(by_id["RT-0"].get("blocks_on") or [])
+    while stack:
+        item_id = stack.pop(0)
+        if item_id in seen or item_id not in open_ids:
+            continue
+        seen.add(item_id)
+        order.append(item_id)
+        stack.extend(by_id[item_id].get("blocks_on") or [])
+    out = ["| id | what | claimed state | waiting for | PR |",
+           "|---|---|---|---|---|"]
+    for item_id in order:
+        item = by_id[item_id]
+        prs = pr_numbers(item) or [str(p) for p in item.get("pr") or []]
+        out.append("| `%s` | %s | `%s` | %s | %s |"
+                   % (item_id, _flow(item["title"], 80), item["state"],
+                      reviewer_kind(item),
+                      ", ".join("#" + p for p in prs) or "&mdash;"))
+    if not order:
+        out.append("| &mdash; | nothing open blocks `RT-0` | | | |")
+    return "\n".join(out)
+
+
 def block_provenance(doc):
     meta = doc["meta"]
     against = meta.get("measured_against", {})
@@ -319,6 +349,7 @@ BLOCKS = {
     "reviewer-load": block_reviewer_load,
     "operator-exposure": block_operator_exposure,
     "open-prs": block_open_prs,
+    "release-waits": block_release_waits,
     "road-release-train": block_road_release_train,
     "road-tenancy": block_road_tenancy,
     "provenance": block_provenance,

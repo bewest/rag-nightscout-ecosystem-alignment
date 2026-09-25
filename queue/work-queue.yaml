@@ -1608,7 +1608,7 @@ items:
           set (c1cce2a is the last of the seven). Read-only.
     blocks_on: [P0-CONNECT-ROLE, BFQ-91]
     evidence:
-      - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
       Released. nightscout-connect 0.1.0 was released 2026-09-24: the
@@ -2026,7 +2026,6 @@ items:
     blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
-      - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
       Answered for 15.0.9 on 2026-09-24 (maintainer, session -6a): the
@@ -2847,11 +2846,10 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730]
     evidence:
-      - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
-      - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
       Waiting on four things and the maintainer's tag. dev is 4f705217
@@ -2867,9 +2865,10 @@ items:
       - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev
       4f705217 + #8758.
 
-      - Three outside contributors' PRs, decided 2026-09-25 (maintainer) to
-      carry into 15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests)
-      and #8530 (RT-PR-8530, a 48-hour chart option). The combined run must
+      - Four outside PRs, decided 2026-09-25 (maintainer) to carry into
+      15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests), #8530
+      (RT-PR-8530, a 48-hour chart option) and #8730 (RT-PR-8730, Crowdin
+      translations). The combined run must
       include them.
 
       - The browser checks for the Loop remote-command path:
@@ -9062,9 +9061,10 @@ items:
     title: "BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
+    branch: bf/mmol-partial-thresholds
     base: origin/dev@4f705217
-    state: not-started
+    worktree: externals/work/crm-bf118-mmol-thresholds
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -9088,14 +9088,13 @@ items:
     semver_reason: a bug fix in how documented settings are read; a site that set all four values sees no change
     register: [BF-118]
     gates:
-      - run: sh -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'
+      - run: sh -c 's=$(git -C externals/cgm-remote-monitor-official show bf/mmol-partial-thresholds:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'
         kind: static
         describe: >
-          FAILS today: origin/dev's lib/settings.js still decides the unit of
-          all four thresholds from BG_HIGH alone. A presence check only; it
-          goes green when that test changes (and stays red if the file cannot
-          be read), and the probe below says whether the change converts a
-          partial mmol set.
+          The branch no longer decides the unit of all four thresholds from
+          BG_HIGH alone (origin/dev fails this until the fix merges; point it
+          at origin/dev then). A presence check only, red if the file cannot
+          be read; the probe below says whether a partial mmol set converts.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/mmol-partial-thresholds.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9112,6 +9111,15 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/mmol-partial-thresholds.js
     notes: >
+      2026-09-25 - FIXED on bf/mmol-partial-thresholds 93359650 (local, not
+      pushed), on dev 4f705217: on an mmol site each threshold is read on
+      its own (below 30 = mmol/L, converted; 30 or more = mg/dL, kept), one
+      log line per conversion, README bullet. 8 new tests (6 fail on dev's
+      settings.js with the symptom); probe exit 0 on the branch, 1 on dev;
+      full suite 2585/3/0 vs dev 2577/3/0, Node 22.23.2, MongoDB 7.0.43.
+      For the maintainer's review: the cut-off of 30, and one stored-value
+      change (BG_HIGH=14 with BG_TARGET_TOP=180 now gives 252/180/80/55,
+      not 3244/3243/1441/991).
       Filed 2026-09-25 from the GitHub triage (issue #7729, opened
       2022-11-30). Same design decision as BF-67 and BF-86 (how threshold
       numbers are validated and interpreted), and should be decided with
@@ -9122,9 +9130,10 @@ items:
     title: "BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/pump-warn-on-suspend
     base: origin/dev@4f705217
-    state: not-started
+    worktree: externals/work/crm-bf119-pump-suspend
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -9145,13 +9154,13 @@ items:
     semver_reason: a documented setting starts doing what it says; no stored data or API changes
     register: [BF-119]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" origin/dev -- lib/plugins/pump.js'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/pump-warn-on-suspend:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" bf/pump-warn-on-suspend -- lib/plugins/pump.js'
         kind: static
         describe: >
-          FAILS today: origin/dev's updateStatus still tests warnOnSuspend
-          on the wrong object. A presence check only;
-          it goes green when that test is removed, and the probe below is
-          what says whether the warning then fires without throwing.
+          The branch no longer tests warnOnSuspend on the wrong object. A
+          presence check only (origin/dev fails it until the fix merges); the
+          probe below is what says the warning fires without throwing. Point
+          it at origin/dev once merged.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/pump-suspend.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9164,6 +9173,12 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/pump-suspend.js
     notes: >
+      2026-09-24/25 - FIXED on bf/pump-warn-on-suspend 7b239c01 (local, not
+      pushed), on dev 4f705217: updateStatus takes prefs and builds
+      result.status first; three tests in tests/pump.test.js (two fail on
+      dev's pump.js). pump 13 passing; probe exit 0 on the branch, 1 on
+      dev; full suite 2580/3/0 vs dev 2577/3/0, Node 22.23.2, MongoDB
+      7.0.43.
       Filed 2026-09-25 from the GitHub issue triage (issue #5622, opened
       2020-04-14). Fixing only the misplaced test would turn the silent miss
       into a TypeError on every suspended status, so both mistakes go in one
@@ -9659,6 +9674,42 @@ items:
       2020-10-10). A past maintainer comment suggested deprecating /pebble
       instead; that is the maintainer's decision. No client in the
       externals corpora calls it.
+  - id: RT-PR-8730
+    title: "#8730 - Crowdin translation updates, carried into 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: crowdin_incoming
+    base: origin/dev@4f705217
+    state: in-flight-upstream
+    pr: [8730]
+    blast_radius: >
+      Translations only: 32 files under translations/, +518/-454. Head
+      f99c0e54, 85 commits behind dev; merges cleanly with dev 4f705217 and
+      with #8758 (measured 2026-09-25).
+    review: maintainer
+    operator_visible: >
+      Updated wording in the languages the Crowdin volunteers translate.
+    semver: patch
+    semver_reason: translation text only
+    register: []
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null
+        kind: static
+        describe: >
+          #8730's head merges into origin/dev without conflict. Needs
+          `git -C externals/cgm-remote-monitor-official fetch official
+          pull/8730/head:refs/triage/pr-8730` first.
+      - no-gate: >
+          No test reads the translation files' content. A broken JSON file
+          would fail the language loader's tests, which the combined run
+          covers once #8730 is in it.
+    blocks_on: []
+    evidence:
+      - docs/60-research/remedial/github-triage-2026-09-25.md
+    notes: >
+      Opened by the Crowdin integration (sulkaharo), last updated
+      2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9.
+      Translations changed after it was opened are not in it.
   - id: OID-LAB
     title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
     parcel: register-open

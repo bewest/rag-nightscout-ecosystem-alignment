@@ -113,9 +113,9 @@ Four entry points, easiest first:
    glucose reading presents no server alarm, including device alarms) has no fix yet.
 3. **The release.** `RT-0` (release PR #8598, 15.0.9) is open, green on CI, and has no
    approving review. It is 62 first-parent merges (`dev` `4f705217`, 2026-09-25); its
-   readiness assessment is
-   [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
-   (a 2026-09-22 snapshot), and how the candidate was tested is in the
+   remaining blockers are generated in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509), its
+   contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
+   candidate was tested is in the
    [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
 4. **An `unsettled` item.** `BFQ-09`, `A7A-7` — it is not yet established
    that these are defects at all. Settling one either way is a complete,

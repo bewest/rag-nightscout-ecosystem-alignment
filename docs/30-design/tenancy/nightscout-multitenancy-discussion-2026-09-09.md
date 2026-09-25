@@ -3002,7 +3002,7 @@ gates the most expensive work.
    remaining §3 hazards as issues **now** so the modernization tree does not re-break them,
    and queue a named Layer 1b′ follow-up directly behind #8605 against the post-modernization
    tree. See the release-sequencing companion,
-   [cgm-remote-monitor release readiness](../modernization/cgm-remote-monitor-release-readiness-2026-09-14.md).
+   [cgm-remote-monitor release readiness](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md).
 8. Given §7.3 — that multitenancy and a runtime rewrite are **substitutes** for the same
    ~41 MB per-process cost — does the project prefer to keep one process per person and shrink
    the process, or keep Node and share the process? Both are defensible; doing both buys
