@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 128 |
-| runnable gates | 198 |
-| explicit `no-gate:` markers | 174 |
+| items | 129 |
+| runnable gates | 199 |
+| explicit `no-gate:` markers | 176 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 174 of the 372 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 176 of the 375 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 2 | BFQ-47, BFQ-102 |
+| `in-flight-upstream` | 3 | BFQ-47, BFQ-102, BFQ-114 |
 | `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
@@ -94,6 +94,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-102** bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
 - **BFQ-111** BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes
 - **BFQ-112** BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
+- **BFQ-114** BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
 
 ---
 
@@ -1719,7 +1720,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 55 items
+`parcel: register-open` &mdash; 56 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1780,6 +1781,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
 | `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
 | `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 1 no-gate |
+| `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
@@ -3526,6 +3528,40 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
+
+### `BFQ-114` &mdash; BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `fix-loop-status-timeline` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer, plus someone who runs AndroidAPS |
+| ships to operators today | **yes** |
+| register | `BF-114` |
+
+**Blast radius.** PR #8568 (outside contributor, head de8efff0, 0 behind dev): lib/data/ddata.js normalizeAapsRunningModes, called from processTreatments; tests/ddata.test.js; and removal of an unused convertToRanges wrapper in lib/profile/profileeditor.js (dev fails eslint no-unused-vars on it; #8605 makes the same deletion).
+
+**What an operator sees.** If you use AndroidAPS and have turned the loop off without an end time, then turned it back on, Nightscout may still treat the loop as deliberately off. While it does, it does not warn you that the loop has stopped running and does not raise pump alerts, and nothing on the page says so. Keep the alerts on your phone and pump switched on. The fix is not in 15.0.9 yet.
+
+**Why `patch`.** a bug fix in how existing records are read; nothing stored changes
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q DISABLED_LOOP origin/dev -- lib/`
+  - FAILS today: nothing in origin/dev's lib/ handles an AAPS DISABLED_LOOP record. A presence check only; it goes green when handling lands, and the probe below is what says whether it works.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/aaps-offline/probe.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8568 de8efff0 (the last clears the released-AAPS shape but not the AAPS-dev shape); both controls behave on all three. The fix is done when the probe exits 0 on the candidate.
+- **NO GATE** &mdash; Nothing tests the alert level itself or the day-to-day report, which reads raw records and still draws the disable open-ended. A test in tests/openaps.test.js asserting the level after a re-enable is the missing piece.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/aaps-offline/probe.js`
+
+**Notes.** Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open-PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Whether it goes into 15.0.9 is the maintainer's decision.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 

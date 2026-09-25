@@ -55,8 +55,8 @@ and the release PR #8598 (`dev` → `master`) is open at `4f705217`, with no rev
 
 | question | answer, 2026-09-25 (`origin/dev` `4f705217`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **77** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **25 open, 46 merged, 1 partly merged (BF-07), 5 fixed on an unmerged branch** (BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **75** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under merged) |
-| How much work is outstanding? | **53 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **78** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 46 merged, 1 partly merged (BF-07), 5 fixed on an unmerged branch** (BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **76** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
+| How much work is outstanding? | **54 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
 Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
 cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
@@ -190,6 +190,7 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-108** | A v1 filter that lists **two or more** timestamps under the date field (`find[date][$in][]=…`) **answers 500 and does nothing**: `enforceDateFilter` calls `.replace` on every operator value that `isNaN`, and a list is an array. xdripswift sends exactly this to delete readings in bulk (`DELETE /api/v1/entries.json?find[type]=sgv&find[date][$in][]=…`, chunks of 50), so those deletes have never removed anything; one-value lists and range deletes work | `lib/server/query.js` `enforceDateFilter` on `v15.0.8`, `origin/dev` `ddd9b600` and the 15.0.9 candidate | **medium** — readings a client asked to delete stay on the site with no error the user sees; nothing is lost or written wrongly | yes | **open, found 2026-09-23** by the consumer survey. **Reproduced**: 500 `dateString.replace is not a function` for 2, 5, 20, 21 and 50 values on all three builds, entries unchanged; the one-value and range-delete controls answer 200 and delete; gate `tools/queue/gates/bf108-date-in-list.js` |
 | **BF-111** | A v1 `find[_id][$in]` list **misses a record stored with a string `_id`**, for reads and for bulk deletes: `lib/server/query.js` turns each hex in the list into an ObjectId, and #8758's `matchEitherForm` widens only a plain equality. A DELETE by a list of a string-stored and an ObjectId-stored id answers 200 and removes only the ObjectId one | `lib/server/query.js` `updateIdQuery` (the `$in`/`$nin` leaves) on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` | **low** — the same records single-id lookups now reach (BF-99 to BF-102) stay out of list operations; no client in the corpus is known to send `find[_id][$in]` | yes | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `1c2d1afd` (2026-09-24) (queue BFQ-111). **Reproduced**: probe P-ID-11 on all three builds, with an ObjectId-stored record in the same list as control ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-112** | An auth subject created with its own 24-hex `_id` is **stored with the `_id` as a string, and DELETE by that id removes nothing** while answering 200. `createSubject` inserts `req.body` as given; `removeSubject` looks up `new ObjectID(_id)` only; `saveSubject` converts. Same class as BF-99, in `auth_subjects` | `lib/authorization/storage.js` `create` and `remove` on `v15.0.8`, `dev` `ddd9b600` and #8758 `6d120fa2` (#8758 does not touch it) | **low** — admin only (`admin:api:subjects:create`); reached by a restore of subjects or a tool that sends `_id`. The access token is derived from `_id.toString()`, so tokens are unaffected | yes | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `d2fd9ff6` (2026-09-24); after `dev` was merged in, create keeps only owned fields (#8754), so follow-up `ab7b22d6` (not pushed yet) keeps only the remove half (queue BFQ-112). **Reproduced**: probe P-ID-12 on all three builds: 200 and a string `_id`, then DELETE 200 with the subject still stored ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
+| **BF-114** | After an AndroidAPS user turns the loop off **with no end time** and later turns it back on, Nightscout **keeps treating the loop as deliberately offline**, so it **raises no "not looping" alert and no pump alert** until the old record leaves the treatments it loads. AAPS records the re-enable as a new "OpenAPS Offline" record (`CLOSED_LOOP`, duration 0) and does not shorten the earlier `DISABLED_LOOP` one, whose duration is open-ended (2147483647 min, or 10 years in AAPS dev). `findOfflineMarker` reads every such record as a time span and returns the newest that covers now, which is still the disable. Loop and Trio are not affected: neither sends "OpenAPS Offline", and each ends its own indefinite overrides (PR #8568, outside contributor) | `lib/plugins/openaps.js` `findOfflineMarker` (used by `statusLevel` and `lib/plugins/pump.js:335`); `lib/data/ddata.js` `processTreatments` does not close it; `v15.0.8` and `dev` `4f705217` | **high** — silences the two server alerts that say an AAPS loop or pump needs attention, with nothing shown to say so; bounded to AAPS users who used an open-ended disable. Keep the phone's and pump's own alerts on | yes | **open, filed 2026-09-25** from the open-PR triage. PR #8568 (open, 0 behind `dev`) infers the disable's end from the next running-mode record and clears the released-AAPS shape; it misses the AAPS-dev shape (`originalDuration` 0, 10-year duration) and the day-to-day report, which does not go through `processTreatments`. **Reproduced** ([probe](../../../tools/lab/aaps-offline/probe.js)): marker still on 5 h after re-enable on `v15.0.8` and `dev` for both shapes; on #8568 `de8efff0`, cleared for the released shape only; both controls behave on all three |
 
 ## 1b. Pre-release findings
 
@@ -4302,6 +4303,34 @@ non-hex ids with 400, so only callers inside the server reach it.
 
 **Fix shape, not measured:** guard with `isHexId` before `idForms` at those call sites, or make
 `idForms` throw on anything else, as its comment says.
+
+### BF-114 · an AAPS open-ended loop disable keeps alerts off after the loop is back on
+
+AndroidAPS uploads a change of running mode as an "OpenAPS Offline" treatment with a `mode`. A
+disable with no end time is uploaded with an open-ended duration: 2147483647 minutes in the shape
+PR #8568's tests use, and 10 years with `originalDuration` 0 in AAPS dev
+(`plugins/sync/.../nsclientV3/extensions/RunningModeExtension.kt`, commit `ac61c43960`, read).
+Turning the loop back on uploads a second record, `CLOSED_LOOP` (or `OPEN_LOOP`,
+`CLOSED_LOOP_LGS`) with duration 0; the first record is not shortened.
+
+`openaps.findOfflineMarker` (`lib/plugins/openaps.js`) reads each "OpenAPS Offline" record as
+`[mills, mills + duration]` and returns the newest that contains the current time. The re-enable
+record has no span, so the disable is returned. While it is, `statusLevel` does not compute the
+"not looping" warning or urgent level, and `pump.js` does not raise pump alert levels. Nothing on
+the page says alerts are off; the loop pill shows offline.
+
+**Reproduced 2026-09-25** with [`tools/lab/aaps-offline/probe.js`](../../../tools/lab/aaps-offline/probe.js),
+which runs the shipping `processTreatments` and `findOfflineMarker` on synthetic records: 5 hours
+after a re-enable, the marker is on for both shapes on `v15.0.8` `92d08342` and `dev` `4f705217`.
+Controls on every tree: a finite 60-minute disable 6 hours ago is off; an open-ended disable with no
+re-enable is on. On PR #8568 `de8efff0` the released shape is cleared and the AAPS-dev shape is
+not. Not run: a booted server, the alarm notification itself, or AAPS.
+
+**Fix shape (PR #8568, measured above):** end an open-ended `DISABLED_LOOP` at the next running-mode
+record from the same pump or uploader. It also needs the AAPS-dev shape (for example `mode`
+`DISABLED_LOOP` with `originalDuration` 0 and a duration over some bound) and a test on the alert
+level. The day-to-day report (`lib/report_plugins/daytoday.js`) draws the bar from the raw records
+and would still show it open-ended.
 
 ## 3. How to use this register
 
