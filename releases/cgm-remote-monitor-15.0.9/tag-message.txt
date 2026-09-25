@@ -1,7 +1,7 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. Still pending: #8758 (head e9dbb1fb once pushed), #8568 (ae4dc2f7),
+cut. Still pending: #8758 (head: e9dbb1fb merged with 25f5ea21, once pushed), #8568 (ae4dc2f7),
 #8419 (b1c23e74), #8730 (f99c0e54). Replace each head below with its
 merge SHA into dev, and re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;

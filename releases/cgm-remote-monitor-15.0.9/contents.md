@@ -27,7 +27,7 @@ it** ([decisions](decisions.md)): #8758, and three outside contributors' PRs car
 | Diff on `dev` | 232 files, +18363/−1417 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8758 (PR head `ab7b22d6`; `e9dbb1fb`, six commits on it, prepared locally to push); #8568 (head `ae4dc2f7`), #8419 (head `b1c23e74`), #8730 (head `f99c0e54`) — `gh pr view <n> --json state,headRefOid` |
+| Open additions | #8758 (PR head `25f5ea21`, which is `ab7b22d6` with `dev` `ecb63223` merged in, 21:02Z; `e9dbb1fb`, six fix commits on `ab7b22d6`, prepared locally, to be merged with `25f5ea21` and pushed); #8568 (head `ae4dc2f7`), #8419 (head `b1c23e74`), #8730 (head `f99c0e54`) — `gh pr view <n> --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `ecb63223`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
@@ -43,7 +43,7 @@ so `e9dbb1fb` is 9 commits behind `ecb63223` and merges into it without conflict
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| #8758 | `bf/object-id-crud` | `e9dbb1fb` (local; the PR shows `ab7b22d6` until pushed) | 25 | 38 files, +4194/−107 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
+| #8758 | `bf/object-id-crud` | `e9dbb1fb` (local; the PR shows `25f5ea21` until pushed) | 25 | 38 files, +4194/−107 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
 
 The three outside contributors' PRs carried by the 2026-09-25 decision
 (`git fetch official pull/<n>/head`):
@@ -411,7 +411,7 @@ the user-facing form. Facts the notes must not lose:
   `dev` `4f705217` + #8758 with its freeze-review fixes, `e9dbb1fb` (local, tree `ea4c4852`, run
   015). CI's `test-ci` gives 3106 passing, 0 failing, 3 pending, and `test:core` gives 286, on Node
   20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server. Not
-  the release candidate: the merge with #8568, #8419, #8530 and #8730 is not built. Browser checks
+  the release candidate: that is `rc/15.0.9-full` (dev `ecb63223` + #8758 `25f5ea21` + `e9dbb1fb` + #8568, #8419 and #8730), being built and run in session -6d. Browser checks
   are owed for `lib/api2` (#8764) and for the data load in `lib/data/ddata.js` (BF-115).
 - #8530, #8766 and #8767 merged after `4f705217`, so neither run above includes them. #8766's and
   #8767's own branches, each on `4f705217`, gave 2585 and 2580 passing, 0 failing, 3 pending on Node
