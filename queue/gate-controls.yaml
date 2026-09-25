@@ -1910,3 +1910,19 @@ controls:
     proves: >
       #8758's pushed head has the one trailing stale delete and no opItem
       map, so the grep exits 1 there until the push.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/entries.js
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" origin/bf/object-id-crud -- lib/server/entries.js
+    control-kind: static
+    proves: >
+      #8758's pushed head reports opts.find._id to the cache and has no
+      cacheRemoval, so the grep exits 1 there until the push.
+  - gate: |-
+      sh -c 'bash -n tools/lab/rc-soak/lab.sh && for f in tools/lab/rc-soak/*.js; do node --check "$f" || exit 1; done'
+    cwd: .
+    control-exempt: >
+      A syntax check with no property to invert; it says the scripts parse and
+      nothing about what they measure. The harness's own controls (A/A, drop
+      and leak faults) are recorded runs in results/proof-2026-09-25.md.

@@ -10116,6 +10116,101 @@ items:
       ordered insert stopped at the first error, so a retry duplicated the
       statuses before it instead. Measure with a forced error (for example a
       document over the size limit) first.
+  - id: BFQ-131
+    title: "BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: wip/object-id-crud-fixes-2
+    base: official/bf/object-id-crud@ab7b22d6
+    worktree: externals/work/crm-6a-rc-cand
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/object-id-forms.js cacheRemoval (new); remove() in
+      lib/server/entries.js, treatments.js and devicestatus.js; websocket
+      dbRemove in lib/server/websocket.js; tests/cache.remove-by-id.test.js
+      (new) and one case in tests/websocket.object-id.test.js.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a defect in an unmerged fix
+    register: [BF-131]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
+          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/entries.js
+        kind: static
+        describe: >
+          The fix (e9dbb1fb) is on the branch. A presence check only; its
+          control is the same grep on origin/bf/object-id-crud, which fails
+          until the push. tests/cache.remove-by-id.test.js and
+          tools/lab/rc-soak/probe-deleted-entry.js say whether it works.
+      - no-gate: >
+          The behaviour needs a booted server and a MongoDB: tests/cache.remove-
+          by-id.test.js (red on 6c3ccce6, green on e9dbb1fb, 2026-09-25, Node
+          22.23.2, MongoDB 7.0.43) and the soak probe (exit 1 on ab7b22d6, 0 on
+          92d08342 and 4f705217). The full six-cell run on e9dbb1fb is recorded
+          in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/rc-soak/probe-deleted-entry.js
+    notes: >
+      Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK),
+      after runs 011 to 014 of the full suite were green: the suite never
+      read the cache after a delete. Fixed the same day as e9dbb1fb before
+      the push, at the maintainer's request to push once. Safety-visible: a
+      deleted bolus or carbs entry kept being shown on newly opened pages
+      and could count in insulin and carbs on board there.
+  - id: RT-SOAK
+    title: "tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak"
+    parcel: release-train
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: in-progress
+    pr: []
+    blast_radius: tools/lab/rc-soak only; runs two local Nightscout processes and two mongo containers on 127.0.0.1.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme tooling
+    register: [BF-131]
+    gates:
+      - run: sh -c 'bash -n tools/lab/rc-soak/lab.sh && for f in tools/lab/rc-soak/*.js; do node --check "$f" || exit 1; done'
+        kind: static
+        describe: The harness scripts parse. Says nothing about what they measure.
+      - no-gate: >
+          The A/A control (lab.sh run --aa --minutes 10 --sim-hours 24: exit 0,
+          zero reply, ledger, parity and page-load differences; R1, R7), its
+          fault controls (--fault-drop 0.01: exit 1 naming the dropped
+          devicestatus keys, R2; --fault-leak 16: exit 1 on heap growth, R5 vs
+          R4) and the A/B run against the candidate each take 10 to 50 minutes
+          with docker and n, so they are recorded runs, not queue gates.
+          Measured 2026-09-25: tools/lab/rc-soak/results/proof-2026-09-25.md.
+      - no-gate: >
+          The 24-72 h real-time soak (lab.sh soak --hours 72, then lab.sh
+          analyze <run>, exit 0) needs a machine held for days by a person; its
+          gate is that analyze on the soak's run directory.
+    blocks_on: [BFQ-131]
+    evidence:
+      - tools/lab/rc-soak/README.md
+      - tools/lab/rc-soak/results/proof-2026-09-25.md
+    notes: >
+      Built 2026-09-25 for the 15.0.9 freeze (session -6a). The first A/B
+      runs against ab7b22d6 found BF-131. Release-notes gaps it found, to
+      decide: /api/v2/properties cob.treatmentCOB is absent when zero
+      (34e9b2da), and an entries re-send without _id now gets _id in the
+      reply (#8758 decision D3). Open: a cob.lastCarbs notes field seen on
+      the candidate only, once per run. Watch RSS in the long soak: one Node
+      24 sample showed the candidate at 280 MB against 136 MB after traffic
+      stopped, while the heap check passed. The long soak runs on the
+      release candidate once the merge with #8568, #8419, #8530 and #8730 is
+      built.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

@@ -40,6 +40,7 @@ repository.
 | [`BFQ-118`](bfq-118-bf-mmol-partial-thresholds.md) | &mdash; | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) |
 | [`BFQ-119`](bfq-119-bf-pump-warn-on-suspend.md) | &mdash; | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
+| [`BFQ-131`](bfq-131-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |

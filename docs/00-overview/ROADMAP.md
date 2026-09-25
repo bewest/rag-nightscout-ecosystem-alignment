@@ -96,6 +96,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 2 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | `BFQ-117` |
 | 2 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | `BFQ-102` |
 | 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` |
+| 2 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 | `in-progress` | `BFQ-131` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |

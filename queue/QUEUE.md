@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 156 |
-| runnable gates | 226 |
-| explicit `no-gate:` markers | 205 |
+| items | 158 |
+| runnable gates | 229 |
+| explicit `no-gate:` markers | 208 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 205 of the 431 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 437 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 1 | OID-LAB |
+| `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 13 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-118, BFQ-119, BFQ-130 |
+| `ready-to-push` | 14 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-118, BFQ-119, BFQ-130, BFQ-131 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 6 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730 |
 | `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
@@ -1000,7 +1000,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 26 items
+`parcel: release-train` &mdash; 27 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1033,6 +1033,7 @@ that costs.
 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | `crowdin_incoming` | patch | 1 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `in-progress` | `main` | n/a | 1 run + 2 no-gate |
 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
@@ -1823,6 +1824,40 @@ that costs.
 
 **Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION.
 
+### `RT-SOAK` &mdash; tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| register | `BF-131` |
+| blocks on | `BFQ-131` |
+
+**Blast radius.** tools/lab/rc-soak only; runs two local Nightscout processes and two mongo containers on 127.0.0.1.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme tooling
+
+**Gates.**
+
+- `[static]` `sh -c 'bash -n tools/lab/rc-soak/lab.sh && for f in tools/lab/rc-soak/*.js; do node --check "$f" || exit 1; done'`
+  - The harness scripts parse. Says nothing about what they measure.
+- **NO GATE** &mdash; The A/A control (lab.sh run --aa --minutes 10 --sim-hours 24: exit 0, zero reply, ledger, parity and page-load differences; R1, R7), its fault controls (--fault-drop 0.01: exit 1 naming the dropped devicestatus keys, R2; --fault-leak 16: exit 1 on heap growth, R5 vs R4) and the A/B run against the candidate each take 10 to 50 minutes with docker and n, so they are recorded runs, not queue gates. Measured 2026-09-25: tools/lab/rc-soak/results/proof-2026-09-25.md.
+- **NO GATE** &mdash; The 24-72 h real-time soak (lab.sh soak --hours 72, then lab.sh analyze <run>, exit 0) needs a machine held for days by a person; its gate is that analyze on the soak's run directory.
+
+**Evidence.**
+
+- `tools/lab/rc-soak/README.md`
+- `tools/lab/rc-soak/results/proof-2026-09-25.md`
+
+**Notes.** Built 2026-09-25 for the 15.0.9 freeze (session -6a). The first A/B runs against ab7b22d6 found BF-131. Release-notes gaps it found, to decide: /api/v2/properties cob.treatmentCOB is absent when zero (34e9b2da), and an entries re-send without _id now gets _id in the reply (#8758 decision D3). Open: a cob.lastCarbs notes field seen on the candidate only, once per run. Watch RSS in the long soak: one Node 24 sample showed the candidate at 280 MB against 136 MB after traffic stopped, while the heap check passed. The long soak runs on the release candidate once the merge with #8568, #8419, #8530 and #8730 is built.
+
 ### `OID-V3-EDIT-MERGE` &mdash; API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does
 
 | | |
@@ -1888,7 +1923,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 78 items
+`parcel: register-open` &mdash; 79 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1974,6 +2009,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-ENTRIES-REPLY-ID` | On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-NE-OPERATOR` | find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -4527,6 +4563,41 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Queued 2026-09-25 at the maintainer's request. Before BF-116's fix the ordered insert stopped at the first error, so a retry duplicated the statuses before it instead. Measure with a forced error (for example a document over the size limit) first.
+
+### `BFQ-131` &mdash; BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/object-id-crud-fixes-2` |
+| base | `official/bf/object-id-crud@ab7b22d6` |
+| worktree | `externals/work/crm-6a-rc-cand` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-131` |
+
+**Blast radius.** lib/server/object-id-forms.js cacheRemoval (new); remove() in lib/server/entries.js, treatments.js and devicestatus.js; websocket dbRemove in lib/server/websocket.js; tests/cache.remove-by-id.test.js (new) and one case in tests/websocket.object-id.test.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a defect in an unmerged fix
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`
+  - wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/entries.js`
+  - The fix (e9dbb1fb) is on the branch. A presence check only; its control is the same grep on origin/bf/object-id-crud, which fails until the push. tests/cache.remove-by-id.test.js and tools/lab/rc-soak/probe-deleted-entry.js say whether it works.
+- **NO GATE** &mdash; The behaviour needs a booted server and a MongoDB: tests/cache.remove- by-id.test.js (red on 6c3ccce6, green on e9dbb1fb, 2026-09-25, Node 22.23.2, MongoDB 7.0.43) and the soak probe (exit 1 on ab7b22d6, 0 on 92d08342 and 4f705217). The full six-cell run on e9dbb1fb is recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/rc-soak/probe-deleted-entry.js`
+
+**Notes.** Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK), after runs 011 to 014 of the full suite were green: the suite never read the cache after a delete. Fixed the same day as e9dbb1fb before the push, at the maintainer's request to push once. Safety-visible: a deleted bolus or carbs entry kept being shown on newly opened pages and could count in insulin and carbs on board there.
 
 ---
 

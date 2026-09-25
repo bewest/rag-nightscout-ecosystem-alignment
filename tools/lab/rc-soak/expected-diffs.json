@@ -1,0 +1,55 @@
+{
+ "_doc": "Differences between arm A (15.0.8) and arm B (15.0.9 candidate) that 15.0.9 makes on purpose. Each entry: a regex over the analyser's signature, why, and where the change is promised (a section of releases/cgm-remote-monitor-15.0.9/release-notes.md, or another decision record when the release notes do not cover it; those are listed with release_notes_gap=true). Ignored in an A/A run, where every difference is a finding. Add an entry only with the section that promises the change.",
+ "thresholds": {
+  "leak_growth_mb": 25,
+  "leak_min_span_min": 20,
+  "lag_ms": 50,
+  "_doc": "leak: one arm's heap-minima slope minus the other's, times the evaluated span (the last 75% of the longest process lifetime), must exceed leak_growth_mb. Calibrated 2026-09-25: a 25-min A/A control of 15.0.8 against itself differed by 3.1 MB; the same run with arm b retaining 16 KB per request differed by 80 MB. rss_growth_mb is the same test on RSS minima; RSS is noisier (allocator and GC release timing), so its margin is wider.",
+  "rss_growth_mb": 100
+ },
+ "allow_5xx": [
+  {
+   "label": "^loop\\.remote\\.",
+   "why": "POST /api/v2/notifications/loop answers 500 when no Apple push key (LOOP_APNS_*) is configured; the lab has none, so both arms answer 500"
+  }
+ ],
+ "diffs": [
+  {
+   "match": "^oref0\\.latest\\.count1\\?(hash|token) \\| header Deprecation \"\"->\"true\"$",
+   "why": "count=1?<text> still reads as 1, now with a deprecation warning",
+   "section": "Corrections > Asking for a number of records (count): a whole number followed by ?"
+  },
+  {
+   "match": "^glupredkit\\.count0\\.(treatments|sgv|profile) \\| header Deprecation \"\"->\"true\"$",
+   "why": "count=0 with a two-sided date range still returns the whole range, now with a deprecation warning",
+   "section": "Corrections > Asking for a number of records (count): count=0 and a date range"
+  },
+  {
+   "match": "^glupredkit\\.count0\\.devicestatus \\| header Deprecation \"\"->\"true\"(, \\.length)?$",
+   "why": "count=0 with a date range on devicestatus: 15.0.8 gave only the last 10, 15.0.9 gives everything in the range, with a deprecation warning",
+   "section": "Corrections > Asking for a number of records (count): count=0 and a date range (device status)"
+  },
+  {
+   "match": "^count0\\.nowindow\\.entries \\| header Deprecation \"\"->\"true\"(, \\.length)?$",
+   "why": "count=0 without a date range: 15.0.8 returned the whole history, 15.0.9 the usual default (10), with a deprecation warning",
+   "section": "Corrections > Asking for a number of records (count): count=0 and no date range"
+  },
+  {
+   "match": "^loop\\.remote\\.override \\| \\.$",
+   "why": "the Loop remote-command error is a short message instead of 15.0.8's HTML error page naming an internal TypeError",
+   "section": "Other fixes: clearer error messages when a Loop remote command fails"
+  },
+  {
+   "match": "^cgm\\.resend3 \\| \\[\\]\\._id \\(only B\\)$",
+   "why": "the entries POST reply carries the stored _id also for a re-sent reading without _id (15.0.8 omits it)",
+   "section": "#8758 decision D3, tools/lab/object-id/results/object-id-2026-09-24.md (P-ID-3)",
+   "release_notes_gap": true
+  },
+  {
+   "match": "^nightguard\\.properties \\| keys only A: \\.cob\\.treatmentCOB[^,]*$",
+   "why": "/api/v2/properties cob.treatmentCOB (Nightscout's own estimate, an object on 15.0.8) is a number on 15.0.9 and absent when zero (commit 34e9b2da)",
+   "section": "Other changes > Numbers that may look different on the same data: COB",
+   "release_notes_gap": true
+  }
+ ]
+}

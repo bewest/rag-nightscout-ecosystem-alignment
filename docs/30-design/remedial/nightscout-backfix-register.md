@@ -255,6 +255,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-113** | On #8758, `idForms` **accepts any 12-character string**, although its comment says anything but an ObjectId or a 24-hex string throws: driver 5.9's `new ObjectId('abcdefghijkl')` succeeds, so `idForms` returns that ObjectId, its hex and the string. `profile.save` and the food, activity and profile `remove` pass non-hex ids to it without the `isHexId` guard `staleStringForms` has, so a 12-character id would upsert and delete by forms it does not name | #8758 `6d120fa2` `lib/server/object-id-forms.js` `idForms`, `lib/server/profile.js` `save`, `food.js`/`activity.js`/`profile.js` `remove` | **low** — pre-release; the v1 routes refuse non-hex ids, so only in-process callers (the connector's internal output) reach it | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `dd2cf8f1` (2026-09-24) (queue BFQ-113). **Reproduced** at the helper: `idForms('abcdefghijkl')` returns three forms on `6d120fa2` instead of throwing; the effect through `profile.save` and `remove` is read, not run |
 | **BF-116** | On #8758, a **devicestatus POST that re-sends a status under the `_id` it is stored with answers 500, and every new status after it in the same POST is lost**. #8758 stores a 24-hex `_id` as an ObjectId, so a re-send now collides with the stored record; the insert is ordered, so it stops at the collision. 15.0.8 stored the re-send as a second, string copy and the rest of the batch | #8758 `ab7b22d6` `lib/server/devicestatus.js` `create` (`storeIdsAsObjectIds`, `insertMany` ordered) | **medium** — pre-release; loop status silently missing for a client that re-sends; a client that retries on 500 re-sends statuses already stored. No AID uploader in the corpus sends a devicestatus `_id` (Loop sends `identifier`; Trio and AndroidAPS send none); a restore or echo tool would | **open, found 2026-09-25** in the #8758 freeze pass. Fix on local branch `wip/object-id-crud-fixes-2` `c3a34bac` (not pushed), for #8758 (queue BFQ-116): a re-send is answered with the stored `_id` and not written, the rest is stored, and a duplicate key is accepted only for a status sent with its own `_id`. **Reproduced** (corpus Q2b; ablation of `devicestatus.js` to `dev` restores 15.0.8's cells); the same 500 and loss already happen on 15.0.8 when the stored copy is a string |
 | **BF-130** | On #8758, a **treatments POST batch can answer 200 and lose one of its items**. Where a treatment is stored with a string `_id` X, a batch `[{_id: X, …edit}, {no _id, same created_at and eventType}]` upserts the first by the ObjectId X (a new document), the second matches the string X copy by `created_at` + `eventType` and replaces it, and the batch's trailing delete of X's string forms then removes that document, which now holds the second item. 15.0.8 keeps both items | #8758 `ab7b22d6` `lib/server/treatments.js` `create` (batch path: `withStaleStringsRemoved` appends one `deleteMany` after all the `replaceOne`s) | **medium** — pre-release; a silent drop behind a 200; narrow reach (a string-stored treatment, and a batch that also carries a record deduplicated onto it by time and type). No corpus client is known to send that batch | **open, found 2026-09-25** by the #8758 freeze review. Fix on local branch `wip/object-id-crud-fixes-2` `6c3ccce6` (not pushed), for #8758 (queue BFQ-130). **Reproduced** by the review on 15.0.8 and `ab7b22d6`, and by the new test on `cb7d4110` (the second item lost); green on `6c3ccce6`, and removing the fix's index map fails two tests |
+| **BF-131** | On #8758, **a record deleted by its `_id` through API v1 stays in the server's in-memory cache**: `DELETE /api/v1/{entries,treatments,devicestatus}/<id>` answers 200 and removes the document from MongoDB, but unfiltered reads (`entries.json?count=…`, `treatments.json?count=…`, `devicestatus.json?count=…`) and a newly opened web page keep being given it until the server restarts or the record leaves the cache window. `remove()` reports `opts.find._id` to the cache as the id removed, and #8758's `query_for` rewrites that value in place into an either-form filter, which no cached record equals. Websocket `dbRemove` of both copies of an id stored twice left one copy cached as well | #8758 `ab7b22d6` `lib/server/{entries,treatments,devicestatus}.js` `remove`, `lib/server/object-id-forms.js` `matchEitherForm` (in-place rewrite), `lib/server/websocket.js` `dbRemove`, `lib/server/cache.js` `removeFromArray` (first match only) | **high** — pre-release; a treatment deleted because it was a mistake (a bolus or carbs entry) keeps being shown on newly opened pages and to unfiltered API readers, and insulin and carbs on board computed from the cache can include it. 15.0.8 and `dev` `4f705217` remove it | **open, found 2026-09-25** by the 15.0.9 A/B soak (`tools/lab/rc-soak`, run R8: a treatment deleted at 20:04 still sent to a page opened at 20:28). Fix on local branch `wip/object-id-crud-fixes-2` `e9dbb1fb` (not pushed), for #8758 (queue BFQ-131). **Reproduced**: `tools/lab/rc-soak/probe-deleted-entry.js` exits 1 on `ab7b22d6` and 0 on `92d08342` and `4f705217`; an ablation of `entries.remove` alone (`f76e6fd5`) exits 0; `tests/cache.remove-by-id.test.js` (6 cache cases) and one websocket case fail on `6c3ccce6` with the record still cached, and pass on `e9dbb1fb` |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -4446,6 +4447,33 @@ added deletes. Tests in `tests/api.object-id.treatments-entries.test.js`: the re
 `cb7d4110`: the second item lost), the no-string-copy control, and each item answered with its
 stored `_id`. Food and activity batches match only by `_id`, so a later item cannot land on
 another item's string copy there.
+
+### BF-131 · on #8758, a record deleted by `_id` stays in the in-memory cache
+
+`entries`, `treatments` and `devicestatus` `remove(opts)` delete by `query_for(opts)` and then emit
+`data-update` with `op: 'remove'` and `changes: opts.find._id`. `lib/server/cache.js` removes the
+first cached record whose `_id == changes`, or, when `changes` is empty, drops what it holds and
+reloads. On 15.0.8 `query.js` turns `find[_id]` into an ObjectId in place, and an ObjectId equals a
+cached record's string `_id`. #8758's `matchEitherForm` then rewrites the same value in place into
+`{$in: [ObjectId, hex, …]}` to match either stored form, so `changes` is that object, nothing in the
+cache equals it, and the deleted record stays. The unfiltered v1 reads and the full data sent to a
+newly opened page come from the cache; a filtered read goes to MongoDB and is correct. Websocket
+`dbRemove` sends the id as asked, but #8758 makes it delete both copies of an id stored twice, and
+the cache drops only the first match.
+
+**Measured 2026-09-25** with the soak harness: run R8 (A/B, 48 h simulated) found 36 deleted records
+sent to newly opened pages on the candidate and none on 15.0.8; the A/A control R7 found none.
+`probe-deleted-entry.js` (30 readings, delete one by `_id`, read `entries.json?count=10` unfiltered
+and filtered): exit 1 on `ab7b22d6`, 0 on `92d08342` and `4f705217`; with only `entries.remove`
+changed to report the id as asked (`f76e6fd5`), exit 0.
+
+**Fix (`e9dbb1fb`, local):** each `remove()` keeps the id as asked before `query_for` rewrites it,
+and reports `object-id-forms.cacheRemoval(asked, deletedCount)`: the id when exactly one record was
+removed and the id is a lower-case hex or another string, and nothing (so the cache reloads) when
+more than one was removed, for an upper-case hex, or for an id that is not a string. Websocket
+`dbRemove` uses the same rule. Tests: `tests/cache.remove-by-id.test.js` (helper rules; each
+collection; an upper-case id; both copies of a twin) and one websocket twin case, all red on
+`6c3ccce6` with the record still cached.
 
 ### BF-129 · a GET of an entry by an id that names no entry answers 500
 

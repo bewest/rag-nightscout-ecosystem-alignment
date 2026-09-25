@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 24 items
+### Maintainer &mdash; 25 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -54,6 +54,7 @@ that it was reviewed.
 | `BFQ-118` | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so lo | &mdash; |
 | `BFQ-119` | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622 | &mdash; |
 | `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
+| `BFQ-131` | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
