@@ -130,10 +130,10 @@ Not shipping on its own. bf/throttle (content 435419ce, tip a0823c4f, a merge
 of dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth-
 hardening, PR #8754 (BF2-AUTH), which is what ships the failed-login fixes in
 15.0.9. bf/throttle will not be pushed or merged up on its own; its first gate
-checks that containment (in #8754's head b5f61f19, measured 2026-09-24). What
+checks that containment (in #8754's head e549e1a6, measured 2026-09-24). What
 ships differs from this branch in one respect. On bf/throttle only the failing
-request waits. #8754's head b5f61f19 (pushed 2026-09-24) contains f6f361b1,
-which puts the wait back before the credential check, as in earlier releases;
+request waits. #8754's head e549e1a6 (2026-09-24) contains f6f361b1, which
+puts the wait back before the credential check, as in earlier releases;
 failures are also counted per credential, and the list is bounded and swept on
 a schedule. BF2-AUTH describes the shipped behaviour. Decisions: - 2026-09-16
 (maintainer): split out of bf/auth, without the lib/server/peer-address.js

@@ -25,7 +25,7 @@ maintainer has decided ship in it ([backfix-2 plan](../../docs/30-design/remedia
 | Diff on `dev` | 212 files, +16002/−1300 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8754 (head `e32f7a1c` on GitHub; `b5f61f19` pending the maintainer's push), #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
+| Open additions | #8754 (head `e549e1a6`), #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `153e5658`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
@@ -34,20 +34,19 @@ maintainer has decided ship in it ([backfix-2 plan](../../docs/30-design/remedia
 ### Open additions (not merged)
 
 Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
-`git diff --shortstat official/dev...<head>`. #8754 at `e32f7a1c` has `dev` `153e5658` merged in;
+`git diff --shortstat official/dev...<head>`. #8754 at `e549e1a6` has `dev` `153e5658` merged in;
 #8758's merge base with `dev` is `1f9a9d10` (#8750).
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| #8754 | `bf2/auth-hardening` | `e32f7a1c` on GitHub; `b5f61f19` pending | 24 at `e32f7a1c`, 26 at `b5f61f19` | 21 files, +1985/−100 at `e32f7a1c`; 21 files, +2033/−100 at `b5f61f19` | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting (below). Reviewers: the maintainer and Andy (security review) |
+| #8754 | `bf2/auth-hardening` | `e549e1a6` | 27 | 22 files, +2063/−100 | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting (below). Reviewers: the maintainer and Andy (security review) |
 | #8758 | `bf/object-id-crud` | `6d120fa2` | 13 | 24 files, +3163/−73 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
 
-**#8754 at `b5f61f19`.** The GitHub head `e32f7a1c` is a merge of `dev` `153e5658` into `607d51b0`,
-and contains `f6f361b1` (the delay's position) and `607d51b0` (the proxy guide,
-`docs/proposals/trusted-proxy-migration.md`). `b5f61f19` is `e32f7a1c` plus `9c6cde72` (forwarded
-addresses with a port) and `b5f61f19` (the proxy guide recommends `TRUST_PROXY=1` on Azure App
-Service), 3 files, +58/−10 — `git diff --shortstat e32f7a1c b5f61f19`. The maintainer pushes it.
-What the PR carries at `b5f61f19`:
+**#8754 at `e549e1a6`** (measured 2026-09-24). It carries `dev` `153e5658` (merged in by `e32f7a1c`),
+`f6f361b1` (the delay's position), `607d51b0` (the proxy guide,
+`docs/proposals/trusted-proxy-migration.md`), `9c6cde72` (forwarded addresses with a port),
+`b5f61f19` (the proxy guide recommends `TRUST_PROXY=1` on Azure App Service) and `e549e1a6` (an API
+v3 failed-login key test through the trust its app inherits). What the PR carries:
 
 - **BF-17.** A subject save no longer writes `accessToken`/`accessTokenDigest`/`digest`. Existing
   rows keep them until the subject is next saved; clearing a row does not retire the token. The
@@ -221,9 +220,8 @@ does not copy them.
 
 ## Open items a releaser must settle
 
-1. **#8754.** The maintainer pushes `b5f61f19`; security review by the maintainer and Andy; then a
-   combined run on `dev` + `b5f61f19` + #8758, because no combined run covers `e32f7a1c` or
-   `b5f61f19`; then merge.
+1. **#8754** (`e549e1a6`): security review by the maintainer and Andy; a combined run on `dev` +
+   `e549e1a6` + #8758, because no combined run covers any head after `280eccbe`; then merge.
 2. **#8758** (`6d120fa2`): review and merge.
 3. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8754 merge` and
    `PENDING: #8758 merge` stay or go with those PRs.
@@ -334,8 +332,7 @@ the user-facing form. Facts the notes must not lose:
   `dev` `f1591069` + the exact `0.1.0` pin + #8754 `ef3404fd` + #8758 `6d120fa2`, tree `4114f45a`,
   3046 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4 and 7.
   `dev` `153e5658` + #8754 `280eccbe` + #8758 `6d120fa2` gives the same tree. It does not cover
-  #8754 at `e32f7a1c` or `b5f61f19` (the delay's position, the proxy guide, forwarded addresses
-  with a port), MongoDB 5.0/6.0, a browser or lab check, or a repeat of the break-its.
+  #8754 at `e549e1a6` (the delay's position, the proxy guide, forwarded addresses with a port, the API v3 key test), MongoDB 5.0/6.0, a browser or lab check, or a repeat of the break-its.
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 

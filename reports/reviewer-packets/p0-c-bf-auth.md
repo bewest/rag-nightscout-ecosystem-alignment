@@ -121,7 +121,7 @@ Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c, a merge of
 dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth-hardening,
 PR #8754 (BF2-AUTH), which is what ships these fixes in 15.0.9. bf/auth will
 not be pushed or merged up on its own; its first gate checks that containment
-(in #8754's head b5f61f19, measured 2026-09-24). Review and the remaining work
+(in #8754's head e549e1a6, measured 2026-09-24). Review and the remaining work
 are on BF2-AUTH. Decisions: - 2026-09-23 (maintainer): the security reviewers
 are the maintainer and Andy (a connector maintainer). - 2026-09-16
 (maintainer): commit 56ed29d2 removes the leftover

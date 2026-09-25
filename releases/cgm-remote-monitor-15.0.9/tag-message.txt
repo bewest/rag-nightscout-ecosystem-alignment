@@ -1,9 +1,9 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete these five lines when the tag is
-cut. Still pending: #8754 (head e32f7a1c on GitHub; b5f61f19 to be
-pushed, then a combined run) and #8758 (head 6d120fa2). Replace their
-heads below with their merge SHAs into dev, and re-measure the counts
+cut. Still pending: #8754 (head e549e1a6, then a combined run)
+and #8758 (head 6d120fa2). Replace their heads below with their
+merge SHAs into dev, and re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>).
 
 15.0.8..dev at 153e5658: 61 first-parent PR merges, 350 commits,
@@ -35,7 +35,7 @@ Security
   #8746 74fc6619  readable-by-world notice on role membership (BF-77)
   #8751 4011193e  backports from #8605: alarm-socket credential
                   logging; per-collection read on two shared routes
-  #8754 e32f7a1c  (pending; b5f61f19 to be pushed) admin subject edit
+  #8754 e549e1a6  (pending) admin subject edit
                   no longer stores the access token (BF-17); failed-auth
                   wait before the credential check, counted per address
                   and per credential, list bounded and swept (BF-30);

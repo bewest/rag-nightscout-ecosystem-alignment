@@ -152,19 +152,18 @@ merge of #8762) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev ->
 master): mergeable, 27 checks green and 3 skipped, zero reviews, review
 required (measured 2026-09-24). Still before the tag: - #8754 (BF2-AUTH) at
-b5f61f19 once the maintainer pushes it (GitHub head today e32f7a1c), plus a
-combined run on that head. Security review: the maintainer and Andy. - #8758
-(BFQ-102), head 6d120fa2. - The release notes (releases/cgm-remote-
-monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24);
-the sections marked PENDING for #8754 and #8758 are finalised when those
-merge. - A human review of #8598, and the maintainer tagging. Evidence: the
-latest combined run,
+e549e1a6 (2026-09-24), plus a combined run on that head. Security review: the
+maintainer and Andy. - #8758 (BFQ-102), head 6d120fa2. - The release notes
+(releases/cgm-remote-monitor-15.0.9/release-notes.md), re-anchored on dev
+153e5658 (2026-09-24); the sections marked PENDING for #8754 and #8758 are
+finalised when those merge. - A human review of #8598, and the maintainer
+tagging. Evidence: the latest combined run,
 docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev f1591069 +
 the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
-280eccbe + #8758 6d120fa2 gives the same tree. Neither e32f7a1c nor b5f61f19
-is covered by a combined run. The browser checks were done by hand on ec70aab0
-(RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
+280eccbe + #8758 6d120fa2 gives the same tree. No head after 280eccbe,
+including e549e1a6, is covered by a combined run. The browser checks were done
+by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
 AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-
 lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4;
 client-unchanged-since-hand-check.js says when they need repeating. Decisions:
