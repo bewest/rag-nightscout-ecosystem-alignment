@@ -9,7 +9,7 @@ paths.
 > Contributor-facing. Synthetic data only: the lab seeds its own records and must never be pointed
 > at a real site. Not medical advice.
 
-Latest results: [results/object-id-2026-09-24.md](results/object-id-2026-09-24.md).
+Latest results: [results/object-id-2026-09-25.md](results/object-id-2026-09-25.md).
 
 ## Run it
 

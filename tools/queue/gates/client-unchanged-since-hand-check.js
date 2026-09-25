@@ -37,7 +37,7 @@ function arg (name, dflt) {
 }
 const HAND = arg('--hand', '8d797ba4');
 const BASE = arg('--base', 'origin/dev');
-const WITH = arg('--with', 'origin/bf2/auth-hardening,origin/bf/object-id-crud,origin/bf/count-client-compat')
+const WITH = arg('--with', 'origin/bf/object-id-crud')
   .split(',').filter(Boolean);
 
 const SERVER_PATHS = [
