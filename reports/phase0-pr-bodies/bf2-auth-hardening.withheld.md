@@ -40,7 +40,7 @@ While `TRUST_PROXY` is unset, Nightscout logs a `SECURITY:` line at startup sayi
 
 - New and changed tests in `client-ip`, `authdelay`, `authsubjects` and `env`. Each was checked by breaking the code it covers; every break fails on the original symptom.
 - `authdelay` sends the correct secret, and a request with no credential, from the same address as the failures, and expects both to wait; against a check-first order both fail, answered in 3-5 ms.
-- Full suite with #8763 and #8764 (the tree of `71987bb4`), Node 24.15.0, MongoDB 7 with a raised open-file limit: **2577 passing**, 3 pending, 0 failing. With #8763 alone (`708af170`, the tree of `e3354218`): 2572 passing.
+- After the merge, on `dev` `4f705217` (the same tree as this PR's head): **2577 passing**, 3 pending, 0 failing on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on Node 20, 22 and 24 against MongoDB 4.4, 5.0 and 6.0. The pre-merge runs of #8763 and #8764 (2572 and 2577 passing) were on MongoDB 3.6.8, not MongoDB 7 as an earlier version of this text said.
 - The API v3 failed-login key is tested to follow `TRUST_PROXY` from `env`, and a v3 app with a different `trust proxy` of its own does not move it. A test pins `client-ip.js`'s exports to `trustFor` and `clientIPFor`.
 - The address Loop receives is tested for `TRUST_PROXY` unset, `1`, a proxy list and `false`, and through the real `lib/api2` app.
 - An nginx front end appending `address:port`: with `1` or a list naming it, the address was the front end's before the port change and the client's after; unset resolved the client both times.

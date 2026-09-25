@@ -23,7 +23,6 @@ repository.
 |---|---|---|---|
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | #8754 | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`P0-C`](p0-c-bf-auth.md) | #8754 | `in-flight-upstream` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) |
 | [`P0-J`](p0-j-bf-throttle.md) | #8754 | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
@@ -37,8 +36,6 @@ repository.
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`RT-LOOP-REMOTE-ADDRESS`](rt-loop-remote-address-rt-trust-one-source.md) | &mdash; | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label |
-| [`RT-TRUST-ONE-SOURCE`](rt-trust-one-source-rt-trust-one-source.md) | &mdash; | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 

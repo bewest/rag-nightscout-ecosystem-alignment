@@ -86,4 +86,5 @@ Break-it, each reverted after:
 | a third export | 1 failing (export test) |
 
 `client-ip`: 62 passing (was 60: one test replaced, two added).
-Full suite at e3354218, Node 24.15.0, MongoDB 7: 2572 passing, 3 pending, 0 failing (2570 at e549e1a6).
+Full suite at e3354218, Node 24.15.0, MongoDB 3.6.8: 2572 passing, 3 pending, 0 failing (2570 at e549e1a6). An earlier version of this text said MongoDB 7; the local server was 3.6.8.
+On dev 4f705217 after the merge: 2577 passing, 3 pending, 0 failing on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on Node 20, 22 and 24 against MongoDB 4.4, 5.0 and 6.0.

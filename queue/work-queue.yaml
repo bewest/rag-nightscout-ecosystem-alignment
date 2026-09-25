@@ -2410,7 +2410,8 @@ items:
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@e549e1a6
     worktree: externals/work/crm-trust-one-source
-    state: in-flight-upstream
+    state: merged-upstream
+    pr: [8763]
     blast_radius: >
       lib/server/client-ip.js, lib/api3/security.js, lib/server/app.js and
       the five modules that call createClientIP(env.trustProxy)
@@ -2443,19 +2444,15 @@ items:
           old entry points. client-ip.js exports trustFor and clientIPFor only
           (e3354218), so new code copying the tests learns those two. At
           d0a3d628 the same grep matches 36 lines (measured 2026-09-24).
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/bf2/auth-hardening
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
         kind: static
         describe: >
-          Containment: #8763 was merged into #8754's branch (708af170,
-          2026-09-24), so both commits reach dev and 15.0.9 with #8754.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null
-        kind: static
-        describe: >
-          trial-merge into origin/dev is conflict-free (measured at 153e5658).
-          Against rt/cut4 and origin/chore/nightscout-modernization it
-          conflicts, and in six files more than e549e1a6 does: the one-line
-          consumer changes in app.js, websocket.js, authorization/index.js,
-          api3/security.js, alarmSocket.js and storageSocket.js.
+          Containment: both commits are in dev, through #8763 into #8754 and
+          #8754 into dev as 4f705217 (2026-09-25T01:33Z). Against rt/cut4 and
+          origin/chore/nightscout-modernization the change conflicts in six
+          files more than e549e1a6 did: the one-line consumer changes in
+          app.js, websocket.js, authorization/index.js, api3/security.js,
+          alarmSocket.js and storageSocket.js (RT-REBASE).
       - run: TEST=client-ip npm run test-single
         cwd: externals/work/crm-trust-one-source
         kind: unit
@@ -2466,8 +2463,11 @@ items:
           security.js ignoring env -> 3 failing; no cache, app.js building its
           own policy, and a cache that ignores env.trustProxy changes -> the
           one-policy test; a third export -> the export test. Full suite at
-          e3354218, Node 24.15.0, MongoDB 7: 2572 passing, 3 pending, 0 failing
-          (2570 at e549e1a6).
+          e3354218, Node 24.15.0, MongoDB 3.6.8 (recorded as MongoDB 7 in the
+          commit message and first PR text; the local server was 3.6.8): 2572
+          passing, 3 pending, 0 failing (2570 at e549e1a6). On dev 4f705217:
+          2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB
+          7.0.43, and in CI on Node 20/22/24 against MongoDB 4.4/5.0/6.0.
     blocks_on: [BF2-AUTH]
     evidence:
       - docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md
@@ -2488,8 +2488,8 @@ items:
       change makes inert for the client address as well as for Express.
       Lowest home is dev (base of the stack); if dev is frozen for 15.0.9,
       commit it on cut 1 and merge up.
-      #8763 merged into bf2/auth-hardening as 708af170 (2026-09-25T01:02Z);
-      it ships with #8754 in 15.0.9. Before that: opened 2026-09-24 as draft
+      #8763 merged into bf2/auth-hardening as 708af170 (2026-09-25T01:02Z),
+      and #8754 into dev as 4f705217 (01:33Z); it ships in 15.0.9. Before that: opened 2026-09-24 as draft
       #8763, head e3354218, base bf2/auth-hardening
       (stacked on #8754); retarget to dev when #8754 merges. Test CI does not
       run on it while the base is not dev (only auto-close ran). Real boot on
@@ -2503,7 +2503,8 @@ items:
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@708af170
     worktree: externals/work/crm-loop-remote-address
-    state: ready-to-push
+    state: merged-upstream
+    pr: [8764, 8765]
     blast_radius: >
       lib/api2/notifications-v2.js:34 (passes req.connection.remoteAddress)
       and the 'remote-address' field lib/server/loop.js puts in every Loop
@@ -2537,15 +2538,12 @@ items:
           lib/api2 no longer reads the connection's peer as the sender's
           address; notifications-v2.js uses clientIPFor(env). At e3354218 the
           same grep matches notifications-v2.js:34 (measured 2026-09-24).
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening official/rt/trust-one-source >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev
         kind: static
         describe: >
-          The follow-up PR (rt/trust-one-source into bf2/auth-hardening)
-          merges clean; the merged tree is identical to 71987bb4's, on which
-          the full suite ran (measured 2026-09-24).
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/loop-remote-address >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free (measured at 153e5658)
+          Containment: in dev through #8764 (into rt/trust-one-source), #8765
+          (into bf2/auth-hardening, 2026-09-25T01:26Z) and #8754 (into dev as
+          4f705217, 01:33Z). dev's tree is identical to 71987bb4's.
       - run: TEST=notifications-v2 npm run test-single
         cwd: externals/work/crm-loop-remote-address
         kind: unit
@@ -2556,7 +2554,11 @@ items:
           with. Break-it at 71987bb4, each reverted, 2026-09-24: the peer
           address again -> 3 failing (unset, 1, list); lib/api2 not passing
           env -> the wiring test. Full suite at 71987bb4, Node 24.15.0,
-          MongoDB 7: 2577 passing, 3 pending, 0 failing (2572 at e3354218).
+          MongoDB 3.6.8 (recorded as MongoDB 7 in the commit message and
+          first PR text; the local server was 3.6.8): 2577 passing, 3 pending,
+          0 failing (2572 at e3354218). On dev 4f705217: 2577/3/0 on Node
+          20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on
+          Node 20/22/24 against MongoDB 4.4/5.0/6.0.
       - no-gate: >
           Decided 2026-09-24 (maintainer): option 2 of the three recorded
           here - route the label through clientIPFor(env) so it follows
@@ -2582,8 +2584,8 @@ items:
       (efcd26b1, 2026-09-25T01:04Z), two minutes after rt/trust-one-source had
       been merged into bf2/auth-hardening as #8763, so #8754 does not have it.
       Maintainer, 2026-09-24: it goes into #8754 and ships in 15.0.9, through
-      a PR from rt/trust-one-source to bf2/auth-hardening (posting copy
-      reports/phase0-pr-bodies/rt-trust-one-source-into-8754.md; not opened).
+      #8765 (rt/trust-one-source into bf2/auth-hardening), merged
+      2026-09-25T01:26Z; #8754 merged into dev as 4f705217 at 01:33Z.
       The 15.0.9 release notes' TRUST_PROXY section and #8754's posting copy
       carry the stored-address notice.
 
@@ -7632,7 +7634,7 @@ items:
     branch: bf2/auth-hardening
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-auth
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8754]
     blast_radius: >
       #8754 head 708af170 (2026-09-24, with #8763) against dev 153e5658: 30 commits, 22 files, +2120/-101; with the pending #8764 follow-up, 25 files, +2167/-105.
@@ -7703,7 +7705,7 @@ items:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
       - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
     notes: >
-      Open upstream as #8754, not merged. Head 708af170 (2026-09-24): e549e1a6 plus #8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0 on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores caregivers' addresses on remote overrides) comes in through a follow-up PR from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait back before the credential check, as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded address that carries a port, the form Azure App Service is reported to send; unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9. Destination
+      Merged into dev as 4f705217 on 2026-09-25T01:33Z, head bae655a0 (#8765 on 708af170; tree identical to 71987bb4's). On dev 4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Before the merge, head 708af170 (2026-09-24): e549e1a6 plus #8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0 on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores caregivers' addresses on remote overrides) comes in through a follow-up PR from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait back before the credential check, as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded address that carries a port, the form Azure App Service is reported to send; unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9. Destination
       15.0.9 (backfix-2 plan section 1a, 2026-09-23). Reviewers: the
       maintainer and Andy (security review); no review is recorded on
       the PR yet (2026-09-24). Owed before merge: the security review and a combined run on #8754's head once #8764's follow-up is merged; the latest combined run (rc-15.0.9-combined-010, 3046/0/3) used #8754 at ef3404fd.

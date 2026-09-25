@@ -41,8 +41,8 @@ header, commit list and counts still describe tip `7103f657`; the posting copy
 | #8763 `rt/trust-one-source` | every client-address consumer reads one `TRUST_PROXY` policy compiled per `env`; `client-ip.js` exports only `trustFor` and `clientIPFor`; API v3 logins key from `env`, not the mounted app's `trust proxy`. No behaviour change | merged into this branch as `708af170` (`d0a3d628`, `e3354218`) |
 | #8764 `rt/loop-remote-address` | the `remote-address` in Loop pushes follows `TRUST_PROXY` through `clientIPFor(env)` instead of the connecting address; the caregiver's address is then stored on remote overrides in treatments | merged into `rt/trust-one-source` (`efcd26b1`) two minutes after #8763 was merged, so it reaches this branch through a follow-up PR from `rt/trust-one-source` |
 
-Full suite on the tree with both (identical to `71987bb4`'s): 2577 passing, 0 failing, 3 pending,
-Node 24.15.0, MongoDB 7.
+Full suite on the tree with both (identical to `71987bb4`'s), Node 24.15.0, MongoDB 3.6.8: 2577
+passing, 0 failing, 3 pending. On dev 4f705217 after the merge: 2577 passing, 3 pending, 0 failing on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on Node 20, 22 and 24 against MongoDB 4.4, 5.0 and 6.0.
 
 > **Read this before the diff.** If you change nothing, Nightscout behaves exactly as it does
 > today. The stronger protection against password guessing applies **only once `TRUST_PROXY` is

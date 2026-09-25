@@ -30,13 +30,12 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 15 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
 | `P0-J` | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default | #8754 |
-| `RT-TRUST-ONE-SOURCE` | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -47,16 +46,14 @@ that it was reviewed.
 | `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot | &mdash; |
 | `BFQ-113` | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers w | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `RT-LOOP-REMOTE-ADDRESS` | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 
-### SECURITY reviewer &mdash; 3 items
+### SECURITY reviewer &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
 | `P0-C` | `in-flight-upstream` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | #8754 |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
@@ -85,7 +82,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 | **#8754** | `P0-C` | `bf/auth` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | SECURITY reviewer |
 | **#8754** | `P0-J` | `bf/throttle` | bf/throttle - BF-30, failed-auth throttling, compatibility d | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |

@@ -15,4 +15,5 @@ Brings #8764 into #8754. #8764 was merged into `rt/trust-one-source` just after 
 
 Files: `lib/api2/index.js` (passes `env`), `lib/api2/notifications-v2.js`, `tests/notifications-v2.test.js`. The full description and break-it results are in #8764.
 
-Full suite on the merged tree (identical to `71987bb4`'s), Node 24.15.0, MongoDB 7: 2577 passing, 3 pending, 0 failing.
+Full suite on the merged tree (identical to `71987bb4`'s), Node 24.15.0, MongoDB 3.6.8: 2577 passing, 3 pending, 0 failing. An earlier version of this text said MongoDB 7; the local server was 3.6.8.
+On dev 4f705217 after the merge: 2577 passing, 3 pending, 0 failing on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on Node 20, 22 and 24 against MongoDB 4.4, 5.0 and 6.0.
