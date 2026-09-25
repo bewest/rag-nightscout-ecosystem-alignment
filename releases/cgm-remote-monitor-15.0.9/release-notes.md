@@ -488,13 +488,23 @@ and kept the old one, and **deleting** it by its ID did nothing. Apps using the 
 
 In this release those records are found. New records that arrive with their own ID are saved in
 the normal form. Records already saved the old way are left as they are until one is edited or
-deleted: the first edit replaces the old copy and you are left with one record, and deleting one
-removes it, together with any old copy an earlier edit left beside it. **If your site receives
-data from another Nightscout site, or you have restored data from an export, or it has run since
-15.0.6 or earlier**, look at any profile or treatment you have edited there. If you see an old copy
-beside the one you edited, edit either one: the two become one record with that edit. Deleting
-either one deletes both. If you are unsure which settings or entries are correct, check with your
-care team.
+deleted. Deleting one removes it, together with any old copy an earlier edit left beside it,
+whether you delete it on a Nightscout page or from an app that uses the newer API, such as
+AndroidAPS. Where an app can show only one of the two copies, it shows the one with the latest
+edit. **If your site receives data from another Nightscout site, or you have restored data from an
+export, or it has run since 15.0.6 or earlier**, look at any profile or treatment you have edited
+there. If you see an old copy beside the one you edited, open the record in the profile editor, or
+in the treatment list on the Reports page, and save it: the two become one record with that edit.
+An edit made by dragging a treatment on the main chart, or from an app, changes the record but
+leaves both copies. Deleting either copy deletes both. If you are unsure which settings or entries
+are correct, check with your care team.
+
+A device status report (the loop or pump status your phone app sends) that an app sends again is
+recognised as already saved: it is not saved twice, and any new reports sent with it are saved.
+
+A treatment or glucose reading sent to Nightscout without a usable ID is given one. One kind of
+badly formed record could stop a Nightscout site from running, and stop it again after every
+restart; that can no longer happen, and a site that already holds such a record keeps running.
 
 The same change fixes deleting an access entry (a "subject" on the admin page) that was restored
 from a backup or created by a tool that set its own ID. Before, the page reported success and the

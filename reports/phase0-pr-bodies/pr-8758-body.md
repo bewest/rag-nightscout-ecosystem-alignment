@@ -1,5 +1,5 @@
-<!-- Body for nightscout/cgm-remote-monitor#8758 at head ab7b22d6 (2026-09-24). This comment is hidden on GitHub. -->
-Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`).
+<!-- Body for nightscout/cgm-remote-monitor#8758 at head cb7d4110 (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
+Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`), and three fixes from the 15.0.9 freeze review (part 4).
 
 ## Part 1: a record's own `_id` finds, edits and deletes it
 
@@ -47,7 +47,11 @@ sending one again through API v3 stored a second copy.
 **What you should do:** nothing, for most sites. If your site receives data from another
 Nightscout site through the connector, or you have restored data from an export, or your site
 has been running since 15.0.6 or earlier, and you have edited a profile or treatment there, look
-at it after upgrading. If you see an old copy beside the one you edited, edit either one: the two become one record with that edit. Deleting either one deletes both.
+at it after upgrading. If you see an old copy beside the one you edited, open it in the profile
+editor, or in the treatment list on the Reports page, and save it: the two become one record with
+that edit. An edit made by dragging a treatment on the main chart, or from an app that uses API v3,
+changes the record but leaves both copies. Deleting either copy deletes both, on a Nightscout page
+or through API v3 (part 4).
 If you are unsure which settings or entries are correct, check with your care team.
 
 ---
@@ -192,13 +196,13 @@ A few words used below:
 - Records added over the websocket with their own ID are saved in the normal form, and websocket
   edits and deletes find records whichever way their ID was saved.
 - API v3 finds, changes and deletes those older records by the ID it lists them under.
-- A device status report sent again is refused, as before, instead of being saved twice.
+- A device status report sent again is not saved twice. (Part 2 refused it with an error, which also lost the other reports sent with it; part 4 answers it as already saved and saves the rest.)
 
 Nothing in your database changes until a record is written, edited or deleted.
 
 **What you should do:** nothing, for most sites. If an app told you it had edited or deleted a
 record but the record did not change, try the change again after upgrading. If you see two copies
-of one record, you can now delete the extra one. If you are unsure which readings, treatments or
+of one record, see part 1: deleting either copy deletes both. If you are unsure which readings, treatments or
 settings are correct, check with your care team.
 
 ---
@@ -266,7 +270,8 @@ On `597e2899` the 70 are:
    If the read-back fails, the POST still answers 200 with the readings stored.
 7. **`ad973110` devicestatus re-send guard.** For a batch that carries 24-hex `_id`s, one
    `find({_id: {$in: <string forms>}}, {_id: 1})`; ids found keep their stored value, so a re-send
-   collides and is refused as on dev and as a profile re-send is. No read for a batch
+   collides and is refused as on dev and as a profile re-send is (part 4, `c3a34bac`, answers the
+   re-send instead of refusing it). No read for a batch
    without 24-hex `_id`s. Measured cost (100-row batch, in-process create, `mongo:7`, 20,000 stored
    rows, 40 runs, two repeats): median 5.29 / 5.09 ms with hex `_id`s against 4.18 / 4.17 ms before
    the guard; without `_id`s 4.14 / 3.93 ms against 4.06 / 4.09 ms. About 1 ms per hex batch; the
@@ -324,6 +329,39 @@ A delete by hex still removes both copies of a record an earlier edit left twice
 
 Each commit carries its own tests. At `dd2cf8f1`, with `lib/` reverted to `6d120fa2` and the new tests kept, 10 of them fail. At `ab7b22d6`, reverting remove to match the ObjectId form only fails the string-`_id` remove test.
 
+## Part 4: fixes from the freeze review
+
+### What changes for you
+
+- A treatment or glucose reading sent without a usable ID is given one. One kind of badly formed
+  record could stop a Nightscout site from running, and again after every restart; that can no
+  longer happen, and a site that already holds such a record keeps running. This was also true on
+  15.0.8.
+- A device status report sent again is recognised as already saved, and the other reports sent
+  with it are saved. Before this part, the whole upload answered with an error and the reports
+  after the repeated one were lost.
+- Deleting a record that is saved twice through an app that uses API v3, such as AndroidAPS,
+  deletes both copies, so it no longer keeps showing. Where API v3 shows one copy, it is the one
+  with the latest edit. The first half was also true on 15.0.8.
+
+### Technical detail
+
+| commit | what was wrong |
+|---|---|
+| `17add44b` | entries and treatments are written with upserts, which keep the `_id` they are given, so an `_id` that is empty or neither a string nor an ObjectId was stored as the record's `_id`; for one such value the next load of the in-memory data threw and the process ended, again after each restart. `object-id-forms.dropEmptyId` drops such an `_id` (an ObjectId from another copy of `bson` is kept, by `_bsontype`), called from `normalizeEntryId` and `normalizeTreatmentId`. `ddata`, `dataloader`, `calcdelta` and API v3 `normalizeDoc` accept a stored record without an id. Test: `tests/api.empty-id.test.js`. |
+| `c3a34bac` | Part 2's re-send guard read the string forms only, so a re-send of a devicestatus stored with an ObjectId (every one this PR creates) collided, answered 500, and the ordered insert dropped every status after it in the POST. The read now asks for every form; a re-sent status is answered with the `_id` it is stored under and not written; the same new `_id` twice in a batch is stored once; the insert is unordered and accepts a duplicate key only for a status sent with its own `_id` (a retry that raced its first POST). **Changed expectations**: the resend-guard tests and the devicestatus re-send row of the matrix go from 500 to 200, marked in the files. This changes the 2026-09-23 decision below from "refused" to "acknowledged"; the guard still stores no second copy. Profile create still refuses a re-send (BF-99). |
+| `63dd716c` | API v3 DELETE wrote one of the documents `filterForOne` matches, so of a record stored with a string `_id` and again with the ObjectId, one stayed valid; and reads and writes sorted by `identifier` only, which the two copies tie on, so which one they took depended on storage order (the string copy, in the review's trials; 15.0.8 took the ObjectId copy). DELETE now marks or removes every form (`updateMany`/`deleteMany`), and `findOne`, `findOneFilter` and `writeFilter` sort `{identifier: -1, _id: -1}`, which takes the ObjectId copy. **Changed expectations**: part 3's v1/v3 pair DELETE test now expects the v1 record marked deleted too, and two helper tests pin the new sort. Test: `tests/api3.delete-every-form.test.js`, which runs GET and PATCH with each copy stored first. |
+
+| `cb7d4110` | From review of the three above. The every-form DELETE matched any document whose `_id` is the identifier, so it could also mark or remove a different record that has an identifier of its own; it now matches by `_id` only records without an identifier, as `identifyingFilter` does. And `dropEmptyId` dropped an Extended JSON `{"$oid": "<hex>"}` `_id`, as `mongoexport` writes it, so a restored record got a new id and a re-send stored a copy; it now becomes the ObjectId it names. Tests: two in `tests/api3.delete-every-form.test.js` (soft and permanent), and one unit and one HTTP test in `tests/api.empty-id.test.js`. |
+
+Not changed here: API v3 PUT/PATCH edit one copy and websocket `dbUpdate` edits both, and each
+leaves two records; websocket `dbAdd` and API v3 POST still store some unusable `_id` values
+without a crash.
+
+Each fix reverted singly fails a named test: either normalizer's call, the `ddata` or `calcdelta`
+guard, the unordered insert, soft and permanent DELETE, the read sort (only with the ObjectId copy
+stored first) and the write sort.
+
 ## Merges
 
 The eight 15.0.9 PRs this was first checked against (#8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757) have all merged into `dev`, and `dev` `4f705217` is merged into this branch (`572bfc32`, no conflicts). CI on `572bfc32` failed one test, the part 3 subject-create test, which `dev`'s change to create made wrong; `ab7b22d6` fixes it.
@@ -332,12 +370,16 @@ The narrower profile-only fix that this replaces is not being opened.
 
 ## Tests, re-run for this description
 
+At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from the last commit).
 At `ab7b22d6` (this branch with `dev` `4f705217` merged), Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. At `dd2cf8f1`, before the merge: 2875 passing, 0 failing, 3 pending.
 At `6d120fa2` (parts 1 and 2), Node 20.20.0: 2866 passing (`dev` `1f9a9d10` was 2386); of the 480 tests in the eleven new files, 259 fail with `dev`'s `lib/`, and the other 221 are invariants that pass on both.
 MongoDB needs a raised open-file limit for this suite (peak 1130 open files in `mongod` at `6d120fa2`); a container at Docker's default 1024 stops partway through.
 
-## Decisions taken (maintainer, 2026-09-23)
+## Decisions taken (maintainer)
 
-Add the device status re-send guard (commit 7 of part 2); take the API v3 fix (commit 5); answer with the stored
+2026-09-25: fix the three freeze-review findings in this PR (part 4), including answering a device
+status re-send instead of refusing it.
+
+2026-09-23: add the device status re-send guard (commit 7 of part 2); take the API v3 fix (commit 5); answer with the stored
 `_id` (commit 6); leave the upper-case string `_id` limit as it is, and state it in the helper (commit 8).
 
