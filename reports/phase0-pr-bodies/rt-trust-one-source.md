@@ -1,8 +1,8 @@
 # `rt/trust-one-source`: every client-address consumer reads one TRUST_PROXY policy
 
-**OPENED 2026-09-24 as draft nightscout/cgm-remote-monitor #8763** at `d0a3d628`. Branch
-`rt/trust-one-source`, tip `e3354218`, two commits on `official/bf2/auth-hardening` `e549e1a6`
-(the head of #8754, still open); the second is committed locally and not yet pushed. Opened
+**OPENED 2026-09-24 as draft nightscout/cgm-remote-monitor #8763.** Head `e3354218` (pushed,
+body updated). Branch `rt/trust-one-source`, two commits on `official/bf2/auth-hardening`
+`e549e1a6` (the head of #8754, still open). Opened
 against `bf2/auth-hardening`; retarget to `dev` when #8754 merges. Trial-merges clean into
 #8754's head and into `origin/dev` `153e5658`. No `CHANGELOG.md` edit. Queue item
 `RT-TRUST-ONE-SOURCE`; semver patch. The posting copy is the text below the line.

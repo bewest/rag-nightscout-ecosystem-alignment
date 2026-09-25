@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 117 |
+| items | 118 |
 | runnable gates | 191 |
-| explicit `no-gate:` markers | 159 |
+| explicit `no-gate:` markers | 160 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 350 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 351 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -47,7 +47,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 6 | P0-C, P0-J, RT-TRUST-ONE-SOURCE, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 33 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
-| `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 7 | RT-LOOP-REMOTE-ADDRESS, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
@@ -982,7 +982,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 18 items
+`parcel: release-train` &mdash; 19 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -998,6 +998,7 @@ that costs.
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `merged-upstream` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `in-flight-upstream` | `rt/trust-one-source` | patch | 5 run |
+| `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `needs-decision` | `-` | patch | 0 run + 1 no-gate |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1233,7 +1234,36 @@ that costs.
 - `docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md`
 - `reports/phase0-pr-bodies/rt-trust-one-source.md`
 
-**Notes.** Target: cut 1 or cut 2 of the modernization train, or earlier on dev if it fits this release cycle (maintainer, 2026-09-24). Today two routes deliver the policy: five modules compile env.trustProxy themselves, and lib/api3/security.js alone reads the Express setting the v3 app inherits from app.js. e549e1a6 (on #8754) tests the inherited route and sets the API v3 fixture's parent as app.js does; it does not remove the second route. Cuts 1-3 do not touch client-ip.js or api3/security.js; cut 2 changes tests/fixtures/api3/instance.js in a different hunk (bound address family, 27da0f8a) and trial-merges with #8754's head without a conflict in these files. Cuts 4 and 5 carry their own client-ip.js (06c83f2f, 395f3207), already resolved to the candidate's file (BF-88); cut 5 also sets 'trust proxy' on the v1 and v3 apps (#8605), which this change makes inert for the client address as well as for Express. Lowest home is dev (base of the stack); if dev is frozen for 15.0.9, commit it on cut 1 and merge up. Opened 2026-09-24 as draft #8763, head d0a3d628 (e3354218 committed after, to narrow the exports; push it to update the PR), base bf2/auth-hardening (stacked on #8754); retarget to dev when #8754 merges. Test CI does not run on it while the base is not dev (only auto-close ran). Real boot on d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot with the same error on both, TRUST_PROXY=1 listens on both.
+**Notes.** Target: cut 1 or cut 2 of the modernization train, or earlier on dev if it fits this release cycle (maintainer, 2026-09-24). Today two routes deliver the policy: five modules compile env.trustProxy themselves, and lib/api3/security.js alone reads the Express setting the v3 app inherits from app.js. e549e1a6 (on #8754) tests the inherited route and sets the API v3 fixture's parent as app.js does; it does not remove the second route. Cuts 1-3 do not touch client-ip.js or api3/security.js; cut 2 changes tests/fixtures/api3/instance.js in a different hunk (bound address family, 27da0f8a) and trial-merges with #8754's head without a conflict in these files. Cuts 4 and 5 carry their own client-ip.js (06c83f2f, 395f3207), already resolved to the candidate's file (BF-88); cut 5 also sets 'trust proxy' on the v1 and v3 apps (#8605), which this change makes inert for the client address as well as for Express. Lowest home is dev (base of the stack); if dev is frozen for 15.0.9, commit it on cut 1 and merge up. Opened 2026-09-24 as draft #8763; head e3354218 (pushed, body updated), base bf2/auth-hardening (stacked on #8754); retarget to dev when #8754 merges. Test CI does not run on it while the base is not dev (only auto-close ran). Real boot on d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot with the same error on both, TRUST_PROXY=1 listens on both.
+
+### `RT-LOOP-REMOTE-ADDRESS` &mdash; Loop remote commands carry the proxy's address as their sender label
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `-` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer, and a Loop maintainer for anything that changes the value |
+| blocks on | `RT-TRUST-ONE-SOURCE` |
+
+**Blast radius.** lib/api2/notifications-v2.js:34 (passes req.connection.remoteAddress) and the 'remote-address' field lib/server/loop.js puts in every Loop push (overrides, override cancel, carbs, bolus). Downstream: Loop's NightscoutService decodes the field as a required String on every V1 remote notification, stores it on a remote override's enactTrigger, and uploads it back to Nightscout as the Temporary Override treatment's remoteAddress with enteredBy "Loop (via remote command)" (LoopWorkspace NightscoutService fe075ef, read 2026-09-24).
+
+**What an operator sees.** When a caregiver sends a remote command to Loop through Nightscout (a temporary override, carbs or a bolus), Nightscout tells Loop where the command came from, and Loop saves that on the override it records back in Nightscout. On most hosted sites that "where" is the address of the hosting company's own proxy, not the caregiver's, so it says nothing useful. Nothing about whether a command is accepted depends on it.
+
+**Why `patch`.** Changes the value of a label in the Loop push payload and in treatments Loop uploads; no API shape changes. Option 3 below keeps the key, which Loop requires.
+
+**Gates.**
+
+- **NO GATE** &mdash; Needs a decision before any code. The three options, measured by reading on 2026-09-24: (1) LEAVE IT. Behind a proxy the label is the proxy's internal address; direct connections get the real peer. No change anywhere. (2) ROUTE IT THROUGH clientIPFor(env) (RT-TRUST-ONE-SOURCE), so it follows TRUST_PROXY like every other address. Accurate behind a configured proxy; with TRUST_PROXY unset it is whatever X-Forwarded-For says, which the caller controls (the endpoint already requires notifications:loop:push). The cost: the caregiver's real public address is then stored in the treatments collection on every remote override, readable by anyone with read access to the site, including anonymous visitors where AUTH_DEFAULT_ROLES grants reading. (3) STOP SENDING AN ADDRESS: send a fixed label such as "Nightscout" (or the authenticated subject's name). The key must stay a string: Loop's V1 notifications decode remote-address as a required String, so removing it would break every remote command. Needs a Loop maintainer to confirm nothing reads it as an address.
+
+**Evidence.**
+
+- `reports/phase0-pr-bodies/rt-trust-one-source.md`
+
+**Notes.** Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the only client-address read in lib/ that does not go through client-ip.js. Present unchanged on origin/dev 153e5658; introduced with the V2 API in 7f05018d (2023-06-04). req.connection is also a deprecated alias for req.socket. Not for 15.0.9: nothing is broken for anyone, the one fix that makes the value accurate (2) stores more personal data, and (3) needs Loop's side confirmed. If (2) or (3) is chosen, it is one line in notifications-v2.js plus a test, stacked on #8763 or on dev after it.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 

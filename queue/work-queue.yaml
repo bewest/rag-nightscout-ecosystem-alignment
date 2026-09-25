@@ -2486,12 +2486,75 @@ items:
       change makes inert for the client address as well as for Express.
       Lowest home is dev (base of the stack); if dev is frozen for 15.0.9,
       commit it on cut 1 and merge up.
-      Opened 2026-09-24 as draft #8763, head d0a3d628 (e3354218 committed
-      after, to narrow the exports; push it to update the PR), base bf2/auth-hardening
+      Opened 2026-09-24 as draft #8763; head e3354218 (pushed, body updated), base bf2/auth-hardening
       (stacked on #8754); retarget to dev when #8754 merges. Test CI does not
       run on it while the base is not dev (only auto-close ran). Real boot on
       d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot
       with the same error on both, TRUST_PROXY=1 listens on both.
+
+  - id: RT-LOOP-REMOTE-ADDRESS
+    title: "Loop remote commands carry the proxy's address as their sender label"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: ""
+    worktree: ""
+    state: needs-decision
+    blast_radius: >
+      lib/api2/notifications-v2.js:34 (passes req.connection.remoteAddress)
+      and the 'remote-address' field lib/server/loop.js puts in every Loop
+      push (overrides, override cancel, carbs, bolus). Downstream: Loop's
+      NightscoutService decodes the field as a required String on every V1
+      remote notification, stores it on a remote override's enactTrigger, and
+      uploads it back to Nightscout as the Temporary Override treatment's
+      remoteAddress with enteredBy "Loop (via remote command)"
+      (LoopWorkspace NightscoutService fe075ef, read 2026-09-24).
+    review: maintainer, and a Loop maintainer for anything that changes the value
+    operator_visible: >
+      When a caregiver sends a remote command to Loop through Nightscout (a
+      temporary override, carbs or a bolus), Nightscout tells Loop where the
+      command came from, and Loop saves that on the override it records back
+      in Nightscout. On most hosted sites that "where" is the address of the
+      hosting company's own proxy, not the caregiver's, so it says nothing
+      useful. Nothing about whether a command is accepted depends on it.
+    semver: patch
+    semver_reason: >
+      Changes the value of a label in the Loop push payload and in treatments
+      Loop uploads; no API shape changes. Option 3 below keeps the key, which
+      Loop requires.
+    register: []
+    gates:
+      - no-gate: >
+          Needs a decision before any code. The three options, measured by
+          reading on 2026-09-24:
+          (1) LEAVE IT. Behind a proxy the label is the proxy's internal
+          address; direct connections get the real peer. No change anywhere.
+          (2) ROUTE IT THROUGH clientIPFor(env) (RT-TRUST-ONE-SOURCE), so it
+          follows TRUST_PROXY like every other address. Accurate behind a
+          configured proxy; with TRUST_PROXY unset it is whatever
+          X-Forwarded-For says, which the caller controls (the endpoint
+          already requires notifications:loop:push). The cost: the
+          caregiver's real public address is then stored in the treatments
+          collection on every remote override, readable by anyone with read
+          access to the site, including anonymous visitors where
+          AUTH_DEFAULT_ROLES grants reading.
+          (3) STOP SENDING AN ADDRESS: send a fixed label such as
+          "Nightscout" (or the authenticated subject's name). The key must
+          stay a string: Loop's V1 notifications decode remote-address as a
+          required String, so removing it would break every remote command.
+          Needs a Loop maintainer to confirm nothing reads it as an address.
+    blocks_on: [RT-TRUST-ONE-SOURCE]
+    evidence:
+      - reports/phase0-pr-bodies/rt-trust-one-source.md
+    notes: >
+      Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the
+      only client-address read in lib/ that does not go through client-ip.js.
+      Present unchanged on origin/dev 153e5658; introduced with the V2 API in
+      7f05018d (2023-06-04). req.connection is also a deprecated alias for
+      req.socket. Not for 15.0.9: nothing is broken for anyone, the one fix
+      that makes the value accurate (2) stores more personal data, and (3)
+      needs Loop's side confirmed. If (2) or (3) is chosen, it is one line in
+      notifications-v2.js plus a test, stacked on #8763 or on dev after it.
 
   - id: RT-REBASE
     title: Cuts 1-4 are 133 commits behind dev and now all five conflict
