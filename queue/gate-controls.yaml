@@ -1811,38 +1811,38 @@ controls:
 
   # --- #8758 freeze pass, 2026-09-25 (session -6a) ---
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/master
     control-kind: static
     proves: >
       The same ancestry question against origin/master (15.0.8), which does
       not contain #8758's head, exits 1. Goes stale when #8758 is released.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" wip/object-id-crud-fixes-2 -- lib/server/object-id-forms.js
+      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" origin/bf/object-id-crud -- lib/server/object-id-forms.js
+      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" origin/master -- lib/server/object-id-forms.js
     control-kind: static
     proves: >
       #8758's pushed head has no dropEmptyId, so the grep exits 1 there
       until the push. Presence only; tests/api.empty-id.test.js is the
       behaviour.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" wip/object-id-crud-fixes-2 -- lib/server/devicestatus.js
+      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" origin/bf/object-id-crud -- lib/server/devicestatus.js
+      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" origin/master -- lib/server/devicestatus.js
     control-kind: static
     proves: >
       #8758's pushed head has no withoutStoredIds, so the grep exits 1 there
       until the push.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" wip/object-id-crud-fixes-2 -- lib/api3/generic/delete/operation.js
+      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" origin/bf/object-id-crud -- lib/api3/generic/delete/operation.js
+      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" origin/master -- lib/api3/generic/delete/operation.js
     control-kind: static
     proves: >
       #8758's pushed head deletes one form, so the grep exits 1 there until
@@ -1902,19 +1902,19 @@ controls:
       storage.js remove reverted (59728200). Green on ab7b22d6, 63dd716c and
       cb7d4110.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "opItem" wip/object-id-crud-fixes-2 -- lib/server/treatments.js
+      git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "opItem" origin/bf/object-id-crud -- lib/server/treatments.js
+      git -C externals/cgm-remote-monitor-official grep -q "opItem" origin/master -- lib/server/treatments.js
     control-kind: static
     proves: >
       #8758's pushed head has the one trailing stale delete and no opItem
       map, so the grep exits 1 there until the push.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/entries.js
+      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" origin/bf/object-id-crud -- lib/server/entries.js
+      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" origin/master -- lib/server/entries.js
     control-kind: static
     proves: >
       #8758's pushed head reports opts.find._id to the cache and has no

@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-115
+# Review packet — BFQ-115 (PR #8758)
 
 **BF-115 - an entry or treatment with an unusable _id is stored with it, and one
 such value stops the server at every load**
@@ -21,7 +21,7 @@ such value stops the server at every load**
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-115` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-115` is the measurement |
 | semver | `patch` |
 | register entries | `BF-115` |
 | operator exposure | **reaches an operator on today's release** |
@@ -51,12 +51,13 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`** &nbsp;·&nbsp; kind: `static`
 
-wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the
-push is to bf/object-id-crud with no rebase.
+The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25,
+e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green
+after #8758 merges.
 
-**`git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" wip/object-id-crud-fixes-2 -- lib/server/ob`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/ob`** &nbsp;·&nbsp; kind: `static`
 
 The fix (17add44b) is on the branch. A presence check only; its control is the
 same grep on origin/bf/object-id-crud, which fails until the push.
@@ -91,7 +92,9 @@ pushed; the register names the mechanism only. The client-unchanged gate names
 lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js is in the
 browser bundle, so a browser data-load hand check is owed before the tag.
 cb7d4110 adds: an Extended JSON {$oid} _id becomes the ObjectId it names, so a
-mongoexport restore keeps its ids.
+mongoexport restore keeps its ids. Pushed to #8758 2026-09-25 as f1e8398b (the
+maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs
+green on that head.
 
 ---
 

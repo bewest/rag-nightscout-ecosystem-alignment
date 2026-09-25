@@ -1,5 +1,5 @@
-<!-- Body for nightscout/cgm-remote-monitor#8758 at head e9dbb1fb (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
-Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`), and three fixes from the 15.0.9 freeze review (part 4).
+<!-- Body for nightscout/cgm-remote-monitor#8758 at head f1e8398b (2026-09-25: e9dbb1fb merged with 25f5ea21, the dev ecb63223 merge). This comment is hidden on GitHub. -->
+Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`), then six fix commits from the 15.0.9 freeze review and soak (part 4), and `dev` `ecb63223` merged in again (`25f5ea21`, `f1e8398b`).
 
 ## Part 1: a record's own `_id` finds, edits and deletes it
 
@@ -370,7 +370,7 @@ treatments batch's per-write delete and its index map.
 
 ## Merges
 
-The eight 15.0.9 PRs this was first checked against (#8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757) have all merged into `dev`, and `dev` `4f705217` is merged into this branch (`572bfc32`, no conflicts). CI on `572bfc32` failed one test, the part 3 subject-create test, which `dev`'s change to create made wrong; `ab7b22d6` fixes it.
+`dev` `ecb63223` (#8530, #8766, #8767) is merged in as `25f5ea21`, and part 4 on top of it as `f1e8398b`, with no conflicts and no file changed by both. The eight 15.0.9 PRs this was first checked against (#8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757) have all merged into `dev`, and `dev` `4f705217` is merged into this branch (`572bfc32`, no conflicts). CI on `572bfc32` failed one test, the part 3 subject-create test, which `dev`'s change to create made wrong; `ab7b22d6` fixes it.
 
 The narrower profile-only fix that this replaces is not being opened.
 

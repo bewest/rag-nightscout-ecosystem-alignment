@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-117
+# Review packet — BFQ-117 (PR #8758)
 
 **BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on
 #8758 v3 reads and writes the older copy**
@@ -21,7 +21,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-117` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-117` is the measurement |
 | semver | `patch` |
 | register entries | `BF-117` |
 | operator exposure | **reaches an operator on today's release** |
@@ -52,12 +52,13 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`** &nbsp;·&nbsp; kind: `static`
 
-wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the
-push is to bf/object-id-crud with no rebase.
+The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25,
+e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green
+after #8758 merges.
 
-**`git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" wip/object-id-crud-fixes-2 -- lib/api3/`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/`** &nbsp;·&nbsp; kind: `static`
 
 The fix (63dd716c) is on the branch. A presence check only; its control is the
 same grep on origin/bf/object-id-crud, which fails until the push.
@@ -91,7 +92,9 @@ be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote-
 monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT-
 MERGE. Also seen by the review, not filed: GET /api/v1/entries/<unknown
 hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper-
-case id reach it.
+case id reach it. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer
+merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that
+head.
 
 ---
 

@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-116
+# Review packet — BFQ-116 (PR #8758)
 
 **BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of
 the batch**
@@ -21,7 +21,7 @@ the batch**
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-116` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-116` is the measurement |
 | semver | `patch` |
 | register entries | `BF-116` |
 
@@ -43,12 +43,13 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`** &nbsp;·&nbsp; kind: `static`
 
-wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the
-push is to bf/object-id-crud with no rebase.
+The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25,
+e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green
+after #8758 merges.
 
-**`git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" wip/object-id-crud-fixes-2 -- lib/serv`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/serv`** &nbsp;·&nbsp; kind: `static`
 
 The fix (c3a34bac) is on the branch. A presence check only; its control is the
 same grep on origin/bf/object-id-crud, which fails until the push.
@@ -77,7 +78,9 @@ reproduced by the review). This reverses #8758's own design, which refused a
 re-send with 500 as profile create does (BF-99); the maintainer asked for it
 on #8758 (2026-09-25, this session). Profile create still refuses a re-send
 with 500; making it match is not done. No AID uploader in the corpus sends a
-devicestatus _id. Fix c3a34bac.
+devicestatus _id. Fix c3a34bac. Pushed to #8758 2026-09-25 as f1e8398b (the
+maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs
+green on that head.
 
 ---
 

@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-131
+# Review packet — BFQ-131 (PR #8758)
 
 **BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so
 pages and unfiltered reads keep showing it**
@@ -21,7 +21,7 @@ pages and unfiltered reads keep showing it**
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-131` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-131` is the measurement |
 | semver | `patch` |
 | register entries | `BF-131` |
 
@@ -42,12 +42,13 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`** &nbsp;·&nbsp; kind: `static`
 
-wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the
-push is to bf/object-id-crud with no rebase.
+The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25,
+e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green
+after #8758 merges.
 
-**`git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/e`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/e`** &nbsp;·&nbsp; kind: `static`
 
 The fix (e9dbb1fb) is on the branch. A presence check only; its control is the
 same grep on origin/bf/object-id-crud, which fails until the push.
@@ -76,7 +77,9 @@ runs 011 to 014 of the full suite were green: the suite never read the cache
 after a delete. Fixed the same day as e9dbb1fb before the push, at the
 maintainer's request to push once. Safety-visible: a deleted bolus or carbs
 entry kept being shown on newly opened pages and could count in insulin and
-carbs on board there.
+carbs on board there. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer
+merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that
+head.
 
 ---
 

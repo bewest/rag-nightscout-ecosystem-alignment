@@ -27,19 +27,19 @@ repository.
 | [`RT-PR-8730`](rt-pr-8730-crowdin-incoming.md) | #8730 | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
+| [`BFQ-115`](bfq-115-wip-object-id-crud-fixes-2.md) | #8758 | `in-flight-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load |
+| [`BFQ-116`](bfq-116-wip-object-id-crud-fixes-2.md) | #8758 | `in-flight-upstream` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch |
+| [`BFQ-117`](bfq-117-wip-object-id-crud-fixes-2.md) | #8758 | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy |
+| [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | #8758 | `in-flight-upstream` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
+| [`BFQ-131`](bfq-131-wip-object-id-crud-fixes-2.md) | #8758 | `in-flight-upstream` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-109`](bfq-109-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair |
 | [`BFQ-110`](bfq-110-bf-object-id-crud.md) | &mdash; | `ready-to-push` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there |
 | [`BFQ-111`](bfq-111-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes |
 | [`BFQ-112`](bfq-112-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it |
 | [`BFQ-113`](bfq-113-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms |
-| [`BFQ-115`](bfq-115-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load |
-| [`BFQ-116`](bfq-116-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch |
-| [`BFQ-117`](bfq-117-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy |
 | [`BFQ-120`](bfq-120-bf-clock-stale-offline.md) | &mdash; | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) |
 | [`BFQ-126`](bfq-126-bf-authsubject-nameless.md) | &mdash; | `ready-to-push` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) |
-| [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
-| [`BFQ-131`](bfq-131-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |

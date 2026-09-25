@@ -8759,8 +8759,8 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/object-id-forms.js dropEmptyId (new); normalizeEntryId in
@@ -8779,12 +8779,13 @@ items:
     semver_reason: a crash fix; a request that stored an unusable id now stores a server id
     register: [BF-115]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
         kind: static
         describe: >
-          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
-          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" wip/object-id-crud-fixes-2 -- lib/server/object-id-forms.js
+          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
+          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
+          freshness: it stays green after #8758 merges.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js
         kind: static
         describe: >
           The fix (17add44b) is on the branch. A presence check only; its
@@ -8816,6 +8817,8 @@ items:
       is in the browser bundle, so a browser data-load hand check is owed
       before the tag. cb7d4110 adds: an Extended JSON {$oid} _id becomes the
       ObjectId it names, so a mongoexport restore keeps its ids.
+      Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
+      tree cf590474; CI 13 of 13 jobs green on that head.
   - id: BFQ-116
     title: "BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch"
     parcel: register-open
@@ -8823,8 +8826,8 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/server/devicestatus.js create (withoutStoredIds replaces
@@ -8839,12 +8842,13 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-116]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
         kind: static
         describe: >
-          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
-          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" wip/object-id-crud-fixes-2 -- lib/server/devicestatus.js
+          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
+          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
+          freshness: it stays green after #8758 merges.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js
         kind: static
         describe: >
           The fix (c3a34bac) is on the branch. A presence check only; its
@@ -8869,6 +8873,8 @@ items:
       create still refuses a re-send with 500; making it match is not
       done. No AID uploader in the corpus sends a devicestatus _id. Fix
       c3a34bac.
+      Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
+      tree cf590474; CI 13 of 13 jobs green on that head.
   - id: BFQ-117
     title: "BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy"
     parcel: register-open
@@ -8876,8 +8882,8 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/generic/delete/operation.js;
@@ -8898,12 +8904,13 @@ items:
     semver_reason: a bug fix in deletes and in which stored copy is read
     register: [BF-117]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
         kind: static
         describe: >
-          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
-          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" wip/object-id-crud-fixes-2 -- lib/api3/generic/delete/operation.js
+          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
+          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
+          freshness: it stays green after #8758 merges.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js
         kind: static
         describe: >
           The fix (63dd716c) is on the branch. A presence check only; its
@@ -8932,6 +8939,8 @@ items:
       remote-monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT-MERGE. Also seen by the review,
       not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No
       such id' on both builds, and #8758 lets an upper-case id reach it.
+      Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
+      tree cf590474; CI 13 of 13 jobs green on that head.
   - id: BFQ-114
     title: "BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on"
     parcel: register-open
@@ -10008,8 +10017,8 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/server/treatments.js create, batch path (the trailing deleteMany
@@ -10021,12 +10030,13 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-130]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
         kind: static
         describe: >
-          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
-          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "opItem" wip/object-id-crud-fixes-2 -- lib/server/treatments.js
+          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
+          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
+          freshness: it stays green after #8758 merges.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js
         kind: static
         describe: >
           The fix (6c3ccce6) is on the branch. A presence check only; its
@@ -10050,6 +10060,8 @@ items:
       trailing delete and should be checked for the same shape.
       Fixed 2026-09-25 as 6c3ccce6 on wip/object-id-crud-fixes-2 at the
       maintainer's request ("fix BF-130 first so I push once").
+      Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
+      tree cf590474; CI 13 of 13 jobs green on that head.
   - id: OID-ENTRIES-REPLY-ID
     title: "On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id"
     parcel: register-open
@@ -10146,8 +10158,8 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
       lib/server/object-id-forms.js cacheRemoval (new); remove() in
@@ -10160,12 +10172,13 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-131]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
         kind: static
         describe: >
-          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
-          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
-      - run: git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" wip/object-id-crud-fixes-2 -- lib/server/entries.js
+          The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b,
+          2026-09-25, e9dbb1fb merged with 25f5ea21). Containment, not
+          freshness: it stays green after #8758 merges.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js
         kind: static
         describe: >
           The fix (e9dbb1fb) is on the branch. A presence check only; its
@@ -10189,6 +10202,8 @@ items:
       the push, at the maintainer's request to push once. Safety-visible: a
       deleted bolus or carbs entry kept being shown on newly opened pages
       and could count in insulin and carbs on board there.
+      Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21);
+      tree cf590474; CI 13 of 13 jobs green on that head.
   - id: RT-SOAK
     title: "tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak"
     parcel: release-train

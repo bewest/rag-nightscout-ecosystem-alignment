@@ -132,8 +132,8 @@ cover more than one `BF-`:
 | `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
 | `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
-| `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
-| `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
+| `BFQ-115` | `in-flight-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
+| `BFQ-117` | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
 | `BFQ-118` | `merged-upstream` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
 | `BFQ-119` | `merged-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
@@ -182,7 +182,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 | 1 | 4 |  | 5 | 2 | 8 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 32 | 1 | 5 | 12 | 4 | 2 | 16 | 4 |  | 2 | 1 |  | **79** |
+| `register-open` | 32 | 1 | 5 | 7 | 4 | 7 | 16 | 4 |  | 2 | 1 |  | **79** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-130
+# Review packet — BFQ-130 (PR #8758)
 
 **BF-130 - on #8758, a treatments batch can answer 200 and lose an item that
 lands on a string-stored copy**
@@ -21,7 +21,7 @@ lands on a string-stored copy**
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes-2` |
 | base | `official/bf/object-id-crud@ab7b22d6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-130` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-130` is the measurement |
 | semver | `patch` |
 | register entries | `BF-130` |
 
@@ -41,12 +41,13 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud`** &nbsp;·&nbsp; kind: `static`
 
-wip/object-id-crud-fixes-2 is a fast-forward of #8758's head ab7b22d6, so the
-push is to bf/object-id-crud with no rebase.
+The fixes (e9dbb1fb) are on #8758's pushed branch (f1e8398b, 2026-09-25,
+e9dbb1fb merged with 25f5ea21). Containment, not freshness: it stays green
+after #8758 merges.
 
-**`git -C externals/cgm-remote-monitor-official grep -q "opItem" wip/object-id-crud-fixes-2 -- lib/server/treatme`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatme`** &nbsp;·&nbsp; kind: `static`
 
 The fix (6c3ccce6) is on the branch. A presence check only; its control is the
 same grep on origin/bf/object-id-crud, which fails until the push.
@@ -73,7 +74,9 @@ request. New in #8758 and a silent 200 drop, so it is a candidate to fold into
 #8758 before the tag, like BF-115 to BF-117; the reach is narrow. The food and
 activity batch paths use the same trailing delete and should be checked for
 the same shape. Fixed 2026-09-25 as 6c3ccce6 on wip/object-id-crud-fixes-2 at
-the maintainer's request ("fix BF-130 first so I push once").
+the maintainer's request ("fix BF-130 first so I push once"). Pushed to #8758
+2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree
+cf590474; CI 13 of 13 jobs green on that head.
 
 ---
 

@@ -36,6 +36,11 @@ that it was reviewed.
 |---|---|---|---|
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | #8568 |
+| `BFQ-115` | `in-flight-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | #8758 |
+| `BFQ-116` | `in-flight-upstream` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | #8758 |
+| `BFQ-117` | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | #8758 |
+| `BFQ-130` | `in-flight-upstream` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | #8758 |
+| `BFQ-131` | `in-flight-upstream` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | #8758 |
 | `RT-PR-8419` | `in-flight-upstream` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | #8419 |
 | `RT-PR-8730` | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 | #8730 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -47,13 +52,8 @@ that it was reviewed.
 | `BFQ-111` | `ready-to-push` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and b | &mdash; |
 | `BFQ-112` | `ready-to-push` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot | &mdash; |
 | `BFQ-113` | `ready-to-push` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers w | &mdash; |
-| `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
-| `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
-| `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
 | `BFQ-120` | `ready-to-push` | BF-120 - the clock view shows an old reading as current when its data fetch fail | &mdash; |
 | `BFQ-126` | `ready-to-push` | BF-126 - an authorization subject without a name ends the server at every boot ( | &mdash; |
-| `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
-| `BFQ-131` | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
@@ -93,6 +93,11 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8568** | `BFQ-114` | `fix-loop-status-timeline` | BF-114 - an AAPS open-ended loop disable keeps loop and pump | Maintainer |
 | **#8730** | `RT-PR-8730` | `crowdin_incoming` | #8730 - Crowdin translation updates, carried into 15.0.9 | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
+| **#8758** | `BFQ-115` | `wip/object-id-crud-fixes-2` | BF-115 - an entry or treatment with an unusable _id is store | Maintainer |
+| **#8758** | `BFQ-116` | `wip/object-id-crud-fixes-2` | BF-116 - on #8758, a devicestatus re-send answers 500 and lo | Maintainer |
+| **#8758** | `BFQ-117` | `wip/object-id-crud-fixes-2` | BF-117 - an API v3 DELETE of a record stored twice leaves on | Maintainer |
+| **#8758** | `BFQ-130` | `wip/object-id-crud-fixes-2` | BF-130 - on #8758, a treatments batch can answer 200 and los | Maintainer |
+| **#8758** | `BFQ-131` | `wip/object-id-crud-fixes-2` | BF-131 - on #8758, a record deleted by _id stays in the in-m | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
