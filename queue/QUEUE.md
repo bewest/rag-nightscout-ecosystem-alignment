@@ -43,10 +43,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
-| `gate-not-met` | 14 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8419, RT-PR-8730 |
+| `gate-not-met` | 13 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-134 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `merged-upstream` | 56 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126, BFQ-130, BFQ-131 |
+| `merged-upstream` | 57 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126, BFQ-130, BFQ-131 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -1029,7 +1029,7 @@ that costs.
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
-| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `gate-not-met` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
+| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `merged-upstream` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `merged-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -1681,7 +1681,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `extend-api-tests` |
 | base | `origin/dev@4f705217` |
@@ -1697,15 +1697,15 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8419 >/dev/null`
-  - #8419's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8419/head:refs/triage/pr-8419` first.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 origin/dev`
+  - #8419's merge 96a2c948 (2026-09-25) is contained in origin/dev.
 - **NO GATE** &mdash; tests/loopnotifications.test.js: 9 passing in the triage (Node version not recorded); in the 2026-09-25 pre-flight its after-all hook times out on Node 20 and 22. No queue gate runs mocha.
 
 **Evidence.**
 
 - `docs/60-research/remedial/github-triage-2026-09-25.md`
 
-**Notes.** 2026-09-25 - FIX READY: pr8419-hook-cleanup e0245857 (+ dev merge 662b12fe, local) makes the fake APNs server destroy its open sessions before close; tests/loopnotifications.test.js 9 passing on Node 20.20.0, 22.23.2 and 24.20.0 (3 runs each before the dev merge, 1 each after). The root cause is BF-134 in lib/server/loop.js. Push to je-l's extend-api-tests (maintainer edits allowed), then merge #8419 BEFORE BF-134's branch, which conflicts on tests/loop-server.test.js (deleted by #8419; resolve by deletion). 2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on 24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an APNs client session left open (not verified). Test-only; a follow-up commit that closes it, or dropping #8419 from 15.0.9, is the maintainer's call. Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
+**Notes.** 2026-09-25 - MERGED into dev as 96a2c948 (#8419, head 8cffc05e = je-l's tests + the hook cleanup, pushed to their branch by the maintainer). Not released; in 15.0.9. 2026-09-25 - FIX READY: pr8419-hook-cleanup e0245857 (+ dev merge 662b12fe, local) makes the fake APNs server destroy its open sessions before close; tests/loopnotifications.test.js 9 passing on Node 20.20.0, 22.23.2 and 24.20.0 (3 runs each before the dev merge, 1 each after). The root cause is BF-134 in lib/server/loop.js. Push to je-l's extend-api-tests (maintainer edits allowed), then merge #8419 BEFORE BF-134's branch, which conflicts on tests/loop-server.test.js (deleted by #8419; resolve by deletion). 2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on 24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an APNs client session left open (not verified). Test-only; a follow-up commit that closes it, or dropping #8419 from 15.0.9, is the maintainer's call. Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
 
 ### `RT-PR-8530` &mdash; #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9
 
@@ -4265,7 +4265,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/loop-apns-shutdown` |
-| base | `origin/dev@fbaa4a2a` |
+| base | `origin/dev@96a2c948` |
 | worktree | `externals/work/crm-bf134-apns-shutdown` |
 | semver | `patch` |
 | review | maintainer |
@@ -4289,7 +4289,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-09-25, found from #8419's test hang. Fixed on bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763, local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43). Whether it goes into 15.0.9 is the maintainer's decision.
+**Notes.** 2026-09-25 - Re-merged with dev 96a2c948 after #8419 (68937a77: the tests/loop-server.test.js conflict resolved by deletion; #8419's loopnotifications mock already has shutdown()), plus c068f935 (the new test reads certificates from tests/fixtures/, where #8419 moved them). Head c068f935: 12 passing on Node 20/22/24 for the two loop test files; the 3 new tests fail with dev's loop.js; probe exit 0; full suite 3170/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25, found from #8419's test hang. Fixed on bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763, local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43). Whether it goes into 15.0.9 is the maintainer's decision.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 

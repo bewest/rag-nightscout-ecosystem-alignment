@@ -20,7 +20,7 @@ timer open**
 |---|---|
 | repository | `cgm-remote-monitor` |
 | branch | `bf/loop-apns-shutdown` |
-| base | `origin/dev@fbaa4a2a` |
+| base | `origin/dev@96a2c948` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-134` is the measurement |
 | semver | `patch` |
 | register entries | `BF-134` |
@@ -76,10 +76,16 @@ it at origin/dev once merged.
 
 ## Notes carried on the item
 
-Filed 2026-09-25, found from #8419's test hang. Fixed on bf/loop-apns-shutdown
-8046336d, re-merged with dev fbaa4a2a (da2f1763, local). Full suite 3120/0/3
-vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43). Whether it goes into 15.0.9 is
-the maintainer's decision.
+2026-09-25 - Re-merged with dev 96a2c948 after #8419 (68937a77: the
+tests/loop-server.test.js conflict resolved by deletion; #8419's
+loopnotifications mock already has shutdown()), plus c068f935 (the new test
+reads certificates from tests/fixtures/, where #8419 moved them). Head
+c068f935: 12 passing on Node 20/22/24 for the two loop test files; the 3 new
+tests fail with dev's loop.js; probe exit 0; full suite 3170/3/0, Node
+22.23.2, MongoDB 7.0.43. Filed 2026-09-25, found from #8419's test hang. Fixed
+on bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763,
+local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43).
+Whether it goes into 15.0.9 is the maintainer's decision.
 
 ---
 

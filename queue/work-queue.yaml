@@ -8935,7 +8935,7 @@ items:
     repo: cgm-remote-monitor
     branch: extend-api-tests
     base: origin/dev@4f705217
-    state: gate-not-met
+    state: merged-upstream
     pr: [8419]
     blast_radius: >
       Tests only, 9 files: moves the APNs test certificates to tests/fixtures/,
@@ -8948,12 +8948,10 @@ items:
     semver_reason: tests only
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8419 >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 origin/dev
         kind: static
         describe: >
-          #8419's head merges into origin/dev without conflict. Needs
-          `git -C externals/cgm-remote-monitor-official fetch official
-          pull/8419/head:refs/triage/pr-8419` first.
+          #8419's merge 96a2c948 (2026-09-25) is contained in origin/dev.
       - no-gate: >
           tests/loopnotifications.test.js: 9 passing in the triage (Node
           version not recorded); in the 2026-09-25 pre-flight its after-all
@@ -8962,6 +8960,9 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-09-25 - MERGED into dev as 96a2c948 (#8419, head 8cffc05e = je-l's
+      tests + the hook cleanup, pushed to their branch by the maintainer).
+      Not released; in 15.0.9.
       2026-09-25 - FIX READY: pr8419-hook-cleanup e0245857 (+ dev merge 662b12fe,
       local) makes the fake APNs server destroy its open sessions before close;
       tests/loopnotifications.test.js 9 passing on Node 20.20.0, 22.23.2 and
@@ -9698,7 +9699,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/loop-apns-shutdown
-    base: origin/dev@fbaa4a2a
+    base: origin/dev@96a2c948
     worktree: externals/work/crm-bf134-apns-shutdown
     state: ready-to-push
     pr: []
@@ -9735,6 +9736,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-09-25 - Re-merged with dev 96a2c948 after #8419 (68937a77: the
+      tests/loop-server.test.js conflict resolved by deletion; #8419's
+      loopnotifications mock already has shutdown()), plus c068f935 (the new
+      test reads certificates from tests/fixtures/, where #8419 moved them).
+      Head c068f935: 12 passing on Node 20/22/24 for the two loop test files;
+      the 3 new tests fail with dev's loop.js; probe exit 0; full suite
+      3170/3/0, Node 22.23.2, MongoDB 7.0.43.
       Filed 2026-09-25, found from #8419's test hang. Fixed on
       bf/loop-apns-shutdown 8046336d, re-merged with dev fbaa4a2a (da2f1763,
       local). Full suite 3120/0/3 vs dev 3117/0/3 (Node 22.23.2, MongoDB 7.0.43).

@@ -183,7 +183,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  | 16 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 6 |  | 5 | 8 | 1 |  |  |  | 1 | **27** |
+| `release-train` | 5 | 1 | 5 |  | 5 | 9 | 1 |  |  |  | 1 | **27** |
 | `register-open` | 33 | 1 | 5 | 1 | 4 | 30 | 4 |  | 2 | 1 |  | **81** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
