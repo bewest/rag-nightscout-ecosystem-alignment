@@ -75,6 +75,7 @@ const note = (m) => fs.appendFileSync(path.join(RUN, 'traffic.log'), new Date().
 const md5 = (s) => crypto.createHash('md5').update(s).digest('hex');
 const hexId = (k) => md5('id:' + k).slice(0, 24);
 const uuid = (k) => { const h = md5('uuid:' + k); return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`; };
+const DUMP_TICKS = new Set((process.env.DUMP_TICKS || '').split(',').filter(Boolean).map(Number)); // debugging: raw replies at these ticks
 const CLIENT_IDS = new Set(); // hex _id and identifiers the client chose; kept when normalising
 const num = (k, lo, hi, dp) => { const x = parseInt(md5('n:' + k).slice(0, 8), 16) / 0xffffffff; return Number((lo + x * (hi - lo)).toFixed(dp || 0)); };
 
@@ -213,6 +214,7 @@ async function op (label, spec, opts) {
   opts = opts || {};
   const specs = await Promise.all(ARMS.map((arm) => spec(arm)));
   const rs = await Promise.all(ARMS.map((arm, i) => specs[i] ? req(arm, specs[i].method, specs[i].path, specs[i].body, specs[i].headers) : null));
+  if (DUMP_TICKS.has(tickN)) out('dump.jsonl', { t: new Date().toISOString(), n: tickN, label, r: rs.map((r) => r ? { st: r.st, body: r.j !== undefined ? r.j : r.text.slice(0, 2000) } : null) });
   let sig = opts.compare === false ? null : compare(label, rs);
   if (sig && KEYS_ONLY.test(label) && !opts.write) {
     // these answers come from each server's in-memory copy of the data, which reloads a
@@ -432,6 +434,10 @@ async function reads (n, sub) {
   await get('loopfollow.treatments6h', (arm) => '/api/v1/treatments.json?find[created_at][$gte]=' + iso(now - 6 * 3600000) + '&' + tok(arm));
   await get('nightguard.entries2h', (arm) => '/api/v1/entries.json?find[date][$gt]=' + (now - 2 * 3600000) + '&count=40&' + tok(arm));
   await get('follower.treatments.count50', (arm) => '/api/v1/treatments.json?count=50&' + tok(arm));
+  // the same reads authenticated by header, as uploaders send them: with `count` the only query
+  // parameter, treatments and devicestatus reads are answered from the in-memory copy
+  await op('uploader.treatments.count50', (arm) => ({ method: 'GET', path: '/api/v1/treatments.json?count=50', headers: SEC(arm) }));
+  await op('uploader.devicestatus.count10', (arm) => ({ method: 'GET', path: '/api/v1/devicestatus.json?count=10', headers: SEC(arm) }));
   if (sub === 0) {
     if (n % 12 === 0) await get('loopfollow.profile.current', (arm) => '/api/v1/profile/current.json?' + tok(arm));
     if (n % 3 === 0) await get('nightguard.properties', (arm) => '/api/v2/properties?' + tok(arm));
@@ -466,7 +472,7 @@ process.on('SIGINT', () => stop('SIGINT'));
   for (const arm of ARMS) await subjects(arm);
   for (const arm of ARMS) { followerSocket(arm); await editorSocket(arm); }
   note(`start mode=${REAL ? 'realtime' : 'compressed'} ticks=${N} realTickMs=${Math.round(REAL_TICK)} simStart=${iso(simStart)} simEnd=${iso(simAt(N - 1))} arms=${ARMS.map((a) => a.name + '@' + a.base).join(',')}`);
-  fs.writeFileSync(path.join(RUN, 'traffic.json'), JSON.stringify({ harness: 3, mode: REAL ? 'realtime' : 'compressed', ticks: N, realTickMs: REAL_TICK, followPerTick: FOLLOW, realStart: iso(realStart), simStart: iso(simStart), simEnd: iso(simAt(N - 1)), arms: ARMS.map((a) => ({ name: a.name, base: a.base, sock: a.sock })) }, null, 1));
+  fs.writeFileSync(path.join(RUN, 'traffic.json'), JSON.stringify({ harness: 4, mode: REAL ? 'realtime' : 'compressed', ticks: N, realTickMs: REAL_TICK, followPerTick: FOLLOW, realStart: iso(realStart), simStart: iso(simStart), simEnd: iso(simAt(N - 1)), arms: ARMS.map((a) => ({ name: a.name, base: a.base, sock: a.sock })) }, null, 1));
   let late = 0;
   for (let n = 0; n < N && !stopping; n++) {
     tickN = n;

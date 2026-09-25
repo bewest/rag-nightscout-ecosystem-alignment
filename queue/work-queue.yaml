@@ -10251,7 +10251,7 @@ items:
           The 24-72 h real-time soak (lab.sh soak --hours 72, then lab.sh
           analyze <run>, exit 0) needs a machine held for days by a person; its
           gate is that analyze on the soak's run directory.
-    blocks_on: [BFQ-131]
+    blocks_on: []
     evidence:
       - tools/lab/rc-soak/README.md
       - tools/lab/rc-soak/results/proof-2026-09-25.md
@@ -10266,6 +10266,51 @@ items:
       stopped, while the heap check passed. The long soak runs on the
       release candidate once the merge with #8568, #8419, #8530 and #8730 is
       built.
+      2026-09-25 re-runs against e9dbb1fb (harness 4, which adds header-
+      authenticated treatments and devicestatus reads that the cache
+      serves): R9 and R13 (48 h) PASS with 0 findings; R10 (72 h with mongo
+      and server restarts) has 2 findings, both harness artefacts, handled
+      by analyzer rules; R16 (restarts and a 30 s mongo outage) PASS;
+      control R11 against ab7b22d6 FAIL with the BF-131 findings; R12
+      against dev 4f705217 PASS. CANDIDATE-2 is BF-133 (15.0.8 behaviour).
+      Every A/B difference on e9dbb1fb is an expected 15.0.9 change or one
+      of the two release-notes gaps above. Next: the 24-72 h soak on the
+      release candidate once it is green.
+  - id: BFQ-133
+    title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@ecb63223
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/cob.js fromTreatments (the lastCarbs choice);
+      tests/cob.test.js.
+    review: maintainer
+    operator_visible: >
+      The last-carbs line under the carbs-on-board (COB) pill can show an
+      older carb entry than your newest one, for example after you edit an
+      older entry. The COB number itself is not affected. Check your
+      treatment list for the time of your last carbs.
+    semver: patch
+    semver_reason: a display detail names the newest carb entry
+    register: [BF-133]
+    gates:
+      - no-gate: >
+          Not started. Seen 2026-09-25 in the rc-soak (raw /api/v2/properties
+          dumps, ticks 45 to 63) on 15.0.8, dev 4f705217, ab7b22d6 and e9dbb1fb.
+          A unit test on cob.fromTreatments with an out-of-order carb list would
+          be the gate.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/rc-soak/results/proof-2026-09-25.md
+    notes: >
+      Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be
+      15.0.8 behaviour, not a 15.0.9 regression. Not for 15.0.9 unless the
+      maintainer wants it; the fix is small.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

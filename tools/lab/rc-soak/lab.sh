@@ -179,7 +179,7 @@ traffic () { # traffic <run> [opts]
   rm -f "$RUN/pid-traffic" "$RUN/pid-sampler"
   env RUN="$RUN" ARMS="$arms_s" MODULES="$ARM_A_DIR/node_modules" INTERVAL_SEC="$si" \
     setsid nohup n exec "$NODE_VER" node "$HERE/sampler.js" < /dev/null > "$RUN/sampler.log" 2>&1 &
-  env RUN="$RUN" ARMS="$arms_t" MODULES="$ARM_A_DIR/node_modules" "${mode[@]}" \
+  env RUN="$RUN" ARMS="$arms_t" MODULES="$ARM_A_DIR/node_modules" DUMP_TICKS="${DUMP_TICKS:-}" "${mode[@]}" \
     setsid nohup n exec "$NODE_VER" node "$HERE/traffic.js" < /dev/null > "$RUN/traffic.out" 2>&1 &
   for _ in $(seq 1 30); do [ -s "$RUN/pid-traffic" ] && [ -s "$RUN/pid-sampler" ] && break; sleep 0.5; done  # each writes its own PID
   is_ours "$(cat "$RUN/pid-traffic")" traffic.js || { cat "$RUN/traffic.out"; die "traffic did not start"; }

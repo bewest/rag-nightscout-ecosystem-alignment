@@ -25,6 +25,18 @@ release candidate.
 shapes follow the client surveys in `tools/lab/object-id/probes.js` and
 `reports/consumer-impact-15.0.9/lab-results.md`.
 
+## Builds (2026-09-25)
+
+| arm | build | worktree |
+|---|---|---|
+| A | 15.0.8 = origin/master 92d08342 | `externals/work/crm-6a-soak-a` |
+| B, current candidate | e9dbb1fb on `wip/object-id-crud-fixes-2`: #8758 head ab7b22d6 plus six fix commits (BF-115, BF-116, BF-117, review fixes, BF-130, BF-131); tree ea4c4852 | `externals/work/crm-6a-soak-b2` (`ARM_B_DIR=$PWD/externals/work/crm-6a-soak-b2`) |
+| B, earlier candidate | ab7b22d6 (origin/dev 4f705217 + #8758); kept as the control for BF-131 | `externals/work/crm-6a-soak-b` (the default `ARM_B_DIR`) |
+
+The default `ARM_B_DIR` still points at ab7b22d6, so a plain `lab.sh run` reproduces the
+BF-131 control. To soak the current candidate, set `ARM_B_DIR` to the `crm-6a-soak-b2`
+worktree. Results: `results/proof-2026-09-25.md`.
+
 ## Before the first run
 
 - Two cgm-remote-monitor worktrees with `npm ci` done, by default
@@ -109,7 +121,7 @@ either build's ids.
 | GluPredKit | `count=0` with two-sided date windows on treatments, `entries/sgv.json` (`dateString`), profile, devicestatus; `count=0` with no window |
 | web page | a socket.io client that authorizes with a JWT and records every `dataUpdate`; an editor socket that sends `dbUpdate` and `dbRemove`; every hour of simulated time (and at the end) a "page load": a new socket per arm records the full `dataUpdate` a newly opened page is sent |
 | careportal | v1 `PUT` and `DELETE` of treatments by `_id`, v1 `DELETE` of an entry and of a devicestatus, each using the `_id` that arm's own reply gave |
-| other followers | `treatments.json?count=50` with no filter (a read the server may answer from memory) |
+| other followers | `treatments.json?count=50&token=…` (a follower); the same read and `devicestatus.json?count=10` authenticated by header, as an uploader sends them. A v1 treatments or devicestatus read is answered from the in-memory copy only when `count` is its only query parameter, so only the header form exercises that path; an entries read ignores `token` when choosing |
 | Loop caregiver | `POST /api/v2/notifications/loop` (no Apple push key is configured, so both arms answer 500; allowed in `expected-diffs.json`) |
 
 ## Reading the result
@@ -131,12 +143,12 @@ for the parity check.
 | http | any 5xx not in the allow list; any request with no HTTP answer outside a disturbance |
 | responses | any difference between the arms' normalised replies (ids the server chose, `srvModified`, `srvCreated`, `lastModified` removed; status, `/api/v2/properties` and `/api/v3/lastModified` compared by key set) that `expected-diffs.json` does not tie to a release-notes section. In an A/A run every difference is a finding. A key-set difference is asked again 3 s later; if it then matches it is counted as transient (the server's in-memory copy reloads a moment after a write), and more than 5% transient for one label is a finding. Differences inside a disturbance window are counted, not judged |
 | ledger | a write an arm acknowledged (2xx) that is not in that arm's database; a delete it acknowledged that left the record; a v3 delete not marked `isValid: false`; a write one arm acknowledged and the other did not |
-| parity | after normalising server-chosen ids and timestamps, any record in one arm's database and not the other's, any `soakKey` stored a different number of times, or any field that differs |
+| parity | after normalising server-chosen ids and timestamps, any record in one arm's database and not the other's, any `soakKey` stored a different number of times, or any field that differs. One exception, reported under expected differences: a record stored a different number of times whose every acknowledgement fell inside a disturbance window (a request that reached one server just before it stopped, whose reply was lost, and which the driver then re-sent, as an uploader would) |
 | memory | over the last 75% of the longest process lifetime, one arm's heap minima (lowest heap per window, so garbage collection timing drops out) grow more than 25 MB beyond the other arm's, or its RSS minima more than 100 MB. Only evaluated when each process lived at least 20 minutes |
 | event loop | one arm's event-loop delay p99 more than twice the other's plus 50 ms |
 | latency | for a label with at least 50 requests, one arm's p95 more than twice the other's plus 20 ms |
 | socket | an acknowledged reading inside the web page's 48-hour window that never arrived in a `dataUpdate`; a follower disconnect outside a disturbance |
-| page load | a record the arm acknowledged deleting (more than 5 s earlier) still in the data a newly opened page is sent; the two arms' page loads at the same tick holding different records; a page load with no `dataUpdate` |
+| page load | a record the arm acknowledged deleting (more than 5 s earlier) still in the data a newly opened page is sent; the two arms' page loads at the same tick holding different records (a record acknowledged less than 10 s before the load is not compared: the in-memory reload is asynchronous); a page load with no `dataUpdate` |
 
 **PASS** means none of the above. The report also lists the expected differences it saw, each
 with its release-notes section, and flags any that are promised only by a decision record and
@@ -175,7 +187,13 @@ operation: label, per arm status, ms, error, deprecation header, difference sign
 `diffs.jsonl` (first three normalised bodies per signature), `ledger.jsonl` (acknowledged writes
 per arm), `socket-<arm>.jsonl`, `samples.jsonl`, `metrics-<arm>.jsonl`, `server-<arm>.log`,
 `pageload-<arm>.jsonl`, `disturb.jsonl`, `analysis.json`, `analysis.txt`, `secrets/` (never share).
-`traffic.json` carries `harness` (currently 2); page loads are only required from harness 2 on.
+`diffs-values.jsonl` keeps, for the first 5 occurrences of each key-set difference (status,
+`/api/v2/properties`, `/api/v3/lastModified`), the values under each differing top-level key, so
+the difference can be read. `DUMP_TICKS=57,60 lab.sh run …` writes both arms' raw replies for
+every operation at those ticks to `dump.jsonl` (debugging only; large).
+
+`traffic.json` carries `harness` (currently 4: 2 added page loads, 3 `diffs-values.jsonl`, 4 the
+header-authenticated count reads); page loads are only required from harness 2 on.
 
 `<SOAK_STATE>/current` points at the most recent `up`; with several labs at once, use the run
 path `up` prints instead.

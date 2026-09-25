@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 158 |
+| items | 159 |
 | runnable gates | 231 |
-| explicit `no-gate:` markers | 208 |
+| explicit `no-gate:` markers | 209 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 439 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 209 of the 440 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 14 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8419, RT-PR-8730 |
 | `ready-to-push` | 9 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-120, BFQ-126 |
@@ -109,6 +109,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-127** BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
 - **BFQ-128** BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220)
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
+- **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
 
 ---
 
@@ -1839,7 +1840,6 @@ that costs.
 | semver | `n/a` |
 | review | maintainer |
 | register | `BF-131` |
-| blocks on | `BFQ-131` |
 
 **Blast radius.** tools/lab/rc-soak only; runs two local Nightscout processes and two mongo containers on 127.0.0.1.
 
@@ -1859,7 +1859,7 @@ that costs.
 - `tools/lab/rc-soak/README.md`
 - `tools/lab/rc-soak/results/proof-2026-09-25.md`
 
-**Notes.** Built 2026-09-25 for the 15.0.9 freeze (session -6a). The first A/B runs against ab7b22d6 found BF-131. Release-notes gaps it found, to decide: /api/v2/properties cob.treatmentCOB is absent when zero (34e9b2da), and an entries re-send without _id now gets _id in the reply (#8758 decision D3). Open: a cob.lastCarbs notes field seen on the candidate only, once per run. Watch RSS in the long soak: one Node 24 sample showed the candidate at 280 MB against 136 MB after traffic stopped, while the heap check passed. The long soak runs on the release candidate once the merge with #8568, #8419, #8530 and #8730 is built.
+**Notes.** Built 2026-09-25 for the 15.0.9 freeze (session -6a). The first A/B runs against ab7b22d6 found BF-131. Release-notes gaps it found, to decide: /api/v2/properties cob.treatmentCOB is absent when zero (34e9b2da), and an entries re-send without _id now gets _id in the reply (#8758 decision D3). Open: a cob.lastCarbs notes field seen on the candidate only, once per run. Watch RSS in the long soak: one Node 24 sample showed the candidate at 280 MB against 136 MB after traffic stopped, while the heap check passed. The long soak runs on the release candidate once the merge with #8568, #8419, #8530 and #8730 is built. 2026-09-25 re-runs against e9dbb1fb (harness 4, which adds header- authenticated treatments and devicestatus reads that the cache serves): R9 and R13 (48 h) PASS with 0 findings; R10 (72 h with mongo and server restarts) has 2 findings, both harness artefacts, handled by analyzer rules; R16 (restarts and a 30 s mongo outage) PASS; control R11 against ab7b22d6 FAIL with the BF-131 findings; R12 against dev 4f705217 PASS. CANDIDATE-2 is BF-133 (15.0.8 behaviour). Every A/B difference on e9dbb1fb is an expected 15.0.9 change or one of the two release-notes gaps above. Next: the 24-72 h soak on the release candidate once it is green.
 
 ### `OID-V3-EDIT-MERGE` &mdash; API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does
 
@@ -1926,7 +1926,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 79 items
+`parcel: register-open` &mdash; 80 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2013,6 +2013,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-NE-OPERATOR` | find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `in-flight-upstream` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
+| `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -4603,6 +4604,37 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/rc-soak/probe-deleted-entry.js`
 
 **Notes.** Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK), after runs 011 to 014 of the full suite were green: the suite never read the cache after a delete. Fixed the same day as e9dbb1fb before the push, at the maintainer's request to push once. Safety-visible: a deleted bolus or carbs entry kept being shown on newly opened pages and could count in insulin and carbs on board there. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head.
+
+### `BFQ-133` &mdash; BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@ecb63223` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-133` |
+
+**Blast radius.** lib/plugins/cob.js fromTreatments (the lastCarbs choice); tests/cob.test.js.
+
+**What an operator sees.** The last-carbs line under the carbs-on-board (COB) pill can show an older carb entry than your newest one, for example after you edit an older entry. The COB number itself is not affected. Check your treatment list for the time of your last carbs.
+
+**Why `patch`.** a display detail names the newest carb entry
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Seen 2026-09-25 in the rc-soak (raw /api/v2/properties dumps, ticks 45 to 63) on 15.0.8, dev 4f705217, ab7b22d6 and e9dbb1fb. A unit test on cob.fromTreatments with an out-of-order carb list would be the gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/rc-soak/results/proof-2026-09-25.md`
+
+**Notes.** Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be 15.0.8 behaviour, not a 15.0.9 regression. Not for 15.0.9 unless the maintainer wants it; the fix is small.
 
 ---
 

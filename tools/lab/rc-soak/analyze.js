@@ -233,6 +233,11 @@ function classify (sig) {
       const noKey = { a: A.filter((d) => !d.soakKey).length, b: B.filter((d) => !d.soakKey).length };
       report.parity[c] = { count: { a: A.length, b: B.length }, only_a: onlyA, only_b: onlyB, no_soakKey: noKey, id_form: { a: idForm(A), b: idForm(B) }, kinds };
       for (const [sig, v] of Object.entries(kinds)) {
+        // a write whose reply was lost in a disturbance is re-sent, as an uploader would; if the
+        // first attempt had reached one arm's server, that arm stores it twice. Only keys whose
+        // every acknowledgement fell inside a disturbance window are explained this way.
+        const disturbed = v.keys.length === v.n && v.keys.every((key) => { const ls = ledger.filter((l) => l.coll === c && l.key === key); return ls.length && ls.some((l) => inWindow(l.t)); });
+        if (disturbed && /copies per soakKey|only in/.test(sig)) { expectedSeen.push({ kind: 'parity', sig, n: v.n, why: 'write re-sent after its reply was lost in a disturbance window: ' + v.keys.join(' '), section: 'harness: disturbance' }); continue; }
         const cl = classify(sig);
         if (cl) expectedSeen.push({ kind: 'parity', sig, n: v.n, why: cl.why, section: cl.section });
         else find('parity', `${sig} (x${v.n})`, { keys: v.keys });
@@ -345,16 +350,24 @@ function classify (sig) {
       if (uniq.length) find('pageload', `arm ${arm}: ${uniq.length} records it acknowledged deleting were still sent to a newly opened web page`, { examples: uniq.slice(0, 5).map((x) => `${x.coll} ${x.key} deleted ${x.deleted}, shown ${x.load}`) });
     }
     const byN = (arr) => new Map(arr.filter((p) => !p.error).map((p) => [p.n, p]));
-    const la = byN(loads.a); const lb = byN(loads.b); let differ = 0; const ex = [];
+    const la = byN(loads.a); const lb = byN(loads.b); let differ = 0; let fresh = 0; const ex = [];
+    // a record acknowledged moments before the load may or may not be in that arm's in-memory
+    // data yet (the reload is asynchronous); only records older than FRESH_MS must match
+    const FRESH_MS = 10000;
+    const lastAck = new Map(); for (const l of ledger) { const k = l.coll + '|' + l.key; const t = Date.parse(l.t); if (!(lastAck.get(k) > t)) lastAck.set(k, t); }
+    const simStart0 = Date.parse(traffic.simStart);
+    const keyOf = (f, x) => f === 'sgv' ? 'entries|sgv-' + Math.round((x - simStart0 - 7000) / 300000) : (f === 'tr' ? 'treatments|' : 'devicestatus|') + x;
     for (const [n, pa] of la) {
       const pb = lb.get(n); if (!pb || inWindow(pa.t)) continue;
+      const at = Date.parse(pa.t);
       for (const f of ['sgv', 'tr', 'ds']) {
         const A = new Set(pa[f]); const B = new Set(pb[f]);
-        const oa = [...A].filter((x) => !B.has(x)); const ob = [...B].filter((x) => !A.has(x));
+        const young = (x) => { const t = lastAck.get(keyOf(f, x)); const y = t !== undefined && t > at - FRESH_MS; if (y) fresh += 1; return y; };
+        const oa = [...A].filter((x) => !B.has(x) && !young(x)); const ob = [...B].filter((x) => !A.has(x) && !young(x));
         if (oa.length || ob.length) { differ += 1; if (ex.length < 5) ex.push(`load n=${n} ${f}: only a ${oa.slice(0, 3).join(' ')} | only b ${ob.slice(0, 3).join(' ')}`); }
       }
     }
-    report.pageload.differ_between_arms = differ;
+    report.pageload.differ_between_arms = differ; report.pageload.ignored_just_written = fresh;
     if (differ) find('pageload', `${differ} page-load collections differ between the arms`, { examples: ex });
   }
   report.proxy_drops = {};
@@ -392,7 +405,7 @@ function print (r) {
   for (const [a, s] of Object.entries(r.socket)) L(`${a}: ${s.dataUpdates} dataUpdates, sgv delivered ${s.sgv_delivered}/${s.sgv_eligible}, delay p50 ${s.delay_ms.p50} p95 ${s.delay_ms.p95} max ${s.delay_ms.max} ms, disconnects ${s.disconnects_outside_disturbance}`);
   L('\n## page loads (full dataUpdate sent to a newly opened page)');
   for (const a of ['a', 'b']) if (r.pageload[a]) L(`${a}: ${r.pageload[a].loads} loads, ${r.pageload[a].errors} errors, deleted records shown ${r.pageload[a].deleted_records_shown}`);
-  if (r.pageload.differ_between_arms !== undefined) L(`differ between arms: ${r.pageload.differ_between_arms}`);
+  if (r.pageload.differ_between_arms !== undefined) L(`differ between arms: ${r.pageload.differ_between_arms} (records acknowledged under 10 s before a load are not compared: ${r.pageload.ignored_just_written})`);
   if (Object.keys(r.proxy_drops).length) L(`\nproxy silent drops (fault injection): ${JSON.stringify(r.proxy_drops)}`);
   if (r.expected_seen.length) { L('\n## expected differences seen'); for (const e of r.expected_seen) L(`- ${e.kind}: ${e.sig || e.label}${e.n ? ' x' + e.n : ''} -- ${e.section || ''} ${e.why}`); }
   L(`\n## invalid (${r.invalid.length})`); r.invalid.forEach((x) => L('- ' + x));
