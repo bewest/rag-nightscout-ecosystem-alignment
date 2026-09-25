@@ -38,7 +38,8 @@ While `TRUST_PROXY` is unset, Nightscout logs a `SECURITY:` line at startup sayi
 
 - New and changed tests in `client-ip`, `authdelay`, `authsubjects` and `env`. Each was checked by breaking the code it covers; every break fails on the original symptom.
 - `authdelay` sends the correct secret, and a request with no credential, from the same address as the failures, and expects both to wait; against a check-first order both fail, answered in 3-5 ms.
-- Full suite at `9c6cde72` (the last code change; `b5f61f19` after it changes docs only), Node 24.15.0, MongoDB 7 with a raised open-file limit: **2569 passing**, 3 pending, 0 failing.
+- Full suite at `e549e1a6`, Node 24.15.0, MongoDB 7 with a raised open-file limit: **2570 passing**, 3 pending, 0 failing.
+- The API v3 failed-login key is tested through the trust the v3 app inherits when `lib/server/app.js` mounts it, and the API v3 test fixture now sets that trust as production does.
 - An nginx front end appending `address:port`: with `1` or a list naming it, the address was the front end's before the port change and the client's after; unset resolved the client both times.
 - A local lab put Nightscout behind real proxies (nginx appending and replacing, two nginx hops, Caddy, Traefik, HAProxy, a TLS terminator, and a PROXY-protocol load balancer in front of two nginx hops) and read back the address Nightscout recorded. With the hop count set to the trusted proxy, every topology resolved the real client and ignored forwarded headers the caller sent; one hop too few gave a proxy's address, one too many believed the caller. Unset resolved exactly as `dev`.
 - None of `client-ip`, `authdelay` or `authsubjects` is in `test:unit` or `test:integration`; use `npm test`, as CI does.
