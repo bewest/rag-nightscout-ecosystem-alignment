@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 118 |
-| runnable gates | 191 |
+| runnable gates | 195 |
 | explicit `no-gate:` markers | 160 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 351 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 355 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,11 +43,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 36 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, RT-LOOP-REMOTE-ADDRESS, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 6 | P0-C, P0-J, RT-TRUST-ONE-SOURCE, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 33 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
-| `needs-decision` | 7 | RT-LOOP-REMOTE-ADDRESS, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
@@ -998,7 +998,7 @@ that costs.
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `merged-upstream` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `in-flight-upstream` | `rt/trust-one-source` | patch | 5 run |
-| `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `needs-decision` | `-` | patch | 0 run + 1 no-gate |
+| `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `ready-to-push` | `rt/loop-remote-address` | patch | 4 run + 1 no-gate |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1240,30 +1240,38 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `-` |
-| worktree | `-` |
+| branch | `rt/loop-remote-address` |
+| base | `official/rt/trust-one-source@e3354218` |
+| worktree | `externals/work/crm-loop-remote-address` |
 | semver | `patch` |
 | review | maintainer, and a Loop maintainer for anything that changes the value |
 | blocks on | `RT-TRUST-ONE-SOURCE` |
 
 **Blast radius.** lib/api2/notifications-v2.js:34 (passes req.connection.remoteAddress) and the 'remote-address' field lib/server/loop.js puts in every Loop push (overrides, override cancel, carbs, bolus). Downstream: Loop's NightscoutService decodes the field as a required String on every V1 remote notification, stores it on a remote override's enactTrigger, and uploads it back to Nightscout as the Temporary Override treatment's remoteAddress with enteredBy "Loop (via remote command)" (LoopWorkspace NightscoutService fe075ef, read 2026-09-24).
 
-**What an operator sees.** When a caregiver sends a remote command to Loop through Nightscout (a temporary override, carbs or a bolus), Nightscout tells Loop where the command came from, and Loop saves that on the override it records back in Nightscout. On most hosted sites that "where" is the address of the hosting company's own proxy, not the caregiver's, so it says nothing useful. Nothing about whether a command is accepted depends on it.
+**What an operator sees.** When a caregiver sends a remote command to Loop through Nightscout (a temporary override, carbs or a bolus), Nightscout tells Loop where the command came from, and Loop saves that on the override it records back in Nightscout. On most hosted sites that "where" is the address of the hosting company's own proxy, not the caregiver's, so it says nothing useful. After this change it is the caregiver's address, worked out the same way as everywhere else from your TRUST_PROXY setting. That address is then saved on each remote override in your Nightscout data, where anyone who can read your site's data can see it. Nothing about whether a command is accepted depends on it.
 
-**Why `patch`.** Changes the value of a label in the Loop push payload and in treatments Loop uploads; no API shape changes. Option 3 below keeps the key, which Loop requires.
+**Why `patch`.** Changes the value of a label in the Loop push payload and in treatments Loop uploads; no API shape changes, and the key Loop requires is kept.
 
 **Gates.**
 
-- **NO GATE** &mdash; Needs a decision before any code. The three options, measured by reading on 2026-09-24: (1) LEAVE IT. Behind a proxy the label is the proxy's internal address; direct connections get the real peer. No change anywhere. (2) ROUTE IT THROUGH clientIPFor(env) (RT-TRUST-ONE-SOURCE), so it follows TRUST_PROXY like every other address. Accurate behind a configured proxy; with TRUST_PROXY unset it is whatever X-Forwarded-For says, which the caller controls (the endpoint already requires notifications:loop:push). The cost: the caregiver's real public address is then stored in the treatments collection on every remote override, readable by anyone with read access to the site, including anonymous visitors where AUTH_DEFAULT_ROLES grants reading. (3) STOP SENDING AN ADDRESS: send a fixed label such as "Nightscout" (or the authenticated subject's name). The key must stay a string: Loop's V1 notifications decode remote-address as a required String, so removing it would break every remote command. Needs a Loop maintainer to confirm nothing reads it as an address.
+- `[static]` `! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" rt/loop-remote-address -- lib/api2`
+  - lib/api2 no longer reads the connection's peer as the sender's address; notifications-v2.js uses clientIPFor(env). At e3354218 the same grep matches notifications-v2.js:34 (measured 2026-09-24).
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/rt/trust-one-source rt/loop-remote-address >/dev/null`
+  - trial-merge into the head of #8763 (the stack base) is conflict-free
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/loop-remote-address >/dev/null`
+  - trial-merge into origin/dev is conflict-free (measured at 153e5658)
+- `[unit]` _(cwd: `externals/work/crm-loop-remote-address`)_ `TEST=notifications-v2 npm run test-single`
+  - 48 passing (43 at e3354218). The address Loop receives for TRUST_PROXY unset, 1, a proxy list and false, and through the real lib/api2 app that TRUST_PROXY=false comes from the env it is created with. Break-it at 71987bb4, each reverted, 2026-09-24: the peer address again -> 3 failing (unset, 1, list); lib/api2 not passing env -> the wiring test. Full suite at 71987bb4, Node 24.15.0, MongoDB 7: 2577 passing, 3 pending, 0 failing (2572 at e3354218).
+- **NO GATE** &mdash; Decided 2026-09-24 (maintainer): option 2 of the three recorded here - route the label through clientIPFor(env) so it follows TRUST_PROXY. Not chosen: (1) leave the proxy's address; (3) send a fixed label and no address. The accepted cost: the caregiver's public address is stored on remote overrides in the treatments collection, readable by anyone with read access, including anonymous visitors where AUTH_DEFAULT_ROLES grants reading. With TRUST_PROXY unset it is the forwarded-header address the caller sent (the endpoint requires notifications:loop:push). Loop decodes remote-address as a required String; the value is still a string whenever the request has a socket peer, as before.
 
 **Evidence.**
 
-- `reports/phase0-pr-bodies/rt-trust-one-source.md`
+- `reports/phase0-pr-bodies/rt-loop-remote-address.md`
 
-**Notes.** Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the only client-address read in lib/ that does not go through client-ip.js. Present unchanged on origin/dev 153e5658; introduced with the V2 API in 7f05018d (2023-06-04). req.connection is also a deprecated alias for req.socket. Not for 15.0.9: nothing is broken for anyone, the one fix that makes the value accurate (2) stores more personal data, and (3) needs Loop's side confirmed. If (2) or (3) is chosen, it is one line in notifications-v2.js plus a test, stacked on #8763 or on dev after it.
+**Notes.** Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the only client-address read in lib/ that does not go through client-ip.js. Present unchanged on origin/dev 153e5658; introduced with the V2 API in 7f05018d (2023-06-04). req.connection is also a deprecated alias for req.socket. Not for 15.0.9: nothing is broken for anyone and the change stores more personal data. Committed as 71987bb4 on rt/loop-remote-address, stacked on #8763's head; open it against rt/trust-one-source and retarget with the stack. Not pushed.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
