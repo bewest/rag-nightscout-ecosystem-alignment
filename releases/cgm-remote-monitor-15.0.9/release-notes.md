@@ -3,13 +3,6 @@
 **DRAFT — not yet released. Prepared for maintainer review; the wording may change.**
 **The version number is settled: 15.0.9.**
 
-<!-- PENDING: #8754 merge. PR #8754 (bf2/auth-hardening) is open, and dev has none of it. Besides the
-     sections wrapped in "PENDING: #8754 merge" markers below, these list items depend on it and must
-     go if it does not ship: "Before you upgrade" items 2 and 3; "Security fixes" items 6 and 7; the
-     TRUST_PROXY and plain-text token items under "What you must do", "What to check afterwards"
-     and "Known issues"; and the user-field mentions in "Before you upgrade" item 5 and "About the
-     version number". Checked against official/dev 153e5658, 2026-09-24. -->
-
 *For people who run a Nightscout site for themselves or a family member. Nightscout is not a
 medical device, and nothing in these notes is medical advice or advice about insulin doses.
 Where a change could affect decisions about your therapy, talk it through with your care team.*
@@ -173,7 +166,6 @@ this release is the one that makes the live-update connection respect it. If you
 `TREATMENTS_AUTH=off`, read the new warning and decide whether you still want it. If you have
 ever edited a user on the admin page, read the token section below.
 
-<!-- PENDING: #8754 merge -->
 ### The new `TRUST_PROXY` setting
 
 Nightscout counts failed logins per visitor address, and per password or token tried. Today it
@@ -228,7 +220,6 @@ configuration guide with more detail.
 
 No release has been chosen in which the default will change; until one is, unset is a permanent,
 supported choice.
-<!-- PENDING: #8754 merge -->
 
 ---
 
@@ -293,7 +284,6 @@ error or a silently empty answer. A survey of 14 Nightscout apps found none that
 condition. One condition that used to work is now refused: `$expr` on the profiles address. An
 undocumented `pipeline` option on the counting addresses is also refused.
 
-<!-- PENDING: #8754 merge -->
 ### Fields stored on users and roles
 
 When a user or role is created or saved, Nightscout now stores only these fields:
@@ -305,7 +295,6 @@ When a user or role is created or saved, Nightscout now stores only these fields
 user or role is saved, and is not stored when one is created. No open-source tool that stores
 other fields was found. If you use a tool that manages users on your site, check it still works
 after the upgrade.
-<!-- PENDING: #8754 merge -->
 
 ---
 
@@ -552,7 +541,6 @@ For a filter asking whether a value is present, only `true`, `false`, `1` and `0
 understood. Other spellings, such as `null` or leaving the value empty, still mean "has the
 value".
 
-<!-- PENDING: #8754 merge -->
 ### Editing a user on the admin page keeps its notes and creation date
 
 On earlier releases, opening a user on the admin page and saving it — for example to give it another
@@ -560,7 +548,6 @@ role — wiped that user's notes and replaced the date it was created with the d
 with no warning. Both are now kept, for users and for roles. You can still clear the notes on
 purpose by emptying the notes box and saving. Notes and dates already lost to earlier edits
 cannot be recovered.
-<!-- PENDING: #8754 merge -->
 
 
 ### Pages that would not load
@@ -730,7 +717,6 @@ software library updates.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
 
-<!-- PENDING: #8754 merge -->
 ### Access tokens stored in plain text
 
 An **access token** is the password-like string that lets a person or an app use your
@@ -772,7 +758,6 @@ retire. If you can look inside your database, a user is affected if its record i
 paste a token or your `API_SECRET` into an issue, forum post, screenshot or chat** — those
 values are the credential itself. Treat any database backup or export as containing working
 credentials.
-<!-- PENDING: #8754 merge -->
 
 
 ## About the version number

@@ -1,13 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete these five lines when the tag is
-cut. Still pending: #8754 (head e549e1a6, then a combined run)
-and #8758 (head 6d120fa2). Replace their heads below with their
-merge SHAs into dev, and re-measure the counts
+cut. Still pending: #8758 (head 6d120fa2). Replace its head below
+with its merge SHA into dev, and re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>).
 
-15.0.8..dev at 153e5658: 61 first-parent PR merges, 350 commits,
-212 files, +16002/-1300. #8754 and #8758 are not yet included.
+15.0.8..dev at 4f705217: 62 first-parent PR merges, 384 commits,
+226 files, +18167/-1403. #8758 is not yet included.
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -35,7 +34,7 @@ Security
   #8746 74fc6619  readable-by-world notice on role membership (BF-77)
   #8751 4011193e  backports from #8605: alarm-socket credential
                   logging; per-collection read on two shared routes
-  #8754 e549e1a6  (pending) admin subject edit
+  #8754 4f705217  admin subject edit
                   no longer stores the access token (BF-17); failed-auth
                   wait before the credential check, counted per address
                   and per credential, list bounded and swept (BF-30);
@@ -43,7 +42,10 @@ Security
                   (BF-88), explicit settings accept forwarded addresses
                   with a port (Azure App Service); subject and role
                   field allow-list, save keeps notes and created_at
-                  (BF-47, declared correction)
+                  (BF-47, declared correction); every client address
+                  from one TRUST_PROXY policy (#8763); the Loop
+                  remote-command sender address follows TRUST_PROXY
+                  and is stored on remote overrides (#8764 #8765)
   #8583 4f6151d7  Loop remote-command errors without diagnostics
 
 Alarms and client
@@ -120,7 +122,9 @@ and updates ignore count; refused query operators return 400; subject
 and role fields outside the allow-list are not stored; filters return
 different (correct) rows; _ no longer becomes a space in query
 parameters; voice endpoints ignore request locale; new TRUST_PROXY
-setting, unset = previous behaviour, with a boot message; MongoDB 4.4
+setting, unset = previous behaviour, with a boot message; Loop remote
+commands record the sender's address as TRUST_PROXY resolves it, stored
+with each remote override; MongoDB 4.4
 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 

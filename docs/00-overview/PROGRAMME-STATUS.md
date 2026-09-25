@@ -21,24 +21,26 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 87 | 28 | 16 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 87 | 28 | 14 |
 | **Modernization** | `release-train` | 21 | 3 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **128** | **40** | **20** |
+| | **total** | **128** | **40** | **18** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. Twenty-six pull requests
+**Remedial** — finding and fixing defects that already ship. Twenty-seven pull requests
 from this work are merged into cgm-remote-monitor `dev`: this programme's #8733, #8734,
 #8735, #8736, #8737, #8738, #8739, #8740 and #8743 (2026-09-17 to 2026-09-20), the three
 advisory fixes #8744, #8745 and #8746 (2026-09-21), #8741 from an external contributor
 (2026-09-20), eleven of the thirteen 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
-#8760, 2026-09-23), and #8761 and #8762 (2026-09-24). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
-the security review) and #8758 (records keep their own `_id`). Every programme connector fix is
+#8760, 2026-09-23), #8761 and #8762, and #8754 (login security fixes and `TRUST_PROXY`, with #8763
+and #8765 folded in; merged as `4f705217`), all 2026-09-24. None is released. Open: #8758 (records
+keep their own `_id`). Every programme connector fix is
 in `nightscout-connect` `0.1.0`, released to npm `latest` on 2026-09-24 (`P0-TAG`, tag `v0.1.0` on
 connector `main` `4dde1ec`). Nightscout `dev` pins it exactly (#8762), and `dev` plus the pin, #8754
-and #8758 passes 3046/0/3 on every Node and MongoDB pair
-([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)). The
+and #8758 passed 3046/0/3 on every Node and MongoDB pair with #8754 at `ef3404fd`
+([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)); `dev` `4f705217` on its own
+passes 2577/0/3 on Node 20, 22 and 24 against MongoDB 7.0.43 and in CI. The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
 
@@ -162,7 +164,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  | 1 | 1 |  | 2 | 14 |  | 1 |  |  |  | **22** |
+| `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
 | `release-train` | 3 |  | 4 |  | 5 |  | 7 | 1 |  |  |  | 1 | **21** |
 | `register-open` | 18 | 1 | 5 | 5 | 4 | 2 | 13 | 4 |  | 2 | 1 |  | **55** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |

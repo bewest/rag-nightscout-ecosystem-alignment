@@ -30,12 +30,11 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 15 items
+### Maintainer &mdash; 14 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
-| `P0-J` | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default | #8754 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -50,13 +49,6 @@ that it was reviewed.
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 
-### SECURITY reviewer &mdash; 2 items
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `P0-C` | `in-flight-upstream` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | #8754 |
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-
 ### Maintainer + a second human &mdash; 2 items
 
 | id | claimed state | what it is | PR |
@@ -70,6 +62,12 @@ that it was reviewed.
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
+### SECURITY reviewer &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+
 <!-- END GENERATED: needs-a-human -->
 
 ---
@@ -82,26 +80,26 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8754** | `P0-C` | `bf/auth` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | SECURITY reviewer |
-| **#8754** | `P0-J` | `bf/throttle` | bf/throttle - BF-30, failed-auth throttling, compatibility d | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
-Twenty-six cgm-remote-monitor pull requests from this work are merged into `dev` and none is
+Twenty-seven cgm-remote-monitor pull requests from this work are merged into `dev` and none is
 released:
 - the thirteen backfix PRs (twelve from this programme, plus #8741 from an external contributor);
 - eleven of the thirteen 15.0.9 additions (#8748, #8749, #8750, #8751, #8752, #8753, #8755, #8756,
   #8757, #8759, #8760);
 - #8761 (the count shapes oref0 and GluPredKit send);
-- #8762 (the pin to exactly `nightscout-connect` `0.1.0`).
+- #8762 (the pin to exactly `nightscout-connect` `0.1.0`);
+- #8754 (login security fixes and `TRUST_PROXY`, with #8763 and #8765 folded in; merged as
+  `4f705217`).
 
-Two are open. #8754 (login security fixes and `TRUST_PROXY`) waits on the security review by the
-maintainer and Andy, and #8758 fixes records keeping their own `_id`. `rc/15.0.9-combined-010`
-(`dev` + the `0.1.0` pin + #8754 + #8758, tree `4114f45a`) passes 3046/0/3 on every Node and MongoDB
-pair. That is the run owed after the pin to exact `0.1.0`
-([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)). #8754's head has since moved to
-`280eccbe`, a merge of `dev` only, and today's `dev` with both open heads is the same tree.
+One is open: #8758 fixes records keeping their own `_id`. `rc/15.0.9-combined-010` (`dev` + the
+`0.1.0` pin + #8754 at `ef3404fd` + #8758, tree `4114f45a`) passed 3046/0/3 on every Node and
+MongoDB pair ([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)). `dev`
+`4f705217` on its own passes 2577/0/3 on Node 20, 22 and 24 against MongoDB 7.0.43 and in CI; no
+combined run yet covers it with #8758. The Loop remote-command browser checks must be repeated,
+because #8764 changed `lib/api2` after they were done (RT-0).
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with

@@ -26,17 +26,18 @@
 ## What this changes
 
 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag
-15.0.8) to dev 153e5658, measured 2026-09-24: 350 commits, 61 first-parent
-merges, 212 files, +16002/-1300. Among them the programme's backfix PRs
+15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent
+merges, 226 files, +18167/-1403. Among them the programme's backfix PRs
 (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753,
-#8755-#8757 and #8759 on 2026-09-23; #8760-#8762 on 2026-09-24; and #8741 from
-an external contributor on the same work), the D3 5.16 -> 7.9 chart migration
-(RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly
-0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart
-fixes, dependency updates and translations. Two open PRs are planned to join
-it: #8754 and #8758. Reproduce with `git -C externals/cgm-remote-monitor-
-official log --first-parent --oneline origin/master..origin/dev` and `git diff
---shortstat origin/master origin/dev`.
+#8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and
+#8765 folded in) on 2026-09-24; and #8741 from an external contributor on the
+same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug
+logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile,
+treatment-query and clock fixes, report and chart fixes, dependency updates
+and translations. One open PR is planned to join it: #8758. Reproduce with
+`git -C externals/cgm-remote-monitor-official log --first-parent --oneline
+origin/master..origin/dev` and `git diff --shortstat origin/master
+origin/dev`.
 
 ## Why that semver
 
@@ -147,23 +148,30 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-Waiting on four things and the maintainer's tag. dev is 153e5658 (2026-09-24,
-merge of #8762) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
+Waiting on four things and the maintainer's tag. dev is 4f705217 (2026-09-24,
+merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev ->
-master): mergeable, 27 checks green and 3 skipped, zero reviews, review
-required (measured 2026-09-24). Still before the tag: - #8754 (BF2-AUTH) at
-e549e1a6 (2026-09-24), plus a combined run on that head. Security review: the
-maintainer and Andy. - #8758 (BFQ-102), head 6d120fa2. - The release notes
-(releases/cgm-remote-monitor-15.0.9/release-notes.md), re-anchored on dev
-153e5658 (2026-09-24); the sections marked PENDING for #8754 and #8758 are
-finalised when those merge. - A human review of #8598, and the maintainer
-tagging. Evidence: the latest combined run,
-docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev f1591069 +
-the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
-3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
-280eccbe + #8758 6d120fa2 gives the same tree. No head after 280eccbe,
-including e549e1a6, is covered by a combined run. The browser checks were done
-by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
+master), head 4f705217: zero reviews, review required (measured 2026-09-25);
+CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB
+4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a
+combined run of dev 4f705217 + #8758. - The browser checks for the Loop
+remote-command path: client-unchanged-since-hand-check.js fails because #8764
+(in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after
+the hand-checked 8d797ba4. A remote override, carbs and bolus from
+Nightscout's careportal and from LoopCaregiver still need a 200 and a
+delivered push, by hand. - The release notes (releases/cgm-remote-
+monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24);
+the #8754 PENDING markers were removed when it merged (2026-09-25), and the
+sections marked PENDING for #8758 are finalised when it merges. - A human
+review of #8598, and the maintainer tagging. Evidence: the latest combined
+run, docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev
+f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2,
+tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev
+153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217
+on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0
+against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run
+yet covers dev 4f705217 + #8758. The browser checks were done by hand on
+ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
 AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-
 lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4;
 client-unchanged-since-hand-check.js says when they need repeating. Decisions:

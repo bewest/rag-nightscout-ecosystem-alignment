@@ -1755,18 +1755,6 @@ controls:
       file, so the gate cannot be satisfied by some other route's read check.
 
   - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" rt/trust-one-source -- lib
-    cwd: .
-    control: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" e549e1a6 -- lib
-    control-kind: static
-    proves: >
-      The same grep at e549e1a6, before the refactor, matches 10 lines (five
-      createClientIP(env.trustProxy), app.js, three in delaylist.js and
-      security.js's 'trust proxy fn') and exits 1 (measured 2026-09-24). A
-      pattern that could not match would pass here too.
-
-  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
     cwd: .
     control: |-
@@ -1780,53 +1768,6 @@ controls:
       would.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/trust-one-source >/dev/null
-    control-kind: static
-    proves: >
-      rt/cut4 and rt/trust-one-source were measured to conflict on
-      2026-09-24 and merge-tree exits 1 on the pair.
-
-  - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" rt/trust-one-source -- lib tests ':!lib/server/client-ip.js'
-    cwd: .
-    control: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" d0a3d628 -- lib tests ':!lib/server/client-ip.js'
-    control-kind: static
-    proves: >
-      At d0a3d628, before the exports were narrowed, the same grep matches 36
-      lines (the tests' createClientIP and compileTrust calls and
-      security.js's getClientIP) and exits 1 (measured 2026-09-24).
-
-  - gate: |-
-      TEST=client-ip npm run test-single
-    cwd: externals/work/crm-trust-one-source
-    control-cwd: .
-    control: |-
-      tools/queue/gates/trust-one-source-control.sh
-    control-kind: slow
-    proves: >
-      The branch's own code with lib/api3/security.js keying the failed-login
-      delay from clientIPFor(undefined) instead of env exits 3: the three API
-      v3 key tests fail with AssertionErrors, measured 2026-09-24 at e3354218.
-      Not ablate.sh: e549e1a6's security.js calls getClientIP, no longer
-      exported, so an ablation fails with a TypeError (measured, exit 5),
-      non-zero for the wrong reason. The script reports CONTROL-INVALID when
-      the edit does not apply or the failure is not an assertion.
-
-  - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" rt/loop-remote-address -- lib/api2
-    cwd: .
-    control: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" e3354218 -- lib/api2
-    control-kind: static
-    proves: >
-      At e3354218 the same grep matches lib/api2/notifications-v2.js:34
-      (req.connection.remoteAddress) and exits 1 (measured 2026-09-24).
-
-  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev
     cwd: .
     control: |-
@@ -1838,26 +1779,32 @@ controls:
       15.0.9 is released to master; re-author it then.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/loop-remote-address >/dev/null
+      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" origin/dev -- lib
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/loop-remote-address >/dev/null
+      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" e549e1a6 -- lib
     control-kind: static
     proves: >
-      rt/cut4 and rt/loop-remote-address were measured to conflict on
-      2026-09-24 and merge-tree exits 1 on the pair.
+      At e549e1a6, before the refactor, the same grep matches 10 lines (five
+      createClientIP(env.trustProxy), app.js, three in delaylist.js and
+      security.js's 'trust proxy fn') and exits 1 (measured 2026-09-25).
 
   - gate: |-
-      TEST=notifications-v2 npm run test-single
-    cwd: externals/work/crm-loop-remote-address
-    control-cwd: .
+      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" origin/dev -- lib tests ':!lib/server/client-ip.js'
+    cwd: .
     control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official rt/loop-remote-address e3354218 externals/work/crm-loop-remote-address notifications-v2
-    control-kind: slow
+      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" d0a3d628 -- lib tests ':!lib/server/client-ip.js'
+    control-kind: static
     proves: >
-      The branch's tests with lib/api2/index.js and notifications-v2.js put
-      back to e3354218 exit 3 on AssertionErrors: the unset, 1 and list cases
-      get the peer ::ffff:127.0.0.1 where they expect 198.51.100.4 (measured
-      2026-09-24). No TypeError: e3354218's notifications-v2.js loads and
-      simply ignores the env argument.
+      At d0a3d628, before the exports were narrowed, the same grep matches 36
+      lines and exits 1 (measured 2026-09-25).
 
+  - gate: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" origin/dev -- lib/api2
+    cwd: .
+    control: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" e3354218 -- lib/api2
+    control-kind: static
+    proves: >
+      At e3354218 the same grep matches lib/api2/notifications-v2.js:34
+      (req.connection.remoteAddress) and exits 1 (measured 2026-09-25).

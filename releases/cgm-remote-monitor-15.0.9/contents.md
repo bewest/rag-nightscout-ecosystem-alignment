@@ -1,17 +1,17 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-24 against `official/dev` `153e5658`
-(merge of #8762) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `4f705217`
+(merge of #8754) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `153e5658`, plus two open PRs**, #8754 and #8758, that the
-maintainer has decided ship in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
-§1, §1a). Every PR merged to `dev` is `merged`; none is `released`. The two open PRs are `open`.
+15.0.9 is **everything on `dev` at `4f705217`, plus one open PR**, #8758, that the maintainer has
+decided ships in it ([backfix-2 plan](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
+§1, §1a). Every PR merged to `dev` is `merged`; none is `released`. #8758 is `open`.
 
 ## Identity
 
@@ -19,54 +19,26 @@ maintainer has decided ship in it ([backfix-2 plan](../../docs/30-design/remedia
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `153e5658` (merge of #8762, 2026-09-24) |
-| Commits on `dev` | 350 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **61** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 212 files, +16002/−1300 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `4f705217` (merge of #8754, 2026-09-24) |
+| Commits on `dev` | 384 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **62** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 226 files, +18167/−1403 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8754 (head `e549e1a6`), #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `153e5658`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
+| Open additions | #8758 (head `6d120fa2`) — `gh pr view <n> --json state,headRefOid` |
+| Release PR | #8598 (`dev` → `master`, head `4f705217`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
 
-### Open additions (not merged)
+### Open addition (not merged)
 
 Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
-`git diff --shortstat official/dev...<head>`. #8754 at `e549e1a6` has `dev` `153e5658` merged in;
-#8758's merge base with `dev` is `1f9a9d10` (#8750).
+`git diff --shortstat official/dev...<head>`. #8758's merge base with `dev` is `1f9a9d10` (#8750).
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
-| #8754 | `bf2/auth-hardening` | `e549e1a6` | 27 | 22 files, +2063/−100 | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting (below). Reviewers: the maintainer and Andy (security review) |
 | #8758 | `bf/object-id-crud` | `6d120fa2` | 13 | 24 files, +3163/−73 | BFQ-102 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
-
-**#8754 at `e549e1a6`** (measured 2026-09-24). It carries `dev` `153e5658` (merged in by `e32f7a1c`),
-`f6f361b1` (the delay's position), `607d51b0` (the proxy guide,
-`docs/proposals/trusted-proxy-migration.md`), `9c6cde72` (forwarded addresses with a port),
-`b5f61f19` (the proxy guide recommends `TRUST_PROXY=1` on Azure App Service) and `e549e1a6` (an API
-v3 failed-login key test through the trust its app inherits). What the PR carries:
-
-- **BF-17.** A subject save no longer writes `accessToken`/`accessTokenDigest`/`digest`. Existing
-  rows keep them until the subject is next saved; clearing a row does not retire the token. The
-  gate `node tools/queue/gates/bf17-remediation-note.js` guards the notes' rotation text (17 checked,
-  0 failing on 2026-09-24), and `tools/queue/gates/bf17-rename-row-control.sh` is its control (exits 1).
-- **BF-30, the failed-login delay.** The wait comes before the credential check, as in earlier
-  releases. Failures are counted per client address and also per credential. The list is bounded
-  and swept on a schedule (`lib/authorization/delaylist.js`).
-- **`TRUST_PROXY` (BF-30, BF-88).** Unset resolves the client address as `dev` does
-  (`forwarded-for`, pinned by `8b975b41`), and a boot message says the delay does not protect
-  against guessing. `false` = direct connection only; a comma-separated list of IPs/CIDRs = the
-  trusted boundary; a whole number = that many hops; `true` = every hop (Express's meaning,
-  `81623f9b`). The subnet aliases `loopback`, `linklocal`, `uniquelocal` are refused at boot
-  (`lib/server/client-ip.js` `compileTrust`). Setting it behind a TLS-terminating proxy that is not
-  trusted causes an https redirect loop. Explicit `TRUST_PROXY` settings accept forwarded addresses
-  that carry a port (the form Azure App Service is reported to send); unset is unchanged
-  (`9c6cde72`).
-- **BF-47.** Subject and role `create()`/`save()` write only an allow-list of fields (declared
-  correction, below); a save that omits `notes` or `created_at` keeps the stored values (`7103f657`).
-- Every read of the auth collections stopped printing its query options to stdout (`ce82f0cd`).
 
 **#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
 changed profile only on a sink that has #8758.
@@ -78,7 +50,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (22), plus #8741
+#### Programme backfix PRs (23), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -103,7 +75,43 @@ which is the home of every defect fact; these tables do not restate them.
 | #8757 | `d0d6b433` | 2026-09-23 | — (RT-4) | the MiniMed deprecation warning names the `CONNECT_*` settings that replace `MMCONNECT_*` |
 | #8760 | `ddd9b600` | 2026-09-24 | BF-103 | a treatment moved or split by drag in the web UI stores the new time in `mills` and `date`, so IOB and COB follow it |
 | #8761 | `f1591069` | 2026-09-24 | — (RT-COUNT-COMPAT) | v1 reads tolerate the count shapes oref0 (`N?…`) and GluPredKit (`count=0` in a date window) send, with a deprecation warning; each tolerance has its own setting, on by default (`b4ead206`, `516f971a`) |
+| #8754 | `4f705217` | 2026-09-24 | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting, with #8763 and #8765 folded in (below). Withheld-style PR body |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
+
+**#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
++2167/−105 against `153e5658`). Besides `bf/auth`, `bf/throttle` and the `client-ip.js` backport it
+carries `f6f361b1` (the delay's position), `607d51b0` (the proxy guide,
+`docs/proposals/trusted-proxy-migration.md`), `9c6cde72` (forwarded addresses with a port),
+`b5f61f19` (the proxy guide recommends `TRUST_PROXY=1` on Azure App Service), #8763 (`d0a3d628`,
+`e3354218`) and #8765 (bringing #8764, `71987bb4`). What it carries:
+
+- **BF-17.** A subject save no longer writes `accessToken`/`accessTokenDigest`/`digest`. Existing
+  rows keep them until the subject is next saved; clearing a row does not retire the token. The
+  gate `node tools/queue/gates/bf17-remediation-note.js` guards the notes' rotation text (17 checked,
+  0 failing on 2026-09-24), and `tools/queue/gates/bf17-rename-row-control.sh` is its control (exits 1).
+- **BF-30, the failed-login delay.** The wait comes before the credential check, as in earlier
+  releases. Failures are counted per client address and also per credential. The list is bounded
+  and swept on a schedule (`lib/authorization/delaylist.js`).
+- **`TRUST_PROXY` (BF-30, BF-88).** Unset resolves the client address as `dev` does
+  (`forwarded-for`, pinned by `8b975b41`), and a boot message says the delay does not protect
+  against guessing. `false` = direct connection only; a comma-separated list of IPs/CIDRs = the
+  trusted boundary; a whole number = that many hops; `true` = every hop (Express's meaning,
+  `81623f9b`). The subnet aliases `loopback`, `linklocal`, `uniquelocal` are refused at boot
+  (`lib/server/client-ip.js`). Setting it behind a TLS-terminating proxy that is not
+  trusted causes an https redirect loop. Explicit `TRUST_PROXY` settings accept forwarded addresses
+  that carry a port (the form Azure App Service is reported to send); unset is unchanged
+  (`9c6cde72`).
+- **BF-47.** Subject and role `create()`/`save()` write only an allow-list of fields (declared
+  correction, below); a save that omits `notes` or `created_at` keeps the stored values (`7103f657`).
+- Every read of the auth collections stopped printing its query options to stdout (`ce82f0cd`).
+- **One `TRUST_PROXY` policy** (#8763, RT-TRUST-ONE-SOURCE). Every client-address consumer reads
+  one policy compiled per `env`; `lib/server/client-ip.js` exports only `trustFor(env)` and
+  `clientIPFor(env)`; API v3 logins key from `env`, not the mounted app's `trust proxy`. No
+  behaviour change.
+- **Loop remote-command sender address** (#8764 via #8765, RT-LOOP-REMOTE-ADDRESS). The
+  `remote-address` in Loop pushes follows `TRUST_PROXY` through `clientIPFor(env)` instead of the
+  connecting address. Loop stores it on remote overrides, so the caregiver's address is kept in
+  treatments, readable by anyone with read access to the site. The release notes say so.
 
 #### Connector pin
 
@@ -220,28 +228,26 @@ does not copy them.
 
 ## Open items a releaser must settle
 
-1. **#8754** (`e549e1a6`): security review by the maintainer and Andy; a combined run on `dev` +
-   `e549e1a6` + #8758, because no combined run covers any head after `280eccbe`; then merge.
-2. **#8758** (`6d120fa2`): review and merge.
-3. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8754 merge` and
-   `PENDING: #8758 merge` stay or go with those PRs.
-4. **#8598 review.** The release PR has zero reviews and review is required.
-5. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
+1. **#8758** (`6d120fa2`): review and merge.
+2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge` stay or go
+   with it.
+3. **#8598 review.** The release PR has zero reviews and review is required.
+4. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md`; 12 commits, `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
    [`../README.md`](../README.md#open-item-changelog-on-dev).
-6. **The tag**, by the maintainer.
+5. **The tag**, by the maintainer.
 
 ## Known test gaps
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 63 of the 187 `tests/*.test.js` files on `dev` `153e5658` match neither
+- **Test-script coverage.** 66 of the 190 `tests/*.test.js` files on `dev` `4f705217` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`). Among them: `query.operands`, `boluscalc.quickpick`,
   `boluscalc.quickpick-rebuild`, `booterror`, `client.alarm-no-reading`, `treatmenttime`,
-  `debug-logging`, `dependency-d3`. #8754 adds three more (`authdelay`, `authsubjects`,
-  `client-ip`). Only `npm test` / `test-ci` (what `main.yml` runs) reaches them. A green
+  `debug-logging`, `dependency-d3`, and #8754's `authdelay`, `authsubjects` and `client-ip` (63 of
+  187 on `153e5658`). Only `npm test` / `test-ci` (what `main.yml` runs) reaches them. A green
   `test:unit` is not evidence for those fixes.
 - **D3 drag clamps.** `TEST=dependency-d3` passes with both treatment-drag clamps in
   `lib/client/renderer.js` deleted, so the suite does not exercise that boundary. RT-D3 was
@@ -296,7 +302,8 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [Open additions](#open-additions-not-merged).
+  [#8754](#programme-backfix-prs-23-plus-8741), including the Loop remote-command sender address
+  that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
 - **Legacy ingestion (RT-4, #8757).** No separate deprecation release. `MMCONNECT_*` (mmconnect) is
@@ -327,15 +334,19 @@ the user-facing form. Facts the notes must not lose:
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
+- `dev` `4f705217` itself (the merge of #8754, 2026-09-25): 2577 passing, 0 failing, 3 pending on
+  Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24
+  × MongoDB 4.4/5.0/6.0). Without #8758.
 - Latest combined run:
   [`rc-15.0.9-combined-010-2026-09-24.md`](../../docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md):
   `dev` `f1591069` + the exact `0.1.0` pin + #8754 `ef3404fd` + #8758 `6d120fa2`, tree `4114f45a`,
   3046 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4 and 7.
-  `dev` `153e5658` + #8754 `280eccbe` + #8758 `6d120fa2` gives the same tree. It does not cover
-  #8754 at `e549e1a6` (the delay's position, the proxy guide, forwarded addresses with a port, the API v3 key test), MongoDB 5.0/6.0, a browser or lab check, or a repeat of the break-its.
+  `dev` `153e5658` + #8754 `280eccbe` + #8758 `6d120fa2` gives the same tree. It predates #8754's
+  later commits (the delay's position, the proxy guide, forwarded addresses with a port, #8763,
+  #8765); no combined run yet covers `dev` `4f705217` + #8758.
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-09-24. Requires maintainer review before release. Nothing tagged or published.*
+*Draft, 2026-09-25. Requires maintainer review before release. Nothing tagged or published.*

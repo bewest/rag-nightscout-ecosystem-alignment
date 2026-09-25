@@ -23,8 +23,6 @@ repository.
 |---|---|---|---|
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`P0-C`](p0-c-bf-auth.md) | #8754 | `in-flight-upstream` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) |
-| [`P0-J`](p0-j-bf-throttle.md) | #8754 | `in-flight-upstream` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-109`](bfq-109-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair |

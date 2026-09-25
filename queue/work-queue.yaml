@@ -376,7 +376,7 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8754]
     blast_radius: >
       Content: 2 commits at ce82f0cd, 3 files, +310/-18.
@@ -462,7 +462,7 @@ items:
       Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c,
       a merge of dev 59430336 made 2026-09-21) is contained by ancestry
       in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what ships
-      these fixes in 15.0.9. bf/auth will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head e549e1a6, measured 2026-09-24).
+      these fixes in 15.0.9. bf/auth will not be pushed or merged up on its own; its first gate checks that containment: bf/auth is in dev through #8754, merged as 4f705217 (2026-09-24).
       Review and the remaining work are on BF2-AUTH.
 
       Decisions:
@@ -510,7 +510,7 @@ items:
     branch: bf/throttle
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-throttle
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8754]
     blast_radius: >
       Content: 1 commit at 435419ce, 3 files, +388/-45.
@@ -609,10 +609,10 @@ items:
       Not shipping on its own. bf/throttle (content 435419ce, tip
       a0823c4f, a merge of dev 59430336 made 2026-09-21) is contained by
       ancestry in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what
-      ships the failed-login fixes in 15.0.9. bf/throttle will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head e549e1a6, measured 2026-09-24).
+      ships the failed-login fixes in 15.0.9. bf/throttle will not be pushed or merged up on its own; its first gate checks that containment: bf/throttle is in dev through #8754, merged as 4f705217 (2026-09-24).
 
       What ships differs from this branch in one respect. On bf/throttle
-      only the failing request waits. #8754's head e549e1a6 (2026-09-24) contains f6f361b1, which puts the
+      only the failing request waits. dev (through #8754, 4f705217) contains f6f361b1, which puts the
       wait back before the credential check, as in earlier releases;
       failures are also counted per credential, and the list is bounded
       and swept on a schedule. BF2-AUTH describes the shipped behaviour.
@@ -2409,7 +2409,7 @@ items:
     repo: cgm-remote-monitor
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@e549e1a6
-    worktree: externals/work/crm-trust-one-source
+    worktree: ""
     state: merged-upstream
     pr: [8763]
     blast_radius: >
@@ -2429,21 +2429,20 @@ items:
       same compiled function (measured 2026-09-24 at e549e1a6).
     register: []
     gates:
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" rt/trust-one-source -- lib'
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" origin/dev -- lib'
         kind: static
         describe: >
-          One source: nothing under lib/ on the branch compiles env.trustProxy
-          itself or reads Express's 'trust proxy fn'; app.js, the five
-          consumers, the delay list and api3/security.js all go through
-          trustFor(env) / clientIPFor(env). At e549e1a6 the same grep matches
-          10 lines (measured 2026-09-24).
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" rt/trust-one-source -- lib tests '':!lib/server/client-ip.js'''
+          One source, on dev: nothing under lib/ compiles env.trustProxy
+          itself or reads Express's 'trust proxy fn'; app.js, the consumers,
+          the delay list and api3/security.js go through trustFor(env) /
+          clientIPFor(env). At e549e1a6 the same grep matches 10 lines.
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" origin/dev -- lib tests '':!lib/server/client-ip.js'''
         kind: static
         describe: >
-          One way to do it: outside client-ip.js, no code or test names the
-          old entry points. client-ip.js exports trustFor and clientIPFor only
-          (e3354218), so new code copying the tests learns those two. At
-          d0a3d628 the same grep matches 36 lines (measured 2026-09-24).
+          One way to do it, on dev: outside client-ip.js no code or test names
+          the old entry points; client-ip.js exports trustFor and clientIPFor
+          only, and a test pins that. At d0a3d628 the same grep matches 36
+          lines.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
         kind: static
         describe: >
@@ -2453,21 +2452,18 @@ items:
           files more than e549e1a6 did: the one-line consumer changes in
           app.js, websocket.js, authorization/index.js, api3/security.js,
           alarmSocket.js and storageSocket.js (RT-REBASE).
-      - run: TEST=client-ip npm run test-single
-        cwd: externals/work/crm-trust-one-source
-        kind: unit
-        describe: >
-          62 passing (60 at e549e1a6: the inherits-from-parent test replaced by
-          the v3-app-with-its-own-trust test, plus the one-policy-per-env and
-          export-list tests). Break-it at e3354218, each reverted, 2026-09-24:
-          security.js ignoring env -> 3 failing; no cache, app.js building its
-          own policy, and a cache that ignores env.trustProxy changes -> the
-          one-policy test; a third export -> the export test. Full suite at
-          e3354218, Node 24.15.0, MongoDB 3.6.8 (recorded as MongoDB 7 in the
-          commit message and first PR text; the local server was 3.6.8): 2572
-          passing, 3 pending, 0 failing (2570 at e549e1a6). On dev 4f705217:
-          2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB
-          7.0.43, and in CI on Node 20/22/24 against MongoDB 4.4/5.0/6.0.
+      - no-gate: >
+          Tests, measured and recorded rather than re-run here: the branch
+          worktree was removed after the merge. client-ip: 62 passing at
+          e3354218 (60 at e549e1a6). Break-it, each reverted, 2026-09-24:
+          security.js ignoring env -> 3 failing; no per-env cache, app.js
+          building its own policy, and a cache ignoring env.trustProxy
+          changes -> the one-policy test; a third export -> the export test.
+          On dev 4f705217, 2026-09-25: 2577 passing, 3 pending, 0 failing on
+          Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in
+          all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). The
+          pre-merge full-suite runs (2571 at d0a3d628, 2572 at e3354218) were
+          on MongoDB 3.6.8, not MongoDB 7 as their commit messages say.
     blocks_on: [BF2-AUTH]
     evidence:
       - docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md
@@ -2502,7 +2498,7 @@ items:
     repo: cgm-remote-monitor
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@708af170
-    worktree: externals/work/crm-loop-remote-address
+    worktree: ""
     state: merged-upstream
     pr: [8764, 8765]
     blast_radius: >
@@ -2532,33 +2528,29 @@ items:
       Loop uploads; no API shape changes, and the key Loop requires is kept.
     register: []
     gates:
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" rt/loop-remote-address -- lib/api2'
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" origin/dev -- lib/api2'
         kind: static
         describe: >
-          lib/api2 no longer reads the connection's peer as the sender's
-          address; notifications-v2.js uses clientIPFor(env). At e3354218 the
-          same grep matches notifications-v2.js:34 (measured 2026-09-24).
+          On dev, lib/api2 no longer reads the connection's peer as the
+          sender's address; notifications-v2.js uses clientIPFor(env). At
+          e3354218 the same grep matches notifications-v2.js:34.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev
         kind: static
         describe: >
           Containment: in dev through #8764 (into rt/trust-one-source), #8765
           (into bf2/auth-hardening, 2026-09-25T01:26Z) and #8754 (into dev as
           4f705217, 01:33Z). dev's tree is identical to 71987bb4's.
-      - run: TEST=notifications-v2 npm run test-single
-        cwd: externals/work/crm-loop-remote-address
-        kind: unit
-        describe: >
-          48 passing (43 at e3354218). The address Loop receives for
+      - no-gate: >
+          Tests, measured and recorded rather than re-run here: the branch
+          worktree was removed after the merge. notifications-v2: 48 passing
+          at 71987bb4 (43 at e3354218): the address Loop receives for
           TRUST_PROXY unset, 1, a proxy list and false, and through the real
-          lib/api2 app that TRUST_PROXY=false comes from the env it is created
-          with. Break-it at 71987bb4, each reverted, 2026-09-24: the peer
-          address again -> 3 failing (unset, 1, list); lib/api2 not passing
-          env -> the wiring test. Full suite at 71987bb4, Node 24.15.0,
-          MongoDB 3.6.8 (recorded as MongoDB 7 in the commit message and
-          first PR text; the local server was 3.6.8): 2577 passing, 3 pending,
-          0 failing (2572 at e3354218). On dev 4f705217: 2577/3/0 on Node
-          20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in CI on
-          Node 20/22/24 against MongoDB 4.4/5.0/6.0.
+          lib/api2 app. Break-it, each reverted: the peer address again -> 3
+          failing; lib/api2 not passing env -> the wiring test. On dev
+          4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against
+          MongoDB 7.0.43, and in all nine CI jobs. The pre-merge run at
+          71987bb4 (2577) was on MongoDB 3.6.8, not MongoDB 7 as its commit
+          message says.
       - no-gate: >
           Decided 2026-09-24 (maintainer): option 2 of the three recorded
           here - route the label through clientIPFor(env) so it follows
@@ -2744,17 +2736,18 @@ items:
     state: needs-decision
     blast_radius: >
       15.0.9 is everything in origin/master..origin/dev: master 92d08342
-      (tag 15.0.8) to dev 153e5658, measured 2026-09-24: 350 commits, 61
-      first-parent merges, 212 files, +16002/-1300. Among them the
+      (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62
+      first-parent merges, 226 files, +18167/-1403. Among them the
       programme's backfix PRs (#8733-#8740 and #8743-#8746 from
       2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on
-      2026-09-23; #8760-#8762 on 2026-09-24; and #8741 from an external
+      2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in)
+      on 2026-09-24; and #8741 from an external
       contributor on the same work), the D3 5.16 -> 7.9 chart migration
       (RT-D3), the opt-in debug logging change (#8726), the connector
       pin to exactly 0.1.0 (#8762), profile, treatment-query and clock
       fixes, report and chart fixes, dependency updates and
-      translations. Two open PRs are planned to join it: #8754 and
-      #8758. Reproduce with `git -C
+      translations. One open PR is planned to join it: #8758. Reproduce
+      with `git -C
       externals/cgm-remote-monitor-official log --first-parent --oneline
       origin/master..origin/dev` and `git diff --shortstat origin/master
       origin/dev`.
@@ -2861,24 +2854,31 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
-      Waiting on four things and the maintainer's tag. dev is 153e5658
-      (2026-09-24, merge of #8762) and declares 15.0.9; it pins
+      Waiting on four things and the maintainer's tag. dev is 4f705217
+      (2026-09-24, merge of #8754) and declares 15.0.9; it pins
       nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 =
-      tag 15.0.8. The release PR is #8598 (dev -> master): mergeable, 27
-      checks green and 3 skipped, zero reviews, review required
-      (measured 2026-09-24).
+      tag 15.0.8. The release PR is #8598 (dev -> master), head
+      4f705217: zero reviews, review required (measured 2026-09-25); CI
+      on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB
+      4.4/5.0/6.0).
 
       Still before the tag:
 
-      - #8754 (BF2-AUTH) at e549e1a6 (2026-09-24), plus a combined run on that head.
-      Security review: the maintainer and Andy.
+      - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev
+      4f705217 + #8758.
 
-      - #8758 (BFQ-102), head 6d120fa2.
+      - The browser checks for the Loop remote-command path:
+      client-unchanged-since-hand-check.js fails because #8764 (in
+      #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js
+      after the hand-checked 8d797ba4. A remote override, carbs and
+      bolus from Nightscout's careportal and from LoopCaregiver still
+      need a 200 and a delivered push, by hand.
 
       - The release notes
       (releases/cgm-remote-monitor-15.0.9/release-notes.md), re-anchored
-      on dev 153e5658 (2026-09-24); the sections marked PENDING for
-      #8754 and #8758 are finalised when those merge.
+      on dev 153e5658 (2026-09-24); the #8754 PENDING markers were
+      removed when it merged (2026-09-25), and the sections marked
+      PENDING for #8758 are finalised when it merges.
 
       - A human review of #8598, and the maintainer tagging.
 
@@ -2887,7 +2887,10 @@ items:
       f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758
       6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0
       x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2
-      gives the same tree. No head after 280eccbe, including e549e1a6, is covered by a combined run. The browser checks were done by hand on ec70aab0
+      gives the same tree. dev 4f705217 on its own (without #8758):
+      2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB
+      7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet
+      covers dev 4f705217 + #8758. The browser checks were done by hand on ec70aab0
       (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
       AUTHENTICATION_PROMPT_ON_LOAD;
       docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and

@@ -98,26 +98,25 @@ them, BF-80 and BF-106, exist only on `dev`), 42 merged, 1 partly merged and 7 f
 
 ## Picking something to review
 
-Three entry points, easiest first:
+Four entry points, easiest first:
 
 1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
-   each item awaiting review. Two 15.0.9 pull requests are open: #8758 (records keep
+   each item awaiting review. One 15.0.9 pull request is open: #8758 (records keep
    their own `_id` across API v1, v3 and the websocket; a large change to core data
-   paths, where careful review is most useful) and #8754 (below). Twenty-six others
-   are merged into `dev`, none released. The connector's fixes are released as
+   paths, where careful review is most useful). Twenty-seven others are merged into
+   `dev`, including #8754 (login security fixes and `TRUST_PROXY`), none released. The connector's fixes are released as
    `nightscout-connect` `0.1.0` (2026-09-24), which `dev` pins exactly (#8762).
 2. **A security or safety item.** #8754 (login security fixes and `TRUST_PROXY`) is
-   the open security PR; its reviewers are the maintainer and Andy, and a second
-   pair of eyes on the evidence is still welcome. Among safety items, `BFQ-92` (a page
-   with no glucose reading presents no server alarm, including device alarms) and
-   `BFQ-103` (a split treatment drag keeps the old time, so IOB and COB ignore the
-   move) have no fix yet.
+   merged into `dev` but not released; a second pair of eyes on its evidence is still
+   welcome before 15.0.9 is tagged. Among safety items, `BFQ-92` (a page with no
+   glucose reading presents no server alarm, including device alarms) has no fix yet.
 3. **The release.** `RT-0` (release PR #8598, 15.0.9) is open, green on CI, and has no
-   approving review. It is 58 first-parent merges; its readiness assessment is
+   approving review. It is 62 first-parent merges (`dev` `4f705217`, 2026-09-25); its
+   readiness assessment is
    [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
-   (a 2026-09-22 snapshot), and the combined test run of everything since is
-   [`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md).
+   (a 2026-09-22 snapshot), and the latest combined test run is
+   [`rc-15.0.9-combined-010-2026-09-24.md`](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md).
 4. **An `unsettled` item.** `BFQ-09`, `A7A-7` — it is not yet established
    that these are defects at all. Settling one either way is a complete,
    self-contained contribution.
