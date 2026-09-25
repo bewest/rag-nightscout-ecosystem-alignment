@@ -8901,7 +8901,7 @@ items:
       #8758's body and release-notes advice 'edit either one: the two
       become one record' holds only for v1 PUT/POST; that wording is to be
       corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm-
-      remote-monitor-15.0.9/release-notes.md). Also seen by the review,
+      remote-monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT-MERGE. Also seen by the review,
       not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No
       such id' on both builds, and #8758 lets an upper-case id reach it.
   - id: BFQ-114
@@ -9168,6 +9168,106 @@ items:
       and activity move it to an ObjectId. #8758's 336-cell matrix is the
       regression net; the 11 new test files overlap it and could be folded
       into it at the same time. Best done with OID-MIGRATION.
+  - id: OID-V3-EDIT-MERGE
+    title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/api3/storage/mongoCollection/modify.js replaceOne and updateOne
+      (after writing the target by _id, remove the other stored forms of
+      the same id), the cached wrapper in
+      lib/api3/storage/mongoCachedCollection/index.js, and
+      lib/api3/generic/{update,patch}/operation.js if the storage calls
+      change; tests in tests/api3.delete-every-form.test.js or a sibling.
+    review: maintainer
+    operator_visible: >
+      Not written yet. It would say: if a treatment or profile was saved
+      twice by an older Nightscout, editing it from an app that uses the
+      newer API (for example AndroidAPS) leaves one record with the edit
+      instead of two.
+    semver: patch
+    semver_reason: an edit of a record stored twice leaves one record instead of two
+    register: []
+    gates:
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/api3/storage/mongoCollection/modify.js'
+        kind: static
+        describe: >
+          Holds while v3 replaceOne/updateOne remove no other stored form
+          (the helper the v1 writes use for it is staleStringForms). A
+          presence check only, inverted: it goes RED when the merge lands
+          and must then be replaced by a behaviour gate.
+      - no-gate: >
+          Behaviour needs a booted server and a MongoDB. Measured
+          2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits
+          one copy and PUT replaces one, each leaving two records; on
+          63dd716c (BF-117 sort) both write the ObjectId copy
+          (tests/api3.delete-every-form.test.js, PATCH in both storage
+          orders) and still leave the string copy.
+    blocks_on: [BFQ-117]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - reports/consumer-impact-15.0.9/clients-8758.md
+    notes: >
+      Follow-up to BF-117, queued 2026-09-25 at the maintainer's request.
+      The v1 rule to match: treatments/food/activity/profile PUT upsert
+      the ObjectId form, then delete the string forms of the same id
+      (object-id-forms staleStringForms). For v3 the target is the
+      document writeFilter picks (the v3 document with the identifier,
+      else the ObjectId copy); the forms to remove are the other
+      documents filterForOne matches that have no identifier. Decide
+      whether PATCH, which sends only some fields, should merge too: the
+      removed copy is the older one, so no newer field is lost, but a
+      field present only on the string copy would be. Record every
+      removal in v3 history (srvModified), or a follower keeps the
+      removed copy. Until this lands, #8758's advice names the profile
+      editor and the Reports treatment list as the way to merge a pair.
+  - id: OID-WS-EDIT-MERGE
+    title: "Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/websocket.js dbUpdate and dbUpdateUnset (filter from
+      idForms, many: true), which the main chart's drag and edit use
+      (lib/client/renderer.js dbUpdate/dbUpdateUnset calls); tests in
+      tests/websocket.object-id.test.js.
+    review: maintainer
+    operator_visible: >
+      Not written yet. It would say: if a treatment was saved twice by an
+      older Nightscout, moving or editing it on the main chart leaves one
+      record instead of two.
+    semver: patch
+    semver_reason: an edit of a record stored twice leaves one record instead of two
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Measured 2026-09-25 by the #8758 freeze review on
+          ab7b22d6: dbUpdate with a 24-hex _id matches both copies
+          (updateMany over idForms) and edits both, leaving two records
+          with the same edit. 15.0.8 matched the ObjectId copy only. A
+          behaviour gate needs a booted server and a socket client, as
+          tests/websocket.object-id.test.js does.
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's
+      request. Editing both copies is not wrong for what is shown (both
+      carry the edit), but the pair never becomes one record, so reads
+      that list treatments keep showing two. The fix shape: update the
+      ObjectId copy (converting a string-only record to its ObjectId, as
+      dbAdd does), then delete the string forms, as the v1 treatments
+      PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must
+      still see the edited _id. Best done with OID-V3-EDIT-MERGE and
+      OID-STORAGE-HELPER, which would give v1, v3 and the websocket one
+      rule for writes by _id.
   - id: OID-DOCS
     title: "Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy"
     parcel: docs-truth

@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 134 |
-| runnable gates | 207 |
-| explicit `no-gate:` markers | 181 |
+| items | 136 |
+| runnable gates | 208 |
+| explicit `no-gate:` markers | 183 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 181 of the 388 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 183 of the 391 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 40 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-DOCS |
+| `not-started` | 42 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117 |
@@ -988,7 +988,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 23 items
+`parcel: release-train` &mdash; 25 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1020,6 +1020,8 @@ that costs.
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `in-flight-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -1779,6 +1781,67 @@ that costs.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION.
+
+### `OID-V3-EDIT-MERGE` &mdash; API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-117` |
+
+**Blast radius.** lib/api3/storage/mongoCollection/modify.js replaceOne and updateOne (after writing the target by _id, remove the other stored forms of the same id), the cached wrapper in lib/api3/storage/mongoCachedCollection/index.js, and lib/api3/generic/{update,patch}/operation.js if the storage calls change; tests in tests/api3.delete-every-form.test.js or a sibling.
+
+**What an operator sees.** Not written yet. It would say: if a treatment or profile was saved twice by an older Nightscout, editing it from an app that uses the newer API (for example AndroidAPS) leaves one record with the edit instead of two.
+
+**Why `patch`.** an edit of a record stored twice leaves one record instead of two
+
+**Gates.**
+
+- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" wip/object-id-crud-fixes-2 -- lib/api3/storage/mongoCollection/modify.js'`
+  - Holds while v3 replaceOne/updateOne remove no other stored form (the helper the v1 writes use for it is staleStringForms). A presence check only, inverted: it goes RED when the merge lands and must then be replaced by a behaviour gate.
+- **NO GATE** &mdash; Behaviour needs a booted server and a MongoDB. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits one copy and PUT replaces one, each leaving two records; on 63dd716c (BF-117 sort) both write the ObjectId copy (tests/api3.delete-every-form.test.js, PATCH in both storage orders) and still leave the string copy.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+
+**Notes.** Follow-up to BF-117, queued 2026-09-25 at the maintainer's request. The v1 rule to match: treatments/food/activity/profile PUT upsert the ObjectId form, then delete the string forms of the same id (object-id-forms staleStringForms). For v3 the target is the document writeFilter picks (the v3 document with the identifier, else the ObjectId copy); the forms to remove are the other documents filterForOne matches that have no identifier. Decide whether PATCH, which sends only some fields, should merge too: the removed copy is the older one, so no newer field is lost, but a field present only on the string copy would be. Record every removal in v3 history (srvModified), or a follower keeps the removed copy. Until this lands, #8758's advice names the profile editor and the Reports treatment list as the way to merge a pair.
+
+### `OID-WS-EDIT-MERGE` &mdash; Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** lib/server/websocket.js dbUpdate and dbUpdateUnset (filter from idForms, many: true), which the main chart's drag and edit use (lib/client/renderer.js dbUpdate/dbUpdateUnset calls); tests in tests/websocket.object-id.test.js.
+
+**What an operator sees.** Not written yet. It would say: if a treatment was saved twice by an older Nightscout, moving or editing it on the main chart leaves one record instead of two.
+
+**Why `patch`.** an edit of a record stored twice leaves one record instead of two
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: dbUpdate with a 24-hex _id matches both copies (updateMany over idForms) and edits both, leaving two records with the same edit. 15.0.8 matched the ObjectId copy only. A behaviour gate needs a booted server and a socket client, as tests/websocket.object-id.test.js does.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id.
 
 ---
 
@@ -3699,7 +3762,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3; the copy- picking regression found by the review, 40/40 trials). Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and each leaves two records, so #8758's body and release-notes advice 'edit either one: the two become one record' holds only for v1 PUT/POST; that wording is to be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote- monitor-15.0.9/release-notes.md). Also seen by the review, not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper-case id reach it.
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3; the copy- picking regression found by the review, 40/40 trials). Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 63dd716c. Not fixed, follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and each leaves two records, so #8758's body and release-notes advice 'edit either one: the two become one record' holds only for v1 PUT/POST; that wording is to be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote- monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT- MERGE. Also seen by the review, not filed: GET /api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper- case id reach it.
 
 ### `BFQ-114` &mdash; BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
 
