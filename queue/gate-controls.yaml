@@ -1788,15 +1788,28 @@ controls:
       2026-09-24 and merge-tree exits 1 on the pair.
 
   - gate: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" rt/trust-one-source -- lib tests ':!lib/server/client-ip.js'
+    cwd: .
+    control: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" d0a3d628 -- lib tests ':!lib/server/client-ip.js'
+    control-kind: static
+    proves: >
+      At d0a3d628, before the exports were narrowed, the same grep matches 36
+      lines (the tests' createClientIP and compileTrust calls and
+      security.js's getClientIP) and exits 1 (measured 2026-09-24).
+
+  - gate: |-
       TEST=client-ip npm run test-single
     cwd: externals/work/crm-trust-one-source
     control-cwd: .
     control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official rt/trust-one-source e549e1a6 externals/work/crm-trust-one-source --files=lib/api3/security.js client-ip
+      tools/queue/gates/trust-one-source-control.sh
     control-kind: slow
     proves: >
-      The branch's tests with only lib/api3/security.js put back to e549e1a6
-      (keying API v3 on the app's 'trust proxy fn') exit 3: the three API v3
-      key tests, measured 2026-09-24. --files, because the whole-branch
-      ablation also removes trustFor, and the one-policy test then fails with
-      a TypeError, which is non-zero for the wrong reason.
+      The branch's own code with lib/api3/security.js keying the failed-login
+      delay from clientIPFor(undefined) instead of env exits 3: the three API
+      v3 key tests fail with AssertionErrors, measured 2026-09-24 at e3354218.
+      Not ablate.sh: e549e1a6's security.js calls getClientIP, no longer
+      exported, so an ablation fails with a TypeError (measured, exit 5),
+      non-zero for the wrong reason. The script reports CONTROL-INVALID when
+      the edit does not apply or the failure is not an assertion.

@@ -2436,6 +2436,13 @@ items:
           consumers, the delay list and api3/security.js all go through
           trustFor(env) / clientIPFor(env). At e549e1a6 the same grep matches
           10 lines (measured 2026-09-24).
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" rt/trust-one-source -- lib tests '':!lib/server/client-ip.js'''
+        kind: static
+        describe: >
+          One way to do it: outside client-ip.js, no code or test names the
+          old entry points. client-ip.js exports trustFor and clientIPFor only
+          (e3354218), so new code copying the tests learns those two. At
+          d0a3d628 the same grep matches 36 lines (measured 2026-09-24).
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-source >/dev/null
         kind: static
         describe: "trial-merge into the head of #8754 (the stack base) is conflict-free"
@@ -2451,14 +2458,14 @@ items:
         cwd: externals/work/crm-trust-one-source
         kind: unit
         describe: >
-          61 passing (60 at e549e1a6: the inherits-from-parent test replaced by
-          the v3-app-with-its-own-trust test, plus the one-policy-per-env
-          test). Break-it, each reverted, 2026-09-24: security.js reading
-          'trust proxy fn' again -> 3 failing; trustFor without its cache,
-          app.js compiling its own policy, and a cache that ignores
-          env.trustProxy changes -> 1 failing each. Full suite at d0a3d628,
-          Node 24.15.0, MongoDB 7: 2571 passing, 3 pending, 0 failing (2570 at
-          e549e1a6).
+          62 passing (60 at e549e1a6: the inherits-from-parent test replaced by
+          the v3-app-with-its-own-trust test, plus the one-policy-per-env and
+          export-list tests). Break-it at e3354218, each reverted, 2026-09-24:
+          security.js ignoring env -> 3 failing; no cache, app.js building its
+          own policy, and a cache that ignores env.trustProxy changes -> the
+          one-policy test; a third export -> the export test. Full suite at
+          e3354218, Node 24.15.0, MongoDB 7: 2572 passing, 3 pending, 0 failing
+          (2570 at e549e1a6).
     blocks_on: [BF2-AUTH]
     evidence:
       - docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md
@@ -2479,7 +2486,8 @@ items:
       change makes inert for the client address as well as for Express.
       Lowest home is dev (base of the stack); if dev is frozen for 15.0.9,
       commit it on cut 1 and merge up.
-      Opened 2026-09-24 as draft #8763, head d0a3d628, base bf2/auth-hardening
+      Opened 2026-09-24 as draft #8763, head d0a3d628 (e3354218 committed
+      after, to narrow the exports; push it to update the PR), base bf2/auth-hardening
       (stacked on #8754); retarget to dev when #8754 merges. Test CI does not
       run on it while the base is not dev (only auto-close ran). Real boot on
       d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot
