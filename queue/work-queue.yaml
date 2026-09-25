@@ -9071,7 +9071,7 @@ items:
       NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector
       0.1.0 via tools/lab/connector-soak with a string-stored profile on
       the sink, P-ID-9 tconnectsync profile replace-mode PUT; (4) P-ID-7
-      through oref0's ns-dedupe-treatments.sh itself.
+      through oref0's ns-dedupe-treatments.sh itself. (5) a lab cell for deleting an auth subject stored with a string _id by its hex: P-ID-12's DELETE cell became vacuous when #8754 made subject create keep only owned fields; a one-off check on 2026-09-25 gave n=1 left on 15.0.8 and dev, n=0 on ab7b22d6. (6) P-ID-1's README row is corrected: Loop does not re-POST a dose with a cached _id (NightscoutService DoseEntry.swift, the _id argument is commented out); it uses a cached id only for a carb PUT and DELETE by id.
   - id: OID-PREVALENCE
     title: "Count string _ids and twin pairs per collection in real data, counts only"
     parcel: register-open
@@ -9168,6 +9168,142 @@ items:
       and activity move it to an ObjectId. #8758's 336-cell matrix is the
       regression net; the 11 new test files overlap it and could be folded
       into it at the same time. Best done with OID-MIGRATION.
+  - id: BFQ-129
+    title: "BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js GET /entries/:spec (the No such id branch)
+      and the entries formatter that turns entries_err into 500; a test in
+      tests/api.entries.upper-case-id.test.js or a sibling.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: an error status for a read that finds nothing becomes a not-found answer
+    register: [BF-129]
+    gates:
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" wip/object-id-crud-fixes-2 -- lib/api/entries/index.js'
+        kind: static
+        describe: >
+          FAILS today: the route still builds the "No such id" error that
+          the formatter answers with 500. A presence check only; the fix is
+          done when a test shows an unknown id answers 404 or 200 [].
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Open, found 2026-09-25 by the #8758 freeze review and queued at the
+      maintainer's request. Live on 15.0.8 for a lower-case id; #8758
+      extends it to an upper-case id. Small enough to fold into #8758 if the
+      maintainer wants; otherwise after 15.0.9. Decide 404 or 200 [] first.
+  - id: OID-UNUSABLE-ID-OTHER-PATHS
+    title: "Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/websocket.js dbAdd (before the 24-hex conversion) and the
+      API v3 create path (lib/api3/generic/create/operation.js or insertOne
+      in lib/api3/storage/mongoCollection/modify.js), using object-id-
+      forms.dropEmptyId; tests beside tests/api.empty-id.test.js.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a record sent without a usable id gets a server id instead of an unaddressable one
+    register: [BF-115]
+    gates:
+      - no-gate: >
+          Not started. Measured 2026-09-25 by the #8758 freeze review on 15.0.8
+          and ab7b22d6 (a sweep of 21 create paths x 5 unusable values):
+          websocket dbAdd stores two unusable values and API v3 POST stores
+          four, each answering success, with no crash; no id route can address
+          the record afterwards. BF-115's fix (17add44b) covers only v1 entries
+          and treatments, the paths that crash.
+    blocks_on: [BFQ-115]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Follow-up to BF-115, queued 2026-09-25 at the maintainer's request.
+      API v3 is addressed by identifier, so an unusable _id there is less
+      visible, but v1 and the websocket still read it; decide whether v3
+      create should drop _id entirely, since v3 documents are addressed by
+      identifier.
+  - id: OID-PROFILE-RESEND
+    title: "Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/profile.js create (the BF-99 create guard and insertMany),
+      tests/api.profiles.object-id.test.js and the profile row of
+      tests/api.crud-by-id.matrix.test.js.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a re-sent profile is answered instead of refused
+    register: []
+    gates:
+      - no-gate: >
+          Not measured. Read on 63dd716c: profile create keeps the BF-99 guard,
+          so a profile re-sent with the _id it is stored under collides and
+          answers 500 (the CRUD matrix asserts it). Whether a profile POST array
+          loses the profiles after the collision, as devicestatus did (BF-116),
+          is not measured; profile create is an ordered insertMany, so it
+          probably does.
+    blocks_on: [BFQ-116]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Queued 2026-09-25 at the maintainer's request, after BF-116 made
+      devicestatus answer a re-send. The two collections now differ:
+      devicestatus acknowledges, profile refuses. A profile re-send is rarer
+      (the connector copies profiles by update-on-change and the profile
+      editor PUTs), but a restore or echo tool would meet it. Measure the
+      array case first; if it loses data, it is a defect for the register.
+  - id: TEST-FLAKE-REPOST-FIND-COUNT
+    title: "tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@63dd716c
+    state: not-started
+    pr: []
+    blast_radius: >
+      tests/api.entries.repost-with-id.test.js, the reads describe block
+      that counts find calls through a Proxy on ctx.store.collection.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: test reliability
+    register: []
+    gates:
+      - no-gate: >
+          Not reproduced on demand. 2026-09-25 on 63dd716c, Node 22.23.2,
+          MongoDB 7.0.43: sixteen _id test files together, 577 passing and this
+          1 failing in the first run, 578 passing in the next two; alone and
+          after each new file, passing. The rc run on the release candidate
+          records whether it recurs in the full suite.
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
+    notes: >
+      The test counts finds on the entries collection for one POST; a find
+      from something else in the same process (a data load after another
+      file's writes, for example) would add one. Fix shape: count only finds
+      whose filter has the $or of sysTime/type the read-back builds, or wait
+      for the bus to settle before posting. Added to #8758's own tests, so
+      it belongs with #8758 if it recurs in the rc run.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

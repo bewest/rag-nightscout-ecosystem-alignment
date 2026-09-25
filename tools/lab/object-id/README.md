@@ -26,6 +26,7 @@ tools/lab/object-id/lab.sh down    # stop the builds, remove the container
 | `OID_MONGO_PORT` | `27181` | host port for the lab's mongod |
 | `OID_MONGO_IMAGE` | `mongo:7` | |
 | `OID_NODE` | `22.23.2` | Node version, through `n exec` |
+| `OID_PROBES` | all | comma-separated probe names (`P-ID-10,P-ID-11`) to run only those; `P-ID-0` always runs |
 
 The API secret is generated per lab into `$OID_STATE/secret`; nothing secret lives in this
 directory. Each build gets its own database, `oidlab_<NAME>`, dropped by `up`. Every probe uses
@@ -51,7 +52,7 @@ v1/v3 pair) are written straight to mongo. Everything else goes through the buil
 
 | probe | client shape | what it asks |
 |---|---|---|
-| P-ID-1 | Loop re-POSTs a dose with the ObjectId it cached from an earlier reply (`NightscoutUploader.swift`); xDrip4iOS retries a LibreLinkUp Sensor Start with a fixed hex `_id` | Does the re-send update the record or add a copy? |
+| P-ID-1 | A client re-POSTs a record with the ObjectId it cached from an earlier reply. Loop uses a cached id only for a carb PUT and for DELETE by id (NightscoutService `DoseEntry.swift` sends no `_id` for doses); xDrip4iOS retries a LibreLinkUp Sensor Start with a fixed hex `_id` | Does the re-send update the record or add a copy? |
 | P-ID-2 | AndroidAPS 4.x GET/PATCH/DELETE `/api/v3/treatments/{identifier}` on v1 records (it treats 404 as done) | Can v3 reach a record stored with a string `_id`? |
 | P-ID-3 | Entries re-sent without `_id`, with a different hex, onto a string record; upper-case `GET /entries/<id>` | Status, which `_id` the reply names, what is stored |
 | P-ID-4 | Websocket `dbAdd`/`dbUpdate`/`dbRemove` (the web UI editor, AndroidAPS 3.x NSClient) | Does the socket act on what it acknowledges? |
@@ -59,12 +60,29 @@ v1/v3 pair) are written straight to mongo. Everything else goes through the buil
 | P-ID-6 | Restore from an export: POST the same record twice to profile, devicestatus, food, activity | Stored form, re-POST status, find and DELETE by id |
 | P-ID-7 | A twin (string record plus the ObjectId copy a PUT on ≤15.0.8 left) deleted by its hex through v1, the websocket and v3 | How many copies are left |
 | P-ID-10 | API v3 DELETE and PUT when a v1 record and a v3 copy of it both exist | Which document the write takes |
-| P-ID-11 | `find[_id][$in]` with a string-stored and an ObjectId-stored id | Reads and bulk deletes by list |
-| P-ID-12 | An auth subject posted with a hex `_id`, then deleted by it | Stored form and whether DELETE removes it |
+| P-ID-11 | `find[_id][$in]` with a string-stored and an ObjectId-stored id; control: two ObjectId-stored ids | Reads and bulk deletes by list |
+| P-ID-12 | An auth subject posted with a hex `_id`, then deleted by it; a subject seeded with a string `_id` (as 15.0.8's create stored it) deleted by its hex; control: the same with an ObjectId `_id` | Stored form and whether DELETE removes it |
 
 P-ID-8 (how common string `_id`s and twins are in real data) and P-ID-9 (tconnectsync's profile
 replace) are not in the lab yet; the queue items `OID-PREVALENCE` and `OID-LAB` track them, with the
 replays through real client code (NightscoutKit, AndroidAPS `core/nssdk`, the real connector).
+
+## Queue gates
+
+One gate per fixed item runs a single probe against one build, in its own mongod container, and
+exits 0 when the fixed behaviour holds, 1 when it does not, and 90 (`CONTROL-INVALID`) when it
+could not measure (a worktree at the wrong commit, a dirty `lib/`, a dead server, or a control cell
+that every build answers the same way coming back different):
+
+| gate | probe | green on | red on (control) |
+|---|---|---|---|
+| `tools/queue/gates/bfq-109-oid-cell.js` | P-ID-10 | `ab7b22d6` | `6d120fa2` |
+| `tools/queue/gates/bfq-111-oid-cell.js` | P-ID-11 | `ab7b22d6` | 15.0.8 `92d08342` |
+| `tools/queue/gates/bfq-112-oid-cell.js` | P-ID-12 (legacy cells) | `ab7b22d6` | 15.0.8 `92d08342` |
+
+`node tools/queue/gates/bfq-109-oid-cell.js --build <worktree> [--ref <commit>]`; ports through
+`OID_GATE_MONGO_PORT` (27191) and `OID_GATE_PORT` (3991). BF-113 has no HTTP cell; its gate is
+`tools/queue/gates/bf113-idforms-guard.js`.
 
 ## Limits
 

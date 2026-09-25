@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 136 |
-| runnable gates | 208 |
-| explicit `no-gate:` markers | 183 |
+| items | 140 |
+| runnable gates | 209 |
+| explicit `no-gate:` markers | 186 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 183 of the 391 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 186 of the 395 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 42 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 46 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117 |
@@ -97,6 +97,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-115** BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load
 - **BFQ-117** BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy
 - **BFQ-114** BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
+- **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 
 ---
 
@@ -1847,7 +1848,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 59 items
+`parcel: register-open` &mdash; 63 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1914,6 +1915,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `not-started` | `-` | patch | 1 run |
+| `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `OID-PROFILE-RESEND` | Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116) | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `TEST-FLAKE-REPOST-FIND-COUNT` | tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -3826,7 +3831,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/object-id/README.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** The lab ran 2026-09-24 against v15.0.8 92d08342, dev ddd9b600 and #8758 6d120fa2: 43 cells, repeated with identical results, and an ablation build for P-ID-10. Owed: (1) an integration gate per BF item that runs the lab and checks one cell, so BFQ-109 to BFQ-112 get a runnable gate; (2) build b moved to dev 153e5658 (the local clone lacks it; ddd9b600..153e5658 touches only count code and the connector pin); (3) replays through real client code instead of request shapes: P-ID-1 with tools/swift-nightscout-tests (Loop's NightscoutKit), P-ID-2 through AndroidAPS core/nssdk NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector 0.1.0 via tools/lab/connector-soak with a string-stored profile on the sink, P-ID-9 tconnectsync profile replace- mode PUT; (4) P-ID-7 through oref0's ns-dedupe-treatments.sh itself.
+**Notes.** The lab ran 2026-09-24 against v15.0.8 92d08342, dev ddd9b600 and #8758 6d120fa2: 43 cells, repeated with identical results, and an ablation build for P-ID-10. Owed: (1) an integration gate per BF item that runs the lab and checks one cell, so BFQ-109 to BFQ-112 get a runnable gate; (2) build b moved to dev 153e5658 (the local clone lacks it; ddd9b600..153e5658 touches only count code and the connector pin); (3) replays through real client code instead of request shapes: P-ID-1 with tools/swift-nightscout-tests (Loop's NightscoutKit), P-ID-2 through AndroidAPS core/nssdk NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector 0.1.0 via tools/lab/connector-soak with a string-stored profile on the sink, P-ID-9 tconnectsync profile replace- mode PUT; (4) P-ID-7 through oref0's ns-dedupe-treatments.sh itself. (5) a lab cell for deleting an auth subject stored with a string _id by its hex: P-ID-12's DELETE cell became vacuous when #8754 made subject create keep only owned fields; a one-off check on 2026-09-25 gave n=1 left on 15.0.8 and dev, n=0 on ab7b22d6. (6) P-ID-1's README row is corrected: Loop does not re-POST a dose with a cached _id (NightscoutService DoseEntry.swift, the _id argument is commented out); it uses a cached id only for a carb PUT and DELETE by id.
 
 ### `OID-PREVALENCE` &mdash; Count string _ids and twin pairs per collection in real data, counts only
 
@@ -3856,6 +3861,125 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Sizes BF-110 (how many sites could lose an edit by deleting a twin) and decides whether OID-MIGRATION is worth building. Health data: the output is counts only, and nothing from the data enters this repository.
+
+### `BFQ-129` &mdash; BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-129` |
+
+**Blast radius.** lib/api/entries/index.js GET /entries/:spec (the No such id branch) and the entries formatter that turns entries_err into 500; a test in tests/api.entries.upper-case-id.test.js or a sibling.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** an error status for a read that finds nothing becomes a not-found answer
+
+**Gates.**
+
+- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" wip/object-id-crud-fixes-2 -- lib/api/entries/index.js'`
+  - FAILS today: the route still builds the "No such id" error that the formatter answers with 500. A presence check only; the fix is done when a test shows an unknown id answers 404 or 200 [].
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Open, found 2026-09-25 by the #8758 freeze review and queued at the maintainer's request. Live on 15.0.8 for a lower-case id; #8758 extends it to an upper-case id. Small enough to fold into #8758 if the maintainer wants; otherwise after 15.0.9. Decide 404 or 200 [] first.
+
+### `OID-UNUSABLE-ID-OTHER-PATHS` &mdash; Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| register | `BF-115` |
+| blocks on | `BFQ-115` |
+
+**Blast radius.** lib/server/websocket.js dbAdd (before the 24-hex conversion) and the API v3 create path (lib/api3/generic/create/operation.js or insertOne in lib/api3/storage/mongoCollection/modify.js), using object-id- forms.dropEmptyId; tests beside tests/api.empty-id.test.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a record sent without a usable id gets a server id instead of an unaddressable one
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Measured 2026-09-25 by the #8758 freeze review on 15.0.8 and ab7b22d6 (a sweep of 21 create paths x 5 unusable values): websocket dbAdd stores two unusable values and API v3 POST stores four, each answering success, with no crash; no id route can address the record afterwards. BF-115's fix (17add44b) covers only v1 entries and treatments, the paths that crash.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Follow-up to BF-115, queued 2026-09-25 at the maintainer's request. API v3 is addressed by identifier, so an unusable _id there is less visible, but v1 and the websocket still read it; decide whether v3 create should drop _id entirely, since v3 documents are addressed by identifier.
+
+### `OID-PROFILE-RESEND` &mdash; Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-116` |
+
+**Blast radius.** lib/server/profile.js create (the BF-99 create guard and insertMany), tests/api.profiles.object-id.test.js and the profile row of tests/api.crud-by- id.matrix.test.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a re-sent profile is answered instead of refused
+
+**Gates.**
+
+- **NO GATE** &mdash; Not measured. Read on 63dd716c: profile create keeps the BF-99 guard, so a profile re-sent with the _id it is stored under collides and answers 500 (the CRUD matrix asserts it). Whether a profile POST array loses the profiles after the collision, as devicestatus did (BF-116), is not measured; profile create is an ordered insertMany, so it probably does.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Queued 2026-09-25 at the maintainer's request, after BF-116 made devicestatus answer a re-send. The two collections now differ: devicestatus acknowledges, profile refuses. A profile re-send is rarer (the connector copies profiles by update-on-change and the profile editor PUTs), but a restore or echo tool would meet it. Measure the array case first; if it loses data, it is a defect for the register.
+
+### `TEST-FLAKE-REPOST-FIND-COUNT` &mdash; tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@63dd716c` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** tests/api.entries.repost-with-id.test.js, the reads describe block that counts find calls through a Proxy on ctx.store.collection.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test reliability
+
+**Gates.**
+
+- **NO GATE** &mdash; Not reproduced on demand. 2026-09-25 on 63dd716c, Node 22.23.2, MongoDB 7.0.43: sixteen _id test files together, 577 passing and this 1 failing in the first run, 578 passing in the next two; alone and after each new file, passing. The rc run on the release candidate records whether it recurs in the full suite.
+
+**Evidence.**
+
+- `docs/30-design/remedial/rc-15.0.9-integration-record.md`
+
+**Notes.** The test counts finds on the entries collection for one POST; a find from something else in the same process (a data load after another file's writes, for example) would add one. Fix shape: count only finds whose filter has the $or of sysTime/type the read-back builds, or wait for the bus to settle before posting. Added to #8758's own tests, so it belongs with #8758 if it recurs in the rc run.
 
 ---
 
