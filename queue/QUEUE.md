@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 140 |
-| runnable gates | 209 |
-| explicit `no-gate:` markers | 186 |
+| items | 144 |
+| runnable gates | 212 |
+| explicit `no-gate:` markers | 190 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 186 of the 395 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 190 of the 402 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 46 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 50 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, BFQ-130, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117 |
@@ -1848,7 +1848,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 63 items
+`parcel: register-open` &mdash; 67 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1904,10 +1904,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `blocked` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
 | `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `blocked` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
 | `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `in-flight-upstream` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
-| `BFQ-109` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
+| `BFQ-109` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
 | `BFQ-110` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there | `ready-to-push` | `bf/object-id-crud` | patch | 0 run + 2 no-gate |
-| `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
-| `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 1 run + 2 no-gate |
+| `BFQ-111` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk deletes | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
+| `BFQ-112` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 2 no-gate |
 | `BFQ-113` | BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms | `ready-to-push` | `wip/object-id-crud-fixes` | patch | 2 run + 1 no-gate |
 | `BFQ-115` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
@@ -1919,6 +1919,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-PROFILE-RESEND` | Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `TEST-FLAKE-REPOST-FIND-COUNT` | tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-130` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `OID-ENTRIES-REPLY-ID` | On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `OID-NE-OPERATOR` | find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -3518,7 +3522,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in docker and the three worktrees, about 3 minutes; lab.sh up, run, down). On 6d120fa2 "hex DELETE, then GET" reads "200 / v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT" leaves identifier=X n=2 where both controls leave n=1. Same for a non-hex identifier. No queue gate wraps the lab yet (OID-LAB).
+- `[integration]` `node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
+  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in docker and the three worktrees, about 3 minutes; lab.sh up, run, down). On 6d120fa2 "hex DELETE, then GET" reads "200 / v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT" leaves identifier=X n=2 where both controls leave n=1. Same for a non-hex identifier. The lab gate above wraps it.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
   - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
 - **NO GATE** &mdash; Fixed by a2c7eb39 on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-10 on build f reads as v15.0.8 and dev (DELETE leaves v3-copy(invalid), GET 410; PUT leaves identifier=X n=1) and P-ID-2 still reads as 6d120fa2 (200). The fix is in modify.js, not utils.js: each write first finds its target with the read's sort ({identifier: -1}) and then writes by that document's _id; utils.js is unchanged. Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
@@ -3584,7 +3590,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-11): a list of a string-stored and an ObjectId-stored treatment returns n=1, and its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+- `[integration]` `node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
+  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-11): a list of a string-stored and an ObjectId-stored treatment returns n=1, and its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and 6d120fa2. The lab gate above wraps it.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
   - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
 - **NO GATE** &mdash; Fixed by 1c2d1afd on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-11 on build f: GET n=2 and the DELETE leaves neither record (n=1 and the string record left on the other three). Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
@@ -3618,7 +3626,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-12): POST /api/v2/authorization/subjects with a hex _id stores a string, and DELETE by that hex answers 200 and leaves it, on v15.0.8, dev ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+- `[integration]` `node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2`
+  - Runs one object-id lab probe (tools/lab/object-id) against the fix branch in its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
+- **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-12): POST /api/v2/authorization/subjects with a hex _id stores a string, and DELETE by that hex answers 200 and leaves it, on v15.0.8, dev ddd9b600 and 6d120fa2. The lab gate above wraps it.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes`
   - wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the push is to bf/object-id-crud with no rebase.
 - **NO GATE** &mdash; Fixed by d2fd9ff6 on wip/object-id-crud-fixes (local, not pushed), four commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-12 on build f: the subject is stored as an ObjectId and DELETE removes it (string and left on the other three). A subject already stored as a string is removed too (tests/storage.shape-handling.test.js). Every other cell of build f equals 6d120fa2's, so #8758's own fixes (P-ID-1 to P-ID-7) are kept. Full suite on the branch, Node 22.23.2, MongoDB 7: 2875 passing, 3 pending, 0 failing. Break-it: with lib/ reverted to 6d120fa2 and the new tests kept, 10 of them fail.
@@ -3697,7 +3707,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1, reproduced by the review). Live on 15.0.8; needs a credential that can create treatments or entries; no corpus client sends such a value. Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0, false and {} as _id, without a crash but unaddressable by any id route. Public-disclosure note: the fix commit and its test show the value once pushed; the register names the mechanism only.
+**Notes.** Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1, reproduced by the review). Live on 15.0.8; needs a credential that can create treatments or entries; no corpus client sends such a value. Put on #8758 at the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed, follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0, false and {} as _id, without a crash but unaddressable by any id route. Public-disclosure note: the fix commit and its test show the value once pushed; the register names the mechanism only. The client-unchanged gate names lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js is in the browser bundle, so a browser data-load hand check is owed before the tag. cb7d4110 adds: an Extended JSON {$oid} _id becomes the ObjectId it names, so a mongoexport restore keeps its ids.
 
 ### `BFQ-116` &mdash; BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch
 
@@ -3980,6 +3990,124 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/rc-15.0.9-integration-record.md`
 
 **Notes.** The test counts finds on the entries collection for one POST; a find from something else in the same process (a data load after another file's writes, for example) would add one. Fix shape: count only finds whose filter has the $or of sysTime/type the read-back builds, or wait for the bus to settle before posting. Added to #8758's own tests, so it belongs with #8758 if it recurs in the rc run.
+
+### `BFQ-130` &mdash; BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-130` |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** lib/server/treatments.js create, batch path (the trailing deleteMany from object-id-forms.withStaleStringsRemoved); a test beside tests/api.object- id.treatments-entries.test.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a defect in an unmerged fix
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Reproduced by the #8758 freeze review 2026-09-25 on 15.0.8 and ab7b22d6 with a booted server; a behaviour gate needs a MongoDB, as the lab gates do (tools/queue/gates/_oid-cell.js could carry a probe for it).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Open, found 2026-09-25 by the #8758 freeze review, queued at the maintainer's request. New in #8758 and a silent 200 drop, so it is a candidate to fold into #8758 before the tag, like BF-115 to BF-117; the reach is narrow. The food and activity batch paths use the same trailing delete and should be checked for the same shape.
+
+### `OID-ENTRIES-REPLY-ID` &mdash; On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** lib/server/entries.js create, the read-back of stored _ids (assignStoredIds keeps the last match per sysTime+type).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** the reply names the record that was written
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Measured by the #8758 freeze review 2026-09-25: with two entries stored at the same sysTime and type, a v1 POST updates copy a and replies with copy b's _id on ab7b22d6; 15.0.8 replied with no _id.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Queued 2026-09-25 at the maintainer's request. Duplicates at one sysTime+type exist only where dedup failed before. updateOne writes the first match in natural order; the read-back should pick the same one, or reply with no _id when the match is ambiguous.
+
+### `OID-NE-OPERATOR` &mdash; find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-102` |
+
+**Blast radius.** lib/server/query.js updateIdQuery (the $ne leaf; $in and $nin already expand to every form since BF-111), tests/query.test.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** an exclusion by id excludes every stored form of it
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Measured by the #8758 freeze review 2026-09-25 on 15.0.8 and ab7b22d6: GET and DELETE with find[_id][$ne]=X exclude only the ObjectId form, so a string copy of X is returned or deleted. $nin excludes both forms on ab7b22d6; $eq matches only the ObjectId.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Queued 2026-09-25 at the maintainer's request. Pre-existing and reachable only with an operator query no corpus client sends; a $ne becomes a $nin of the forms.
+
+### `OID-DEVICESTATUS-MIXED-ERRORS` &mdash; A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `wip/object-id-crud-fixes-2@cb7d4110` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| blocks on | `BFQ-116` |
+
+**Blast radius.** lib/server/devicestatus.js create (the unordered insertMany error handling added by BF-116's fix).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** error handling of a partly failed batch
+
+**Gates.**
+
+- **NO GATE** &mdash; Read from the code by the #8758 freeze review 2026-09-25, not run: no per-document error other than a duplicate key could be forced. Any error other than 11000 on a status sent with its own _id answers 500 after the unordered insert stored the rest, and a client that retries stores statuses without _id twice.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Queued 2026-09-25 at the maintainer's request. Before BF-116's fix the ordered insert stopped at the first error, so a retry duplicated the statuses before it instead. Measure with a forced error (for example a document over the size limit) first.
 
 ---
 

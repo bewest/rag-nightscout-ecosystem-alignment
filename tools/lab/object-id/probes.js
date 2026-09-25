@@ -3,6 +3,7 @@
 // real clients send. Run through lab.sh; see README.md for what each cell means.
 //
 //   node probes.js <name> <build-dir> <port>   run every probe, print one JSON object
+//                                              (OID_PROBES=P-ID-10,P-ID-11 runs only those; P-ID-0 always runs)
 //   node probes.js --drop <name> <build-dir>   drop that build's lab database
 //   node probes.js --compare <out-dir>         tabulate <out-dir>/*.json cell by cell
 //
@@ -78,6 +79,8 @@ const emit = (s, ev, d) => new Promise(resolve => {
   s.emit(ev, d, a => { clearTimeout(t); resolve(a); });
 });
 const ack = a => JSON.stringify(a).slice(0, 40);
+const WANT = process.env.OID_PROBES ? process.env.OID_PROBES.split(',') : null;
+const want = p => !WANT || WANT.includes(p);
 
 (async () => {
   const cli = await MongoClient.connect(MONGO);
@@ -94,7 +97,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
   // P-ID-1 Loop: re-POST of a dose with the ObjectId it cached from an earlier reply,
   // onto a record stored as a string (<=15.0.6); ObjectId-stored control.
   // xDrip4iOS: the LibreLinkUp Sensor Start carries a deterministic hex _id and is retried.
-  {
+  if (want('P-ID-1')) {
     const c = db.collection('treatments');
     const hs = hex(); const ca = iso(now - 90 * 60000);
     await c.insertOne({ _id: hs, eventType: 'Temp Basal', rate: 0.5, absolute: 0.5, duration: 30, created_at: ca, enteredBy: 'loop://lab' });
@@ -117,6 +120,8 @@ const ack = a => JSON.stringify(a).slice(0, 40);
     const subj = ((await req('GET', '/api/v2/authorization/subjects')).j || []).find(x => x.name === 'oidlab-admin');
     const jwt = (await req('GET', '/api/v2/authorization/request/' + subj.accessToken)).j.token;
     V = { authorization: 'Bearer ' + jwt };
+  }
+  if (want('P-ID-2')) {
     const c = db.collection('treatments'); const t = now - 10 * 60000;
     const hs = hex(); const hs2 = hex(); const ho = hex();
     await c.insertOne({ _id: hs, eventType: 'Note', notes: 'legacy', created_at: iso(t), date: t, utcOffset: 0 });
@@ -135,7 +140,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
   }
 
   // P-ID-3 entries: re-send with no _id, with a different hex, onto a string record; upper-case GET.
-  {
+  if (want('P-ID-3')) {
     const T1 = now - 60 * 60000; const T2 = now - 55 * 60000; const T3 = now - 50 * 60000;
     const e = (t, extra) => Object.assign({ type: 'sgv', sgv: 111, date: t, dateString: iso(t), device: 'lab' }, extra || {});
     let r = await req('POST', '/api/v1/entries', [e(T1)]);
@@ -158,7 +163,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
   }
 
   // P-ID-4 websocket (web UI editor, AAPS 3.x NSClient).
-  {
+  if (want('P-ID-4')) {
     const s = await sock(); const c = db.collection('treatments');
     const hs = hex();
     await c.insertOne({ _id: hs, eventType: 'Note', notes: 'orig', created_at: iso(now - 40 * 60000) });
@@ -183,7 +188,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
 
   // P-ID-5 connector 0.1.0's profile guard (find[_id] must return the copy before it PUTs),
   // P-ID-6 restore from an export (POST the same record twice).
-  {
+  if (want('P-ID-5') || want('P-ID-6')) {
     const hp = hex(); const sd = iso(now - 86400000);
     const sched = v => [{ time: '00:00', value: v }];
     const prof = { _id: hp, defaultProfile: 'Default', startDate: sd, created_at: sd, mills: now - 86400000, units: 'mg/dl', store: { Default: { dia: 5, carbratio: sched(10), sens: sched(50), basal: sched(1), target_low: sched(100), target_high: sched(110), timezone: 'UTC', units: 'mg/dl' } } };
@@ -212,7 +217,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
 
   // P-ID-7 a twin: the string record and the ObjectId copy a PUT on <=15.0.8 left beside it.
   // Delete by the hex through each path a user or tool would take.
-  {
+  if (want('P-ID-7')) {
     const c = db.collection('treatments');
     const twin = async (notes) => {
       const h = hex(); const ca = iso(now - 5 * 60000 - Math.floor(Math.random() * 60000));
@@ -235,7 +240,7 @@ const ack = a => JSON.stringify(a).slice(0, 40);
 
   // P-ID-10 API v3 writes when a v1 record and the v3 copy an earlier v3 PUT added both exist:
   // {_id: X} (v1, no identifier) and {_id: ObjectId, identifier: X} (v3). v3 reads sort identifier:-1.
-  {
+  if (want('P-ID-10')) {
     const c = db.collection('treatments');
     for (const kind of ['hex', 'non-hex']) {
       const seed = async () => {
@@ -264,8 +269,14 @@ const ack = a => JSON.stringify(a).slice(0, 40);
   }
 
   // P-ID-11 find[_id][$in] (xDrip4iOS-style list operations) against a string record.
-  {
+  // The control is a list of two ObjectId-stored records, which every build finds and deletes.
+  if (want('P-ID-11')) {
     const c = db.collection('treatments');
+    const o1 = hex(); const o2 = hex();
+    await c.insertMany([{ _id: new ObjectId(o1), eventType: 'Note', notes: 'o1', created_at: iso(now - 72 * 60000) }, { _id: new ObjectId(o2), eventType: 'Note', notes: 'o2', created_at: iso(now - 73 * 60000) }]);
+    const g0 = len(await req('GET', '/api/v1/treatments.json?find[_id][$in][]=' + o1 + '&find[_id][$in][]=' + o2 + '&count=10'));
+    const r0 = await req('DELETE', '/api/v1/treatments/?find[_id][$in][]=' + o1 + '&find[_id][$in][]=' + o2);
+    put('P-ID-11', 'GET, DELETE find[_id][$in] [OID, OID] (control)', [g0, r0.s, await count('treatments', o1), await count('treatments', o2)]);
     const hs = hex(); const ho = hex();
     await c.insertMany([{ _id: hs, eventType: 'Note', notes: 's', created_at: iso(now - 70 * 60000) }, { _id: new ObjectId(ho), eventType: 'Note', notes: 'o', created_at: iso(now - 71 * 60000) }]);
     put('P-ID-11', 'GET find[_id][$in] [string, OID]', len(await req('GET', '/api/v1/treatments.json?find[_id][$in][]=' + hs + '&find[_id][$in][]=' + ho + '&count=10')));
@@ -274,7 +285,17 @@ const ack = a => JSON.stringify(a).slice(0, 40);
   }
 
   // P-ID-12 auth subjects created with a hex _id (admin page, backup restore of subjects).
-  {
+  // Since #8754 create keeps only the subject's owned fields, so the first two cells no longer
+  // store the sent _id on dev; the legacy cells seed the subject straight to mongo, as 15.0.8's
+  // create stored it (the string), and delete it by that hex through the API.
+  if (want('P-ID-12')) {
+    const subjects = db.collection('auth_subjects');
+    const hs = hex(); const ho = hex();
+    await subjects.insertMany([{ _id: hs, name: 'oidlab-legacy-string', roles: ['readable'], created_at: iso(now) }, { _id: new ObjectId(ho), name: 'oidlab-legacy-oid', roles: ['readable'], created_at: iso(now) }]);
+    const ds = await req('DELETE', '/api/v2/authorization/subjects/' + hs);
+    put('P-ID-12', 'legacy string subject DELETE by its hex', [ds.s, await count('auth_subjects', hs)]);
+    const dob = await req('DELETE', '/api/v2/authorization/subjects/' + ho);
+    put('P-ID-12', 'legacy OID subject DELETE by its hex (control)', [dob.s, await count('auth_subjects', ho)]);
     const h = hex();
     const r = await req('POST', '/api/v2/authorization/subjects', { _id: h, name: 'oidlab-hex', roles: ['readable'] });
     put('P-ID-12', 'subject POST with hex _id', [r.s, await stored('auth_subjects', h)]);

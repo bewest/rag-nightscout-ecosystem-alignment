@@ -8446,6 +8446,13 @@ items:
     semver_reason: a defect in an unmerged fix; no API or setting moves
     register: [BF-109]
     gates:
+      - run: node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
+        kind: integration
+        describe: >
+          Runs one object-id lab probe (tools/lab/object-id) against the fix
+          branch in its own mongo:7 container and asserts the fixed cells.
+          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
+          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
       - no-gate: >
           Measured by tools/lab/object-id (probe P-ID-10; needs mongo:7 in
           docker and the three worktrees, about 3 minutes; lab.sh up, run,
@@ -8453,7 +8460,7 @@ items:
           v1-original(invalid),v3-copy / GET 200 v3-copy" where v15.0.8 and
           dev ddd9b600 read "... v3-copy(invalid) / GET 410"; "hex PUT"
           leaves identifier=X n=2 where both controls leave n=1. Same for a
-          non-hex identifier. No queue gate wraps the lab yet (OID-LAB).
+          non-hex identifier. The lab gate above wraps it.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
         kind: static
         describe: >
@@ -8572,11 +8579,18 @@ items:
     semver_reason: a bug fix; the request answers 200 and misses records
     register: [BF-111]
     gates:
+      - run: node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
+        kind: integration
+        describe: >
+          Runs one object-id lab probe (tools/lab/object-id) against the fix
+          branch in its own mongo:7 container and asserts the fixed cells.
+          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
+          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
       - no-gate: >
           Measured by tools/lab/object-id (probe P-ID-11): a list of a
           string-stored and an ObjectId-stored treatment returns n=1, and
           its DELETE leaves the string one, on v15.0.8, dev ddd9b600 and
-          6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+          6d120fa2. The lab gate above wraps it.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
         kind: static
         describe: >
@@ -8629,11 +8643,18 @@ items:
     semver_reason: a bug fix; admin-only
     register: [BF-112]
     gates:
+      - run: node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
+        kind: integration
+        describe: >
+          Runs one object-id lab probe (tools/lab/object-id) against the fix
+          branch in its own mongo:7 container and asserts the fixed cells.
+          Green 2026-09-25 on ab7b22d6, 63dd716c and cb7d4110; its control
+          (queue/gate-controls.yaml) is red. Needs docker and n; about 20 s.
       - no-gate: >
           Measured by tools/lab/object-id (probe P-ID-12): POST
           /api/v2/authorization/subjects with a hex _id stores a string, and
           DELETE by that hex answers 200 and leaves it, on v15.0.8, dev
-          ddd9b600 and 6d120fa2. No queue gate wraps the lab yet (OID-LAB).
+          ddd9b600 and 6d120fa2. The lab gate above wraps it.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id-crud-fixes
         kind: static
         describe: >
@@ -8788,6 +8809,11 @@ items:
       a crash but unaddressable by any id route. Public-disclosure note:
       the fix commit and its test show the value once pushed; the register
       names the mechanism only.
+      The client-unchanged gate names
+      lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js
+      is in the browser bundle, so a browser data-load hand check is owed
+      before the tag. cb7d4110 adds: an Extended JSON {$oid} _id becomes the
+      ObjectId it names, so a mongoexport restore keeps its ids.
   - id: BFQ-116
     title: "BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch"
     parcel: register-open
@@ -9304,6 +9330,128 @@ items:
       whose filter has the $or of sysTime/type the read-back builds, or wait
       for the bus to settle before posting. Added to #8758's own tests, so
       it belongs with #8758 if it recurs in the rc run.
+  - id: BFQ-130
+    title: "BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@cb7d4110
+    state: not-started
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/treatments.js create, batch path (the trailing deleteMany
+      from object-id-forms.withStaleStringsRemoved); a test beside
+      tests/api.object-id.treatments-entries.test.js.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a defect in an unmerged fix
+    register: [BF-130]
+    gates:
+      - no-gate: >
+          Not started. Reproduced by the #8758 freeze review 2026-09-25 on
+          15.0.8 and ab7b22d6 with a booted server; a behaviour gate needs a
+          MongoDB, as the lab gates do (tools/queue/gates/_oid-cell.js could
+          carry a probe for it).
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Open, found 2026-09-25 by the #8758 freeze review, queued at the
+      maintainer's request. New in #8758 and a silent 200 drop, so it is a
+      candidate to fold into #8758 before the tag, like BF-115 to BF-117;
+      the reach is narrow. The food and activity batch paths use the same
+      trailing delete and should be checked for the same shape.
+  - id: OID-ENTRIES-REPLY-ID
+    title: "On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@cb7d4110
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/entries.js create, the read-back of stored _ids
+      (assignStoredIds keeps the last match per sysTime+type).
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: the reply names the record that was written
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Measured by the #8758 freeze review 2026-09-25: with two
+          entries stored at the same sysTime and type, a v1 POST updates copy a
+          and replies with copy b's _id on ab7b22d6; 15.0.8 replied with no _id.
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Queued 2026-09-25 at the maintainer's request. Duplicates at one
+      sysTime+type exist only where dedup failed before. updateOne writes
+      the first match in natural order; the read-back should pick the same
+      one, or reply with no _id when the match is ambiguous.
+  - id: OID-NE-OPERATOR
+    title: "find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@cb7d4110
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/query.js updateIdQuery (the $ne leaf; $in and $nin already
+      expand to every form since BF-111), tests/query.test.js.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: an exclusion by id excludes every stored form of it
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Measured by the #8758 freeze review 2026-09-25 on 15.0.8
+          and ab7b22d6: GET and DELETE with find[_id][$ne]=X exclude only the
+          ObjectId form, so a string copy of X is returned or deleted. $nin
+          excludes both forms on ab7b22d6; $eq matches only the ObjectId.
+    blocks_on: [BFQ-102]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Queued 2026-09-25 at the maintainer's request. Pre-existing and
+      reachable only with an operator query no corpus client sends; a $ne
+      becomes a $nin of the forms.
+  - id: OID-DEVICESTATUS-MIXED-ERRORS
+    title: "A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: wip/object-id-crud-fixes-2@cb7d4110
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/devicestatus.js create (the unordered insertMany error
+      handling added by BF-116's fix).
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: error handling of a partly failed batch
+    register: []
+    gates:
+      - no-gate: >
+          Read from the code by the #8758 freeze review 2026-09-25, not run: no
+          per-document error other than a duplicate key could be forced. Any
+          error other than 11000 on a status sent with its own _id answers 500
+          after the unordered insert stored the rest, and a client that retries
+          stores statuses without _id twice.
+    blocks_on: [BFQ-116]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Queued 2026-09-25 at the maintainer's request. Before BF-116's fix the
+      ordered insert stopped at the first error, so a retry duplicated the
+      statuses before it instead. Measure with a forced error (for example a
+      document over the size limit) first.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

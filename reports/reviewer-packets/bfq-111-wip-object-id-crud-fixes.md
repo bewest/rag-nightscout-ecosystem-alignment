@@ -48,6 +48,13 @@ maintainer
 
 ## What was measured
 
+**`node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixe`** &nbsp;·&nbsp; kind: `integration`
+
+Runs one object-id lab probe (tools/lab/object-id) against the fix branch in
+its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on
+ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is
+red. Needs docker and n; about 20 s.
+
 **`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id`** &nbsp;·&nbsp; kind: `static`
 
 wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the
@@ -59,8 +66,8 @@ push is to bf/object-id-crud with no rebase.
 
 - Measured by tools/lab/object-id (probe P-ID-11): a list of a string-stored
   and an ObjectId-stored treatment returns n=1, and its DELETE leaves the
-  string one, on v15.0.8, dev ddd9b600 and 6d120fa2. No queue gate wraps the
-  lab yet (OID-LAB).
+  string one, on v15.0.8, dev ddd9b600 and 6d120fa2. The lab gate above
+  wraps it.
 - Fixed by 1c2d1afd on wip/object-id-crud-fixes (local, not pushed), four
   commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside
   v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-11 on build f: GET n=2 and the

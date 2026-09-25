@@ -87,7 +87,11 @@ the maintainer's request (2026-09-25, this session). Fix 17add44b. Not fixed,
 follow-up: websocket dbAdd stores '' and 0, and API v3 POST stores '', 0,
 false and {} as _id, without a crash but unaddressable by any id route.
 Public-disclosure note: the fix commit and its test show the value once
-pushed; the register names the mechanism only.
+pushed; the register names the mechanism only. The client-unchanged gate names
+lib/data/{calcdelta,dataloader,ddata}.js from this fix, and ddata.js is in the
+browser bundle, so a browser data-load hand check is owed before the tag.
+cb7d4110 adds: an Extended JSON {$oid} _id becomes the ObjectId it names, so a
+mongoexport restore keeps its ids.
 
 ---
 

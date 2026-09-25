@@ -49,6 +49,13 @@ maintainer
 
 ## What was measured
 
+**`node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixe`** &nbsp;·&nbsp; kind: `integration`
+
+Runs one object-id lab probe (tools/lab/object-id) against the fix branch in
+its own mongo:7 container and asserts the fixed cells. Green 2026-09-25 on
+ab7b22d6, 63dd716c and cb7d4110; its control (queue/gate-controls.yaml) is
+red. Needs docker and n; about 20 s.
+
 **`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/bf/object-id-crud wip/object-id`** &nbsp;·&nbsp; kind: `static`
 
 wip/object-id-crud-fixes is a fast-forward of #8758's head (6d120fa2), so the
@@ -63,8 +70,8 @@ push is to bf/object-id-crud with no rebase.
   6d120fa2 "hex DELETE, then GET" reads "200 / v1-original(invalid),v3-copy
   / GET 200 v3-copy" where v15.0.8 and dev ddd9b600 read "...
   v3-copy(invalid) / GET 410"; "hex PUT" leaves identifier=X n=2 where both
-  controls leave n=1. Same for a non-hex identifier. No queue gate wraps the
-  lab yet (OID-LAB).
+  controls leave n=1. Same for a non-hex identifier. The lab gate above
+  wraps it.
 - Fixed by a2c7eb39 on wip/object-id-crud-fixes (local, not pushed), four
   commits on 6d120fa2. Lab 2026-09-24 with the branch as build f beside
   v15.0.8, dev ddd9b600 and 6d120fa2: P-ID-10 on build f reads as v15.0.8
