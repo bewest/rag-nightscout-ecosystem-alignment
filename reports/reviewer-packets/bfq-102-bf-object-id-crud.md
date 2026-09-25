@@ -84,29 +84,29 @@ Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero reviews
 (2026-09-24). One PR from bf/object-id-crud, which contains bf/object-id-
 consistency 597e2899. Owed: a review and the merge, before the 15.0.9 tag.
 Evidence: the combined run rc-15.0.9-combined-010
-(docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md) includes
-6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id
-matrix in each cell. Per-commit suites and the 336-cell matrix are in the no-
-gate. The D1 check adds about 1 ms to a 100-row devicestatus batch that
-carries hex _ids and nothing without. The narrow alternatives (BFQ-99
-9b8cc2f9, BFQ-100 2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to
-land. It enables the connector's profile update-on-change (BFQ-97). PR body
-draft reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: -
-2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with
-consistent working CRUD across the API (plan section 1a, "15.0.9 ID
-consistency"). - 2026-09-23 (maintainer): D1 to D4 (plan section 1a), applied:
-D1 devicestatus re-send guard, D2 v3 reaches non-hex string _ids, D3 entries
-POST answers the stored _id, D4 helper header. Review 2026-09-24
-(tools/lab/object-id, 43 cells against v15.0.8, dev ddd9b600 and 6d120fa2):
-three pre-release findings on this head, BF-109 (BFQ-109, v3 writes take the
-v1 half of a pair), BF-110 (BFQ-110, a delete by hex removes both twins; the
-body's "you can now delete it" advice leads there; needs a decision) and
-BF-113 (BFQ-113, idForms accepts 12-character strings). The body's "Nothing in
-your database changes until a record is edited or deleted" is wrong for new
-records, which are now stored as ObjectId. The entries POST now answers the
-stored _id and drops a different sent _id without an error (D3, as decided;
-worth one line in the notes). Two shipping defects in the same class that this
-PR does not touch: BF-111 (BFQ-111) and BF-112 (BFQ-112).
+(docs/30-design/remedial/rc-15.0.9-integration-record.md) includes 6d120fa2:
+3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with the CRUD-by-_id matrix in each
+cell. Per-commit suites and the 336-cell matrix are in the no-gate. The D1
+check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids
+and nothing without. The narrow alternatives (BFQ-99 9b8cc2f9, BFQ-100
+2fac53f5, BFQ-101 7295bc8c) conflict with it and are not to land. It enables
+the connector's profile update-on-change (BFQ-97). PR body draft
+reports/phase0-pr-bodies/bf-object-id-consistency.md. Decisions: - 2026-09-23
+(maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working
+CRUD across the API (plan section 1a, "15.0.9 ID consistency"). - 2026-09-23
+(maintainer): D1 to D4 (plan section 1a), applied: D1 devicestatus re-send
+guard, D2 v3 reaches non-hex string _ids, D3 entries POST answers the stored
+_id, D4 helper header. Review 2026-09-24 (tools/lab/object-id, 43 cells
+against v15.0.8, dev ddd9b600 and 6d120fa2): three pre-release findings on
+this head, BF-109 (BFQ-109, v3 writes take the v1 half of a pair), BF-110
+(BFQ-110, a delete by hex removes both twins; the body's "you can now delete
+it" advice leads there; needs a decision) and BF-113 (BFQ-113, idForms accepts
+12-character strings). The body's "Nothing in your database changes until a
+record is edited or deleted" is wrong for new records, which are now stored as
+ObjectId. The entries POST now answers the stored _id and drops a different
+sent _id without an error (D3, as decided; worth one line in the notes). Two
+shipping defects in the same class that this PR does not touch: BF-111
+(BFQ-111) and BF-112 (BFQ-112).
 
 ---
 

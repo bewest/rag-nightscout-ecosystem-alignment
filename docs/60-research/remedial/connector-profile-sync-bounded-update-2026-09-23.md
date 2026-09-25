@@ -9,7 +9,7 @@
 > Historical: evidence for the maintainer's decisions of 2026-09-23 (bound the profile reads; copy profile edits). Both
 > commits merged as connector #79 and are in nightscout-connect `0.1.0`, released 2026-09-24 and pinned exactly by
 > Nightscout `dev` (#8762). Update-on-change works only against a sink that has #8758 (open). The combined runs'
-> lab arm did not include these two commits ([rc-15.0.9-combined-010](../../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)).
+> lab arm did not include these two commits ([15.0.9 integration record](../../30-design/remedial/rc-15.0.9-integration-record.md)).
 > Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-97).
 
 Every figure is **reproduced** (run in the lab or the suite) unless marked **read-derived**. All lab data was

@@ -4,7 +4,7 @@
 `bf2/subject-edit-keeps-fields`, one commit `7103f657` on `bf2/auth-hardening` `29e6430e`
 (register BF-47, queue BFQ-47). No `CHANGELOG.md` edit. **Ships in 15.0.9** (decided 2026-09-23,
 backfix-2 plan §1a). The combined run with the other 15.0.9 additions is recorded in
-`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`.
+`docs/30-design/remedial/rc-15.0.9-integration-record.md`.
 
 **This commit cannot go into `dev` without `bf2/auth-hardening`.** Merged onto `dev` `74fc6619`
 alone, it conflicts in `lib/authorization/storage.js`, and `tests/authsubjects.test.js` does not

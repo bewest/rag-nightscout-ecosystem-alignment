@@ -337,13 +337,11 @@ the user-facing form. Facts the notes must not lose:
 - `dev` `4f705217` itself (the merge of #8754, 2026-09-25): 2577 passing, 0 failing, 3 pending on
   Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24
   × MongoDB 4.4/5.0/6.0). Without #8758.
-- Latest combined run:
-  [`rc-15.0.9-combined-010-2026-09-24.md`](../../docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md):
-  `dev` `f1591069` + the exact `0.1.0` pin + #8754 `ef3404fd` + #8758 `6d120fa2`, tree `4114f45a`,
-  3046 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4 and 7.
-  `dev` `153e5658` + #8754 `280eccbe` + #8758 `6d120fa2` gives the same tree. It predates #8754's
-  later commits (the delay's position, the proxy guide, forwarded addresses with a port, #8763,
-  #8765); no combined run yet covers `dev` `4f705217` + #8758.
+- Freeze candidate, 2026-09-25
+  ([15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)):
+  `dev` `4f705217` + #8758 `ab7b22d6`, tree `25ab7afc` (#8758 is 0 behind `dev`). CI's `test-ci`
+  gives 3066 passing, 0 failing, 3 pending, and `test:core` gives 286, on Node 20.20.0, 22.23.2 and
+  24.20.0 × MongoDB 4.4.24 and 7.0.43. The `lib/api2` browser checks are owed (#8764).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 

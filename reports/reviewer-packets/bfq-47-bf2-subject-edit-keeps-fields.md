@@ -85,7 +85,7 @@ Control, re-run by the coordinator 2026-09-23 - with 29e6430e's storage.js the
 
 - Drafted PR body: [`reports/phase0-pr-bodies/bf2-subject-edit-keeps-fields.md`](../../reports/phase0-pr-bodies/bf2-subject-edit-keeps-fields.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
-- [`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md)
+- [`docs/30-design/remedial/rc-15.0.9-integration-record.md`](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)
 
 ## Notes carried on the item
 

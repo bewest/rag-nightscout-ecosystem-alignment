@@ -8,7 +8,7 @@ after 15.0.9 is tagged, and every count here must be re-measured then; item stat
 review; it makes no recommendation between the two release shapes.*
 
 Base: `rc/15.0.9-additions-c` **`b9c9828b`** (= `origin/dev` `74fc6619` + eight
-additions; record: [rc-15.0.9-additions-c](../remedial/rc-15.0.9-additions-c-2026-09-23.md)),
+additions; record: [15.0.9 integration record](../remedial/rc-15.0.9-integration-record.md)),
 used by SHA. Published cuts, unmoved at `git ls-remote` before the run:
 cut 1 `origin/chore/retire-jsdom` `bce12ecc`, cut 2
 `origin/chore/build-runtime-separation` `b6e8c7cd`, cut 3

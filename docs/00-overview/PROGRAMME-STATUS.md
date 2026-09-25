@@ -37,10 +37,11 @@ advisory fixes #8744, #8745 and #8746 (2026-09-21), #8741 from an external contr
 and #8765 folded in; merged as `4f705217`), all 2026-09-24. None is released. Open: #8758 (records
 keep their own `_id`). Every programme connector fix is
 in `nightscout-connect` `0.1.0`, released to npm `latest` on 2026-09-24 (`P0-TAG`, tag `v0.1.0` on
-connector `main` `4dde1ec`). Nightscout `dev` pins it exactly (#8762), and `dev` plus the pin, #8754
-and #8758 passed 3046/0/3 on every Node and MongoDB pair with #8754 at `ef3404fd`
-([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)); `dev` `4f705217` on its own
-passes 2577/0/3 on Node 20, 22 and 24 against MongoDB 7.0.43 and in CI. The
+connector `main` `4dde1ec`). Nightscout `dev` pins it exactly (#8762). The freeze candidate, `dev`
+`4f705217` + #8758 `ab7b22d6` (tree `25ab7afc`), passed 3066/0/3 on Node 20, 22 and 24 against
+MongoDB 4.4.24 and 7.0.43 on 2026-09-25
+([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)); `dev` `4f705217`
+on its own passes 2577/0/3 and is green in CI. The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
 

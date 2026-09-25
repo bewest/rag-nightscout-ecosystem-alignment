@@ -3,7 +3,7 @@
 **DRAFT. Not pushed, not opened.** Branch `bf2/ops` on `origin/dev` `74fc6619`, tip `e6a50e9a`,
 four commits. No `CHANGELOG.md` edit. Merges clean into `dev`. Ships in 15.0.9 (decided
 2026-09-23, backfix-2 plan §1a). The combined run with the other 15.0.9 additions is recorded in
-`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. The section "Tested together with
+`docs/30-design/remedial/rc-15.0.9-integration-record.md`. The section "Tested together with
 the other 15.0.9 changes" below is its posting summary.
 
 | commit | what it fixes | who can see it today |

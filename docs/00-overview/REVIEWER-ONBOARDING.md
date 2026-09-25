@@ -115,8 +115,8 @@ Four entry points, easiest first:
    approving review. It is 62 first-parent merges (`dev` `4f705217`, 2026-09-25); its
    readiness assessment is
    [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
-   (a 2026-09-22 snapshot), and the latest combined test run is
-   [`rc-15.0.9-combined-010-2026-09-24.md`](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md).
+   (a 2026-09-22 snapshot), and how the candidate was tested is in the
+   [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
 4. **An `unsettled` item.** `BFQ-09`, `A7A-7` — it is not yet established
    that these are defects at all. Settling one either way is a complete,
    self-contained contribution.

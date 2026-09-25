@@ -6,7 +6,7 @@ nightscout-connect `official/dev` `1946beb`; §3 and §5 re-measured 2026-09-23 
 `4011193e`/`ddd9b600`. Superseded for state: the decisions in §1 and §1a stand, but the PR table and
 the human steps are out of date. Item state is in `queue/work-queue.yaml` (`RT-0`, `BF2-AUTH`,
 `BFQ-102`), what waits on a person is in [NEEDS-A-HUMAN](../../00-overview/NEEDS-A-HUMAN.md), and the
-latest combined run is [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md).*
+latest combined run is [15.0.9 integration record](rc-15.0.9-integration-record.md).*
 
 BF-72 appears here by mechanism only. It is live on the shipping release, has no
 fix, and this repository is public; the reproducing material is kept outside
@@ -124,19 +124,19 @@ State on 2026-09-23 against `dev` `ddd9b600`. The queue holds the authoritative 
 | #8760 | `bf/split-drag-time` | a treatment moved by drag, whole or split, keeps its new time for IOB and COB (BF-103) | merged |
 | #8754 | `bf2/auth-hardening` | BF-17, BF-30, `TRUST_PROXY` (with hop counts and `true`), BF-47's admin-page fix; withheld-style body | **open**: security review, maintainer and Andy |
 | #8758 | `bf/object-id-crud` | records keep their own `_id` across v1, v3 and the websocket (BF-99 to BF-102) | **open**: review |
-| #8762 | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started [2026-09-24: merged; combined run [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md). #8761 (RT-COUNT-COMPAT) also merged 2026-09-24.] |
+| #8762 | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started [2026-09-24: merged; combined run [15.0.9 integration record](rc-15.0.9-integration-record.md). #8761 (RT-COUNT-COMPAT) also merged 2026-09-24.] |
 
 "merged" means merged into `dev`, not released.
 
 **Tested together.** `rc/15.0.9-combined-36b` `d087588f` merged every PR above except #8760 and the final pin,
 in PR order, each merge clean: 3015/0/3 on Node 20, 22 and 24 with MongoDB 4.4 and 7, the create/read/update/delete
 matrix 336/336, and a Nightscout-to-Nightscout lab run on `0.1.0-dev.3` with no duplicates or gaps
-([record](rc-15.0.9-combined-2026-09-23.md)). `dev` `ddd9b600` with #8754 (`ef3404fd`) and #8758 (`6d120fa2`)
+([record](rc-15.0.9-integration-record.md)). `dev` `ddd9b600` with #8754 (`ef3404fd`) and #8758 (`6d120fa2`)
 merges clean and differs from that tree in exactly #8760's five files. Decided 2026-09-23 (maintainer): run
 the combined suite on that set now, so #8754 and #8758 can merge on evidence, and once more after the pin to
 exact `0.1.0`, before the tag. The first run, `rc/15.0.9-combined-59` (tree `2ce67b27`), passes 3028/0/3 on every
 Node and MongoDB cell, with the create/read/update/delete matrix in each
-([record](rc-15.0.9-combined-59-2026-09-23.md)).
+([record](rc-15.0.9-integration-record.md)).
 
 **Checked by hand** on the combined rc `ec70aab0` (2026-09-23): the treatment drag (RT-D3) with mouse in mg/dL and
 mmol/L and with touch, the same as 15.0.8; alarms under `AUTH_DEFAULT_ROLES=denied` and with
@@ -215,7 +215,7 @@ Re-ordered 2026-09-23, after ten of the twelve 15.0.9 PRs merged. State is in th
 2. **Connector 0.1.0:** when `0.1.0-dev.3` has had the testing the maintainer wants (P0-TAG), tag `v0.1.0` on
    connector `dev` and approve the `npm-publish` environment. [2026-09-24: done; `v0.1.0` is on connector `main` `4dde1ec`.]
 3. **Nightscout pin:** open the PR moving `dev` from `0.1.0-dev.3` to exact `0.1.0`, and re-run the combined rc
-   with it (P0-PIN). [2026-09-24: done; #8762 merged, combined run [rc-15.0.9-combined-010](rc-15.0.9-combined-010-2026-09-24.md).]
+   with it (P0-PIN). [2026-09-24: done; #8762 merged, combined run [15.0.9 integration record](rc-15.0.9-integration-record.md).]
 4. **Release:** finish the 15.0.9 release notes; get #8598 approved by at least one reviewer who is not the author;
    merge it; tag 15.0.9.
 5. **Advisories:** the metadata corrections can be applied at any time (`advisories/apply-metadata.sh --apply`);

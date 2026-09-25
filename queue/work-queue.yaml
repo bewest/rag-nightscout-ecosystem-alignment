@@ -1817,7 +1817,7 @@ items:
       were the prerelease pins before it, both 2026-09-23.
 
       Evidence: the combined run with the pin,
-      docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev
+      docs/30-design/remedial/rc-15.0.9-integration-record.md: dev
       f1591069 + 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree
       4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB
       4.4/7; the pin step alone equals dev (2471/0/3, same titles);
@@ -2346,7 +2346,7 @@ items:
       run on dev f1591069 (which carries #8761) + the exact connector
       pin + #8754 ef3404fd + #8758 passes 3046/0/3 in all six Node x
       MongoDB cells
-      (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md).
+      (docs/30-design/remedial/rc-15.0.9-integration-record.md).
       Not run: a real OpenAPS rig or GluPredKit install (the lab replays
       their requests, not the programs).
 
@@ -2883,7 +2883,7 @@ items:
       - A human review of #8598, and the maintainer tagging.
 
       Evidence: the latest combined run,
-      docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev
+      docs/30-design/remedial/rc-15.0.9-integration-record.md: dev
       f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758
       6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0
       x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2
@@ -5131,7 +5131,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md
       - docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md
-      - docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
       Merged into dev by #8756 (c11888ed, 2026-09-23); not released. It
@@ -5144,7 +5144,7 @@ items:
 
       Evidence: integrated on rc/15.0.9-additions-d 5764156e, 2520/0/3
       on every Node and MongoDB pair
-      (docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md);
+      (docs/30-design/remedial/rc-15.0.9-integration-record.md);
       BF-35's probes still pass (food-boluscalc-browser.js 5/5 against
       15.0.8). PR body:
       reports/phase0-pr-bodies/bf3-quickpick-rebuild.md. The register's
@@ -5848,7 +5848,7 @@ items:
     blocks_on: [P0-C]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
-      - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       In review as part of #8754 (BF2-AUTH): the fix, 7103f657, is a
       commit on bf2/auth-hardening and is in #8754's head e32f7a1c
@@ -6126,7 +6126,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md
       - docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md
-      - docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
       Merged into dev by #8755 (728351e3, 2026-09-23); not released. CI
@@ -6148,7 +6148,7 @@ items:
       received data) is why each handler needs two guards. Evidence:
       integrated on rc/15.0.9-additions-d 5764156e, 2520/0/3 on every
       Node and MongoDB pair
-      (docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md); PR
+      (docs/30-design/remedial/rc-15.0.9-integration-record.md); PR
       body reports/phase0-pr-bodies/bf3-alarm-no-reading.md.
 
   - id: BFQ-92
@@ -7706,7 +7706,7 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
-      - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Merged into dev as 4f705217 on 2026-09-25T01:33Z, head bae655a0 (#8765 on 708af170; tree identical to 71987bb4's). On dev 4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Before the merge, head 708af170 (2026-09-24): e549e1a6 plus #8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0 on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores caregivers' addresses on remote overrides) comes in through a follow-up PR from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait back before the credential check, as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded address that carries a port, the form Azure App Service is reported to send; unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9. Destination
       15.0.9 (backfix-2 plan section 1a, 2026-09-23). Reviewers: the
@@ -7859,7 +7859,7 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
-      - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Merged into dev by #8753 (3a38c6f2, 2026-09-23); not released. CI
       and CodeQL green. It reaches operators with 15.0.9 (RT-0). Four
@@ -8382,7 +8382,7 @@ items:
       merge, before the 15.0.9 tag.
 
       Evidence: the combined run rc-15.0.9-combined-010
-      (docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)
+      (docs/30-design/remedial/rc-15.0.9-integration-record.md)
       includes 6d120fa2: 3046/0/3 on Node 20/22/24 x MongoDB 4.4/7 with
       the CRUD-by-_id matrix in each cell. Per-commit suites and the
       336-cell matrix are in the no-gate. The D1 check adds about 1 ms

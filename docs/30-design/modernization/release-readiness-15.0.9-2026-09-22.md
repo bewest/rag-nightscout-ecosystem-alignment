@@ -8,7 +8,7 @@ reviewers of PR #8598. Snapshot, 2026-09-22, against `origin/dev` `74fc6619`,
 backfix 2 folded into 15.0.9). What is still before the tag is in queue item `RT-0` in
 [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and in
 [PROGRAMME-STATUS](../../00-overview/PROGRAMME-STATUS.md); the latest combined run is
-[rc-15.0.9-combined-010](../remedial/rc-15.0.9-combined-010-2026-09-24.md). It replaced
+[15.0.9 integration record](../remedial/rc-15.0.9-integration-record.md). It replaced
 [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readiness-2026-09-14.md)
 for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md) for ordering.*
 

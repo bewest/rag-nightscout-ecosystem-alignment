@@ -57,6 +57,15 @@ current or superseded, and where the current fact lives. Known-wrong claims in a
 snapshot are corrected in place with a one-line note, not left for the reader to
 discover.
 
+**A series is one living document.** When the same deliverable is produced
+repeatedly — successive test runs of one release candidate, revisions of one
+plan — it lives in one file with no date in its name. The current version is
+given in full. Each earlier version is one row in a history table that links to
+the file at the commit holding it. Checks that the current version did not repeat
+are carried forward, each naming the tree it ran on. Superseded files are removed
+from the working tree rather than kept beside the current one. The first such
+record is [the 15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
+
 ## What this is not
 
 It is not a style guide and not a length limit. A long document that meets the

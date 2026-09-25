@@ -4,7 +4,7 @@
 commit `83cfff14` on `origin/dev` `74fc6619` (register BF-69, queue BFQ-69). No `CHANGELOG.md`
 edit. **Ships in 15.0.9** (decided 2026-09-23). Evidence:
 `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`. The combined run with the other
-15.0.9 additions is recorded in `docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`.
+15.0.9 additions is recorded in `docs/30-design/remedial/rc-15.0.9-integration-record.md`.
 
 > **Ordering: this must ship with or after #8735 (BF-35).** #8735 made each quick-pick option load
 > the record its label names. This PR makes the list non-empty, so without #8735 it would expose

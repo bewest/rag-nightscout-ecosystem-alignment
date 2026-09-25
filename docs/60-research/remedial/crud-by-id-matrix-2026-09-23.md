@@ -1,7 +1,7 @@
 # CRUD by `_id`: a matrix over every collection, stored `_id` form, API v1, API v3 and the websocket
 
 *Contributor-facing. Snapshot, 2026-09-23. Current: the fix is PR #8758 (`bf/object-id-crud`
-`6d120fa2`), open for review and covered by [rc-15.0.9-combined-010](../../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md);
+`6d120fa2`), open for review and covered by [15.0.9 integration record](../../30-design/remedial/rc-15.0.9-integration-record.md);
 item state is in `queue/work-queue.yaml` (`BFQ-102`). Measured 2026-09-23 against `origin/dev` `1f9a9d10` (15.0.9),
 `bf/object-id-consistency` `597e2899`, and `bf/object-id-crud` `6d120fa2` (eight commits on
 `597e2899`). Storage: `mongo:7` and MongoDB 4.4 in Docker. Node 20.20.0 and 22.23.2 via `n exec`.

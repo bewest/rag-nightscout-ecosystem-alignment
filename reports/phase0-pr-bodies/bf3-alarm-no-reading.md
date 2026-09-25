@@ -4,7 +4,7 @@
 commit `92544d8f` on `origin/dev` `74fc6619` (register BF-90, queue BFQ-90). No `CHANGELOG.md`
 edit. **Ships in 15.0.9** (decided 2026-09-23). Evidence:
 `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`. The combined run with the other
-15.0.9 additions is recorded in `docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`.
+15.0.9 additions is recorded in `docs/30-design/remedial/rc-15.0.9-integration-record.md`.
 
 > **Read this before the diff.** This is a crash fix only. **It does NOT make a page showing `---`
 > sound or show device alarms** (pump, loop, site or sensor age). Before and after this change, a

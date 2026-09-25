@@ -4,7 +4,7 @@
 `origin/dev` `74fc6619`, tip `7103f657` (14 commits, 10 of them non-merge). **Ships in 15.0.9**
 (decided 2026-09-23, backfix-2 plan §1a, superseding §3's "after 15.0.9 is tagged"). The combined
 run with the other 15.0.9 additions is recorded in
-`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. Its posting summary is "Tested
+`docs/30-design/remedial/rc-15.0.9-integration-record.md`. Its posting summary is "Tested
 together with the other 15.0.9 changes" below.
 
 **Posted in the withheld style (maintainer, 2026-09-23, in answer to the question put directly;

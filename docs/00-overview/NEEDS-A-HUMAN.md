@@ -96,11 +96,10 @@ released:
 - #8754 (login security fixes and `TRUST_PROXY`, with #8763 and #8765 folded in; merged as
   `4f705217`).
 
-One is open: #8758 fixes records keeping their own `_id`. `rc/15.0.9-combined-010` (`dev` + the
-`0.1.0` pin + #8754 at `ef3404fd` + #8758, tree `4114f45a`) passed 3046/0/3 on every Node and
-MongoDB pair ([record](../30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md)). `dev`
-`4f705217` on its own passes 2577/0/3 on Node 20, 22 and 24 against MongoDB 7.0.43 and in CI; no
-combined run yet covers it with #8758. The Loop remote-command browser checks must be repeated,
+One is open: #8758 fixes records keeping their own `_id`. On 2026-09-25 the freeze candidate,
+`dev` `4f705217` + #8758 `ab7b22d6` (tree `25ab7afc`), passed 3066/0/3 on Node 20, 22 and 24 against
+MongoDB 4.4.24 and 7.0.43 ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
+`dev` `4f705217` on its own passes 2577/0/3. The Loop remote-command browser checks must be repeated,
 because #8764 changed `lib/api2` after they were done (RT-0).
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
@@ -135,8 +134,8 @@ still exposed to all of them. Release PR #8598 is open. Its head is `dev`, now `
 no approving review. Still before the tag: #8754 and #8758 (tested together with the `0.1.0` pin on
 current `dev`), the release notes, and that review. What 15.0.9 contains and whether it is ready:
 [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
-(a 2026-09-22 snapshot; the combined rc record is
-[`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md)).
+(a 2026-09-22 snapshot; test evidence is in the
+[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 
 ### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
 

@@ -164,19 +164,18 @@ monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24);
 the #8754 PENDING markers were removed when it merged (2026-09-25), and the
 sections marked PENDING for #8758 are finalised when it merges. - A human
 review of #8598, and the maintainer tagging. Evidence: the latest combined
-run, docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md: dev
-f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2,
-tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev
-153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217
-on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0
-against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run
-yet covers dev 4f705217 + #8758. The browser checks were done by hand on
-ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
-AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-
-lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4;
-client-unchanged-since-hand-check.js says when they need repeating. Decisions:
-- 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood
-(backfix-2 plan section 1a,
+run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 +
+the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
+3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
+280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own
+(without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB
+7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev
+4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3,
+alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD;
+docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag
+again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when
+they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries
+beyond dev as it then stood (backfix-2 plan section 1a,
 docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0 answers an
 empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is
 declared deprecated in the release notes and dropped in a later release; the
