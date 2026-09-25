@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 117 |
-| runnable gates | 186 |
-| explicit `no-gate:` markers | 160 |
+| runnable gates | 190 |
+| explicit `no-gate:` markers | 159 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 160 of the 346 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 349 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 37 | RT-VERSION, RT-TRUST-ONE-SOURCE, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
+| `not-started` | 36 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, RT-TRUST-ONE-SOURCE, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `in-flight-upstream` | 5 | P0-C, P0-J, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 33 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
@@ -997,7 +997,7 @@ that costs.
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `merged-upstream` | `bf/count-zero-empty` | patch | 2 run |
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `merged-upstream` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
-| `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `ready-to-push` | `rt/trust-one-source` | patch | 4 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1200,11 +1200,11 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `-` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| branch | `rt/trust-one-source` |
+| base | `official/bf2/auth-hardening@e549e1a6` |
+| worktree | `externals/work/crm-trust-one-source` |
 | semver | `patch` |
 | review | maintainer |
 | blocks on | `BF2-AUTH` |
@@ -1217,11 +1217,19 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. Done means: lib/api3/security.js keys the failed-login delay from the policy compiled from opCtx.env (every API v3 operation already passes env), not from app.get('trust proxy fn') inherited through the mount; app.js sets Express's 'trust proxy' from that same compiled policy; the policy is compiled once per env; the API v3 key tests in tests/client-ip.test.js pass env instead of an app with trust proxy set; the inherits-from-parent test from e549e1a6 is replaced by one showing a v3 app with a different 'trust proxy' of its own does not change the key; break-it on each; full suite unchanged.
+- `[static]` `! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" rt/trust-one-source -- lib`
+  - One source: nothing under lib/ on the branch compiles env.trustProxy itself or reads Express's 'trust proxy fn'; app.js, the five consumers, the delay list and api3/security.js all go through trustFor(env) / clientIPFor(env). At e549e1a6 the same grep matches 10 lines (measured 2026-09-24).
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-source >/dev/null`
+  - trial-merge into the head of #8754 (the stack base) is conflict-free
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null`
+  - trial-merge into origin/dev is conflict-free (measured at 153e5658). Against rt/cut4 and origin/chore/nightscout-modernization it conflicts, and in six files more than e549e1a6 does: the one-line consumer changes in app.js, websocket.js, authorization/index.js, api3/security.js, alarmSocket.js and storageSocket.js.
+- `[unit]` _(cwd: `externals/work/crm-trust-one-source`)_ `TEST=client-ip npm run test-single`
+  - 61 passing (60 at e549e1a6: the inherits-from-parent test replaced by the v3-app-with-its-own-trust test, plus the one-policy-per-env test). Break-it, each reverted, 2026-09-24: security.js reading 'trust proxy fn' again -> 3 failing; trustFor without its cache, app.js compiling its own policy, and a cache that ignores env.trustProxy changes -> 1 failing each. Full suite at d0a3d628, Node 24.15.0, MongoDB 7: 2571 passing, 3 pending, 0 failing (2570 at e549e1a6).
 
 **Evidence.**
 
 - `docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md`
+- `reports/phase0-pr-bodies/rt-trust-one-source.md`
 
 **Notes.** Target: cut 1 or cut 2 of the modernization train, or earlier on dev if it fits this release cycle (maintainer, 2026-09-24). Today two routes deliver the policy: five modules compile env.trustProxy themselves, and lib/api3/security.js alone reads the Express setting the v3 app inherits from app.js. e549e1a6 (on #8754) tests the inherited route and sets the API v3 fixture's parent as app.js does; it does not remove the second route. Cuts 1-3 do not touch client-ip.js or api3/security.js; cut 2 changes tests/fixtures/api3/instance.js in a different hunk (bound address family, 27da0f8a) and trial-merges with #8754's head without a conflict in these files. Cuts 4 and 5 carry their own client-ip.js (06c83f2f, 395f3207), already resolved to the candidate's file (BF-88); cut 5 also sets 'trust proxy' on the v1 and v3 apps (#8605), which this change makes inert for the client address as well as for Express. Lowest home is dev (base of the stack); if dev is frozen for 15.0.9, commit it on cut 1 and merge up.
 

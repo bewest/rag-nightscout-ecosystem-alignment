@@ -1753,3 +1753,50 @@ controls:
       gate exit 0, control exit 1 - which also establishes something the gate
       alone does not: that line is the ONLY occurrence of the pattern in the
       file, so the gate cannot be satisfied by some other route's read check.
+
+  - gate: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" rt/trust-one-source -- lib
+    cwd: .
+    control: |-
+      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" e549e1a6 -- lib
+    control-kind: static
+    proves: >
+      The same grep at e549e1a6, before the refactor, matches 10 lines (five
+      createClientIP(env.trustProxy), app.js, three in delaylist.js and
+      security.js's 'trust proxy fn') and exits 1 (measured 2026-09-24). A
+      pattern that could not match would pass here too.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-source >/dev/null
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/trust-one-source >/dev/null
+    control-kind: static
+    proves: >
+      rt/cut4 and rt/trust-one-source were measured to conflict on
+      2026-09-24 (cut 4 carries its own client-ip.js) and merge-tree exits 1
+      on the pair.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree rt/cut4 rt/trust-one-source >/dev/null
+    control-kind: static
+    proves: >
+      rt/cut4 and rt/trust-one-source were measured to conflict on
+      2026-09-24 and merge-tree exits 1 on the pair.
+
+  - gate: |-
+      TEST=client-ip npm run test-single
+    cwd: externals/work/crm-trust-one-source
+    control-cwd: .
+    control: |-
+      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official rt/trust-one-source e549e1a6 externals/work/crm-trust-one-source --files=lib/api3/security.js client-ip
+    control-kind: slow
+    proves: >
+      The branch's tests with only lib/api3/security.js put back to e549e1a6
+      (keying API v3 on the app's 'trust proxy fn') exit 3: the three API v3
+      key tests, measured 2026-09-24. --files, because the whole-branch
+      ablation also removes trustFor, and the one-policy test then fails with
+      a TypeError, which is non-zero for the wrong reason.

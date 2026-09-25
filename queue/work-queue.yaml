@@ -2407,10 +2407,10 @@ items:
     title: "Every client-address consumer uses one TRUST_PROXY policy compiled from env"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
-    base: ""
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    branch: rt/trust-one-source
+    base: official/bf2/auth-hardening@e549e1a6
+    worktree: externals/work/crm-trust-one-source
+    state: ready-to-push
     blast_radius: >
       lib/server/client-ip.js, lib/api3/security.js, lib/server/app.js and
       the five modules that call createClientIP(env.trustProxy)
@@ -2428,19 +2428,41 @@ items:
       same compiled function (measured 2026-09-24 at e549e1a6).
     register: []
     gates:
-      - no-gate: >
-          Not started. Done means: lib/api3/security.js keys the failed-login
-          delay from the policy compiled from opCtx.env (every API v3 operation
-          already passes env), not from app.get('trust proxy fn') inherited
-          through the mount; app.js sets Express's 'trust proxy' from that same
-          compiled policy; the policy is compiled once per env; the API v3 key
-          tests in tests/client-ip.test.js pass env instead of an app with trust
-          proxy set; the inherits-from-parent test from e549e1a6 is replaced by
-          one showing a v3 app with a different 'trust proxy' of its own does not
-          change the key; break-it on each; full suite unchanged.
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" rt/trust-one-source -- lib'
+        kind: static
+        describe: >
+          One source: nothing under lib/ on the branch compiles env.trustProxy
+          itself or reads Express's 'trust proxy fn'; app.js, the five
+          consumers, the delay list and api3/security.js all go through
+          trustFor(env) / clientIPFor(env). At e549e1a6 the same grep matches
+          10 lines (measured 2026-09-24).
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-source >/dev/null
+        kind: static
+        describe: "trial-merge into the head of #8754 (the stack base) is conflict-free"
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null
+        kind: static
+        describe: >
+          trial-merge into origin/dev is conflict-free (measured at 153e5658).
+          Against rt/cut4 and origin/chore/nightscout-modernization it
+          conflicts, and in six files more than e549e1a6 does: the one-line
+          consumer changes in app.js, websocket.js, authorization/index.js,
+          api3/security.js, alarmSocket.js and storageSocket.js.
+      - run: TEST=client-ip npm run test-single
+        cwd: externals/work/crm-trust-one-source
+        kind: unit
+        describe: >
+          61 passing (60 at e549e1a6: the inherits-from-parent test replaced by
+          the v3-app-with-its-own-trust test, plus the one-policy-per-env
+          test). Break-it, each reverted, 2026-09-24: security.js reading
+          'trust proxy fn' again -> 3 failing; trustFor without its cache,
+          app.js compiling its own policy, and a cache that ignores
+          env.trustProxy changes -> 1 failing each. Full suite at d0a3d628,
+          Node 24.15.0, MongoDB 7: 2571 passing, 3 pending, 0 failing (2570 at
+          e549e1a6).
     blocks_on: [BF2-AUTH]
     evidence:
       - docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md
+      - reports/phase0-pr-bodies/rt-trust-one-source.md
     notes: >
       Target: cut 1 or cut 2 of the modernization train, or earlier on dev if
       it fits this release cycle (maintainer, 2026-09-24). Today two routes
