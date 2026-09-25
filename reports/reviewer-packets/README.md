@@ -37,7 +37,7 @@ repository.
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`RT-LOOP-REMOTE-ADDRESS`](rt-loop-remote-address-rt-loop-remote-address.md) | &mdash; | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label |
+| [`RT-LOOP-REMOTE-ADDRESS`](rt-loop-remote-address-rt-trust-one-source.md) | &mdash; | `ready-to-push` | Loop remote commands carry the proxy's address as their sender label |
 | [`RT-TRUST-ONE-SOURCE`](rt-trust-one-source-rt-trust-one-source.md) | &mdash; | `in-flight-upstream` | Every client-address consumer uses one TRUST_PROXY policy compiled from env |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |

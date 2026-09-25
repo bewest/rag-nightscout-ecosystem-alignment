@@ -8416,7 +8416,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: wip/object-id-crud-fixes
-    base: official/bf/object-id-crud@6d120fa2
+    base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
     state: ready-to-push
     pr: []
@@ -8471,8 +8471,15 @@ items:
       write takes. Fix shape, not measured: resolve the target with the
       sorted findOneFilter, then write by its exact _id.
       Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the
-      maintainer's request ("fixes we can add to this PR"). Next step:
-      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
+      maintainer's request ("fixes we can add to this PR"). Pushed to
+      #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub
+      (572bfc32), and CI failed one test there, the BF-112 create test,
+      because #8754 made subject create keep only owned fields. Follow-up
+      ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32)
+      drops the create half and keeps remove; with dev 4f705217 merged,
+      Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
+      step: a human pushes ab7b22d6 and uploads
+      reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
   - id: BFQ-110
     title: "BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there"
     parcel: register-open
@@ -8514,7 +8521,10 @@ items:
           Proposed: "If you see an old copy beside the one you edited, edit
           either one: the two become one record with that edit. Deleting
           either one deletes both." The next step is a human edit of the PR
-          body and of the 15.0.9 release notes.
+          body and of the 15.0.9 release notes. Both are prepared
+          2026-09-24: reports/phase0-pr-bodies/pr-8758-body.md (upload with
+          gh pr edit) and the #8758 section of
+          releases/cgm-remote-monitor-15.0.9/release-notes.md.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8534,7 +8544,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: wip/object-id-crud-fixes
-    base: official/bf/object-id-crud@6d120fa2
+    base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
     state: ready-to-push
     pr: []
@@ -8579,14 +8589,21 @@ items:
       Natural follow-up on the #8758 helper once it merges (expand each hex
       leaf of $in and $nin to its forms). Candidate for 15.0.10.
       Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the
-      maintainer's request ("fixes we can add to this PR"). Next step:
-      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
+      maintainer's request ("fixes we can add to this PR"). Pushed to
+      #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub
+      (572bfc32), and CI failed one test there, the BF-112 create test,
+      because #8754 made subject create keep only owned fields. Follow-up
+      ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32)
+      drops the create half and keeps remove; with dev 4f705217 merged,
+      Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
+      step: a human pushes ab7b22d6 and uploads
+      reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
   - id: BFQ-112
     title: "BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: wip/object-id-crud-fixes
-    base: official/bf/object-id-crud@6d120fa2
+    base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
     state: ready-to-push
     pr: []
@@ -8631,14 +8648,21 @@ items:
       token digests _id.toString(), the same for either form, so tokens
       are unaffected. Fix shape: toStoredId on create, idForms on remove.
       Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the
-      maintainer's request ("fixes we can add to this PR"). Next step:
-      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
+      maintainer's request ("fixes we can add to this PR"). Pushed to
+      #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub
+      (572bfc32), and CI failed one test there, the BF-112 create test,
+      because #8754 made subject create keep only owned fields. Follow-up
+      ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32)
+      drops the create half and keeps remove; with dev 4f705217 merged,
+      Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
+      step: a human pushes ab7b22d6 and uploads
+      reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
   - id: BFQ-113
     title: "BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: wip/object-id-crud-fixes
-    base: official/bf/object-id-crud@6d120fa2
+    base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
     state: ready-to-push
     pr: []
@@ -8686,8 +8710,15 @@ items:
       remove is read, not run. Small enough to fold into #8758 with
       BFQ-109.
       Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the
-      maintainer's request ("fixes we can add to this PR"). Next step:
-      a human pushes wip/object-id-crud-fixes to official bf/object-id-crud.
+      maintainer's request ("fixes we can add to this PR"). Pushed to
+      #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub
+      (572bfc32), and CI failed one test there, the BF-112 create test,
+      because #8754 made subject create keep only owned fields. Follow-up
+      ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32)
+      drops the create half and keeps remove; with dev 4f705217 merged,
+      Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
+      step: a human pushes ab7b22d6 and uploads
+      reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
   - id: OID-LAB
     title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
     parcel: register-open

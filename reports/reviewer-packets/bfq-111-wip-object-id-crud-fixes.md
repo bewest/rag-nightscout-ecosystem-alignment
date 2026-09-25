@@ -20,7 +20,7 @@ bulk deletes**
 |---|---|
 | repository | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
-| base | `official/bf/object-id-crud@6d120fa2` |
+| base | `official/bf/object-id-crud@572bfc32` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-111` is the measurement |
 | semver | `patch` |
 | register entries | `BF-111` |
@@ -81,8 +81,14 @@ Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural
 follow-up on the #8758 helper once it merges (expand each hex leaf of $in and
 $nin to its forms). Candidate for 15.0.10. Fix committed 2026-09-24 as
 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the maintainer's
-request ("fixes we can add to this PR"). Next step: a human pushes wip/object-
-id-crud-fixes to official bf/object-id-crud.
+request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24
+(dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed
+one test there, the BF-112 create test, because #8754 made subject create keep
+only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-
+forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217
+merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next
+step: a human pushes ab7b22d6 and uploads reports/phase0-pr-
+bodies/pr-8758-body.md as the PR body.
 
 ---
 

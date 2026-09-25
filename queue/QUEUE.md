@@ -3372,7 +3372,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
-| base | `official/bf/object-id-crud@6d120fa2` |
+| base | `official/bf/object-id-crud@572bfc32` |
 | worktree | `externals/work/crm-object-id-fixes` |
 | semver | `patch` |
 | review | maintainer |
@@ -3397,7 +3397,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the review of #8758, which it blocks in the review's judgement; whether it holds the merge is the maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's P-ID-2 fix (v3 GET/PATCH/DELETE of a string- _id record back to 404), so a fix must keep P-ID-2 and change only which document a write takes. Fix shape, not measured: resolve the target with the sorted findOneFilter, then write by its exact _id. Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Next step: a human pushes wip/object- id-crud-fixes to official bf/object-id-crud.
+**Notes.** Open, found 2026-09-24 in the review of #8758, which it blocks in the review's judgement; whether it holds the merge is the maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js reverted to 1f9a9d10 gives dev's P-ID-10 cells and loses #8758's P-ID-2 fix (v3 GET/PATCH/DELETE of a string- _id record back to 404), so a fix must keep P-ID-2 and change only which document a write takes. Fix shape, not measured: resolve the target with the sorted findOneFilter, then write by its exact _id. Fix committed 2026-09-24 as a2c7eb39 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body.
 
 ### `BFQ-110` &mdash; BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there
 
@@ -3422,7 +3422,7 @@ distinction is the only thing that makes the register mean anything - widening
 **Gates.**
 
 - **NO GATE** &mdash; Measured by tools/lab/object-id (probe P-ID-7). On 6d120fa2 the v1 DELETE /treatments/<hex> and the websocket dbRemove of a twin leave n=0 where v15.0.8 and dev ddd9b600 leave n=1; find[_id] returns 2 where they return 1. The v3 permanent DELETE leaves 1 on all three. No queue gate wraps the lab yet (OID-LAB).
-- **NO GATE** &mdash; Decided 2026-09-24 (maintainer): deleting a record by its hex id removes both copies of a twin. That is what #8758's body already says ("Deleting such a record now removes it, including a copy left by an earlier edit"), so no code changes. What is left is one line of the body's advice, "If you see an old copy beside the one you edited, you can now delete it", which deletes the edited copy too. Proposed: "If you see an old copy beside the one you edited, edit either one: the two become one record with that edit. Deleting either one deletes both." The next step is a human edit of the PR body and of the 15.0.9 release notes.
+- **NO GATE** &mdash; Decided 2026-09-24 (maintainer): deleting a record by its hex id removes both copies of a twin. That is what #8758's body already says ("Deleting such a record now removes it, including a copy left by an earlier edit"), so no code changes. What is left is one line of the body's advice, "If you see an old copy beside the one you edited, you can now delete it", which deletes the edited copy too. Proposed: "If you see an old copy beside the one you edited, edit either one: the two become one record with that edit. Deleting either one deletes both." The next step is a human edit of the PR body and of the 15.0.9 release notes. Both are prepared 2026-09-24: reports/phase0-pr-bodies/pr-8758-body.md (upload with gh pr edit) and the #8758 section of releases/cgm-remote-monitor-15.0.9/release-notes.md.
 
 **Evidence.**
 
@@ -3438,7 +3438,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
-| base | `official/bf/object-id-crud@6d120fa2` |
+| base | `official/bf/object-id-crud@572bfc32` |
 | worktree | `externals/work/crm-object-id-fixes` |
 | semver | `patch` |
 | review | maintainer |
@@ -3463,7 +3463,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural follow-up on the #8758 helper once it merges (expand each hex leaf of $in and $nin to its forms). Candidate for 15.0.10. Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Next step: a human pushes wip/object- id-crud-fixes to official bf/object-id-crud.
+**Notes.** Open, found 2026-09-24 in the #8758 review; not a #8758 regression. Natural follow-up on the #8758 helper once it merges (expand each hex leaf of $in and $nin to its forms). Candidate for 15.0.10. Fix committed 2026-09-24 as 1c2d1afd on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast- forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr- bodies/pr-8758-body.md as the PR body.
 
 ### `BFQ-112` &mdash; BF-112 - an auth subject created with a hex _id is stored as a string and cannot be deleted by it
 
@@ -3472,7 +3472,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
-| base | `official/bf/object-id-crud@6d120fa2` |
+| base | `official/bf/object-id-crud@572bfc32` |
 | worktree | `externals/work/crm-object-id-fixes` |
 | semver | `patch` |
 | review | maintainer |
@@ -3497,7 +3497,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review; same class as BF-99 in auth_subjects, which #8758 does not touch. The web admin page does not send _id, so reaching it needs a restore or a tool. The access token digests _id.toString(), the same for either form, so tokens are unaffected. Fix shape: toStoredId on create, idForms on remove. Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Next step: a human pushes wip/object-id-crud- fixes to official bf/object-id-crud.
+**Notes.** Open, found 2026-09-24 in the #8758 review; same class as BF-99 in auth_subjects, which #8758 does not touch. The web admin page does not send _id, so reaching it needs a restore or a tool. The access token digests _id.toString(), the same for either form, so tokens are unaffected. Fix shape: toStoredId on create, idForms on remove. Fix committed 2026-09-24 as d2fd9ff6 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
 
 ### `BFQ-113` &mdash; BF-113 - on #8758, idForms accepts a 12-character string and unguarded callers widen to its forms
 
@@ -3506,7 +3506,7 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `wip/object-id-crud-fixes` |
-| base | `official/bf/object-id-crud@6d120fa2` |
+| base | `official/bf/object-id-crud@572bfc32` |
 | worktree | `externals/work/crm-object-id-fixes` |
 | semver | `patch` |
 | review | maintainer |
@@ -3531,7 +3531,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Next step: a human pushes wip/object-id-crud- fixes to official bf/object-id-crud.
+**Notes.** Open, found 2026-09-24 in the #8758 review. The v1 routes refuse non-hex ids with 400; only in-process callers (the connector's internal output) can pass one. The effect through profile.save and remove is read, not run. Small enough to fold into #8758 with BFQ-109. Fix committed 2026-09-24 as dd2cf8f1 on wip/object-id-crud-fixes; folded into #8758 at the maintainer's request ("fixes we can add to this PR"). Pushed to #8758 2026-09-24 (dd2cf8f1); the maintainer then merged dev on GitHub (572bfc32), and CI failed one test there, the BF-112 create test, because #8754 made subject create keep only owned fields. Follow-up ab7b22d6 on wip/object-id-crud-fixes (fast-forward of 572bfc32) drops the create half and keeps remove; with dev 4f705217 merged, Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. Next step: a human pushes ab7b22d6 and uploads reports/phase0-pr-bodies/pr-8758-body.md as the PR body.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 

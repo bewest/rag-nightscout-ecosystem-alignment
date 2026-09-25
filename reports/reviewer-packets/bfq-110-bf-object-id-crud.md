@@ -68,7 +68,9 @@ maintainer
   deletes the edited copy too. Proposed: "If you see an old copy beside the
   one you edited, edit either one: the two become one record with that edit.
   Deleting either one deletes both." The next step is a human edit of the PR
-  body and of the 15.0.9 release notes.
+  body and of the 15.0.9 release notes. Both are prepared 2026-09-24:
+  reports/phase0-pr-bodies/pr-8758-body.md (upload with gh pr edit) and the
+  #8758 section of releases/cgm-remote-monitor-15.0.9/release-notes.md.
 
 ## Evidence
 

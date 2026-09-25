@@ -18,8 +18,8 @@
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `rt/loop-remote-address` |
-| base | `official/rt/trust-one-source@e3354218` |
+| branch | `rt/trust-one-source` |
+| base | `official/bf2/auth-hardening@708af170` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-LOOP-REMOTE-ADDRESS` is the measurement |
 | semver | `patch` |
 
@@ -63,9 +63,11 @@ lib/api2 no longer reads the connection's peer as the sender's address;
 notifications-v2.js uses clientIPFor(env). At e3354218 the same grep matches
 notifications-v2.js:34 (measured 2026-09-24).
 
-**`git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/rt/trust-one-source rt/loop-remo`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening official/rt/t`** &nbsp;·&nbsp; kind: `static`
 
-trial-merge into the head of #8763 (the stack base) is conflict-free
+The follow-up PR (rt/trust-one-source into bf2/auth-hardening) merges clean;
+the merged tree is identical to 71987bb4's, on which the full suite ran
+(measured 2026-09-24).
 
 **`git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/loop-remote-address >/dev/n`** &nbsp;·&nbsp; kind: `static`
 
@@ -102,19 +104,24 @@ e3354218).
 
 ## Evidence
 
-- Drafted PR body: [`reports/phase0-pr-bodies/rt-loop-remote-address.md`](../../reports/phase0-pr-bodies/rt-loop-remote-address.md)
+- Drafted PR body: [`reports/phase0-pr-bodies/rt-trust-one-source.md`](../../reports/phase0-pr-bodies/rt-trust-one-source.md)
 - [`reports/phase0-pr-bodies/rt-loop-remote-address.md`](../../reports/phase0-pr-bodies/rt-loop-remote-address.md)
+- [`reports/phase0-pr-bodies/rt-trust-one-source-into-8754.md`](../../reports/phase0-pr-bodies/rt-trust-one-source-into-8754.md)
 
 ## Notes carried on the item
 
 Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the only
 client-address read in lib/ that does not go through client-ip.js. Present
 unchanged on origin/dev 153e5658; introduced with the V2 API in 7f05018d
-(2023-06-04). req.connection is also a deprecated alias for req.socket. Not
-for 15.0.9: nothing is broken for anyone and the change stores more personal
-data. Committed as 71987bb4 on rt/loop-remote-address, stacked on #8763's
-head; open it against rt/trust-one-source and retarget with the stack. Not
-pushed.
+(2023-06-04). req.connection is also a deprecated alias for req.socket. Opened
+as #8764 against rt/trust-one-source and merged there (efcd26b1,
+2026-09-25T01:04Z), two minutes after rt/trust-one-source had been merged into
+bf2/auth-hardening as #8763, so #8754 does not have it. Maintainer,
+2026-09-24: it goes into #8754 and ships in 15.0.9, through a PR from
+rt/trust-one-source to bf2/auth-hardening (posting copy reports/phase0-pr-
+bodies/rt-trust-one-source-into-8754.md; not opened). The 15.0.9 release
+notes' TRUST_PROXY section and #8754's posting copy carry the stored-address
+notice.
 
 ---
 

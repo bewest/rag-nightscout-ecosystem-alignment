@@ -27,9 +27,10 @@ TRUST_PROXY**
 
 ## What this changes
 
-#8754 head e549e1a6 (2026-09-24) against dev 153e5658: 27 commits, 22 files,
-+2063/-100. lib/authorization/{index,delaylist,storage,endpoints}.js;
-lib/server/{client-ip,env,app,websocket}.js; lib/api/status.js;
+#8754 head 708af170 (2026-09-24, with #8763) against dev 153e5658: 30 commits,
+22 files, +2120/-101; with the pending #8764 follow-up, 25 files, +2167/-105.
+lib/authorization/{index,delaylist,storage,endpoints}.js; lib/server/{client-
+ip,env,app,websocket}.js; lib/api/status.js;
 lib/api3/{security,alarmSocket,storageSocket}.js; package.json and lock
 (proxy-addr declared, forwarded-for kept); README.md and
 docs/proposals/trusted-proxy-migration.md; tests authdelay, authsubjects,
@@ -107,41 +108,46 @@ default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 ## Notes carried on the item
 
-Open upstream as #8754, not merged. Head e549e1a6 (2026-09-24). It carries dev
-153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait
-back before the credential check, as in earlier releases; 9c6cde72 (an
-explicit TRUST_PROXY accepts a forwarded address that carries a port, the form
-Azure App Service is reported to send; unset is unchanged); b5f61f19 (the
-proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key
-test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6
-(session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9.
-Destination 15.0.9 (backfix-2 plan section 1a, 2026-09-23). Reviewers: the
-maintainer and Andy (security review); no review is recorded on the PR yet
-(2026-09-24). Owed before merge: the security review and a combined run on
-e549e1a6; the latest combined run (rc-15.0.9-combined-010, 3046/0/3) used
-#8754 at ef3404fd. What it carries: bf/auth (BF-17, P0-C) and bf/throttle
-(BF-30, P0-J) by ancestry; the client-address module and TRUST_PROXY setting
-cherry-picked (-x) from chore/nightscout-modernization (06c83f2f, 395f3207),
-with 8b975b41 a port so that with TRUST_PROXY unset the address comes from
-forwarded-for exactly as on dev (395f3207's default differs in four cases,
-BF-88); the subject-edit fix 7103f657 (BFQ-47) as its last content commit. The
-failed-login delay: the wait comes before the check, as in earlier releases;
-failures are also counted per credential; the list is bounded and swept on a
-schedule. The throttle keys on data.ip, which comes from client-ip.js, so one
-setting governs both. BF-30 is closed only when TRUST_PROXY names a boundary;
-with the default it remains open, and the branch says so in its boot message
-and PR body. Semver stays major for BF-47 (a compatibility flag, sketched in
-the PR body, would make it minor; the maintainer decided none). Decisions: -
-2026-09-23 (maintainer): ships in 15.0.9, superseding the plan's section 3
-"PRs open after 15.0.9 is tagged". - 2026-09-23 (maintainer): posted in the
-withheld style (reports/phase0-pr-bodies/bf2-auth-hardening.withheld.md); the
-full text is kept for after a fixed release, and the rotation section goes
-into the 15.0.9 release notes. bf2/subject-edit-keeps-fields folded in as the
-final commit. - 2026-09-23 (maintainer): TRUST_PROXY accepts a hop count and
-true, with Express's meaning for each; Express's subnet aliases (loopback,
-linklocal, uniquelocal) are refused, and accepting them is deferred to a later
-release. The inert trust proxy lines in lib/api/index.js and lib/api3/index.js
-are trimmed (the sub-apps inherit trust proxy from lib/server/app.js). -
+Open upstream as #8754, not merged. Head 708af170 (2026-09-24): e549e1a6 plus
+#8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0
+on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores
+caregivers' addresses on remote overrides) comes in through a follow-up PR
+from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the
+merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c);
+f6f361b1, which puts the failed-login wait back before the credential check,
+as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded
+address that carries a port, the form Azure App Service is reported to send;
+unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and
+e549e1a6 (an API v3 failed-login key test through the trust its app inherits).
+Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix
+is part of #8754 and 15.0.9. Destination 15.0.9 (backfix-2 plan section 1a,
+2026-09-23). Reviewers: the maintainer and Andy (security review); no review
+is recorded on the PR yet (2026-09-24). Owed before merge: the security review
+and a combined run on #8754's head once #8764's follow-up is merged; the
+latest combined run (rc-15.0.9-combined-010, 3046/0/3) used #8754 at ef3404fd.
+What it carries: bf/auth (BF-17, P0-C) and bf/throttle (BF-30, P0-J) by
+ancestry; the client-address module and TRUST_PROXY setting cherry-picked (-x)
+from chore/nightscout-modernization (06c83f2f, 395f3207), with 8b975b41 a port
+so that with TRUST_PROXY unset the address comes from forwarded-for exactly as
+on dev (395f3207's default differs in four cases, BF-88); the subject-edit fix
+7103f657 (BFQ-47) as its last content commit. The failed-login delay: the wait
+comes before the check, as in earlier releases; failures are also counted per
+credential; the list is bounded and swept on a schedule. The throttle keys on
+data.ip, which comes from client-ip.js, so one setting governs both. BF-30 is
+closed only when TRUST_PROXY names a boundary; with the default it remains
+open, and the branch says so in its boot message and PR body. Semver stays
+major for BF-47 (a compatibility flag, sketched in the PR body, would make it
+minor; the maintainer decided none). Decisions: - 2026-09-23 (maintainer):
+ships in 15.0.9, superseding the plan's section 3 "PRs open after 15.0.9 is
+tagged". - 2026-09-23 (maintainer): posted in the withheld style
+(reports/phase0-pr-bodies/bf2-auth-hardening.withheld.md); the full text is
+kept for after a fixed release, and the rotation section goes into the 15.0.9
+release notes. bf2/subject-edit-keeps-fields folded in as the final commit. -
+2026-09-23 (maintainer): TRUST_PROXY accepts a hop count and true, with
+Express's meaning for each; Express's subnet aliases (loopback, linklocal,
+uniquelocal) are refused, and accepting them is deferred to a later release.
+The inert trust proxy lines in lib/api/index.js and lib/api3/index.js are
+trimmed (the sub-apps inherit trust proxy from lib/server/app.js). -
 2026-09-23 (maintainer): the security reviewers are the maintainer and Andy.
 Measured facts a reviewer needs: lib/api3/security.js:34 reads app.get('trust
 proxy fn') for the v3 token throttle key, and the inherited fn equals the

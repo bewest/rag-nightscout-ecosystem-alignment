@@ -497,12 +497,20 @@ site** or **restored from an export**, and treatments and glucose readings saved
 and kept the old one, and **deleting** it by its ID did nothing. Apps using the newer API
 (version 3), or the live connection some apps keep open, had the same trouble.
 
-In this release those records are found. The first time one is edited, the edit replaces the old
-copy and you are left with one record; deleting one removes it. Nothing in your database changes
-until a record is edited or deleted. **If your site receives data from another Nightscout site, or
-you have restored data from an export, or it has run since 15.0.6 or earlier**, look at any profile
-or treatment you have edited there. If you see an old copy beside the one you edited, you can now
-delete it. If you are unsure which settings or entries are correct, check with your care team.
+In this release those records are found. New records that arrive with their own ID are saved in
+the normal form. Records already saved the old way are left as they are until one is edited or
+deleted: the first edit replaces the old copy and you are left with one record, and deleting one
+removes it, together with any old copy an earlier edit left beside it. **If your site receives
+data from another Nightscout site, or you have restored data from an export, or it has run since
+15.0.6 or earlier**, look at any profile or treatment you have edited there. If you see an old copy
+beside the one you edited, edit either one: the two become one record with that edit. Deleting
+either one deletes both. If you are unsure which settings or entries are correct, check with your
+care team.
+
+The same change fixes deleting an access entry (a "subject" on the admin page) that was restored
+from a backup or created by a tool that set its own ID. Before, the page reported success and the
+entry stayed, **still able to access your site**. It is now removed. If you have deleted such an
+entry before, check the list on the admin page to make sure it is gone.
 <!-- PENDING: #8758 merge -->
 
 ### Moving a treatment on the chart now moves its insulin and carbs too

@@ -62,9 +62,10 @@ points. client-ip.js exports trustFor and clientIPFor only (e3354218), so new
 code copying the tests learns those two. At d0a3d628 the same grep matches 36
 lines (measured 2026-09-24).
 
-**`git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/bf2/auth-hardening rt/trust-one-`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/bf2/auth-hardening`** &nbsp;·&nbsp; kind: `static`
 
-trial-merge into the head of #8754 (the stack base) is conflict-free
+Containment: #8763 was merged into #8754's branch (708af170, 2026-09-24), so
+both commits reach dev and 15.0.9 with #8754.
 
 **`git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev rt/trust-one-source >/dev/null`** &nbsp;·&nbsp; kind: `static`
 
@@ -113,12 +114,13 @@ files. Cuts 4 and 5 carry their own client-ip.js (06c83f2f, 395f3207), already
 resolved to the candidate's file (BF-88); cut 5 also sets 'trust proxy' on the
 v1 and v3 apps (#8605), which this change makes inert for the client address
 as well as for Express. Lowest home is dev (base of the stack); if dev is
-frozen for 15.0.9, commit it on cut 1 and merge up. Opened 2026-09-24 as draft
-#8763; head e3354218 (pushed, body updated), base bf2/auth-hardening (stacked
-on #8754); retarget to dev when #8754 merges. Test CI does not run on it while
-the base is not dev (only auto-close ran). Real boot on d0a3d628 and e549e1a6
-compared: TRUST_PROXY=loopback refused at boot with the same error on both,
-TRUST_PROXY=1 listens on both.
+frozen for 15.0.9, commit it on cut 1 and merge up. #8763 merged into
+bf2/auth-hardening as 708af170 (2026-09-25T01:02Z); it ships with #8754 in
+15.0.9. Before that: opened 2026-09-24 as draft #8763, head e3354218, base
+bf2/auth-hardening (stacked on #8754); retarget to dev when #8754 merges. Test
+CI does not run on it while the base is not dev (only auto-close ran). Real
+boot on d0a3d628 and e549e1a6 compared: TRUST_PROXY=loopback refused at boot
+with the same error on both, TRUST_PROXY=1 listens on both.
 
 ---
 
