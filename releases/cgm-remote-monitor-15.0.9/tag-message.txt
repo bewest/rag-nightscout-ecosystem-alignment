@@ -1,12 +1,15 @@
 cgm-remote-monitor 15.0.9
 
-DRAFT tag body, not applied. Delete these five lines when the tag is
-cut. Still pending: #8758 (head e9dbb1fb once pushed). Replace its head below
-with its merge SHA into dev, and re-measure the counts
-(git rev-list --first-parent --count 15.0.8..<tag>).
+DRAFT tag body, not applied. Delete this paragraph when the tag is
+cut. Still pending: #8758 (head e9dbb1fb once pushed), #8568 (ae4dc2f7),
+#8419 (b1c23e74), #8730 (f99c0e54). Replace each head below with its
+merge SHA into dev, and re-measure the counts
+(git rev-list --first-parent --count 15.0.8..<tag>;
+git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at 4f705217: 62 first-parent PR merges, 384 commits,
-226 files, +18167/-1403. #8758 is not yet included.
+15.0.8..dev at ecb63223: 65 first-parent PR merges, 393 commits,
+232 files, +18363/-1417. #8758, #8568, #8419 and #8730 are not yet
+included.
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -49,6 +52,14 @@ Security
   #8583 4f6151d7  Loop remote-command errors without diagnostics
 
 Alarms and client
+  #8766 e812a68c  mmol sites: each BG_ threshold read on its own
+                  (below 30 = mmol/L, converted; 30 or more = mg/dL,
+                  kept), so low alarms fire when only some are set in
+                  mmol/L; one log line per converted threshold (BF-118)
+  #8767 ecb63223  PUMP_WARN_ON_SUSPEND raises "Pump Suspended"; pill
+                  takes the warning colour while suspended (BF-119)
+  #8568 ae4dc2f7  (pending) AAPS open-ended loop disable no longer keeps
+                  loop and pump alerts off after re-enable (BF-114)
   #8739 7a5561f4  insulinage URGENT reachable; ENABLE suggestion;
                   voice locale no longer process-global
                   (BF-28 BF-29 BF-31)
@@ -62,6 +73,7 @@ Alarms and client
   #8734 fdd08706  merge delete + unmatched update (BF-36)
   #8732 59430336  pills and profile editor on incomplete data
   #8729 1abc1aad  chart.update() 0-height guard
+  #8530 c3d42d4e  48-hour choice in the main chart's hour selector
   #8587 48441640  COB from the uploading system
   #8602 57f45284  Daily Stats A1c from mg/dL
   #8588 c1943ced  report SGV de-duplication no longer cascades
@@ -107,8 +119,13 @@ Dependencies
   Express/body-parser, ip-address, fast-uri, socket.io-parser,
   DOMPurify, js-yaml, Mocha, PostCSS, brace-expansion)
 
+Tests
+  #8419 b1c23e74  (pending) iOS Loop push-notification and websocket
+                  integration tests
+
 Translations, docs, version
   #8599 #8603  Crowdin
+  #8730 f99c0e54  (pending) Crowdin
   #8516 85fed44b  README: MongoDB 4.4 not supported
   #8750 1f9a9d10  README: MongoDB 4.4 deprecated, still tested
   #7338 57d1cac9  docs
@@ -124,11 +141,15 @@ different (correct) rows; _ no longer becomes a space in query
 parameters; voice endpoints ignore request locale; new TRUST_PROXY
 setting, unset = previous behaviour, with a boot message; Loop remote
 commands record the sender's address as TRUST_PROXY resolves it, stored
-with each remote override; MongoDB 4.4
+with each remote override; on mmol sites each BG_ threshold is
+read on its own, so a site mixing mmol/L and mg/dL thresholds can
+store different values (check thresholds after upgrading);
+PUMP_WARN_ON_SUSPEND now raises a warning; MongoDB 4.4
 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 
-Not in this release: BF-86/BF-67 threshold units; BF-76 silenceTime
+Not in this release: BF-86/BF-67 threshold units on mg/dL sites and
+the silent threshold rewrite; BF-76 silenceTime
 bound; server alarms on a page with no reading; a planned TRUST_PROXY
 default flip.
 

@@ -1,18 +1,19 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `4f705217`
-(merge of #8754) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `ecb63223`
+(merge of #8767) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `4f705217`, plus the open PRs the maintainer has decided ship in
-it** ([decisions](decisions.md)): #8758, and four outside contributors' PRs carried by decision on
-2026-09-25, #8568 (BF-114), #8419 (tests), #8530 (a 48-hour chart option) and #8730 (Crowdin
-translations). Every PR merged to `dev` is `merged`; none is `released`. The carried PRs are `open`.
+15.0.9 is **everything on `dev` at `ecb63223`, plus the open PRs the maintainer has decided ship in
+it** ([decisions](decisions.md)): #8758, and three outside contributors' PRs carried by decision on
+2026-09-25, #8568 (BF-114), #8419 (tests) and #8730 (Crowdin translations). A fourth carried PR,
+#8530 (a 48-hour chart option), merged on 2026-09-25. Every PR merged to `dev` is `merged`; none is
+`released`. The carried PRs still to merge are `open`.
 
 ## Identity
 
@@ -20,26 +21,41 @@ translations). Every PR merged to `dev` is `merged`; none is `released`. The car
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `4f705217` (merge of #8754, 2026-09-24) |
-| Commits on `dev` | 384 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **62** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 226 files, +18167/−1403 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `ecb63223` (merge of #8767, 2026-09-25) |
+| Commits on `dev` | 393 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **65** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 232 files, +18363/−1417 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8758 (PR head `ab7b22d6`; `e9dbb1fb`, six commits on it, prepared locally to push) — `gh pr view <n> --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `4f705217`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
+| Open additions | #8758 (PR head `ab7b22d6`; `e9dbb1fb`, six commits on it, prepared locally to push); #8568 (head `ae4dc2f7`), #8419 (head `b1c23e74`), #8730 (head `f99c0e54`) — `gh pr view <n> --json state,headRefOid` |
+| Release PR | #8598 (`dev` → `master`, head `ecb63223`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
 
-### Open addition (not merged)
+### Open additions (not merged)
 
-Sizes are against `dev`: `git rev-list --count official/dev..<head>` and
-`git diff --shortstat official/dev...<head>`. #8758's merge base with `dev` is `4f705217` (#8754), `dev`'s tip: #8758 is 0 commits behind (2026-09-25).
+Sizes are against `dev` `ecb63223`: `git rev-list --count official/dev..<head>` and
+`git diff --shortstat official/dev...<head>`; behind is `git rev-list --count <head>..official/dev`.
+#8758's merge base with `dev` is `4f705217` (#8754); `dev` has moved on by #8530, #8766 and #8767,
+so `e9dbb1fb` is 9 commits behind `ecb63223` and merges into it without conflict
+(`git merge-tree --write-tree official/dev e9dbb1fb`) (2026-09-25).
 
 | PR | branch | head | commits not on `dev` | diff | register | what |
 |---|---|---|---|---|---|---|
 | #8758 | `bf/object-id-crud` | `e9dbb1fb` (local; the PR shows `ab7b22d6` until pushed) | 25 | 38 files, +4194/−107 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
+
+The three outside contributors' PRs carried by the 2026-09-25 decision
+(`git fetch official pull/<n>/head`):
+
+| PR | branch | head | commits not on `dev` | behind `dev` | diff | register | what |
+|---|---|---|---|---|---|---|---|
+| #8568 | `lejcey:fix-loop-status-timeline` | `ae4dc2f7` | 3 | 6 (merge base `c3d42d4e`, #8530) | 3 files, +358/−8 | BF-114 | `lib/data/ddata.js` infers the end of an AAPS open-ended loop disable from the next running-mode record, so the offline marker no longer keeps the "not looping" and pump alerts off after the loop is re-enabled; `tests/ddata.test.js`; drops an unused `convertToRanges` wrapper in `lib/profile/profileeditor.js`. Clears the released-AAPS record shape only; the AAPS-dev shape and the day-to-day report are not covered (register BF-114), and the fix may be extended to the second shape before it merges |
+| #8419 | `je-l:extend-api-tests` | `b1c23e74` | 15 | 161 (merge base `57d1cac9`, #7338) | 9 files, +322/−89 | — | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), test fixtures, `.nycrc.json`. Nothing user-facing |
+| #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 35 | 94 (merge base `59430336`, #8732) | 32 files, +518/−454 | — | Crowdin translation updates (`translations/*.json`) |
+
+Each merges into `ecb63223` without conflict (`git merge-tree --write-tree official/dev <head>`
+exits 0 for all three). None has been built or tested on `ecb63223` here.
 
 **#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
 changed profile only on a sink that has #8758.
@@ -51,7 +67,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (23), plus #8741
+#### Programme backfix PRs (24), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -77,6 +93,8 @@ which is the home of every defect fact; these tables do not restate them.
 | #8760 | `ddd9b600` | 2026-09-24 | BF-103 | a treatment moved or split by drag in the web UI stores the new time in `mills` and `date`, so IOB and COB follow it |
 | #8761 | `f1591069` | 2026-09-24 | — (RT-COUNT-COMPAT) | v1 reads tolerate the count shapes oref0 (`N?…`) and GluPredKit (`count=0` in a date window) send, with a deprecation warning; each tolerance has its own setting, on by default (`b4ead206`, `516f971a`) |
 | #8754 | `4f705217` | 2026-09-24 | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting, with #8763 and #8765 folded in (below). Withheld-style PR body |
+| #8766 | `e812a68c` | 2026-09-25 | BF-118 | fixes #7729. On a `DISPLAY_UNITS=mmol` site each of `BG_HIGH`, `BG_TARGET_TOP`, `BG_TARGET_BOTTOM`, `BG_LOW` is judged on its own in `lib/settings.js`: below 30 = mmol/L, converted (`Math.round(v * MMOL_TO_MGDL)`); 30 or more = mg/dL, kept; one `console.info` line per converted threshold. Replaces the all-or-nothing conversion gated on `bgHigh < 50`, under which a site setting only the two targets in mmol/L stored them as mg/dL, `verifyThresholds` rewrote `bgLow` to 2.9, no low alarm could fire and every reading raised "Warning HIGH". README bullet under Alarms. `verifyThresholds` (BF-67) and mg/dL sites (BF-86) unchanged |
+| #8767 | `ecb63223` | 2026-09-25 | BF-119 | fixes #5622. `PUMP_WARN_ON_SUSPEND` (with `PUMP_ENABLE_ALERTS`) raises a WARN "Pump Suspended" notification while the latest devicestatus reports `pump.status.suspended` and the pump is not bolusing (`lib/plugins/pump.js` `updateStatus`); it never did before. With `PUMP_WARN_ON_SUSPEND` on, the pill class follows WARN while suspended. A devicestatus reporting only `status.status: 'suspended'` shows "suspended" on the pill without the warning. Public text says only that the setting now works |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -151,6 +169,7 @@ no multi-hour soak and no source outage.
 | #8587 | `48441640` | 2026-09-04 | COB pill uses the COB reported by the uploading system (new `lib/client-core/devicestatus/cob.js`) |
 | #8589 | `2af0aed9` | 2026-09-04 | report page built once per page load |
 | #8590 | `101f51a0` | 2026-09-04 | treatments table filter by event type |
+| #8530 | `c3d42d4e` | 2026-09-25 | a `48` choice in the main (focus) chart's hour selector, between `24` and `...` (one line in `views/index.html`); no default changes. Carried by the 2026-09-25 decision |
 
 #### Dependency updates
 
@@ -187,6 +206,16 @@ All merged 2026-09-05. #8749 (qs) is in the backfix table above.
 | #8750 | `1f9a9d10` | 2026-09-23 | README: MongoDB 4.4 **deprecated**, still tested, to be dropped in a later release |
 | #7338 | `57d1cac9` | 2026-09-06 | js-beautify option in docs |
 
+### Credits for the carried PRs
+
+The outside contributors whose PRs the 2026-09-25 decision carries into 15.0.9, by GitHub login
+(`gh pr view <n> --json author`):
+
+- **lejcey** — #8568, the AAPS loop-status timeline fix (open)
+- **je-l** — #8419, the iOS Loop push-notification and websocket tests (open)
+- **alanshurafa** — #8530, the 48-hour chart choice (merged)
+- **the Crowdin translators** — #8730, translation updates (open; opened by the Crowdin sync)
+
 ## Version number: 15.0.9
 
 Decided 2026-09-22 (queue `RT-VERSION`; [decisions](decisions.md)). The release is **15.0.9**, the number
@@ -219,7 +248,7 @@ The facts the classification rests on, for the record:
 | Item | State | Consequence |
 |---|---|---|
 | BF-72 — a class of expensive search request can occupy the database for minutes, with no credentials on a default install | open; no fix; disposition decided privately (`BFQ-72`) | described by mechanism only |
-| BF-86 / BF-67 — thresholds in the wrong units (a mmol/L low threshold on a mg/dL site is stored so the low alarm can never fire; an out-of-order threshold is silently rewritten) | open | carried as a known issue in the notes |
+| BF-86 / BF-67 — thresholds in the wrong units (a mmol/L low threshold on a mg/dL site is stored so the low alarm can never fire; an out-of-order threshold is silently rewritten) | open; #8766 (BF-118) fixes only the partial-mmol/L case on a `DISPLAY_UNITS=mmol` site | carried as a known issue in the notes |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
@@ -236,20 +265,25 @@ alarms should always have a second way to see readings.
 
 The queue-tracked items are listed, generated and current, in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509) (queue `RT-0`'s open
-blockers: #8758, the carried outside PRs, `RT-VERSION`). Beside them:
+blockers: #8758, the carried outside PRs still open — #8568, #8419, #8730 — and `RT-VERSION`).
+Beside them:
 
 1. **The Loop remote-command browser checks.** #8764 changed `lib/api2/index.js` and
    `lib/api2/notifications-v2.js` after the hand-checked `8d797ba4`, so a remote override, carbs
    and bolus from careportal and from LoopCaregiver each need a 200 and a delivered push, by hand
    (`client-unchanged-since-hand-check.js` is red until then).
-2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge` are finalised
-   when it merges.
-3. **#8598 review.** The release PR has zero reviews and review is required.
-4. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
+2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge`,
+   `PENDING: #8568 merge` and `PENDING: #8730 merge` are finalised when each merges. The #8568
+   passage describes the released-AAPS record shape only; rewrite it if the fix is extended to the
+   AAPS-dev shape before it merges (register BF-114).
+3. **#8568's scope.** Whether it is extended to the second AAPS record shape (`originalDuration` 0,
+   10-year duration) before it merges.
+4. **#8598 review.** The release PR has zero reviews and review is required.
+5. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md`; 12 commits, `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
    [`../README.md`](../README.md#open-item-changelog-on-dev).
-5. **The tag**, by the maintainer.
+6. **The tag**, by the maintainer.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
@@ -318,7 +352,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-23-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-24-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
@@ -345,6 +379,25 @@ the user-facing form. Facts the notes must not lose:
 - **World-readable notice (#8746).** Sites with `TREATMENTS_AUTH=off` now see the admin notice.
 - **COB (#8587)**, **A1c (#8602)**, **report SGV filtering (#8588)**: displayed values may
   change on the same data.
+- **mmol/L thresholds (#8766, BF-118).** On a `DISPLAY_UNITS=mmol` site each `BG_` threshold is
+  read on its own: below 30 = mmol/L, converted; 30 or more = mg/dL, kept; unset thresholds keep
+  their mg/dL defaults (260/180/80/55). A site with only the targets in mmol/L now gets its low and
+  urgent-low alarms back and stops getting "Warning HIGH" on every reading. The one stored-value
+  change: `BG_HIGH` in mmol/L with `BG_TARGET_TOP` in mg/dL (e.g. 14 and 180) now stores 252 / 180 /
+  80 / 55, where 15.0.8 stored 3244 / 3243 / 1441 / 991 after `verifyThresholds`. All-mmol/L and
+  all-mg/dL sites are unchanged. The server log has one `Threshold <key> <value> taken as mmol/L,
+  converted to <n> mg/dl` line per converted threshold; the notes tell mmol/L users to check their
+  thresholds and keep device alarms on. mg/dL sites (BF-86) and `verifyThresholds` (BF-67) are
+  unchanged.
+- **Pump suspended (#8767, BF-119).** `PUMP_WARN_ON_SUSPEND` with `PUMP_ENABLE_ALERTS` now raises a
+  WARN "Pump Suspended" notification (group `Pump`, sound `echo`, the usual pump snooze rules; an
+  OpenAPS offline marker suppresses it). With `PUMP_WARN_ON_SUSPEND` on, the pill takes the warning
+  colour while suspended, independent of `PUMP_ENABLE_ALERTS`. Sites without the setting see no
+  change. Public text: the setting now works, nothing about the old failure.
+- **48-hour chart (#8530).** A `48` choice in the main chart's hour selector; defaults unchanged.
+- **AAPS loop re-enable (#8568, BF-114; open).** After an AAPS open-ended "disable loop" and a later
+  re-enable, the "not looping" and pump alerts return, for the released-AAPS record shape. The notes
+  carry it inside `PENDING: #8568 merge` markers.
 
 ## Evidence
 
@@ -360,6 +413,10 @@ the user-facing form. Facts the notes must not lose:
   20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server. Not
   the release candidate: the merge with #8568, #8419, #8530 and #8730 is not built. Browser checks
   are owed for `lib/api2` (#8764) and for the data load in `lib/data/ddata.js` (BF-115).
+- #8530, #8766 and #8767 merged after `4f705217`, so neither run above includes them. #8766's and
+  #8767's own branches, each on `4f705217`, gave 2585 and 2580 passing, 0 failing, 3 pending on Node
+  22.23.2 against MongoDB 7.0.43, with each PR's new tests failing on `dev`'s code (PR bodies). No
+  full-suite run of `dev` `ecb63223` is recorded here.
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 

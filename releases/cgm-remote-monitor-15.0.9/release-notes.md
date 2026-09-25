@@ -14,9 +14,9 @@ Where a change could affect decisions about your therapy, talk it through with y
 > is worth reporting.
 
 This is a bug-fix and security release. Most of what is in it is something that should
-already have worked. A few fixes change what you see on screen, one changes which alarms can
+already have worked. A few fixes change what you see on screen, some change which alarms can
 reach your phone, and some requests from apps and scripts are now answered differently. Please
-read the first two sections even if you usually skip release notes.
+read the first three sections even if you usually skip release notes.
 
 **A few words used throughout these notes:**
 
@@ -37,7 +37,7 @@ read the first two sections even if you usually skip release notes.
 
 ## Before you upgrade: what to check
 
-Work through this list first. Most people will find that nothing applies to them except item 8.
+Work through this list first. Most people will find that nothing applies to them except item 10.
 
 1. **Which MongoDB version your database runs.** MongoDB is the database Nightscout keeps your
    readings and treatments in. **MongoDB 4.4 is deprecated in this release.** It still works and
@@ -67,7 +67,14 @@ Work through this list first. Most people will find that nothing applies to them
    [If you run Nightscout with Docker Compose](#if-you-run-nightscout-with-docker-compose).
 7. **If insulin-age alerts are turned on** (`IAGE_ENABLE_ALERTS`), a new urgent alert can reach
    your phone. Tell whoever receives your Nightscout alerts. See the next section.
-8. **Have a second way to see your readings** while you upgrade and for a day afterwards —
+8. **If your site shows glucose in mmol/L** (`DISPLAY_UNITS=mmol`), write down the alarm levels
+   you expect before you upgrade, and check them afterwards: some sites' alarm levels are read
+   differently now, and on some sites low alarms start working. See
+   [Low alarms on sites that use mmol/L](#low-alarms-on-sites-that-use-mmoll).
+9. **If you turned on `PUMP_WARN_ON_SUSPEND`**, a "Pump Suspended" warning can now reach your
+   phone; it never did before. See
+   [The "pump suspended" warning now works](#the-pump-suspended-warning-now-works).
+10. **Have a second way to see your readings** while you upgrade and for a day afterwards —
    your CGM app, your pump or your meter — in case something that connects to your site stops
    working.
 
@@ -111,6 +118,119 @@ battery age alerts already behave.
 Nothing about your pump or insulin changes — only whether Nightscout tells you. This is not a
 schedule for changing a reservoir; if you are unsure what interval is right for you, ask your
 care team.
+
+---
+
+## Alarm fixes: mmol/L alarm levels, and pump and loop alerts
+
+These fixes change which alarms Nightscout raises. None of them changes anything on your pump,
+CGM or looping app. **Nightscout is not a medical device: keep the alarms on your CGM, pump and
+phone app switched on, and do not rely on Nightscout alone to warn you.** This is not medical
+advice; if you are unsure what your alarm levels should be, talk to your care team.
+
+### Low alarms on sites that use mmol/L
+
+Glucose is measured in one of two units, **mmol/L** or **mg/dL**, depending on the country and
+the meter. Your site shows mmol/L if its
+`DISPLAY_UNITS` setting is `mmol`. Nightscout's glucose alarms use four **alarm levels**, each a
+setting:
+
+- `BG_HIGH` — the urgent high alarm;
+- `BG_TARGET_TOP` — the top of your target range, where the high warning starts;
+- `BG_TARGET_BOTTOM` — the bottom of your target range, where the low warning starts;
+- `BG_LOW` — the urgent low alarm.
+
+Any you leave unset use a built-in default, written in mg/dL (260, 180, 80 and 55).
+
+**What was wrong.** On a site set to mmol/L, Nightscout converted the alarm levels you wrote in
+mmol/L only if `BG_HIGH` was also written in mmol/L, and then it converted all four. If you set
+only your target range in mmol/L (for example `BG_TARGET_TOP=8.5` and `BG_TARGET_BOTTOM=3.9`) and
+left `BG_HIGH` unset, nothing was converted. Your targets were read as 8.5 and 3.9 **mg/dL**, far
+below any real reading, and the urgent low level was then lowered to 2.9 mg/dL to sit beneath
+them. As a result **the low and urgent-low alarms could never go off, and every reading, even a
+low one, raised "Warning HIGH".** This was the same on 15.0.8 and earlier.
+
+**What changes.** Nightscout now looks at each of the four alarm levels on its own. A number
+**below 30** is read as mmol/L and converted; a number of **30 or more** is read as mg/dL and kept
+as you wrote it. Levels you leave unset keep their defaults. So a site that sets only some of its
+levels in mmol/L gets working low alarms. **The server log shows one line for each level it
+converts**, for example `Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl`, so
+you can see what Nightscout did with each one.
+
+- **If you set all four levels in mmol/L, or all four in mg/dL,** nothing changes for you.
+- **One uncommon mix is now stored differently.** If you set `BG_HIGH` in mmol/L and a target in
+  mg/dL (for example `BG_HIGH=14` and `BG_TARGET_TOP=180`), the mg/dL number is now kept as you
+  wrote it. Before, it was converted by mistake into a very large number, and your alarm levels
+  did not make sense.
+
+**What to do after upgrading, if your site uses mmol/L:**
+
+1. **Check your alarm levels.** Look at the target lines on your chart and the alarm levels your
+   site uses, and make sure they are the numbers you meant. The start-up lines in your server log
+   show each level Nightscout converted.
+2. **If you had set only some levels in mmol/L, expect low alarms to start** and "Warning HIGH" to
+   stop appearing on in-range and low readings. Tell whoever receives your Nightscout alerts.
+3. **Keep your CGM's and pump's own low alarms on.** Do not rely on Nightscout alone for low
+   alerts.
+
+If you are not sure what your alarm levels should be, talk to your care team. This is not medical
+advice.
+
+This fix is only for sites set to mmol/L. On a site set to mg/dL, an alarm level typed in mmol/L
+is still not caught; see [Known issues](#known-issues--not-fixed-in-this-release).
+
+### The "pump suspended" warning now works
+
+A pump is **suspended** when it has stopped delivering insulin, whether you stopped it or the
+pump did. Nightscout has a setting meant to warn you when that happens, `PUMP_WARN_ON_SUSPEND`,
+used together with `PUMP_ENABLE_ALERTS` (which turns on Nightscout's pump alerts). **It never
+worked:** the pump box on your page showed "suspended", but no warning was sent.
+
+In this release, with both settings on, Nightscout raises a **"Pump Suspended"** warning for as
+long as your pump reports that it is suspended. It is sent, snoozed and sounded like Nightscout's
+other pump warnings. With `PUMP_WARN_ON_SUSPEND` on, the pump box on your page also turns the
+warning colour while the pump is suspended. **If you have not turned `PUMP_WARN_ON_SUSPEND` on,
+nothing changes for you.**
+
+Things to know:
+
+- If you turned this setting on some time ago, a warning you have never seen may now reach your
+  phone. Tell whoever receives your Nightscout alerts what it means.
+- The warning depends on your phone app or uploader sending your pump's status to Nightscout, and
+  on how your site sends notifications. It can arrive late or not at all. Some apps report a
+  suspended pump in a way that shows "suspended" in the pump box without raising the warning.
+- Like Nightscout's other pump alerts, it is not sent while your looping app has marked the loop
+  as offline.
+- **Keep the alerts on your pump and your phone app switched on.** Do not rely on Nightscout alone
+  to tell you your pump is suspended.
+
+This is not medical advice. If you are unsure how you should be alerted to a suspended pump, talk
+to your care team.
+
+<!-- PENDING: #8568 merge. #8568 (outside contributor, open) clears the offline marker for the
+     record shape released AndroidAPS versions send. The fix may be extended to a second record
+     shape (AAPS development builds: originalDuration 0, a 10-year duration) before it merges; if
+     it is, delete the sentence about development builds. #8568 does not change the Day to day
+     report, which reads treatments another way; check what that report shows before release.
+     If #8568 does not ship, delete this item and add it to Known issues. -->
+### AndroidAPS: loop and pump alerts return when you turn the loop back on
+
+In **AndroidAPS** (AAPS), you can turn the loop off ("disable loop") with no end time. While the
+loop is off on purpose, Nightscout does not raise its "not looping" alert (`OPENAPS_ENABLE_ALERTS`)
+or its pump alerts (`PUMP_ENABLE_ALERTS`), if you have turned those on.
+
+On 15.0.8 and earlier, when you later turned the loop back on in AAPS, **Nightscout kept treating
+the loop as switched off**, so those alerts stayed silent, with nothing on screen to say so, for
+as long as the "disable" record stayed among the recent records Nightscout looks at. In this
+release, Nightscout sees that the loop was turned back on, and those alerts work again.
+
+- This covers the way **released versions of AAPS** record turning the loop off and on.
+  **Development (unreleased) builds of AAPS** record it differently, and on those the alerts can
+  still stay off after the loop is turned back on.
+- Loop and Trio are not affected.
+- Keep the alerts in AAPS and on your pump switched on. This is not medical advice; talk to your
+  care team about how you are alerted.
+<!-- PENDING: #8568 merge -->
 
 ---
 
@@ -625,6 +745,17 @@ hosting provider, or installed directly on a server), this does not affect you.
 - **Reports** no longer throw away valid readings after two closely spaced ones, so charts,
   averages and time-in-range may change slightly.
 
+### A 48-hour view on the main chart
+
+The "Hours:" choices on the main page, which set how much time the main chart shows, now include
+**48**, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.
+
+<!-- PENDING: #8730 merge -->
+### Translations
+
+Updated translations from Nightscout's volunteer translators on Crowdin.
+<!-- PENDING: #8730 merge -->
+
 ### Other fixes
 
 Faster data loading on sites with many treatments; deleted records no longer reappear; failed
@@ -669,7 +800,11 @@ software library updates.
 9. **If you want the stronger protection against password guessing**, set `TRUST_PROXY` as
    described in [The new `TRUST_PROXY` setting](#the-new-trust_proxy-setting). Otherwise leave it
    unset.
-10. **After upgrading, check that everything connected to your site still works**, and watch for
+10. **If your site uses mmol/L**, check your alarm levels after upgrading (see
+    [Low alarms on sites that use mmol/L](#low-alarms-on-sites-that-use-mmoll)).
+11. **If you use `PUMP_WARN_ON_SUSPEND`**, tell whoever receives your alerts that a "Pump
+    Suspended" warning can now arrive.
+12. **After upgrading, check that everything connected to your site still works**, and watch for
    a day.
 
 ## What to check afterwards
@@ -681,6 +816,11 @@ software library updates.
   tool's author.
 - Any report or filtered view you rely on — expect numbers to change; that is the fix.
 - The IAGE box, if you use insulin age: it may now show URGENT.
+- If your site uses mmol/L: the target lines on your chart and your alarm levels are the numbers
+  you meant. The server log's start-up lines show each alarm level Nightscout converted from
+  mmol/L.
+- If you use `PUMP_WARN_ON_SUSPEND`: while your pump is suspended, the pump box turns the warning
+  colour.
 - Bookmarked links that contain an underscore.
 - If you set `TRUST_PROXY`: your site still loads over https, the startup warning about the
   failed-login delay is gone from the log, and one wrong password sent from your phone shows your
@@ -721,7 +861,9 @@ software library updates.
   as mg/dL. A low alarm entered as `3.9` (meaning mmol/L) is kept as 3.9 mg/dL, a level no
   reading ever reaches, so **that low alarm can never go off**, and nothing warns you. A high
   alarm entered as `14` is instead quietly changed to a different number, and only the server
-  log says so. Check that the thresholds on your settings page are the numbers you meant, keep
+  log says so. (How a site set to mmol/L reads its alarm levels is described
+  [above](#low-alarms-on-sites-that-use-mmoll).) Check that the thresholds on your settings page
+  are the numbers you meant, keep
   your device's own alarms on, and talk through your alarm settings with your care team. This
   is not medical advice.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
@@ -781,6 +923,6 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*DRAFT, 2026-09-24. Requires maintainer review before publishing. Nightscout is not a medical
+*DRAFT, 2026-09-25. Requires maintainer review before publishing. Nightscout is not a medical
 device, and nothing in these notes is medical advice or guidance about insulin dosing. Where a
 change here could affect decisions about your therapy, discuss it with your care team.*
