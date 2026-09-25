@@ -86,8 +86,9 @@ Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed
 indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is
 a different record, and nothing on any branch handled it before #8568.
 Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP,
-originalDuration 0, a very long duration) and add an alert-level test. Whether
-it goes into 15.0.9 is the maintainer's decision.
+originalDuration 0, a very long duration) and add an alert-level test. Decided
+2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to
+also match the AAPS-dev shape and add an alert-level test.
 
 ---
 

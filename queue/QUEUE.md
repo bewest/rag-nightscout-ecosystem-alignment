@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 129 |
-| runnable gates | 199 |
-| explicit `no-gate:` markers | 176 |
+| items | 131 |
+| runnable gates | 201 |
+| explicit `no-gate:` markers | 178 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 176 of the 375 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 178 of the 379 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 3 | BFQ-47, BFQ-102, BFQ-114 |
+| `in-flight-upstream` | 5 | BFQ-47, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530 |
 | `merged-upstream` | 38 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
@@ -986,7 +986,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 21 items
+`parcel: release-train` &mdash; 23 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1014,6 +1014,8 @@ that costs.
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
+| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `in-flight-upstream` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
+| `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `in-flight-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
@@ -1350,7 +1352,7 @@ that costs.
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** Waiting on four things and the maintainer's tag. dev is 4f705217 (2026-09-24, merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev -> master), head 4f705217: zero reviews, review required (measured 2026-09-25); CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev 4f705217 + #8758. - The browser checks for the Loop remote-command path: client-unchanged-since-hand-check.js fails because #8764 (in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's careportal and from LoopCaregiver still need a 200 and a delivered push, by hand. - The release notes (releases/cgm-remote- monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers were removed when it merged (2026-09-25), and the sections marked PENDING for #8758 are finalised when it merges. - A human review of #8598, and the maintainer tagging. Evidence: the latest combined run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev 4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (backfix-2 plan section 1a, docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
+**Notes.** Waiting on four things and the maintainer's tag. dev is 4f705217 (2026-09-24, merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev -> master), head 4f705217: zero reviews, review required (measured 2026-09-25); CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev 4f705217 + #8758. - Three outside contributors' PRs, decided 2026-09-25 (maintainer) to carry into 15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests) and #8530 (RT-PR-8530, a 48-hour chart option). The combined run must include them. - The browser checks for the Loop remote- command path: client-unchanged-since-hand-check.js fails because #8764 (in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's careportal and from LoopCaregiver still need a 200 and a delivered push, by hand. - The release notes (releases/cgm-remote-monitor-15.0.9/release- notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers were removed when it merged (2026-09-25), and the sections marked PENDING for #8758 are finalised when it merges. - A human review of #8598, and the maintainer tagging. Evidence: the latest combined run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a, 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev 4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD; docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (backfix-2 plan section 1a, docs/30-design/remedial/backfix-2-plan-2026-09-22.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 
@@ -1657,6 +1659,66 @@ that costs.
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
 **Notes.** Merged into dev by #8751 (4011193e, 2026-09-23); not released. It reaches operators with 15.0.9 (RT-0). Register ids: BF-104 (alarm-subscription credentials in the server log) and BF-105 (two shared read routes skip the per-collection read permission). Body posted in the withheld style (reports/phase0-pr-bodies/bf2-backports.md). The two unbuilt findings (status credential in the URL, IMPORT_CONFIG diagnostics) stay follow-ups. Decisions: - 2026-09-23 (maintainer): the two backports (9c50788e, b5038500) ship in 15.0.9 rather than a later backfix, because their fix code is already public on the modernization branch and 15.0.8 users otherwise wait a release. Triage (docs/60-research/remedial/modernization-backport-triage-2026-09-22.md), measured 2026-09-22 over 11 candidates (6 named + 5 from a path/content sweep). Defect on dev and live on 15.0.8: 31c354d8 (alarm socket logs the submitted credential), d3ac8026 (a per-collection read grant not checked on two shared routes; bites scoped-token installs under denied), 973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not security. 71c42c9a not a defect; the Helmet pair and 479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. The backports carry the modernization commits' code verbatim (cherry-pick -x, tests adapted where dev's socket differs), so the later cut rebase sees agreement, not a second implementation. Suite on Node 22.23.2: dev 2386/0/3, branch 2398/0/3; with dev's lib the two new test files fail 7 of 12.
+
+### `RT-PR-8419` &mdash; #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `extend-api-tests` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Tests only, 9 files: moves the APNs test certificates to tests/fixtures/, folds tests/loop-server.test.js into a new tests/loopnotifications.test.js, adds .nycrc.json. Head b1c23e74, 152 commits behind dev; merges cleanly with dev 4f705217 and with #8758 (measured 2026-09-25).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** tests only
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8419 >/dev/null`
+  - #8419's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8419/head:refs/triage/pr-8419` first.
+- **NO GATE** &mdash; The PR's own tests: tests/loopnotifications.test.js on dev with the PR merged, 9 passing (2026-09-25, open-PR triage). Not yet run in a combined candidate.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-15.0.9/contents.md`
+
+**Notes.** Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
+
+### `RT-PR-8530` &mdash; #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `feature/focus-range-48h-upstream` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+
+**Blast radius.** One line of views/index.html: a 48 entry in the focus chart's hour selector. Head 5353ff64, 0 behind dev 4f705217; merges cleanly with dev and with #8758 (measured 2026-09-25).
+
+**What an operator sees.** The main chart's hour selector gains a 48-hour choice beside 24.
+
+**Why `minor`.** An added option. The versioning policy classes a new user-visible option as minor; 15.0.9 carries it under a patch number by the maintainer's decision (2026-09-25), which the policy records as a departure.
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8530 >/dev/null`
+  - #8530's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8530/head:refs/triage/pr-8530` first.
+- **NO GATE** &mdash; No test covers the selector, and nobody has checked in a browser that the chart renders at 48 hours (the focus chart's data window and tick density at that range).
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-15.0.9/contents.md`
+
+**Notes.** Outside contributor (alanshurafa); the maintainer merged dev into it on 2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
 
 ### `OID-MIGRATION` &mdash; Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms
 
@@ -3561,7 +3623,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/aaps-offline/probe.js`
 
-**Notes.** Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open-PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Whether it goes into 15.0.9 is the maintainer's decision.
+**Notes.** Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open-PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Decided 2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to also match the AAPS-dev shape and add an alert-level test.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 

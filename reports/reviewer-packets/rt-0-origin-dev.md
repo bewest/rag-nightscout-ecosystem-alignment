@@ -154,18 +154,21 @@ merge of #8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
 master), head 4f705217: zero reviews, review required (measured 2026-09-25);
 CI on 4f705217 passed all nine test jobs (Node 20/22/24 x MongoDB
 4.4/5.0/6.0). Still before the tag: - #8758 (BFQ-102), head 6d120fa2, and a
-combined run of dev 4f705217 + #8758. - The browser checks for the Loop
-remote-command path: client-unchanged-since-hand-check.js fails because #8764
-(in #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after
-the hand-checked 8d797ba4. A remote override, carbs and bolus from
-Nightscout's careportal and from LoopCaregiver still need a 200 and a
-delivered push, by hand. - The release notes (releases/cgm-remote-
-monitor-15.0.9/release-notes.md), re-anchored on dev 153e5658 (2026-09-24);
-the #8754 PENDING markers were removed when it merged (2026-09-25), and the
-sections marked PENDING for #8758 are finalised when it merges. - A human
-review of #8598, and the maintainer tagging. Evidence: the latest combined
-run, docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 +
-the exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
+combined run of dev 4f705217 + #8758. - Three outside contributors' PRs,
+decided 2026-09-25 (maintainer) to carry into 15.0.9: #8568 (BFQ-114, BF-114),
+#8419 (RT-PR-8419, tests) and #8530 (RT-PR-8530, a 48-hour chart option). The
+combined run must include them. - The browser checks for the Loop remote-
+command path: client-unchanged-since-hand-check.js fails because #8764 (in
+#8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the
+hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's
+careportal and from LoopCaregiver still need a 200 and a delivered push, by
+hand. - The release notes (releases/cgm-remote-monitor-15.0.9/release-
+notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers
+were removed when it merged (2026-09-25), and the sections marked PENDING for
+#8758 are finalised when it merges. - A human review of #8598, and the
+maintainer tagging. Evidence: the latest combined run,
+docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the
+exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
 3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
 280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own
 (without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB

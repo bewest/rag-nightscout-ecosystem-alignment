@@ -2867,6 +2867,11 @@ items:
       - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev
       4f705217 + #8758.
 
+      - Three outside contributors' PRs, decided 2026-09-25 (maintainer) to
+      carry into 15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests)
+      and #8530 (RT-PR-8530, a 48-hour chart option). The combined run must
+      include them.
+
       - The browser checks for the Loop remote-command path:
       client-unchanged-since-hand-check.js fails because #8764 (in
       #8754) changed lib/api2/index.js and lib/api2/notifications-v2.js
@@ -8780,8 +8785,82 @@ items:
       since 13.0.0; this is a different record, and nothing on any branch
       handled it before #8568. Suggested to the contributor: also match the
       AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long
-      duration) and add an alert-level test. Whether it goes into 15.0.9 is
-      the maintainer's decision.
+      duration) and add an alert-level test. Decided 2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to also match the AAPS-dev shape and add an alert-level test.
+  - id: RT-PR-8419
+    title: "#8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: extend-api-tests
+    base: origin/dev@4f705217
+    state: in-flight-upstream
+    pr: [8419]
+    blast_radius: >
+      Tests only, 9 files: moves the APNs test certificates to tests/fixtures/,
+      folds tests/loop-server.test.js into a new tests/loopnotifications.test.js,
+      adds .nycrc.json. Head b1c23e74, 152 commits behind dev; merges cleanly with
+      dev 4f705217 and with #8758 (measured 2026-09-25).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: tests only
+    register: []
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8419 >/dev/null
+        kind: static
+        describe: >
+          #8419's head merges into origin/dev without conflict. Needs
+          `git -C externals/cgm-remote-monitor-official fetch official
+          pull/8419/head:refs/triage/pr-8419` first.
+      - no-gate: >
+          The PR's own tests: tests/loopnotifications.test.js on dev with the
+          PR merged, 9 passing (2026-09-25, open-PR triage). Not yet run in a
+          combined candidate.
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25
+      (maintainer): carry into 15.0.9. It is a file-level rebase cost for
+      #8605, which also edits tests/loop-server.test.js and the instance
+      fixtures.
+  - id: RT-PR-8530
+    title: "#8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: feature/focus-range-48h-upstream
+    base: origin/dev@4f705217
+    state: in-flight-upstream
+    pr: [8530]
+    blast_radius: >
+      One line of views/index.html: a 48 entry in the focus chart's hour
+      selector. Head 5353ff64, 0 behind dev 4f705217; merges cleanly with dev
+      and with #8758 (measured 2026-09-25).
+    review: maintainer
+    operator_visible: >
+      The main chart's hour selector gains a 48-hour choice beside 24.
+    semver: minor
+    semver_reason: >
+      An added option. The versioning policy classes a new user-visible option
+      as minor; 15.0.9 carries it under a patch number by the maintainer's
+      decision (2026-09-25), which the policy records as a departure.
+    register: []
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8530 >/dev/null
+        kind: static
+        describe: >
+          #8530's head merges into origin/dev without conflict. Needs
+          `git -C externals/cgm-remote-monitor-official fetch official
+          pull/8530/head:refs/triage/pr-8530` first.
+      - no-gate: >
+          No test covers the selector, and nobody has checked in a browser that
+          the chart renders at 48 hours (the focus chart's data window and tick
+          density at that range).
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Outside contributor (alanshurafa); the maintainer merged dev into it on
+      2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
   - id: OID-LAB
     title: "tools/lab/object-id - wrap the lab in queue gates and add the real-client replays"
     parcel: register-open
