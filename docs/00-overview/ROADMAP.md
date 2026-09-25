@@ -41,8 +41,8 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
 | `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | `in-flight-upstream` | Maintainer | #8758 |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | `in-flight-upstream` | Maintainer | #8568 |
+| `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622 | `in-flight-upstream` | Maintainer | #8767 |
 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | Maintainer | #8419 |
-| `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | `in-flight-upstream` | Maintainer | #8530 |
 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | Maintainer | #8730 |
 
 <!-- END GENERATED: release-waits -->
@@ -87,7 +87,6 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | &mdash; |
-| 1 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | `in-flight-upstream` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | &mdash; |
 | 1 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
@@ -95,7 +94,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 2 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `BFQ-102` |
 | 2 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | `BFQ-117` |
 | 2 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | `BFQ-102` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8730` |
 | 2 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 | `in-progress` | `BFQ-131` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |

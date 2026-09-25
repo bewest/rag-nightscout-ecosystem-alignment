@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-119
+# Review packet — BFQ-119 (PR #8767)
 
 **BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue
 #5622)**
@@ -21,7 +21,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/pump-warn-on-suspend` |
 | base | `origin/dev@4f705217` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-119` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-119` is the measurement |
 | semver | `patch` |
 | register entries | `BF-119` |
 | operator exposure | **reaches an operator on today's release** |
@@ -76,14 +76,17 @@ the warning fires without throwing. Point it at origin/dev once merged.
 
 ## Notes carried on the item
 
-2026-09-24/25 - FIXED on bf/pump-warn-on-suspend 7b239c01 (local, not pushed),
-on dev 4f705217: updateStatus takes prefs and builds result.status first;
-three tests in tests/pump.test.js (two fail on dev's pump.js). pump 13
-passing; probe exit 0 on the branch, 1 on dev; full suite 2580/3/0 vs dev
-2577/3/0, Node 22.23.2, MongoDB 7.0.43. Filed 2026-09-25 from the GitHub issue
-triage (issue #5622, opened 2020-04-14). Fixing only the misplaced test would
-turn the silent miss into a TypeError on every suspended status, so both
-mistakes go in one change with a test that asserts the WARN notification.
+2026-09-25 - OPEN upstream as #8767, head 3a2e3773 (7b239c01 plus a dev merge
+that includes #8766; the pump files are identical to 7b239c01). Goes into
+15.0.9 (decided 2026-09-25, maintainer). 2026-09-24/25 - FIXED on bf/pump-
+warn-on-suspend 7b239c01 (local, not pushed), on dev 4f705217: updateStatus
+takes prefs and builds result.status first; three tests in tests/pump.test.js
+(two fail on dev's pump.js). pump 13 passing; probe exit 0 on the branch, 1 on
+dev; full suite 2580/3/0 vs dev 2577/3/0, Node 22.23.2, MongoDB 7.0.43. Filed
+2026-09-25 from the GitHub issue triage (issue #5622, opened 2020-04-14).
+Fixing only the misplaced test would turn the silent miss into a TypeError on
+every suspended status, so both mistakes go in one change with a test that
+asserts the WARN notification.
 
 ---
 

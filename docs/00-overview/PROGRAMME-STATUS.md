@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 111 | 44 | 21 |
-| **Modernization** | `release-train` | 27 | 5 | 4 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 111 | 44 | 20 |
+| **Modernization** | `release-train` | 27 | 5 | 3 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **158** | **58** | **28** |
+| | **total** | **158** | **58** | **26** |
 
 <!-- END GENERATED: horizons -->
 
@@ -134,8 +134,8 @@ cover more than one `BF-`:
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
-| `BFQ-118` | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
-| `BFQ-119` | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
+| `BFQ-118` | `merged-upstream` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
+| `BFQ-119` | `in-flight-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `not-started` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
 | `BFQ-121` | `not-started` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
 | `BFQ-122` | `not-started` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
@@ -181,8 +181,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 4 |  | 5 | 3 | 7 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 34 | 1 | 5 | 12 | 4 | 2 | 14 | 4 |  | 2 | 1 |  | **79** |
+| `release-train` | 5 | 1 | 4 |  | 5 | 2 | 8 | 1 |  |  |  | 1 | **27** |
+| `register-open` | 34 | 1 | 5 | 10 | 4 | 3 | 15 | 4 |  | 2 | 1 |  | **79** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

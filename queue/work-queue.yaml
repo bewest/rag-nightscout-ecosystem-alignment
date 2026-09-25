@@ -2846,7 +2846,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, RT-PR-8419, RT-PR-8530, RT-PR-8730]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, RT-PR-8730]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -2869,7 +2869,12 @@ items:
       15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests), #8530
       (RT-PR-8530, a 48-hour chart option) and #8730 (RT-PR-8730, Crowdin
       translations). The combined run must
-      include them.
+      include them. #8530 merged 2026-09-25 (c3d42d4e).
+
+      - Two backfix fixes, decided 2026-09-25 (maintainer) to go into 15.0.9:
+      BF-118 (BFQ-118, #8766, merged 2026-09-25 as e812a68c) and BF-119
+      (BFQ-119, #8767, head 3a2e3773, open). The combined run must include
+      #8767.
 
       - The browser checks for the Loop remote-command path:
       client-unchanged-since-hand-check.js fails because #8764 (in
@@ -9028,7 +9033,7 @@ items:
     repo: cgm-remote-monitor
     branch: feature/focus-range-48h-upstream
     base: origin/dev@4f705217
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8530]
     blast_radius: >
       One line of views/index.html: a 48 entry in the focus chart's hour
@@ -9044,12 +9049,10 @@ items:
       decision (2026-09-25), which the policy records as a departure.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8530 >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3d42d4e origin/dev
         kind: static
         describe: >
-          #8530's head merges into origin/dev without conflict. Needs
-          `git -C externals/cgm-remote-monitor-official fetch official
-          pull/8530/head:refs/triage/pr-8530` first.
+          #8530's merge c3d42d4e (2026-09-25) is contained in origin/dev.
       - no-gate: >
           No test covers the selector, and nobody has checked in a browser that
           the chart renders at 48 hours (the focus chart's data window and tick
@@ -9058,6 +9061,7 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      Merged 2026-09-25 as c3d42d4e; not released.
       Outside contributor (alanshurafa); the maintainer merged dev into it on
       2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
   - id: BFQ-118
@@ -9067,8 +9071,8 @@ items:
     branch: bf/mmol-partial-thresholds
     base: origin/dev@4f705217
     worktree: externals/work/crm-bf118-mmol-thresholds
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8766]
     ships_to_operators_today: true
     blast_radius: >
       lib/settings.js processRawSettings threshold conversion (and
@@ -9091,13 +9095,10 @@ items:
     semver_reason: a bug fix in how documented settings are read; a site that set all four values sees no change
     register: [BF-118]
     gates:
-      - run: sh -c 's=$(git -C externals/cgm-remote-monitor-official show bf/mmol-partial-thresholds:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e812a68c origin/dev
         kind: static
         describe: >
-          The branch no longer decides the unit of all four thresholds from
-          BG_HIGH alone (origin/dev fails this until the fix merges; point it
-          at origin/dev then). A presence check only, red if the file cannot
-          be read; the probe below says whether a partial mmol set converts.
+          #8766's merge e812a68c (2026-09-25) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/mmol-partial-thresholds.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9114,6 +9115,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/mmol-partial-thresholds.js
     notes: >
+      2026-09-25 - MERGED into dev as e812a68c (#8766; head ee804b45 is 93359650
+      plus a dev merge, and the fix's files are unchanged). Not released; goes
+      into 15.0.9 (decided 2026-09-25, maintainer).
       2026-09-25 - FIXED on bf/mmol-partial-thresholds 93359650 (local, not
       pushed), on dev 4f705217: on an mmol site each threshold is read on
       its own (below 30 = mmol/L, converted; 30 or more = mg/dL, kept), one
@@ -9136,8 +9140,8 @@ items:
     branch: bf/pump-warn-on-suspend
     base: origin/dev@4f705217
     worktree: externals/work/crm-bf119-pump-suspend
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8767]
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/pump.js updateStatus and its caller prepareData (a few
@@ -9176,6 +9180,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/pump-suspend.js
     notes: >
+      2026-09-25 - OPEN upstream as #8767, head 3a2e3773 (7b239c01 plus a dev
+      merge that includes #8766; the pump files are identical to 7b239c01).
+      Goes into 15.0.9 (decided 2026-09-25, maintainer).
       2026-09-24/25 - FIXED on bf/pump-warn-on-suspend 7b239c01 (local, not
       pushed), on dev 4f705217: updateStatus takes prefs and builds
       result.status first; three tests in tests/pump.test.js (two fail on

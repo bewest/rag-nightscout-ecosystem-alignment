@@ -30,14 +30,14 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 25 items
+### Maintainer &mdash; 23 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | #8568 |
+| `BFQ-119` | `in-flight-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622 | #8767 |
 | `RT-PR-8419` | `in-flight-upstream` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | #8419 |
-| `RT-PR-8530` | `in-flight-upstream` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into | #8530 |
 | `RT-PR-8730` | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 | #8730 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
@@ -51,8 +51,6 @@ that it was reviewed.
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
 | `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
-| `BFQ-118` | `ready-to-push` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so lo | &mdash; |
-| `BFQ-119` | `ready-to-push` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622 | &mdash; |
 | `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
 | `BFQ-131` | `ready-to-push` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
@@ -91,10 +89,10 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8419** | `RT-PR-8419` | `extend-api-tests` | #8419 - tests for Loop push notifications and websockets (je | Maintainer |
-| **#8530** | `RT-PR-8530` | `feature/focus-range-48h-upstream` | #8530 - a 48-hour option in the focus range selector (alansh | Maintainer |
 | **#8568** | `BFQ-114` | `fix-loop-status-timeline` | BF-114 - an AAPS open-ended loop disable keeps loop and pump | Maintainer |
 | **#8730** | `RT-PR-8730` | `crowdin_incoming` | #8730 - Crowdin translation updates, carried into 15.0.9 | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
+| **#8767** | `BFQ-119` | `bf/pump-warn-on-suspend` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
