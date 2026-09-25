@@ -286,6 +286,7 @@ measurement.
 |---|---|
 | what "done" means for these documents | [`DEFINITION-OF-DONE.md`](DEFINITION-OF-DONE.md) |
 | the order of the work ahead | [`ROADMAP.md`](ROADMAP.md) |
+| how documents and records are controlled (proposal) | [`DOCUMENT-CONTROL.md`](DOCUMENT-CONTROL.md) |
 | item state, gates, review routing | `queue/work-queue.yaml` (source of truth) |
 | defect facts and `BF-` ids | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) |
 | what 15.0.9 contains and leaves broken | [`../../releases/cgm-remote-monitor-15.0.9/contents.md`](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
