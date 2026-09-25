@@ -2873,8 +2873,7 @@ items:
 
       - Two backfix fixes, decided 2026-09-25 (maintainer) to go into 15.0.9:
       BF-118 (BFQ-118, #8766, merged 2026-09-25 as e812a68c) and BF-119
-      (BFQ-119, #8767, head 3a2e3773, open). The combined run must include
-      #8767.
+      (BFQ-119, #8767, merged 2026-09-25 as ecb63223).
 
       - The browser checks for the Loop remote-command path:
       client-unchanged-since-hand-check.js fails because #8764 (in
@@ -9140,7 +9139,7 @@ items:
     branch: bf/pump-warn-on-suspend
     base: origin/dev@4f705217
     worktree: externals/work/crm-bf119-pump-suspend
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8767]
     ships_to_operators_today: true
     blast_radius: >
@@ -9161,13 +9160,10 @@ items:
     semver_reason: a documented setting starts doing what it says; no stored data or API changes
     register: [BF-119]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/pump-warn-on-suspend:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" bf/pump-warn-on-suspend -- lib/plugins/pump.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecb63223 origin/dev
         kind: static
         describe: >
-          The branch no longer tests warnOnSuspend on the wrong object. A
-          presence check only (origin/dev fails it until the fix merges); the
-          probe below is what says the warning fires without throwing. Point
-          it at origin/dev once merged.
+          #8767's merge ecb63223 (2026-09-25) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/pump-suspend.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9180,6 +9176,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/pump-suspend.js
     notes: >
+      2026-09-25 - MERGED into dev as ecb63223 (#8767); dev's pump.js and
+      tests/pump.test.js are identical to 7b239c01. Not released; goes into
+      15.0.9.
       2026-09-25 - OPEN upstream as #8767, head 3a2e3773 (7b239c01 plus a dev
       merge that includes #8766; the pump files are identical to 7b239c01).
       Goes into 15.0.9 (decided 2026-09-25, maintainer).

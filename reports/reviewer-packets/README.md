@@ -27,7 +27,6 @@ repository.
 | [`RT-PR-8730`](rt-pr-8730-crowdin-incoming.md) | #8730 | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-102`](bfq-102-bf-object-id-crud.md) | #8758 | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
-| [`BFQ-119`](bfq-119-bf-pump-warn-on-suspend.md) | #8767 | `in-flight-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-109`](bfq-109-wip-object-id-crud-fixes.md) | &mdash; | `ready-to-push` | BF-109 - on #8758, API v3 DELETE and PUT by identifier write the v1 half of a v1/v3 pair |
 | [`BFQ-110`](bfq-110-bf-object-id-crud.md) | &mdash; | `ready-to-push` | BF-110 - on #8758, deleting a record by its hex id also deletes its twin, and the PR's advice leads users there |
