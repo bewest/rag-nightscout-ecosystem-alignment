@@ -32,20 +32,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 116 |
-| runnable gates | 185 |
+| runnable gates | 186 |
 | explicit `no-gate:` markers | 159 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 344 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 159 of the 345 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 36 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108 |
-| `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 3 | BFQ-47, BF2-AUTH, BFQ-102 |
+| `in-flight-upstream` | 5 | P0-C, P0-J, BFQ-47, BF2-AUTH, BFQ-102 |
 | `merged-upstream` | 33 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
@@ -111,8 +111,8 @@ with 15.0.9. None of these needs a tenancy decision.
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `merged-upstream` | `bf/alarms` | minor | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `merged-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `gate-not-met` | `bf/auth` | major | 4 run + 3 no-gate |
-| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `gate-not-met` | `bf/throttle` | patch | 5 run + 2 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `in-flight-upstream` | `bf/auth` | major | 4 run + 3 no-gate |
+| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `in-flight-upstream` | `bf/throttle` | patch | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `merged-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `merged-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
@@ -231,7 +231,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/auth` |
 | base | `origin/dev@a8888f0d` |
@@ -248,8 +248,8 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth`
-  - bf/auth has not fallen behind origin/dev. This branch is waiting to be pushed, so falling behind dev is a real defect in it. RED as of 2026-09-22: the tip merges origin/dev 59430336, and dev has since moved to 74fc6619 (the three advisory merges). The remedy is `git merge dev`, which the trial-merge gate below measures as conflict-free; see notes for why it has not been done.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev`
+  - bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs `git -C externals/cgm-remote-monitor-official fetch origin` first.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null`
   - trial-merge into origin/dev is conflict-free
 - `[static]` _(cwd: `externals/work/crm-bf-auth`)_ `grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0`
@@ -264,13 +264,13 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c, a merge of dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what ships these fixes in 15.0.9. bf/auth will not be pushed or merged up, so its freshness gate stays red: it is 16 first- parent merges (51 commits) behind origin/dev 153e5658, measured 2026-09-24. The queue has no superseded state, so the state is left as measured. Review and the remaining work are on BF2-AUTH. Decisions: - 2026-09-23 (maintainer): the security reviewers are the maintainer and Andy (a connector maintainer). - 2026-09-16 (maintainer): commit 56ed29d2 removes the leftover console.log('Loading',opts). The line is on origin/dev at storage.js:84, not introduced here; it is taken because this branch already rewrites the file and it is the same defect class as the count-path filter leak fixed on bf/reads. - 2026-09-16 (maintainer): remediation for tokens already stored in plaintext is text, not tooling (P0-C-REMEDIATE): no detector, no migration, rotation instructions in the PR body and the 15.0.9 release notes, including that renaming a subject is not a rotation because the matcher is name-independent. Sequencing letter C. GT3 found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes']; notes was added by the fix, created_at was not. FU-RESIDUALS follow-up 4 is carried by this branch and so by #8754; it is fixed (on a branch), not merged, and FU- RESIDUALS' gate, which reads origin/dev, correctly still fails. Green gates here do not mean an operator is safe: tokens written in plaintext before the upgrade are untouched by it. The 2026-09-21 merge-up was measured rather than trusted to merge-tree (the register's BF-04 detail records a clean merge-tree that hid a semantic collision). Only lib/authorization/storage.js is touched by both sides, in different functions: dev's 06b133a7 (BF-01) replaces the limit() helper on the read path, while this branch narrows save() to a field allow-list. TEST=authsubjects 8 passing at ce82f0cd and at 404e714c; full suite 2319 passing, 3 pending, 0 failing at 404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. At Docker's default descriptor limit mongod dies mid-suite (BF-10) and every later timeout looks like a regression.
+**Notes.** Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c, a merge of dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what ships these fixes in 15.0.9. bf/auth will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head b5f61f19, measured 2026-09-24). Review and the remaining work are on BF2-AUTH. Decisions: - 2026-09-23 (maintainer): the security reviewers are the maintainer and Andy (a connector maintainer). - 2026-09-16 (maintainer): commit 56ed29d2 removes the leftover console.log('Loading',opts). The line is on origin/dev at storage.js:84, not introduced here; it is taken because this branch already rewrites the file and it is the same defect class as the count-path filter leak fixed on bf/reads. - 2026-09-16 (maintainer): remediation for tokens already stored in plaintext is text, not tooling (P0-C-REMEDIATE): no detector, no migration, rotation instructions in the PR body and the 15.0.9 release notes, including that renaming a subject is not a rotation because the matcher is name-independent. Sequencing letter C. GT3 found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes']; notes was added by the fix, created_at was not. FU-RESIDUALS follow-up 4 is carried by this branch and so by #8754; it is fixed (on a branch), not merged, and FU- RESIDUALS' gate, which reads origin/dev, correctly still fails. Green gates here do not mean an operator is safe: tokens written in plaintext before the upgrade are untouched by it. The 2026-09-21 merge-up was measured rather than trusted to merge-tree (the register's BF-04 detail records a clean merge-tree that hid a semantic collision). Only lib/authorization/storage.js is touched by both sides, in different functions: dev's 06b133a7 (BF-01) replaces the limit() helper on the read path, while this branch narrows save() to a field allow-list. TEST=authsubjects 8 passing at ce82f0cd and at 404e714c; full suite 2319 passing, 3 pending, 0 failing at 404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. At Docker's default descriptor limit mongod dies mid-suite (BF-10) and every later timeout looks like a regression.
 
 ### `P0-J` &mdash; bf/throttle - BF-30, failed-auth throttling, compatibility default
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/throttle` |
 | base | `origin/dev@a8888f0d` |
@@ -287,8 +287,8 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle`
-  - bf/throttle has not fallen behind origin/dev. This branch is waiting to be pushed, so falling behind dev is a real defect in it. RED as of 2026-09-22: the tip merges origin/dev 59430336, and dev has since moved to 74fc6619 (the three advisory merges). The remedy is `git merge dev`; the trial-merge gate below measures it as conflict-free.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev`
+  - bf/throttle ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs `git -C externals/cgm-remote-monitor-official fetch origin` first.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null`
   - trial-merge into origin/dev is conflict-free
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization >/dev/null`
@@ -304,7 +304,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Not shipping on its own. bf/throttle (content 435419ce, tip a0823c4f, a merge of dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth- hardening, PR #8754 (BF2-AUTH), which is what ships the failed-login fixes in 15.0.9. bf/throttle will not be pushed or merged up, so its freshness gate stays red: it is 16 first-parent merges (51 commits) behind origin/dev 153e5658, measured 2026-09-24; the other three static gates pass. The queue has no superseded state, so the state is left as measured. What ships differs from this branch in one respect. On bf/throttle only the failing request waits. #8754's head e32f7a1c (a dev merge on 607d51b0, pushed 2026-09-24) contains f6f361b1, which puts the wait back before the credential check, as in earlier releases; failures are also counted per credential, and the list is bounded and swept on a schedule. BF2-AUTH describes the shipped behaviour. Decisions: - 2026-09-16 (maintainer): split out of bf/auth, without the lib/server/peer-address.js plumbing that conflicted with PR #8605 in five files. #8605 does not touch lib/authorization/delaylist.js, but it replaces the address derivation that feeds it (lib/server/client-ip.js driven by TRUST_PROXY) in the call sites the peer-address plumbing also edited. Without peer-address.js the only conflict with #8605 is storage.js, which belongs to BF-17 (P0-C). - 2026-09-16 (maintainer): compatibility defaults plus notification across this area. The cost, recorded when it was decided: another release in which an attacker rotating X-Forwarded-For is not throttled. The 2026-09-21 merge-up had zero overlap (dev had no commit touching this branch's three files); after it the branch still merges clean against chore/nightscout- modernization and carries no peer-address plumbing. TEST=authdelay: 11 passing at 435419ce and at a0823c4f. `pr: []` is declared because the review text names #8605, which is RT-3's PR, not this item's; without it the packet generator would infer the wrong PR from the prose.
+**Notes.** Not shipping on its own. bf/throttle (content 435419ce, tip a0823c4f, a merge of dev 59430336 made 2026-09-21) is contained by ancestry in bf2/auth- hardening, PR #8754 (BF2-AUTH), which is what ships the failed-login fixes in 15.0.9. bf/throttle will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head b5f61f19, measured 2026-09-24). What ships differs from this branch in one respect. On bf/throttle only the failing request waits. #8754's head b5f61f19 (pushed 2026-09-24) contains f6f361b1, which puts the wait back before the credential check, as in earlier releases; failures are also counted per credential, and the list is bounded and swept on a schedule. BF2-AUTH describes the shipped behaviour. Decisions: - 2026-09-16 (maintainer): split out of bf/auth, without the lib/server/peer-address.js plumbing that conflicted with PR #8605 in five files. #8605 does not touch lib/authorization/delaylist.js, but it replaces the address derivation that feeds it (lib/server/client-ip.js driven by TRUST_PROXY) in the call sites the peer-address plumbing also edited. Without peer-address.js the only conflict with #8605 is storage.js, which belongs to BF-17 (P0-C). - 2026-09-16 (maintainer): compatibility defaults plus notification across this area. The cost, recorded when it was decided: another release in which an attacker rotating X-Forwarded-For is not throttled. The 2026-09-21 merge-up had zero overlap (dev had no commit touching this branch's three files); after it the branch still merges clean against chore/nightscout-modernization and carries no peer-address plumbing. TEST=authdelay: 11 passing at 435419ce and at a0823c4f. `pr: [8754]` is declared explicitly because the review text names #8605, which is RT-3's PR, not this item's.
 
 ### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext - text, not tooling
 
@@ -871,16 +871,16 @@ with 15.0.9. None of these needs a tenancy decision.
 **Gates.**
 
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0`
-  - CONTROL, and it PASSES. The sequencing document says the rule is written twice, in lib/server/count.js and v3's parseLimit; count.js does not exist on origin/dev - bf/reads creates it. So the duplication does not exist yet and this follow-up is created by P0-E landing.
-- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0`
-  - FAILS on bf/reads, where both readings of the rule are present. Paired with the control above, a red here is the duplication and not the command - the identical command run against origin/dev exits 0.
+  - FAILS while the count rule is written twice on origin/dev: in lib/server/count.js (from P0-E, #8738) and in API v3's parseLimit (lib/api3/generic/collection.js). Goes green when one reading of the rule remains.
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e origin/master:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0`
+  - CONTROL, PASSES: the identical command against origin/master (15.0.8), which has parseLimit but no count.js, exits 0. So a red on the gate above is the duplication, not the command.
 - **NO GATE** &mdash; Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name.
 
 **Evidence.**
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** No longer blocked: bf/reads (P0-E) merged into dev by #8738 on 2026-09-18, so lib/server/count.js exists on origin/dev and the limit rule is written twice there, in count.js and in API v3's parseLimit (lib/api3/generic/collection.js). Since #8748 (RT-COUNT0) and #8761 (RT-COUNT- COMPAT) the two readings disagree on purpose for zero: v1 accepts count=0 while v3 limit=0 stays 400. No branch. Follow-up #1 in the same list is resolved by the combination: BF-01 delegates to each collection's query_for, which already names its collection, so coercion's option reaches query.js on the count path. What remains there is an end-to-end test asserting it, which does not exist, and it is not this item.
+**Notes.** bf/reads (P0-E) merged into dev by #8738 on 2026-09-18, so lib/server/count.js exists on origin/dev and the limit rule is written twice there (the first gate fails on it; origin/master is its control), in count.js and in API v3's parseLimit (lib/api3/generic/collection.js). Since #8748 (RT-COUNT0) and #8761 (RT-COUNT-COMPAT) the two readings disagree on purpose for zero: v1 accepts count=0 while v3 limit=0 stays 400. No branch. Follow-up #1 in the same list is resolved by the combination: BF-01 delegates to each collection's query_for, which already names its collection, so coercion's option reaches query.js on the count path. What remains there is an end-to-end test asserting it, which does not exist, and it is not this item.
 
 ### `FU-RESIDUALS` &mdash; Follow-ups 3, 4, 7 - three named residuals beside branches already prepared
 
@@ -1006,7 +1006,7 @@ that costs.
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `chore/mime-exposure-review` | major | 2 run + 2 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
-| `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 2 run + 1 no-gate |
+| `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
@@ -1533,16 +1533,18 @@ that costs.
 **Gates.**
 
 - `[static]` `node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review`
-  - FAILS on the two err-less shapes and reports that cut 4's bootevent.js has 2 of 9 push sites producing them. Three control shapes - the Mongo string, the ENV array and a real Error - RENDER through the identical expression, so the failure is the input shape and not the harness. The gate refuses to run if the map expression is no longer present verbatim in the shipping file.
+  - FAILS on cut 4: its booterror.js lacks dev's null-err guard (cut 4 is behind dev), and its bootevent.js has err-less push sites that produce the failing shape. Goes green when cut 4 carries the guard (a dev merge or rebase); the register asks for err at the call sites as well. The gate runs the map callback lifted from the ref's own file, with three control shapes that must render.
 - `[static]` `node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev`
-  - THE §1b CONTROL, and it also fails - on origin/dev the renderer throws on the same two shapes while 0 of 7 push sites produce them. That is the register's filing decision as a measurement: the weakness is in SHIPPING code today and is awaiting a caller, and the caller arrives with cut 4. `git diff origin/dev origin/chore/mime-exposure-review -- lib/server/booterror.js` is EMPTY, so a reviewer reading only cut 4's diff will not see the renderer half.
+  - PASSES: origin/dev's renderer shows a desc-only boot error instead of throwing (e6a50e9a, merged with #8753).
+- `[static]` `node tools/queue/gates/booterror-shape-coverage.js --ref origin/master >/dev/null && exit 1 || exit 0`
+  - CONTROL, PASSES because the gate FAILS on origin/master (15.0.8), whose renderer has no guard and throws on both err-less shapes. It shows the gate distinguishes a guarded renderer from an unguarded one.
 - **NO GATE** &mdash; Nothing renders the actual error.html template. The gate exercises the map that builds each error line, which is where the TypeError is thrown, but a full render needs EJS, express and a views path. The fix must be BOTH halves - pass err at both call sites AND make the renderer defensive - with a regression test asserting a desc-only boot error renders as HTML. Fixing only the call sites leaves the next caller to rediscover it.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Half merged. The renderer guard (BF-63's renderer half) is in dev via #8753 (bf2/ops e6a50e9a, 2026-09-23): lib/server/booterror.js on origin/dev handles a boot error with a null or absent err. Not released. The call-site half at cut 4 bootevent.js:330 and :335, the two bootErrors.push sites that omit err, is still open and is fixed when the cuts are rebased. The two gates test the map expression in isolation, so both still fail after the guard (see the queue report); they do not measure dev's guarded path. Separately, booterror.js interpolates desc and err into HTML unescaped; every input today is server- side. The gate's caller-count arm matches ES6 shorthand `err` as well as `err:`; it reproduces the register exactly: 7/7/9 push sites, 0/0/2 err-less, on master/dev/cut 4.
+**Notes.** Half merged. The renderer guard (BF-63's renderer half) is in dev via #8753 (bf2/ops e6a50e9a, 2026-09-23): lib/server/booterror.js on origin/dev handles a boot error with a null or absent err. Not released. The call-site half at cut 4 bootevent.js:330 and :335, the two bootErrors.push sites that omit err, is still open. The gate runs the map callback lifted from each ref's booterror.js: it passes on origin/dev, fails on origin/master (15.0.8, the control) and fails on cut 4, which does not yet carry the guard; a dev merge or rebase of cut 4 brings it. Separately, booterror.js interpolates desc and err into HTML unescaped; every input today is server-side. The gate's caller- count arm matches ES6 shorthand `err` as well as `err:`; it reproduces the register exactly: 7/7/9 push sites, 0/0/2 err-less, on master/dev/cut 4.
 
 ### `BF2-BACKPORT` &mdash; Which modernization-only security commits fix a defect that dev has
 

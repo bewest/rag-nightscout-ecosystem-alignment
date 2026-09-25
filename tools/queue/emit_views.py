@@ -239,7 +239,7 @@ def block_open_prs(doc):
             rows.append((prs[0], item))
     out = ["| PR | id | branch | what it fixes | who should review |",
            "|---|---|---|---|---|"]
-    for pr, item in sorted(rows):
+    for pr, item in sorted(rows, key=lambda r: (r[0], r[1]["id"])):
         out.append("| **#%s** | `%s` | `%s` | %s | %s |"
                    % (pr, item["id"], item.get("branch", "&mdash;"),
                       _flow(item["title"], 60), reviewer_kind(item)))

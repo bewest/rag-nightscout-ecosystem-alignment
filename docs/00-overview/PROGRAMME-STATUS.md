@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 26 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 79 | 26 | 11 |
 | **Modernization** | `release-train` | 17 | 1 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **116** | **36** | **14** |
+| | **total** | **116** | **36** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -160,7 +160,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 | 3 | 1 |  |  | 14 |  | 1 |  |  |  | **22** |
+| `phase0` | 3 | 1 | 1 |  | 2 | 14 |  | 1 |  |  |  | **22** |
 | `release-train` | 1 | 4 |  | 5 |  | 5 | 1 |  |  |  | 1 | **17** |
 | `register-open` | 17 | 5 |  | 4 | 2 | 13 | 4 |  | 2 | 1 |  | **48** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |

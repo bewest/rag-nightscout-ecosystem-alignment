@@ -3,44 +3,37 @@
  * booterror-shape-coverage.js  —  BF-63
  *
  * `lib/server/booterror.js` renders the page an operator sees when Nightscout
- * refuses to boot. Its error-line map is:
+ * refuses to boot. Up to 15.0.8 its error-line map computed
  *
  *   message = JSON.stringify(pick(obj.err, Object.getOwnPropertyNames(obj.err)))
  *
- * `Object.getOwnPropertyNames(obj.err)` is evaluated as an ARGUMENT, before
- * `pick()`'s own `obj == null` guard ever runs, so a boot error carrying no
- * `err` key throws `TypeError: Cannot convert undefined or null to object`.
- * The page that exists to explain why the site will not start is the page
- * that crashes.
+ * for every non-string `err`. `Object.getOwnPropertyNames(obj.err)` is
+ * evaluated as an ARGUMENT, before `pick()`'s own `obj == null` guard runs, so
+ * a boot error with no `err` throws `TypeError: Cannot convert undefined or
+ * null to object`, and the page that explains why the site will not start
+ * crashes instead. `origin/dev` guards it (`obj.err == null` renders the
+ * description only; e6a50e9a, merged with #8753).
  *
- * WHY IT MATTERS MORE THAN AN ORDINARY CRASH: the message it destroys is the
- * mitigation for BF-61 — cut 4 turns a missing `CONNECT_COUNTRY_CODE` into a
- * total site outage, and `{desc:'CONNECT_COUNTRY_CODE is required'}` is
- * precisely the shape that throws here. An operator whose site has gone dark
- * gets a blank failure instead of the one sentence that would tell them what
- * to set.
+ * It matters because cut 4 adds the first callers that omit `err`: a missing
+ * `CONNECT_COUNTRY_CODE` becomes a boot refusal whose one explanatory line is
+ * exactly the shape that throws on a renderer without the guard (BF-61). The
+ * fix is both halves - the renderer guard AND `err` at the call sites.
  *
- * PROVENANCE CORRECTION CARRIED IN THE GATE, because a reviewer sent to the
- * wrong diff dismissed this once: `git diff origin/dev
- * origin/chore/mime-exposure-review -- lib/server/booterror.js` is EMPTY. The
- * renderer is unchanged and pre-existing shipping code. What cut 4 adds is
- * the first callers that omit `err`. So the weakness is in §1 code awaiting a
- * §1b caller — which is why the register files it §1b and says so.
+ * WHAT IS MEASURED: the map callback itself, lifted out of the ref's
+ * booterror.js (brace-matched from `ctx.bootErrors.map(function (obj) {`) and
+ * run with that ref's `pick`. Nothing is retyped, so a guard added anywhere in
+ * the callback is seen. If the callback cannot be found, the gate says so and
+ * measures nothing.
  *
- * THIS GATE FAILS TODAY on the two `err`-less shapes. It goes green when the
- * renderer is defensive — and the register is explicit that the fix must be
- * BOTH halves, the call sites AND the renderer, because fixing only the call
- * sites leaves the next caller to rediscover it.
+ * NON-VACUITY: three control shapes must render through the same callback -
+ * the Mongo shape (`err` a string), the ENV shape (an array) and a real
+ * `Error`. If none renders, the harness is broken and that is reported as
+ * such, not as a defect. `--ref origin/master` (15.0.8, no guard) must FAIL
+ * the two err-less arms; `--ref origin/dev` must pass them.
  *
- * NON-VACUITY. Three control shapes must RENDER through the identical map:
- * the Mongo shape (`err` a string), the ENV shape (`err` an array) and a real
- * `Error`. If the harness threw on all five, the gate would be measuring its
- * own construction. It reports that case as a broken harness, not a defect.
+ * READS ONLY.
  *
- * READS ONLY: it lifts the map's expression out of the shipping file rather
- * than re-typing it, requires the shipping `pick`, and renders nothing.
- *
- *   --ref <ref>   which ref's booterror.js and pick.js to measure
+ *   --ref <ref>   which ref's booterror.js, pick.js and bootevent.js to measure
  */
 
 const path = require('path');
@@ -64,33 +57,32 @@ if (rendererSource === null || pickSource === null) {
 }
 
 /*
- * The expression under test is taken FROM THE FILE, not retyped. If the line
- * is ever reworded this gate stops finding it and says so, rather than
- * silently going on measuring a copy of code that no longer ships.
+ * The map callback is taken FROM THE FILE: find its opening, brace-match to its
+ * end, and compile that source with the ref's own `pick` in scope.
  */
-const EXPR = /message = JSON\.stringify\(pick\(obj\.err, Object\.getOwnPropertyNames\(obj\.err\)\)\);/;
-const found = EXPR.test(rendererSource);
+const START = /ctx\.bootErrors\.map\(\s*function\s*\(\s*obj\s*\)\s*\{/;
+const start = START.exec(rendererSource);
+let callbackSource = null;
+if (start) {
+  let depth = 0;
+  let i = start.index + start[0].length - 1;
+  for (; i < rendererSource.length; i += 1) {
+    if (rendererSource[i] === '{') depth += 1;
+    else if (rendererSource[i] === '}') { depth -= 1; if (depth === 0) break; }
+  }
+  if (depth === 0) callbackSource = rendererSource.slice(start.index + start[0].length - 1, i + 1);
+}
 findings.push({
-  ok: found,
-  text: `the map expression under test is present verbatim in ${REF}:lib/server/booterror.js `
-      + `= ${found}${found ? '' : ' — the renderer has changed shape and this gate can no '
-        + 'longer claim to measure it'}`,
+  ok: callbackSource !== null,
+  text: `the error-line map callback was found in ${REF}:lib/server/booterror.js = ${callbackSource !== null}`
+      + `${callbackSource !== null ? '' : ' - the renderer has changed shape and this gate measures nothing'}`,
 });
-if (!found) report('booterror-shape-coverage (BF-63)', findings);
+if (callbackSource === null) report('booterror-shape-coverage (BF-63)', findings);
 
 // eslint-disable-next-line no-eval
 const pick = eval(`(function(){ ${pickSource.replace('module.exports = pick;', '')} return pick; })()`);
-
-function renderLine(obj) {
-  // The shipping map, transcribed once from the matched expression above.
-  let message;
-  if (typeof obj.err === 'string' || obj.err instanceof String) {
-    message = obj.err;
-  } else {
-    message = JSON.stringify(pick(obj.err, Object.getOwnPropertyNames(obj.err)));
-  }
-  return '<dt><b>' + obj.desc + '</b></dt><dd>' + String(message).replace(/\\n/g, '<br/>') + '</dd>';
-}
+// eslint-disable-next-line no-new-func
+const renderLine = new Function('pick', `return function (obj) ${callbackSource};`)(pick);
 
 function attempt(obj) {
   try { return { ok: true, html: renderLine(obj) }; }

@@ -376,8 +376,8 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: gate-not-met
-    pr: []
+    state: in-flight-upstream
+    pr: [8754]
     blast_radius: >
       Content: 2 commits at ce82f0cd, 3 files, +310/-18.
       lib/authorization/endpoints.js, lib/authorization/storage.js,
@@ -407,15 +407,13 @@ items:
       failures behind a shared proxy.
     register: [BF-17]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev
         kind: static
         describe: >
-          bf/auth has not fallen behind origin/dev. This branch is waiting to be
-          pushed, so falling behind dev is a real defect in it. RED as of
-          2026-09-22: the tip merges origin/dev 59430336, and dev has since moved
-          to 74fc6619 (the three advisory merges). The remedy is `git merge dev`,
-          which the trial-merge gate below measures as conflict-free; see notes
-          for why it has not been done.
+          bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH):
+          its tip is contained in #8754's head, or in origin/dev once #8754
+          merges. Needs `git -C externals/cgm-remote-monitor-official fetch
+          origin` first.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -464,10 +462,7 @@ items:
       Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c,
       a merge of dev 59430336 made 2026-09-21) is contained by ancestry
       in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what ships
-      these fixes in 15.0.9. bf/auth will not be pushed or merged up, so
-      its freshness gate stays red: it is 16 first-parent merges (51
-      commits) behind origin/dev 153e5658, measured 2026-09-24. The
-      queue has no superseded state, so the state is left as measured.
+      these fixes in 15.0.9. bf/auth will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head b5f61f19, measured 2026-09-24).
       Review and the remaining work are on BF2-AUTH.
 
       Decisions:
@@ -515,8 +510,8 @@ items:
     branch: bf/throttle
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-throttle
-    state: gate-not-met
-    pr: []
+    state: in-flight-upstream
+    pr: [8754]
     blast_radius: >
       Content: 1 commit at 435419ce, 3 files, +388/-45.
       lib/authorization/delaylist.js, lib/authorization/index.js,
@@ -547,14 +542,13 @@ items:
       surface. The secure default is a later and deliberate bump.
     register: [BF-30]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev
         kind: static
         describe: >
-          bf/throttle has not fallen behind origin/dev. This branch is waiting to
-          be pushed, so falling behind dev is a real defect in it. RED as of
-          2026-09-22: the tip merges origin/dev 59430336, and dev has since moved
-          to 74fc6619 (the three advisory merges). The remedy is `git merge dev`;
-          the trial-merge gate below measures it as conflict-free.
+          bf/throttle ships inside PR #8754 (bf2/auth-hardening, queue
+          BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once
+          #8754 merges. Needs `git -C externals/cgm-remote-monitor-official
+          fetch origin` first.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -615,15 +609,10 @@ items:
       Not shipping on its own. bf/throttle (content 435419ce, tip
       a0823c4f, a merge of dev 59430336 made 2026-09-21) is contained by
       ancestry in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what
-      ships the failed-login fixes in 15.0.9. bf/throttle will not be
-      pushed or merged up, so its freshness gate stays red: it is 16
-      first-parent merges (51 commits) behind origin/dev 153e5658,
-      measured 2026-09-24; the other three static gates pass. The queue
-      has no superseded state, so the state is left as measured.
+      ships the failed-login fixes in 15.0.9. bf/throttle will not be pushed or merged up on its own; its first gate checks that containment (in #8754's head b5f61f19, measured 2026-09-24).
 
       What ships differs from this branch in one respect. On bf/throttle
-      only the failing request waits. #8754's head e32f7a1c (a dev merge
-      on 607d51b0, pushed 2026-09-24) contains f6f361b1, which puts the
+      only the failing request waits. #8754's head b5f61f19 (pushed 2026-09-24) contains f6f361b1, which puts the
       wait back before the credential check, as in earlier releases;
       failures are also counted per credential, and the list is bounded
       and swept on a schedule. BF2-AUTH describes the shipped behaviour.
@@ -650,9 +639,7 @@ items:
       peer-address plumbing. TEST=authdelay: 11 passing at 435419ce and
       at a0823c4f.
 
-      `pr: []` is declared because the review text names #8605, which is
-      RT-3's PR, not this item's; without it the packet generator would
-      infer the wrong PR from the prose.
+      `pr: [8754]` is declared explicitly because the review text names #8605, which is RT-3's PR, not this item's.
   - id: P0-C-REMEDIATE
     title: Operator remediation for tokens already stored in plaintext - text,
       not tooling
@@ -6477,22 +6464,23 @@ items:
       - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
         kind: static
         describe: >
-          FAILS on the two err-less shapes and reports that cut 4's bootevent.js
-          has 2 of 9 push sites producing them. Three control shapes - the Mongo
-          string, the ENV array and a real Error - RENDER through the identical
-          expression, so the failure is the input shape and not the harness. The
-          gate refuses to run if the map expression is no longer present
-          verbatim in the shipping file.
+          FAILS on cut 4: its booterror.js lacks dev's null-err guard (cut 4 is
+          behind dev), and its bootevent.js has err-less push sites that produce
+          the failing shape. Goes green when cut 4 carries the guard (a dev
+          merge or rebase); the register asks for err at the call sites as well.
+          The gate runs the map callback lifted from the ref's own file, with
+          three control shapes that must render.
       - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev
         kind: static
         describe: >
-          THE §1b CONTROL, and it also fails - on origin/dev the renderer throws
-          on the same two shapes while 0 of 7 push sites produce them. That is
-          the register's filing decision as a measurement: the weakness is in
-          SHIPPING code today and is awaiting a caller, and the caller arrives
-          with cut 4. `git diff origin/dev origin/chore/mime-exposure-review --
-          lib/server/booterror.js` is EMPTY, so a reviewer reading only cut 4's
-          diff will not see the renderer half.
+          PASSES: origin/dev's renderer shows a desc-only boot error instead of
+          throwing (e6a50e9a, merged with #8753).
+      - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/master >/dev/null && exit 1 || exit 0
+        kind: static
+        describe: >
+          CONTROL, PASSES because the gate FAILS on origin/master (15.0.8), whose
+          renderer has no guard and throws on both err-less shapes. It shows the
+          gate distinguishes a guarded renderer from an unguarded one.
       - no-gate: >
           Nothing renders the actual error.html template. The gate exercises the
           map that builds each error line, which is where the TypeError is
@@ -6508,11 +6496,7 @@ items:
       Half merged. The renderer guard (BF-63's renderer half) is in dev
       via #8753 (bf2/ops e6a50e9a, 2026-09-23): lib/server/booterror.js
       on origin/dev handles a boot error with a null or absent err. Not
-      released. The call-site half at cut 4 bootevent.js:330 and :335,
-      the two bootErrors.push sites that omit err, is still open and is
-      fixed when the cuts are rebased. The two gates test the map
-      expression in isolation, so both still fail after the guard (see
-      the queue report); they do not measure dev's guarded path.
+      released. The call-site half at cut 4 bootevent.js:330 and :335, the two bootErrors.push sites that omit err, is still open. The gate runs the map callback lifted from each ref's booterror.js: it passes on origin/dev, fails on origin/master (15.0.8, the control) and fails on cut 4, which does not yet carry the guard; a dev merge or rebase of cut 4 brings it.
 
       Separately, booterror.js interpolates desc and err into HTML
       unescaped; every input today is server-side. The gate's
@@ -6643,17 +6627,16 @@ items:
       - run: 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
         kind: static
         describe: >
-          CONTROL, and it PASSES. The sequencing document says the rule is
-          written twice, in lib/server/count.js and v3's parseLimit; count.js
-          does not exist on origin/dev - bf/reads creates it. So the
-          duplication does not exist yet and this follow-up is created by P0-E
-          landing.
-      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
+          FAILS while the count rule is written twice on origin/dev: in
+          lib/server/count.js (from P0-E, #8738) and in API v3's parseLimit
+          (lib/api3/generic/collection.js). Goes green when one reading of the
+          rule remains.
+      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e origin/master:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
         kind: static
         describe: >
-          FAILS on bf/reads, where both readings of the rule are present. Paired
-          with the control above, a red here is the duplication and not the
-          command - the identical command run against origin/dev exits 0.
+          CONTROL, PASSES: the identical command against origin/master (15.0.8),
+          which has parseLimit but no count.js, exits 0. So a red on the gate
+          above is the duplication, not the command.
       - no-gate: >
           Nothing asserts that the two implementations AGREE while they both
           exist. A differential test - the same limit value through both paths,
@@ -6665,9 +6648,7 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
-      No longer blocked: bf/reads (P0-E) merged into dev by #8738 on
-      2026-09-18, so lib/server/count.js exists on origin/dev and the
-      limit rule is written twice there, in count.js and in API v3's
+      bf/reads (P0-E) merged into dev by #8738 on 2026-09-18, so lib/server/count.js exists on origin/dev and the limit rule is written twice there (the first gate fails on it; origin/master is its control), in count.js and in API v3's
       parseLimit (lib/api3/generic/collection.js). Since #8748
       (RT-COUNT0) and #8761 (RT-COUNT-COMPAT) the two readings disagree
       on purpose for zero: v1 accepts count=0 while v3 limit=0 stays
