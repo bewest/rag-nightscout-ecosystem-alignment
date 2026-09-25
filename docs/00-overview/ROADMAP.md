@@ -41,8 +41,8 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
 | `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | `in-flight-upstream` | Maintainer | #8758 |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after th | `in-flight-upstream` | Maintainer | #8568 |
-| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | Maintainer | #8419 |
-| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | Maintainer | #8730 |
+| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `gate-not-met` | Maintainer | #8419 |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | Maintainer | #8730 |
 
 <!-- END GENERATED: release-waits -->
 
@@ -85,8 +85,8 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 |---:|---|---|---|---|
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
-| 1 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `in-flight-upstream` | &mdash; |
-| 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | &mdash; |
+| 1 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | `gate-not-met` | &mdash; |
+| 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | &mdash; |
 | 1 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `BFQ-102`, `OID-PREVALENCE` |

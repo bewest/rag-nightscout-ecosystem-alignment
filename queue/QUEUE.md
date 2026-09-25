@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 158 |
-| runnable gates | 230 |
+| runnable gates | 231 |
 | explicit `no-gate:` markers | 208 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 438 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 439 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,10 +43,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
-| `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 14 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS, RT-PR-8419, RT-PR-8730 |
 | `ready-to-push` | 9 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-120, BFQ-126 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 9 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8730, BFQ-130, BFQ-131 |
+| `in-flight-upstream` | 7 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-114, BFQ-130, BFQ-131 |
 | `merged-upstream` | 42 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, RT-PR-8530, BFQ-118, BFQ-119 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
@@ -1028,9 +1028,9 @@ that costs.
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
-| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `in-flight-upstream` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
+| `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `gate-not-met` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `merged-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
-| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `in-flight-upstream` | `crowdin_incoming` | patch | 1 run + 1 no-gate |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `in-progress` | `main` | n/a | 1 run + 2 no-gate |
@@ -1680,7 +1680,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `gate-not-met` |
 | repo | `cgm-remote-monitor` |
 | branch | `extend-api-tests` |
 | base | `origin/dev@4f705217` |
@@ -1698,13 +1698,13 @@ that costs.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8419 >/dev/null`
   - #8419's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8419/head:refs/triage/pr-8419` first.
-- **NO GATE** &mdash; The PR's own tests: tests/loopnotifications.test.js on dev with the PR merged, 9 passing (2026-09-25, open-PR triage). Not yet run in a combined candidate.
+- **NO GATE** &mdash; tests/loopnotifications.test.js: 9 passing in the triage (Node version not recorded); in the 2026-09-25 pre-flight its after-all hook times out on Node 20 and 22. No queue gate runs mocha.
 
 **Evidence.**
 
 - `docs/60-research/remedial/github-triage-2026-09-25.md`
 
-**Notes.** Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
+**Notes.** 2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on 24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an APNs client session left open (not verified). Test-only; a follow-up commit that closes it, or dropping #8419 from 15.0.9, is the maintainer's call. Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
 
 ### `RT-PR-8530` &mdash; #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9
 
@@ -1740,13 +1740,14 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `gate-not-met` |
 | repo | `cgm-remote-monitor` |
 | branch | `crowdin_incoming` |
 | base | `origin/dev@4f705217` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
+| register | `BF-132` |
 
 **Blast radius.** Translations only: 32 files under translations/, +518/-454. Head f99c0e54, 85 commits behind dev; merges cleanly with dev 4f705217 and with #8758 (measured 2026-09-25).
 
@@ -1758,13 +1759,15 @@ that costs.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null`
   - #8730's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8730/head:refs/triage/pr-8730` first.
-- **NO GATE** &mdash; No test reads the translation files' content. A broken JSON file would fail the language loader's tests, which the combined run covers once #8730 is in it.
+- `[static]` `git -C externals/cgm-remote-monitor-official show refs/triage/pr-8730:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'`
+  - FAILS today (BF-132): #8730's zh_TW "ml" is 克 (grams), where dev has 毫升 (millilitres). Goes green when Crowdin carries dev's strings. Needs a fresh fetch of pull/8730/head.
+- **NO GATE** &mdash; The other three reverted strings are caught by tests/language.test.js in a combined run (4 fail on the 2026-09-25 pre-flight, tree dd51bb8a).
 
 **Evidence.**
 
 - `docs/60-research/remedial/github-triage-2026-09-25.md`
 
-**Notes.** Opened by the Crowdin integration (sulkaharo), last updated 2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9. Translations changed after it was opened are not in it.
+**Notes.** 2026-09-25 - NOT MERGEABLE AS IS (BF-132): the release-candidate pre-flight showed #8730 reverts dev's corrected translations (zh_TW ml -> grams, Carbs, sv_SE Days with food, a Russian status line; 4 language tests fail). Needs Crowdin corrected and a re-sync. Recommended to the maintainer: take it out of 15.0.9. Opened by the Crowdin integration (sulkaharo), last updated 2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9. Translations changed after it was opened are not in it.
 
 ### `OID-MIGRATION` &mdash; Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms
 

@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 24 items
+### Maintainer &mdash; 22 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -41,8 +41,6 @@ that it was reviewed.
 | `BFQ-117` | `in-flight-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | #8758 |
 | `BFQ-130` | `in-flight-upstream` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | #8758 |
 | `BFQ-131` | `in-flight-upstream` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so page | #8758 |
-| `RT-PR-8419` | `in-flight-upstream` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15 | #8419 |
-| `RT-PR-8730` | `in-flight-upstream` | #8730 - Crowdin translation updates, carried into 15.0.9 | #8730 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -89,9 +87,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8419** | `RT-PR-8419` | `extend-api-tests` | #8419 - tests for Loop push notifications and websockets (je | Maintainer |
 | **#8568** | `BFQ-114` | `fix-loop-status-timeline` | BF-114 - an AAPS open-ended loop disable keeps loop and pump | Maintainer |
-| **#8730** | `RT-PR-8730` | `crowdin_incoming` | #8730 - Crowdin translation updates, carried into 15.0.9 | Maintainer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
 | **#8758** | `BFQ-115` | `wip/object-id-crud-fixes-2` | BF-115 - an entry or treatment with an unusable _id is store | Maintainer |
 | **#8758** | `BFQ-116` | `wip/object-id-crud-fixes-2` | BF-116 - on #8758, a devicestatus re-send answers 500 and lo | Maintainer |

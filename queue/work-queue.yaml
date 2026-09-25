@@ -9004,7 +9004,7 @@ items:
     repo: cgm-remote-monitor
     branch: extend-api-tests
     base: origin/dev@4f705217
-    state: in-flight-upstream
+    state: gate-not-met
     pr: [8419]
     blast_radius: >
       Tests only, 9 files: moves the APNs test certificates to tests/fixtures/,
@@ -9024,13 +9024,20 @@ items:
           `git -C externals/cgm-remote-monitor-official fetch official
           pull/8419/head:refs/triage/pr-8419` first.
       - no-gate: >
-          The PR's own tests: tests/loopnotifications.test.js on dev with the
-          PR merged, 9 passing (2026-09-25, open-PR triage). Not yet run in a
-          combined candidate.
+          tests/loopnotifications.test.js: 9 passing in the triage (Node
+          version not recorded); in the 2026-09-25 pre-flight its after-all
+          hook times out on Node 20 and 22. No queue gate runs mocha.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-09-25 - BLOCKED on a test fault: in the release-candidate pre-flight
+      (tree dd51bb8a) the new tests/loopnotifications.test.js 'after all' hook
+      times out after 10 s at fakeAPNServer.close on Node 20 and 22 (passes on
+      24); it reproduces on the PR head alone (2 of 2 on Node 22). Likely an
+      APNs client session left open (not verified). Test-only; a follow-up
+      commit that closes it, or dropping #8419 from 15.0.9, is the
+      maintainer's call.
       Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25
       (maintainer): carry into 15.0.9. It is a file-level rebase cost for
       #8605, which also edits tests/loop-server.test.js and the instance
@@ -9712,7 +9719,7 @@ items:
     repo: cgm-remote-monitor
     branch: crowdin_incoming
     base: origin/dev@4f705217
-    state: in-flight-upstream
+    state: gate-not-met
     pr: [8730]
     blast_radius: >
       Translations only: 32 files under translations/, +518/-454. Head
@@ -9723,7 +9730,7 @@ items:
       Updated wording in the languages the Crowdin volunteers translate.
     semver: patch
     semver_reason: translation text only
-    register: []
+    register: [BF-132]
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null
         kind: static
@@ -9731,14 +9738,24 @@ items:
           #8730's head merges into origin/dev without conflict. Needs
           `git -C externals/cgm-remote-monitor-official fetch official
           pull/8730/head:refs/triage/pr-8730` first.
+      - run: git -C externals/cgm-remote-monitor-official show refs/triage/pr-8730:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'
+        kind: static
+        describe: >
+          FAILS today (BF-132): #8730's zh_TW "ml" is 克 (grams), where dev
+          has 毫升 (millilitres). Goes green when Crowdin carries dev's
+          strings. Needs a fresh fetch of pull/8730/head.
       - no-gate: >
-          No test reads the translation files' content. A broken JSON file
-          would fail the language loader's tests, which the combined run
-          covers once #8730 is in it.
+          The other three reverted strings are caught by tests/language.test.js
+          in a combined run (4 fail on the 2026-09-25 pre-flight, tree dd51bb8a).
     blocks_on: []
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-09-25 - NOT MERGEABLE AS IS (BF-132): the release-candidate pre-flight
+      showed #8730 reverts dev's corrected translations (zh_TW ml -> grams,
+      Carbs, sv_SE Days with food, a Russian status line; 4 language tests
+      fail). Needs Crowdin corrected and a re-sync. Recommended to the
+      maintainer: take it out of 15.0.9.
       Opened by the Crowdin integration (sulkaharo), last updated
       2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9.
       Translations changed after it was opened are not in it.
