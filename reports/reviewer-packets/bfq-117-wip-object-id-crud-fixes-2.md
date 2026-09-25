@@ -88,9 +88,10 @@ follow-up: v3 PUT/PATCH edit one copy and websocket dbUpdate edits both, and
 each leaves two records, so #8758's body and release-notes advice 'edit either
 one: the two become one record' holds only for v1 PUT/POST; that wording is to
 be corrected (reports/phase0-pr-bodies/pr-8758-body.md, releases/cgm- remote-
-monitor-15.0.9/release-notes.md). Also seen by the review, not filed: GET
-/api/v1/entries/<unknown hex>.json answers 500 'No such id' on both builds,
-and #8758 lets an upper-case id reach it.
+monitor-15.0.9/release-notes.md); queued as OID-V3-EDIT-MERGE and OID-WS-EDIT-
+MERGE. Also seen by the review, not filed: GET /api/v1/entries/<unknown
+hex>.json answers 500 'No such id' on both builds, and #8758 lets an upper-
+case id reach it.
 
 ---
 
