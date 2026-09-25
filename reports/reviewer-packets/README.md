@@ -36,6 +36,7 @@ repository.
 | [`BFQ-115`](bfq-115-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load |
 | [`BFQ-116`](bfq-116-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch |
 | [`BFQ-117`](bfq-117-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy |
+| [`BFQ-130`](bfq-130-wip-object-id-crud-fixes-2.md) | &mdash; | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |

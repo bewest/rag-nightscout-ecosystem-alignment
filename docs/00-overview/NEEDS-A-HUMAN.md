@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 21 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -50,6 +50,7 @@ that it was reviewed.
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one s | &mdash; |
 | `BFQ-116` | `ready-to-push` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the  | &mdash; |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #87 | &mdash; |
+| `BFQ-130` | `ready-to-push` | BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
@@ -153,7 +154,7 @@ green.
 #79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) were lab-run on
 2026-09-23, on code identical to what shipped. The runs were 80 min, and 46 min against sinks
 running the 15.0.9 candidate
-([record](../60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md)). That is
+([record](../60-research/remedial/connector-profile-sync.md)). That is
 shorter than the 4 h 23 min dev.2 soak, and no source outage was repeated.
 
 ### `BFQ-47` — decided, and in review

@@ -69,7 +69,7 @@ failed find or save fails the poll. Glooko profiles (matched by `identifier`) ar
 
 ## Evidence
 
-Full record: `docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md`.
+Full record: `docs/60-research/remedial/connector-profile-sync.md`.
 
 **Suite**, Node 20.20.0 / 22.23.2 / 24.20.0: 308 at `f924de2`, **319** at `1d2ebc8` (+11), **334** at `de3cee1` (+15),
 0 fail, 0 skipped, on the real clock and under three faked system times and time zones. An earlier draft of the new

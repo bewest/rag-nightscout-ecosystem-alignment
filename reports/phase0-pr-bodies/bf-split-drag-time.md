@@ -3,8 +3,8 @@
 **DRAFT. Local branch, not pushed.** Branch `bf/split-drag-time` on `origin/dev` `4011193e`, tip
 `8d797ba4`, one commit. No `CHANGELOG.md` edit. `git merge-tree` is clean with #8754 (`8211f8e2`)
 and #8758 (`6d120fa2`). Evidence:
-[`docs/60-research/remedial/bf103-fix-2026-09-23.md`](../../docs/60-research/remedial/bf103-fix-2026-09-23.md);
-defect: [`bf103-split-drag-stale-time-2026-09-23.md`](../../docs/60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md).
+[`docs/60-research/remedial/bf103-split-drag-time.md`](../../docs/60-research/remedial/bf103-split-drag-time.md)
+(the defect and the fix).
 
 | what changes | who can see it |
 |---|---|

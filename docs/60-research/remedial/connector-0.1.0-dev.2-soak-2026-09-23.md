@@ -8,7 +8,7 @@
 > Historical: the evidence for tagging nightscout-connect v0.1.0 and pinning it into 15.0.9. Both have happened:
 > `0.1.0` was released 2026-09-24 and `dev` pins it exactly (#8762). The two defects found in §5.1 and §5.2 are
 > registered as BF-97 and BF-98, and their fixes (connector #79) are in `0.1.0`
-> ([profile duplicate stall](connector-profile-duplicate-stall-2026-09-23.md)). Current defect facts live in the
+> ([profile duplicate stall](connector-profile-sync.md)). Current defect facts live in the
 > [backfix register](../../30-design/remedial/nightscout-backfix-register.md), and item state in
 > [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).
 

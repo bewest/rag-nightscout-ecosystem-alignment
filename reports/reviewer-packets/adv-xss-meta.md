@@ -106,7 +106,7 @@ The socket write path calls the purifier at v15.0.8; it does not at v15.0.7.
 
 - [`docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md`](../../docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md)
 - [`docs/reports/security-hotfix-eval-2026/report-01-stored-xss.md`](../../docs/reports/security-hotfix-eval-2026/report-01-stored-xss.md)
-- [`docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`](../../docs/30-design/remedial/security-advisory-disposition-2026-09-21.md)
+- [`docs/30-design/remedial/advisory-response-2026-09/README.md`](../../docs/30-design/remedial/advisory-response-2026-09/README.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 
 ## Notes carried on the item

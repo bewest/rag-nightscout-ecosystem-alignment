@@ -102,7 +102,7 @@ The router-wide read gate BF-78 is about is present on the shipping release.
 ## Evidence
 
 - [`docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md`](../../docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md)
-- [`docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`](../../docs/30-design/remedial/security-advisory-disposition-2026-09-21.md)
+- [`docs/30-design/remedial/advisory-response-2026-09/README.md`](../../docs/30-design/remedial/advisory-response-2026-09/README.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 
 ## Notes carried on the item

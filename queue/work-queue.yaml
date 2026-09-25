@@ -1628,7 +1628,7 @@ items:
       #79's final code (9dbef9e, whose lib/ equals de3cee1) was lab-run
       on 2026-09-23: 80 min on the first sinks and 46 min on the
       15.0.9-candidate sinks
-      (docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md).
+      (docs/60-research/remedial/connector-profile-sync.md).
       That is shorter than the 4 h 23 min dev.2 soak, and source outages
       and restarts were not repeated. Update-on-change works only
       against a sink that has #8758 (BFQ-102).
@@ -7073,10 +7073,9 @@ items:
 # ADV-* — the five open GitHub security advisories, triaged 2026-09-21.
 #
 # Not a new programme: the advisories and the backfix register describe the
-# same defects in different words. Read
-# docs/30-design/remedial/security-advisory-disposition-2026-09-21.md first: it
-# says which of the five survive AUTH_DEFAULT_ROLES=denied and which describe
-# the documented `readable` default. Anonymous read under `readable` is the
+# same defects in different words. Which of the five survive
+# AUTH_DEFAULT_ROLES=denied is withheld until a release ships the fixes; the
+# pack index is docs/30-design/remedial/advisory-response-2026-09/README.md. Anonymous read under `readable` is the
 # documented default and is not itself a defect.
 #
 # Each ADV- item's remaining bottleneck is a decision or a release, not
@@ -7181,7 +7180,7 @@ items:
     evidence:
       - docs/60-research/remedial/ghsa-gjhc-loadretro-2026-09-21.md
       - docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md
-      - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
+      - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Merged into dev by #8744 (a9acd313, 2026-09-21) from
@@ -7350,7 +7349,7 @@ items:
     evidence:
       - docs/60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md
       - docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md
-      - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
+      - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
@@ -7480,7 +7479,7 @@ items:
     evidence:
       - docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md
       - docs/reports/security-hotfix-eval-2026/report-01-stored-xss.md
-      - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
+      - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Needs a decision on BF-73 and BF-74 (see review); the metadata
@@ -7595,7 +7594,7 @@ items:
     blocks_on: []
     evidence:
       - docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md
-      - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
+      - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       BF-77 is merged into dev by #8746 (74fc6619, 2026-09-21) and not
@@ -7918,8 +7917,7 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
-      - docs/60-research/remedial/bf103-split-drag-stale-time-2026-09-23.md
-      - docs/60-research/remedial/bf103-fix-2026-09-23.md
+      - docs/60-research/remedial/bf103-split-drag-time.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
       Merged into dev by #8760 (ddd9b600, 2026-09-24 01:43Z); not
@@ -7949,7 +7947,7 @@ items:
       2440/0/3 dev, 2453/0/3 branch on Node 20 and 22 (after npm run
       bundle); 9 of 9 break-its caught by the browser probe (7 by unit
       tests). Evidence
-      docs/60-research/remedial/bf103-fix-2026-09-23.md; PR body
+      docs/60-research/remedial/bf103-split-drag-time.md; PR body
       reports/phase0-pr-bodies/bf-split-drag-time.md.
 
       The split copy drops page-added mills, endmills, mgdl, scaled,
@@ -8128,7 +8126,7 @@ items:
       code (9dbef9e, whose lib/ equals de3cee1) was lab-run on
       2026-09-23: 80 min on the first sinks and 46 min on the
       15.0.9-candidate sinks
-      (docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md).
+      (docs/60-research/remedial/connector-profile-sync.md).
       That is shorter than the 4 h 23 min dev.2 soak, and source outages
       and restarts were not repeated. Update-on-change works only
       against a sink that has #8758 (BFQ-102); other sinks get no copies
@@ -8155,9 +8153,7 @@ items:
       (synthetic, 10 sinks incl. 15.0.8, dev, 9b8cc2f9, 597e2899): no
       twins, edits arrive on BF-99 sinks, polls 4.7-5.3 min,
       entries/treatments/devicestatus counts match. Evidence
-      docs/60-research/remedial/connector-profile-sync-bounded-update-2026-09-23.md
-      and
-      docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md;
+      docs/60-research/remedial/connector-profile-sync.md;
       PR body
       reports/connector-pr-bodies/profile-sync-bounded-update.md.
       Workaround for anyone on 0.1.0-dev.2:
@@ -8204,7 +8200,7 @@ items:
       no roles, or when a read returns 401, naming the subject and both
       fixes; no writes to the source; no token, secret or URL in the
       message. The exact wording is in the evidence doc
-      (docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md)
+      (docs/60-research/remedial/connector-profile-sync.md)
       for the release notes.
 
       Decisions:
@@ -9935,9 +9931,10 @@ items:
     title: "BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: wip/object-id-crud-fixes-2@cb7d4110
-    state: not-started
+    branch: wip/object-id-crud-fixes-2
+    base: official/bf/object-id-crud@ab7b22d6
+    worktree: externals/work/crm-6a-rc-cand
+    state: ready-to-push
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -9950,12 +9947,25 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-130]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 wip/object-id-crud-fixes-2
+        kind: static
+        describe: >
+          wip/object-id-crud-fixes-2 is a fast-forward of #8758's head
+          ab7b22d6, so the push is to bf/object-id-crud with no rebase.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "opItem" wip/object-id-crud-fixes-2 -- lib/server/treatments.js
+        kind: static
+        describe: >
+          The fix (6c3ccce6) is on the branch. A presence check only; its
+          control is the same grep on origin/bf/object-id-crud, which fails
+          until the push. tests/api.object-id.treatments-entries.test.js is
+          what says the fix works.
       - no-gate: >
-          Not started. Reproduced by the #8758 freeze review 2026-09-25 on
-          15.0.8 and ab7b22d6 with a booted server; a behaviour gate needs a
-          MongoDB, as the lab gates do (tools/queue/gates/_oid-cell.js could
-          carry a probe for it).
-    blocks_on: [BFQ-102]
+          The behaviour is held by tests/api.object-id.treatments-
+          entries.test.js (the reproduction is red on cb7d4110 and green on
+          6c3ccce6; removing the index map fails two tests), which needs a
+          booted server and a MongoDB. The full six-cell run on 6c3ccce6 is
+          recorded in docs/30-design/remedial/rc-15.0.9-integration-record.md.
+    blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
@@ -9964,6 +9974,8 @@ items:
       candidate to fold into #8758 before the tag, like BF-115 to BF-117;
       the reach is narrow. The food and activity batch paths use the same
       trailing delete and should be checked for the same shape.
+      Fixed 2026-09-25 as 6c3ccce6 on wip/object-id-crud-fixes-2 at the
+      maintainer's request ("fix BF-130 first so I push once").
   - id: OID-ENTRIES-REPLY-ID
     title: "On #8758, an entries POST that matches two stored duplicates updates one and replies with the other's _id"
     parcel: register-open

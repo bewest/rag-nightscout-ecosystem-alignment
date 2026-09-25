@@ -72,7 +72,7 @@ In #4 the page was also reloaded several times at phone width. The chart never l
 | rc | 20:02:06.701Z | 19:09:23.509Z | `mgdl: 110`, `scaled: 110` |
 | 15.0.8 | 19:30:04.900Z | 19:17:09.526Z | `mgdl: 110` |
 
-The IOB/COB effect was measured afterwards on the rc with a control (COB 0 vs 25 g, IOB 0 vs 2.49 U). The mechanism and the control are in the [BF-103 evidence](bf103-split-drag-stale-time-2026-09-23.md).
+The IOB/COB effect was measured afterwards on the rc with a control (COB 0 vs 25 g, IOB 0 vs 2.49 U). The mechanism and the control are in the [BF-103 evidence](bf103-split-drag-time.md).
 
 ### 5. Alarms with `AUTH_DEFAULT_ROLES=denied`
 

@@ -3,18 +3,20 @@
 *Contributor-facing. Outgoing artifacts: each file says whether it has been sent.*
 
 The pull requests and the responses to the five security advisories on
-`nightscout/cgm-remote-monitor`. Current verdicts and what is still owed live in
-[the disposition](../security-advisory-disposition-2026-09-21.md); this directory holds the text.
+`nightscout/cgm-remote-monitor`. What is still owed for each advisory is in queue items `ADV-*`
+and `RT-0` in [`queue/work-queue.yaml`](../../../../queue/work-queue.yaml); this directory holds the
+text.
 
 **State as of 2026-09-23.** All three PRs **merged into `dev` on 2026-09-21** (#8744, #8745, #8746)
 and are **not released**. The reporter replies and the metadata corrections are **drafted and not
 sent**. No advisory is published.
 
 **Details withheld (2026-09-23).** Three of the five advisories concern defects still present in
-the shipping release, 15.0.8. Their write-ups in this pack, the disposition and the research notes
-are withheld until a release containing the fixes ships and the advisories are published, matching
-the shortened descriptions of #8743, #8744 and #8745. The full text is in git history at
-`ef376ecb`. Current state is in queue items `ADV-*` and `RT-0`.
+the shipping release, 15.0.8. Their write-ups in this pack, the disposition and sequencing records,
+and the research notes are withheld until a release containing the fixes ships and the advisories
+are published, matching the shortened descriptions of #8743, #8744 and #8745. The full text is in
+git history at `ef376ecb` (the disposition and sequencing records were
+`docs/30-design/remedial/security-advisory-{disposition,sequencing}-2026-09-21.md`).
 
 ## The five advisories at a glance
 
@@ -57,7 +59,5 @@ Nightscout ships `AUTH_DEFAULT_ROLES=readable`, documents it as "readable by any
 URL", and warns about it at every boot, so anonymous read on a default install is the documented
 product. Each advisory's severity names the configuration it was scored against.
 
-*See also*: [disposition](../security-advisory-disposition-2026-09-21.md) ·
-[sequencing (snapshot)](../security-advisory-sequencing-2026-09-21.md) ·
-[configuration matrix](../../../60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md) ·
+*See also*: [configuration matrix](../../../60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md) ·
 [register](../nightscout-backfix-register.md)

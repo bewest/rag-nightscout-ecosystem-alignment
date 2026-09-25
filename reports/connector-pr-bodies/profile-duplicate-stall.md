@@ -81,7 +81,7 @@ is written to the source site, and the message has no token, secret or URL in it
 
 ## Evidence
 
-Full record: `docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md` in the alignment repository.
+Full record: `docs/60-research/remedial/connector-profile-sync.md` in the alignment repository.
 
 **Tests.** `test/profile-duplicate.test.js` (12 tests) runs both outputs against a store that behaves like Nightscout's
 `insertMany`. On `fbd4e55` all 12 fail with `Nightscout internal write failed` (code 11000) or `Nightscout write
