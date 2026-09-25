@@ -1901,3 +1901,12 @@ controls:
       subject after DELETE by its hex (n=1); also red on ab7b22d6 with the
       storage.js remove reverted (59728200). Green on ab7b22d6, 63dd716c and
       cb7d4110.
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official grep -q "opItem" wip/object-id-crud-fixes-2 -- lib/server/treatments.js
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official grep -q "opItem" origin/bf/object-id-crud -- lib/server/treatments.js
+    control-kind: static
+    proves: >
+      #8758's pushed head has the one trailing stale delete and no opItem
+      map, so the grep exits 1 there until the push.

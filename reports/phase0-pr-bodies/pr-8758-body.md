@@ -1,4 +1,4 @@
-<!-- Body for nightscout/cgm-remote-monitor#8758 at head cb7d4110 (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
+<!-- Body for nightscout/cgm-remote-monitor#8758 at head 6c3ccce6 (2026-09-25; ab7b22d6 plus part 4, local until pushed). This comment is hidden on GitHub. -->
 Records keep their own `_id`, and create, read, update and delete by that `_id` work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on `dev` `1f9a9d10`: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then `dev` is merged in (`572bfc32`), with one follow-up for a change `dev` made to access entries (`ab7b22d6`), and three fixes from the 15.0.9 freeze review (part 4).
 
 ## Part 1: a record's own `_id` finds, edits and deletes it
@@ -353,6 +353,7 @@ Each commit carries its own tests. At `dd2cf8f1`, with `lib/` reverted to `6d120
 | `63dd716c` | API v3 DELETE wrote one of the documents `filterForOne` matches, so of a record stored with a string `_id` and again with the ObjectId, one stayed valid; and reads and writes sorted by `identifier` only, which the two copies tie on, so which one they took depended on storage order (the string copy, in the review's trials; 15.0.8 took the ObjectId copy). DELETE now marks or removes every form (`updateMany`/`deleteMany`), and `findOne`, `findOneFilter` and `writeFilter` sort `{identifier: -1, _id: -1}`, which takes the ObjectId copy. **Changed expectations**: part 3's v1/v3 pair DELETE test now expects the v1 record marked deleted too, and two helper tests pin the new sort. Test: `tests/api3.delete-every-form.test.js`, which runs GET and PATCH with each copy stored first. |
 
 | `cb7d4110` | From review of the three above. The every-form DELETE matched any document whose `_id` is the identifier, so it could also mark or remove a different record that has an identifier of its own; it now matches by `_id` only records without an identifier, as `identifyingFilter` does. And `dropEmptyId` dropped an Extended JSON `{"$oid": "<hex>"}` `_id`, as `mongoexport` writes it, so a restored record got a new id and a re-send stored a copy; it now becomes the ObjectId it names. Tests: two in `tests/api3.delete-every-form.test.js` (soft and permanent), and one unit and one HTTP test in `tests/api.empty-id.test.js`. |
+| `6c3ccce6` | A treatments POST batch deleted the string forms of the ids it matched by `_id` once, after all its writes. An item without `_id` matched by `created_at` and `eventType` could land on such a string copy and was deleted with it, behind a 200. Each write matched by `_id` now removes its string forms right after it, so a later item finds the one record and replaces it, as it does when no string copy exists; upserted ids are mapped back to their items past the added deletes. Tests: three in `tests/api.object-id.treatments-entries.test.js`. |
 
 Not changed here: API v3 PUT/PATCH edit one copy and websocket `dbUpdate` edits both, and each
 leaves two records; websocket `dbAdd` and API v3 POST still store some unusable `_id` values
@@ -360,7 +361,8 @@ without a crash.
 
 Each fix reverted singly fails a named test: either normalizer's call, the `ddata` or `calcdelta`
 guard, the unordered insert, soft and permanent DELETE, the read sort (only with the ObjectId copy
-stored first) and the write sort.
+stored first), the write sort, the Extended JSON read, the narrowed DELETE filter, and the
+treatments batch's per-write delete and its index map.
 
 ## Merges
 
@@ -370,7 +372,7 @@ The narrower profile-only fix that this replaces is not being opened.
 
 ## Tests, re-run for this description
 
-At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from the last commit).
+At `63dd716c` the full suite (CI's `test-ci`, then `test:core`), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At `cb7d4110`, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than `63dd716c`, all from that commit). At `6c3ccce6` the full suite is being run.
 At `ab7b22d6` (this branch with `dev` `4f705217` merged), Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. At `dd2cf8f1`, before the merge: 2875 passing, 0 failing, 3 pending.
 At `6d120fa2` (parts 1 and 2), Node 20.20.0: 2866 passing (`dev` `1f9a9d10` was 2386); of the 480 tests in the eleven new files, 259 fail with `dev`'s `lib/`, and the other 221 are invariants that pass on both.
 MongoDB needs a raised open-file limit for this suite (peak 1130 open files in `mongod` at `6d120fa2`); a container at Docker's default 1024 stops partway through.
