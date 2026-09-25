@@ -55,8 +55,8 @@ and the release PR #8598 (`dev` → `master`) is open at `4f705217`, with no rev
 
 | question | answer, 2026-09-25 (`origin/dev` `4f705217`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **78** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 46 merged, 1 partly merged (BF-07), 5 fixed on an unmerged branch** (BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **76** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
-| How much work is outstanding? | **54 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **92** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **40 open, 46 merged, 1 partly merged (BF-07), 5 fixed on an unmerged branch** (BF-99 to BF-102 in PR #8758; BF-52 on a local branch). **90** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
+| How much work is outstanding? | **70 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
 Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
 cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
@@ -81,7 +81,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-25 the highest is BF-129; BF-118 to BF-128 are reserved by another session for triage defects. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-25 the highest is BF-130. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -193,6 +193,17 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-114** | After an AndroidAPS user turns the loop off **with no end time** and later turns it back on, Nightscout **keeps treating the loop as deliberately offline**, so it **raises no "not looping" alert and no pump alert** until the old record leaves the treatments it loads. AAPS records the re-enable as a new "OpenAPS Offline" record (`CLOSED_LOOP`, duration 0) and does not shorten the earlier `DISABLED_LOOP` one, whose duration is open-ended (2147483647 min, or 10 years in AAPS dev). `findOfflineMarker` reads every such record as a time span and returns the newest that covers now, which is still the disable. Loop and Trio are not affected: neither sends "OpenAPS Offline", and each ends its own indefinite overrides (PR #8568, outside contributor) | `lib/plugins/openaps.js` `findOfflineMarker` (used by `statusLevel` and `lib/plugins/pump.js:335`); `lib/data/ddata.js` `processTreatments` does not close it; `v15.0.8` and `dev` `4f705217` | **high** — silences the two server alerts that say an AAPS loop or pump needs attention, with nothing shown to say so; bounded to AAPS users who used an open-ended disable. Keep the phone's and pump's own alerts on | yes | **open, filed 2026-09-25** from the open-PR triage. PR #8568 (open, 0 behind `dev`) infers the disable's end from the next running-mode record and clears the released-AAPS shape; it misses the AAPS-dev shape (`originalDuration` 0, 10-year duration) and the day-to-day report, which does not go through `processTreatments`. **Reproduced** ([probe](../../../tools/lab/aaps-offline/probe.js)): marker still on 5 h after re-enable on `v15.0.8` and `dev` for both shapes; on #8568 `de8efff0`, cleared for the released shape only; both controls behave on all three |
 | **BF-115** | An entry or treatment written with an **`_id` value that is not an id** is stored with that value, because entries and treatments are written with upserts and an upsert keeps the `_id` it is given. For one such value the request answers 500 but the record is written, and the code that loads records into memory expects every stored `_id` to be an id: **the server process stops at the next data load, and again within seconds of every restart**, until the record is removed from the database. Other such values are stored without a crash, but no id route can address the record afterwards | `lib/server/entries.js` `normalizeEntryId`, `lib/server/treatments.js` `normalizeTreatmentId` (v1 POST `/entries`, POST and PUT `/treatments`); the load in `lib/data/ddata.js` `processRawDataForRuntime` (also `dataloader.js`, `calcdelta.js`, API v3 `normalizeDoc`); `v15.0.8` `92d08342`, `dev` `4f705217` and #8758 `ab7b22d6` | **high** — one write takes a site down and keeps it down; needs a credential that can create treatments or entries. No client in the corpus sends such a value (the 2026-09-25 pass). Mechanism only here: the value is not named in this public file | yes | **open, found 2026-09-25** in the #8758 freeze pass (corpus replay, reproduced independently by the review). Fix on local branch `wip/object-id-crud-fixes-2` `17add44b` (not pushed), for #8758 (queue BFQ-115). **Reproduced** on `v15.0.8` and `ab7b22d6`: the request, the stored record, the stop at the next load and again after a restart; positive control, removing the record, and the server stays up. Fix break-its: dropping either normalizer's guard or the load guard fails a named test |
 | **BF-117** | An API v3 **DELETE of a record stored twice by its `_id`** (once as the 24-hex string, as 15.0.6 and earlier stored it, and once as the ObjectId a later edit added beside it) **marks or removes only one copy**; the other stays valid in v1 and v3 reads, so a treatment deleted from AndroidAPS keeps showing. On #8758 `ab7b22d6` v1 DELETE and websocket `dbRemove` remove both copies (BF-110), so v3 is the odd one out; and #8758's v3 reads and writes take the **string copy**, the older one, where 15.0.8 takes the ObjectId copy, which holds the edit | `lib/api3/generic/delete/operation.js`; `lib/api3/storage/mongoCollection/modify.js` `writeFilter`, `find.js` `findOne`/`findOneFilter` (sort by `identifier` only); `v15.0.8` `92d08342` (one copy deleted) and #8758 `ab7b22d6` (one copy deleted, and the string copy read and written) | **medium** — a deleted treatment reappears, and on #8758 v3 GET and PATCH show and edit the stale copy; bounded to records stored twice, whose number is not known (queue OID-PREVALENCE) | yes | **open, found 2026-09-25** in the #8758 freeze pass. Fix on local branch `wip/object-id-crud-fixes-2` `63dd716c` (not pushed), for #8758 (queue BFQ-117): DELETE covers every stored form; reads and writes sort `_id` descending too. **Reproduced** on both builds (corpus Q10/Q10b; review 40/40 trials of the copy picked, both storage orders, MongoDB 4.4 and 7). Not fixed there: v3 PUT/PATCH and websocket `dbUpdate` leave both copies (queue OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE) |
+| **BF-118** | On a site with `DISPLAY_UNITS=mmol`, Nightscout converts the four alarm thresholds from mmol/L **only when `BG_HIGH` is below 50**. An operator who sets only `BG_TARGET_TOP` and `BG_TARGET_BOTTOM` in mmol/L, as the README says to, leaves `BG_HIGH` at its mg/dL default of 260. So nothing is converted, and the targets are kept as **8.5 and 3.9 mg/dL**. `verifyThresholds` then rewrites `BG_LOW` from 55 to **2.9 mg/dL** (BF-67's rewrite). The result: **no low or urgent-low alarm can fire**, and **every reading raises "Warning HIGH"**, including a 45 mg/dL (2.5 mmol/L) low | `lib/settings.js:291` (conversion gated on `thresholds.bgHigh < 50` alone), then `verifyThresholds` `:302-325` (the `bgLow` rewrite at `:315-319`); `lib/plugins/simplealarms.js` `compareBGToTresholds`; unchanged between `v15.0.8` and `dev` `4f705217` (no diff to `lib/settings.js`) | **safety**: the low alarms a person believes are set do not exist, and a low is announced as a high. Bounded to `DISPLAY_UNITS=mmol` sites that set some thresholds in mmol/L but leave `BG_HIGH` unset or in mg/dL. The only trace is two `console.warn` lines on the server. Keep device alarms on | yes | open, filed 2026-09-25 from the GitHub triage (issue #7729). Related to BF-67 and BF-86 but not either of them (see detail). **Reproduced** in-process through `lib/server/env.js` and `simplealarms` ([probe](../../../tools/lab/triage-2026-09/mmol-partial-thresholds.js)). Stored `bgHigh 260 / bgTargetTop 8.5 / bgTargetBottom 3.9 / bgLow 2.9`. At 45 mg/dL the result is "Warning HIGH", not a low alarm, and at 100 mg/dL it is also "Warning HIGH". Identical on `v15.0.8` and `dev`. Controls: all four set in mmol/L convert to 252/153/70/54 and raise "Urgent LOW" at 45. The two targets set in mg/dL on a mg/dL site raise "Urgent LOW" at 45 |
+| **BF-119** | **`PUMP_WARN_ON_SUSPEND` never raises a warning.** With pump alerts on (`PUMP_ENABLE_ALERTS=true`) and `PUMP_WARN_ON_SUSPEND=true`, a devicestatus whose pump reports `status.suspended: true` raises **no** Pump notification. `updateStatus()` has two mistakes: it tests `warnOnSuspend` on the wrong object (a function parameter shadows the plugin, whose `warnOnSuspend` is set in `checkNotifications`), so the test is false in normal operation; and inside that branch it writes `result.status.level` before `result.status` exists, then replaces `result.status` anyway. Fixing only the first turns the silent miss into a `TypeError` on every suspended status. The pump pill still shows "suspended" | `lib/plugins/pump.js` `updateStatus` `:285-299` (test `:292`, early write `:293-294`, overwrite `:297`; plugin flag set `:85`; preference `:55`; called `:319`), identical on `v15.0.8` and `dev` `4f705217` | **safety (alarm)** — an alarm the operator explicitly switched on never fires; bounded to sites that set both `PUMP_ENABLE_ALERTS=true` and `PUMP_WARN_ON_SUSPEND=true`. Keep the pump's and the phone's own alerts on | yes | **open, filed 2026-09-25** from the GitHub triage (issue #5622). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/pump-suspend.js)): no Pump notification on `v15.0.8` and `dev` `4f705217`; the second mistake reproduced as a `TypeError` when the first is bypassed; both controls behave; a two-line fix sketch turns the probe green |
+| **BF-120** | A clock view (`/clock/<face>`) **keeps showing its last reading as current once its data fetch starts failing**, for example when the network drops or the server is down. The reading's age, the stale grey background and the stale face are computed only when a fetch succeeds. A 30-minute-old reading stays on its in-range colour with the age it had when it arrived. On the default faces there is no age text until a reading is stale, so no age appears at all. Only the time of day keeps moving | `lib/client/clock-client.js`: the `client.query` error handler at `:56-58` only logs. `client.render` (`:66`) is called only from the success callback. The stale test is at `:185-189`, and the timers are set in `client.init` (`:298`/`:301` on `v15.0.8`, `:302`/`:305` on `dev` `4f705217`) | **safety**: someone following the clock can take an old glucose value for a current one, with nothing on the face to say it is old. Bounded to the clock views and to the time the fetch fails. The main page recomputes its own "time ago" on a timer (read) | yes | open, filed 2026-09-25 from the GitHub triage (issue #7036). **Reproduced** in-process ([probe](../../../tools/lab/triage-2026-09/clock-stale-offline.js)): 30 minutes after the last successful fetch, with every later fetch failing, the face still says "Just now", the value has no `stale` class and the background is still in-range green. Identical on `v15.0.8` and `dev`. Control: the same run with fetches succeeding shows "30 minutes ago" and grey |
+| **BF-121** | **Two carb entries recorded at the same time are stored as one**, and the other entry's carbs are lost in Nightscout. A v1 treatment write that carries no `identifier` and no `_id` is an upsert keyed on `created_at` + `eventType`, so the second entry replaces the first, keeping its `_id`. Loop's `syncIdentifier` and Trio's `id` are not part of that key. API v3 does the same when no `identifier` is sent (the computed identifier is built from `device`, `date` and `eventType`), and the websocket `dbAdd` drops the second entry and keeps the first. A v1 write can also replace a v3 record with the same `created_at` and `eventType`, which removes that record's `identifier` and `srvModified` | `lib/server/treatments.js` `upsertQueryFor` (fallback at `:376` on `v15.0.8`, `:372` on `dev` `4f705217`, `:399` on #8758 `ab7b22d6`); `lib/api3/shared/operationTools.js:97` `calculateIdentifier` and `lib/api3/generic/setup.js:95` `dedupFallbackFields`; `lib/server/websocket.js` `processSingleDbAdd` (`:514` / `:538` / `:567`) | **safety** (dosing-relevant data loss): the carbs Nightscout stores, shows, totals in reports and hands to followers are lower than what was entered, with no error. It does not change what Loop doses from, because Loop keeps its own carb store. Bounded to two entries with the same `eventType` at the identical time string. The careportal's and bolus wizard's back-dated entries are whole minutes, so that is where it is most reachable | yes | **open, filed 2026-09-25** from the GitHub triage (issue #8185). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/same-time-carbs.js)) on `v15.0.8` `92d08342`, `dev` `4f705217` and #8758 `ab7b22d6`, with identical output: 7 same-time arms store 1 record each (v1 single, v1 array, careportal shape, v3 without identifier, v3 then v1, socket `dbAdd`, socket ±2 s), and 4 controls store 2 (1 s apart through v1 and through the socket, distinct `identifier` through v1 and through v3). #8758 does not change it. The client-side claims are read |
+| **BF-122** | **Records written, changed or deleted through API v1 never appear in API v3 history**, so a client that syncs with `/api/v3/<collection>/history/<time>` never receives them. History selects on the stored `srvModified` field. Only the v3 write handlers set it, and the v1 storage layer (`treatments`, `entries`, `devicestatus`, and the in-process writes that nightscout-connect makes) never does. A v1 PUT replaces the whole document, which drops the `srvModified` a v3 record had. A v1 DELETE removes the document outright, so there is no `isValid: false` tombstone for history to return. Plain v3 search does find the records, because it fills in `srvModified` from the record date when it reads them | `lib/api3/generic/history/operation.js:102` (filter on `srvModified`) and `:113`; `srvModified` is set only in `lib/api3/generic/create/insert.js:25`, `update/replace.js:29` and `patch/operation.js:77`; not set anywhere in `lib/server/treatments.js`, `entries.js` or `devicestatus.js` on `v15.0.8`, `dev` `4f705217` or #8758 `ab7b22d6` | **safety** (dosing-relevant sync gap). AndroidAPS NSClientV3 loads by date only on its first load and then polls history (read). So after that first load it would not receive carbs, insulin or temp targets entered in the Nightscout careportal or by a v1 uploader, would not receive v1-uploaded glucose readings when Nightscout is its BG source, and would not see v1 edits or deletions. Bounded to v3-history consumers on a site that also receives v1 writes. In the corpus that is AndroidAPS NSClientV3 alongside every v1 uploader: careportal, Loop, Trio, xDrip+, xdripswift, oref0 and nightscout-connect | yes | **open, filed 2026-09-25** from the GitHub triage (issue #8244). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/v1-writes-v3-history.js)) on `v15.0.8` `92d08342`, `dev` `4f705217` and #8758 `ab7b22d6`, with identical output. v1 POST to treatments, entries and devicestatus, a v1 PUT and a v1 DELETE: all absent from v3 history. Controls present: v3 POST to the three collections, v3 DELETE, and the v1 record once `srvModified` is set on it by hand. #8758 does not change it. The AndroidAPS side is read, not run |
+| **BF-123** | When AndroidAPS switches to a profile **at a percentage** (for example 150%), Nightscout names the active profile "… (150%)" but **reports the unscaled scheduled basal, ISF and carb ratio**. AAPS uploads the Profile Switch with `percentage` and `timeshift` and a `profileJson` that it deliberately does not scale. Nightscout applies `percentage` only when the treatment also carries `CircadianPercentageProfile`, which no current AAPS sends | `lib/profilefunctions.js` `getValueByTime` `:124-172` (`isCcpProfile` at `:128`); read by `getTempBasal` (`:486` on `v15.0.8`, `:491` on `dev`), and so by the basal pill, the chart's basal line, and the Bolus Wizard Preview and IOB/COB plugins (read); same logic on `v15.0.8` and `dev` `4f705217` | **correctness, dosing-relevant display**: the scheduled basal and the ISF/IC that Nightscout shows and uses in its own calculations are wrong by the switch's percentage while it lasts. Bounded to AAPS percentage switches other than 100%. Temp basals, which AAPS uploads as absolute rates, are shown correctly. AAPS's own dosing is not affected | yes | open, filed 2026-09-25 from the GitHub triage (issue #7771). **Reproduced** in-process ([probe](../../../tools/lab/triage-2026-09/profile-switch-percentage.js)): with an AAPS-shaped 150% switch active, basal reads 1.0 U/h (profile 1.0), ISF 50 and IC 10. With `CircadianPercentageProfile: true` added, it reads 1.5, 33.33 and 6.67. Identical on `v15.0.8` and `dev`. AAPS side **read** |
+| **BF-124** | **The chart tooltip of a treatment with carbs or insulin shows its BG in the wrong units when the display units differ from the profile's units.** `treatmentTooltip` converts `treatment.glucose` whenever `settings.units` differs from `profile.getUnits()`, and ignores the treatment's own `units`. The careportal stores a BG in the display units (`units: settings.units`), so on an mmol/L site with an mg/dL profile a Meal Bolus entered with BG 5 shows **BG 0.3**; on an mg/dL site with an mmol/L profile, 90 shows **1621**. A record stored in mg/dL on a site whose display and profile are both mmol/L is shown unconverted (**90**). A BG Check with no carbs or insulin uses the other tooltip, which prints the stored value, so it looks right; this is why sites with the same display setting disagree (their profiles differ). The stored record is unchanged | `lib/client/renderer.js` `appendTreatments` → `treatmentTooltip` `:638-645` on `v15.0.8`, `:641-648` on `dev` `4f705217`; careportal writes `units` at `lib/client/careportal.js:321` (both refs) | **correctness** — a wrong number in a tooltip next to a treatment, off by a factor of 18; bounded to sites whose profile units differ from their display units (or records whose units differ from the profile's), and to treatments with carbs, insulin, protein or fat | yes | **open, filed 2026-09-25** from the GitHub triage (issue #5940). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/tooltip-bg-units.js)), in-process in jsdom with the tree's own renderer and d3: BG 0.3 / 1621 / 90 on `v15.0.8` (d3 5) and `dev` `4f705217` (d3 7); four controls behave; a fix sketch keyed on `treatment.units` shows 5 / 90 / 5 |
+| **BF-125** | **On a site whose language is not English, IFTTT Maker alarm events are named with the translated level word**, so applets keyed on `ns-warning`, `ns-urgent` or `ns-<level>-<plugin>` never fire; only the generic `ns-event` still matches. `sendMakerEvent` names the event from `levels.toLowerCase(level)`, which is the **display** label run through the site's translation (`ns-осторожно` in Russian, `ns-warnung` in German). Separately, an alarm's dedup key is stored for 30 s and extended to 15 min only when a Pushover or Maker send reports success, so when the Maker call fails (and no Pushover send succeeds) the same alarm is sent again at the next check after 30 s. The second half does not depend on the language: with a successful call, a Russian site is suppressed like an English one | `lib/server/pushnotify.js` `sendMakerEvent` `:124-144` (name `:131`), dedup `:50`, success TTL `:100`, `:141`; `lib/levels.js` `toDisplay`/`toLowerCase` `:17-37`; `lib/plugins/maker.js` `makeRequests` `:82-97`; `lib/server/bootevent.js` `ctx.levels.translate = ctx.language.translate` (`:218` / `:247`); identical on `v15.0.8` and `dev` `4f705217` | **safety (alarm delivery)** — IFTTT alarms configured per level never arrive; bounded to sites that use IFTTT Maker with a non-English `LANGUAGE` (28 of 29 non-English languages on `v15.0.8`, 30 of 30 on `dev`, translate "Warning" or "Urgent"). The resend is a nuisance (repeat every ~minute) bounded to failing Maker calls. Keep the phone's and devices' own alarms on | yes | **open, filed 2026-09-25** from the GitHub triage (issue #8104). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/maker-language.js)), in-process with a local stub in place of IFTTT: translated names for `ru` and `de` on `v15.0.8` and `dev` `4f705217`, `en` control correct; resend after 45 s only when the call fails. Why a real IFTTT call fails in the reporter's setup was **not reproduced** |
+| **BF-126** | **One authorization subject stored without a `name` ends the server process, and every restart after it, until the row is removed from MongoDB.** The subject-creation path stores what an admin sends without requiring a name (on `dev`, #8754's field allow-list keeps `name` but does not require it). The reload that follows every subject write, and the one at boot, derive each subject's access token from `subject.name.toLowerCase()`, which throws a `TypeError` on the nameless row inside a database callback, so the process exits. The admin page's form always sends a string, so the path is reached through the API, not the page | `lib/authorization/storage.js` `reload()` (`:161`; subject token `:190` on `v15.0.8`; `:220`, `:256` on `dev` `4f705217`); `create()` accepts the row (`storage.createSubject` `:130` on `v15.0.8`, `:189` with `SUBJECT_FIELDS` `:51` on `dev`); `lib/authorization/endpoints.js` subject creation `:44` / `:48` | **availability** — a persistent outage until someone edits the database by hand; bounded to a caller with admin rights (`admin:api:subjects:create`) | yes | **open, filed 2026-09-25** from the GitHub triage (issue #7110). **Reproduced** (probe held outside this repository), booted server on MongoDB 7: on `v15.0.8` and `dev` `4f705217` the process exits with code 1, and the reboot exits the same way; removing the row restores both. Control (a named subject) keeps the server up |
+| **BF-127** | On a site that denies anonymous reads (`AUTH_DEFAULT_ROLES=denied`), a viewer who opened Nightscout with an access token in the address and then picks a view from the **Clock** menu gets a **blank clock**. The menu links are plain paths, the clock page looks for a token only in its own address, and the main page does not keep the token anywhere the clock can read it. So the clock's requests go out without a token and are refused, and nothing is drawn. Nothing on the page says why | `views/index.html:176-179` (menu links `/clock/bgclock`, `/clock/clock-color`, `/clock/clock`, `/clock/config`); `views/clockviews/clock.html:36-61` (token only from `location.search`; `client.init()` only in `script.onload`, no error path); `lib/client/clock-client.js:35-63` (the same for `/api/v2/properties`); same on `v15.0.8` and `dev` `4f705217` | **availability**: the clock views are unusable from the menu for token viewers on a denied site. No wrong value is shown. Bounded to sites with anonymous reads denied, viewers who use a token rather than the API secret, and clocks opened from the menu. Opening `/clock/<face>?token=…` directly works | yes | open, filed 2026-09-25 from the GitHub triage (issue #7377). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/clock-token-link.js)). Booted server, `AUTH_DEFAULT_ROLES=denied`, MongoDB 7: `/clock/clock-color` answers 200, and `/api/v1/status.js` and `/api/v2/properties` answer 401 without a token and 200 with one. In-process, the clock at the menu link draws nothing, and with `?token=` it draws the value. Identical on `v15.0.8` and `dev` |
+| **BF-128** | **On a site whose display units are mmol/L, `/pebble?units=mgdl` returns the reading in mg/dL but the delta (`bgdelta`) in mmol/L**, unlabelled: a reading of 90 mg/dL falling 2 mg/dL comes back as `sgv "90"`, `bgdelta -0.1`. The middleware turns `?units` into `req.mmol`, which picks the reading's units, but `prepareSandbox` only ever forces the sandbox **to** mmol; it never forces mg/dL, so the delta keeps the site's units. The opposite request (`?units=mmol` on an mg/dL site) is consistent | `lib/server/pebble.js` `prepareSandbox` `:143-154` (only-mmol override `:146-148`), middleware `:177`; delta scaled by site units in `lib/plugins/bgnow.js:171`; identical on `v15.0.8` and `dev` `4f705217` | **correctness** — a watch face showing a delta 18 times too small, in the wrong units, next to a correct reading; bounded to mmol/L sites whose client asks `/pebble` for mg/dL | yes | **open, filed 2026-09-25** from the GitHub triage (issue #6220). **Reproduced** ([probe](../../../tools/lab/triage-2026-09/pebble-units.js)), in-process through the pebble middleware and handler: `bgdelta -0.1` with `sgv "90"` on `v15.0.8` and `dev` `4f705217`; three controls consistent; a one-line fix sketch gives `-2` |
 | **BF-129** | `GET /api/v1/entries/<id>.json` for a 24-hex id that **names no entry answers HTTP 500** with "No such id", where a read that finds nothing answers 200 and `[]`. The route sets `res.entries_err` when `getEntry` returns nothing, and the formatter answers any `entries_err` with 500. On #8758 the route also accepts an upper-case id, so a request that was answered as a `spec` on 15.0.8 (200, `[]`) now reaches the 500 | `lib/api/entries/index.js` `GET /entries/:spec` (`res.entries_err = 'No such id…'`); `v15.0.8` `92d08342` and #8758 `ab7b22d6` (`isId` accepts either case since `a612a26f`) | **low** — a lookup of a missing or deleted reading reads as a server fault; a client that retries on 500, or treats it as an outage, is misled. No corpus client is known to fetch an entry by id | yes | **open, found 2026-09-25** by the #8758 freeze review (queue BFQ-129). **Reproduced** on both builds by the review; not yet reproduced in the lab |
 
 ## 1b. Pre-release findings
@@ -243,6 +254,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-110** | On #8758, **deleting a record by its hex id also deletes its twin**: where a string record and the ObjectId copy a PUT on 15.0.8 or earlier added beside it both exist, `find[_id]` returns both and v1 `DELETE /treatments/<hex>` and websocket `dbRemove` remove both. #8758's own user advice, "If you see an old copy beside the one you edited, you can now delete it", removes the edited copy too. Editing the record merges the pair into one | #8758 `6d120fa2` `lib/server/object-id-forms.js` `matchEitherForm` via `query.js`, `treatments.js` `remove`, `websocket.js` `dbRemove` | **medium** — pre-release; the copy with the user's edit is lost with the stale one, through the careportal, the web UI's Remove and oref0's `ns-dedupe-treatments.sh`. How many twins exist in real data is not known (queue OID-PREVALENCE) | **decided 2026-09-24 (maintainer): behaviour kept** — a delete by hex removes both copies, as #8758's body already says ("Deleting such a record now removes it, including a copy left by an earlier edit"). No code change; the body's advice "you can now delete it" is to be reworded to "edit either one" (queue BFQ-110). Found 2026-09-24 in the #8758 review. **Reproduced**: probe P-ID-7 on all three builds; 15.0.8 and `dev` leave one record, `6d120fa2` leaves none; v3 DELETE is unaffected ([lab](../../../tools/lab/object-id/results/object-id-2026-09-24.md)) |
 | **BF-113** | On #8758, `idForms` **accepts any 12-character string**, although its comment says anything but an ObjectId or a 24-hex string throws: driver 5.9's `new ObjectId('abcdefghijkl')` succeeds, so `idForms` returns that ObjectId, its hex and the string. `profile.save` and the food, activity and profile `remove` pass non-hex ids to it without the `isHexId` guard `staleStringForms` has, so a 12-character id would upsert and delete by forms it does not name | #8758 `6d120fa2` `lib/server/object-id-forms.js` `idForms`, `lib/server/profile.js` `save`, `food.js`/`activity.js`/`profile.js` `remove` | **low** — pre-release; the v1 routes refuse non-hex ids, so only in-process callers (the connector's internal output) reach it | **open, found 2026-09-24** in the #8758 review; **fix pushed to #8758** as `dd2cf8f1` (2026-09-24) (queue BFQ-113). **Reproduced** at the helper: `idForms('abcdefghijkl')` returns three forms on `6d120fa2` instead of throwing; the effect through `profile.save` and `remove` is read, not run |
 | **BF-116** | On #8758, a **devicestatus POST that re-sends a status under the `_id` it is stored with answers 500, and every new status after it in the same POST is lost**. #8758 stores a 24-hex `_id` as an ObjectId, so a re-send now collides with the stored record; the insert is ordered, so it stops at the collision. 15.0.8 stored the re-send as a second, string copy and the rest of the batch | #8758 `ab7b22d6` `lib/server/devicestatus.js` `create` (`storeIdsAsObjectIds`, `insertMany` ordered) | **medium** — pre-release; loop status silently missing for a client that re-sends; a client that retries on 500 re-sends statuses already stored. No AID uploader in the corpus sends a devicestatus `_id` (Loop sends `identifier`; Trio and AndroidAPS send none); a restore or echo tool would | **open, found 2026-09-25** in the #8758 freeze pass. Fix on local branch `wip/object-id-crud-fixes-2` `c3a34bac` (not pushed), for #8758 (queue BFQ-116): a re-send is answered with the stored `_id` and not written, the rest is stored, and a duplicate key is accepted only for a status sent with its own `_id`. **Reproduced** (corpus Q2b; ablation of `devicestatus.js` to `dev` restores 15.0.8's cells); the same 500 and loss already happen on 15.0.8 when the stored copy is a string |
+| **BF-130** | On #8758, a **treatments POST batch can answer 200 and lose one of its items**. Where a treatment is stored with a string `_id` X, a batch `[{_id: X, …edit}, {no _id, same created_at and eventType}]` upserts the first by the ObjectId X (a new document), the second matches the string X copy by `created_at` + `eventType` and replaces it, and the batch's trailing delete of X's string forms then removes that document, which now holds the second item. 15.0.8 keeps both items | #8758 `ab7b22d6` `lib/server/treatments.js` `create` (batch path: `withStaleStringsRemoved` appends one `deleteMany` after all the `replaceOne`s) | **medium** — pre-release; a silent drop behind a 200; narrow reach (a string-stored treatment, and a batch that also carries a record deduplicated onto it by time and type). No corpus client is known to send that batch | **open, found 2026-09-25** by the #8758 freeze review (queue BFQ-130). **Reproduced** by the review on 15.0.8 and `ab7b22d6`; not yet reproduced on `cb7d4110` |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -4414,6 +4426,23 @@ which is why both orders run. **Not fixed:** v3 PUT/PATCH and websocket `dbUpdat
 copies and leave two records, so #8758's advice "edit either one: the two become one record" holds
 only for v1 PUT/POST (queue OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE).
 
+### BF-130 · on #8758, a treatments batch can lose an item behind a 200
+
+The batch path of `treatments.create` builds one `replaceOne` (upsert) per item and, for items
+matched by `_id`, appends one `deleteMany` of the string forms of those ids at the end
+(`withStaleStringsRemoved`). The stale delete assumes nothing else in the batch lands on a string
+copy. An item without `_id` is matched by `created_at` + `eventType`, and can land on exactly that
+string copy: it replaces it, and the trailing delete then removes it.
+
+**Measured 2026-09-25** by the #8758 freeze review: seeded a treatment with string `_id` X; POST
+`[{_id: X, edited}, {no _id, same created_at and eventType}]`: 15.0.8 stores both items;
+`ab7b22d6` answers 200 and stores only the first.
+
+**Fix shape (the review's sketch, not measured):** put each item's stale-string delete directly
+after its own `replaceOne`, so a later item matching by time and type finds the merged record.
+That makes the second item replace the first, which is what a POST of two items with the same
+`created_at` and `eventType` does when no string copy exists; say so in the test.
+
 ### BF-129 · a GET of an entry by an id that names no entry answers 500
 
 `GET /api/v1/entries/:spec` treats a 24-hex `spec` as an id and calls `getEntry`. When nothing is
@@ -4428,6 +4457,760 @@ both for a lower-case unknown id; for an upper-case unknown id 200 `[]` on 15.0.
 
 **Fix shape, not measured:** answer 404 (or 200 `[]`, as the other reads do) when `getEntry`
 finds nothing; pick one and say which in the API docs.
+
+### BF-118 · mmol/L targets set without BG_HIGH are never converted, so low alarms cannot fire
+
+`lib/settings.js` stores thresholds in mg/dL. On a site whose units are mmol it converts
+them, but only under one test (`:290-296`, same on both refs):
+
+```js
+// Do not convert for old installs that have these set in mg/dl
+if (settings.units.toLowerCase().includes('mmol') && thresholds.bgHigh < 50) {
+  thresholds.bgHigh = Math.round(thresholds.bgHigh * constants.MMOL_TO_MGDL);
+  thresholds.bgTargetTop = Math.round(thresholds.bgTargetTop * constants.MMOL_TO_MGDL);
+  ...
+```
+
+Whether all four values are mmol/L is decided by `BG_HIGH` alone. The README describes each
+of `BG_HIGH`, `BG_TARGET_TOP`, `BG_TARGET_BOTTOM` and `BG_LOW` as interpreting "units based on
+DISPLAY_UNITS setting", and gives mg/dL defaults. An operator on an mmol site who sets only
+the two target lines in mmol/L, which is the configuration in issue #7729, leaves `BG_HIGH` at
+260. Nothing is converted. `verifyThresholds` then finds `bgLow` (55) above `bgTargetBottom`
+(3.9) and rewrites it to `bgTargetBottom - 1 = 2.9`, logging two `console.warn` lines.
+
+Because a threshold was set, `ALARM_TYPES` defaults to `simple` (`lib/settings.js:249-251`).
+`simplealarms.compareBGToTresholds` compares the scaled reading with the scaled thresholds.
+With a top target of 8.5 mg/dL, every real reading is "above target" and raises a WARN HIGH.
+With `bgLow` at 2.9 mg/dL and `bgTargetBottom` at 3.9 mg/dL, no real reading is below either,
+so neither the urgent-low nor the low branch can be reached.
+
+**How this differs from BF-67.** BF-67 is the silent ±1 rewrite in `verifyThresholds`. Its
+reachable case is an operator's unit mix-up on a mg/dL site (`BG_HIGH=14` stored as 181).
+Here the rewrite of `BG_LOW` to 2.9 is a BF-67 rewrite, but it is a consequence and not the
+cause. The site's units are set correctly, and the operator entered mmol/L as the README
+describes. The values are wrong before `verifyThresholds` runs, because the conversion
+skipped them. Any BF-67 fix (refuse, or correct and announce) would at most make this visible.
+Refusing would reject a configuration the documentation supports. Correcting and announcing
+would still leave the targets at 8.5 and 3.9 mg/dL. BF-67's own gate
+(`tools/queue/gates/threshold-silent-rewrite.js`) does not cover this input. Its mmol control
+sets all four values, including `BG_HIGH=14` (read).
+
+**How this differs from BF-86.** BF-86 is an mmol/L value (`BG_LOW=3.9`) entered on a
+**mg/dL** site. It is stored unconverted with no warning, because the site's units say mg/dL
+and the one-sided guard does not catch a value below the band. That is operator error with no
+feedback. Here the site is **mmol**, and Nightscout had the information to convert but keyed
+the decision on the one threshold the operator did not set. The low-side outcome is the same
+kind (a low alarm below any real reading). But this entry also produces a constant false
+"Warning HIGH", which BF-86's input does not (BF-86 leaves the targets at their mg/dL
+defaults). BF-86's suggested fix, flagging a threshold outside the physiological range for
+the configured units, would catch 8.5 and 3.9 only if the range check ran on mg/dL values
+before `verifyThresholds`. It would still not convert them.
+
+So all three entries share one design decision (how Nightscout validates and interprets
+threshold numbers), which is why the triage placed #7729 with BF-67 and BF-86. The trigger,
+the operator's configuration and the fix differ, so this is filed as its own entry.
+
+**Reproduced 2026-09-25** by `tools/lab/triage-2026-09/mmol-partial-thresholds.js`. Each arm
+runs in a child process with a clean environment, using the tree's `lib/server/env.js` (the
+boot path, including `DISPLAY_UNITS` → `units`). It then runs `lib/plugins/simplealarms.js`
+through `lib/sandbox` `serverInit` and `lib/notifications` on one fresh reading at a time.
+
+| arm | stored thresholds (mg/dL) high / top / bottom / low | warn lines | 45 mg/dL | 100 mg/dL | 300 mg/dL |
+|---|---|---|---|---|---|
+| `DISPLAY_UNITS=mmol BG_TARGET_TOP=8.5 BG_TARGET_BOTTOM=3.9` | 260 / 8.5 / 3.9 / 2.9 | 2 | **Warning HIGH** | **Warning HIGH** | Urgent HIGH |
+| control: the same with `BG_HIGH=14 BG_LOW=3.0` | 252 / 153 / 70 / 54 | 0 | Urgent LOW | none | Urgent HIGH |
+| control: `DISPLAY_UNITS=mg/dl BG_TARGET_TOP=153 BG_TARGET_BOTTOM=70` | 260 / 153 / 70 / 55 | 0 | Urgent LOW | none | Urgent HIGH |
+
+The results are identical on `v15.0.8` `92d08342` and `dev` `4f705217`. The probe exits 1 on
+both. The triage probe (`triage/wt-issues/p7729.js`, `eachSettingAsEnv` directly) gave the
+same stored thresholds.
+
+**Ablation.** A copy of `dev` where each threshold below 50 is converted on its own gives
+260 / 153 / 70 / 55 for the partial set and "Urgent LOW" at 45, and the probe exits 0. This
+shows that the probe can go green. It is not the recommended fix. A per-value "below 50"
+test has its own edge cases (for example a mg/dL `BG_LOW` of 40 on an mmol site).
+
+**Not run:** a booted server, the client's chart lines (read: they are drawn from the same
+mg/dL thresholds, so near zero on an mmol chart), the `ar2` predictive alarms (not selected
+when a threshold is set), and Pushover, IFTTT or other notification delivery.
+
+**Fix shape (not measured):** decide the unit of each configured threshold from
+`DISPLAY_UNITS` and the value, rather than from `BG_HIGH` alone. Or convert only the values
+that were explicitly set when the site is mmol, keeping the "old installs set in mg/dL"
+compatibility the comment refers to. Report on screen, not only in the log, when values are
+rewritten or look like the wrong unit. This is the same maintainer decision with a safety
+dimension as BF-67 and BF-86 and should be designed with them. Open PR #8522 addresses the
+Bolus Wizard Preview and profile editor, not this (triage, read).
+
+### BF-119 · `PUMP_WARN_ON_SUSPEND` never raises a warning
+
+`PUMP_WARN_ON_SUSPEND=true` is meant to raise a WARN-level "Pump Suspended" notification while
+the latest devicestatus reports the pump suspended. It never does.
+
+**Mechanism.** In `lib/plugins/pump.js` (identical on `v15.0.8` `92d08342` and `dev` `4f705217`),
+`checkNotifications` copies the preference onto the plugin object (`pump.warnOnSuspend =
+prefs.warnOnSuspend`, `:85`) and calls `prepareData`, which calls `updateStatus(pump, result)`
+(`:319`). There `pump` is a local variable, not the plugin, so the test at `:292` does not see
+the setting and is false in normal operation. Inside the branch, `:293-294` assign `result.status.level` and `result.status.message`
+before `result.status` has been created (it is first assigned at `:297`, which would also discard
+the level). If the first mistake is repaired alone, `:293` throws `TypeError: Cannot set properties
+of undefined (setting 'level')` for every suspended status. Both must be fixed together.
+
+**The throwing path.** What a throw at `:293` does to the other pump notifications, and what
+reaches it on 15.0.8, is held outside this public repository while it is live on the shipping
+release (read-derived; the throw itself ran in-process). The fix below removes it.
+
+**Reproduced 2026-09-25** with [`tools/lab/triage-2026-09/pump-suspend.js`](../../../tools/lab/triage-2026-09/pump-suspend.js),
+which runs the tree's own `lib/plugins/pump.js`, `lib/sandbox.js` and `lib/notifications.js`
+in-process (the `tests/pump.test.js` pattern), with one synthetic devicestatus and
+`{ enableAlerts: true, warnOnSuspend: true }` as the plugin's extended settings. On `v15.0.8`
+`92d08342` (its own lockfile's `node_modules`) and `dev` `4f705217`: the suspend arm raises **no
+Pump notification** (exit 1).
+
+**Controls** (both trees): reservoir 0.5 U, not suspended, raises level 2 "URGENT: Pump Reservoir
+Low" (the harness sees Pump alarms); `warnOnSuspend` off with the pump suspended raises nothing.
+**Break-it check:** on a scratch copy of `dev` `4f705217` with the fix sketch below applied, the
+suspend arm raises level 1 "Pump Suspended", the probe exits 0 and `tests/pump.test.js` passes
+(10 passing).
+
+**Not run:** a booted server, the Pushover/IFTTT delivery of the notification, and any real
+uploader. Which uploaders send `pump.status.suspended` was not surveyed.
+
+**Fix shape (measured on a scratch copy only, not a branch):** pass `prefs` into `updateStatus`,
+build `result.status` first, then set `level = levels.WARN` and `message = 'Pump Suspended'` when
+the status is suspended and `prefs.warnOnSuspend` is on; drop the `pump.warnOnSuspend` assignment
+in `checkNotifications`. Add a `tests/pump.test.js` case asserting the WARN notification, and one
+asserting nothing with the setting off. It changes alarm behaviour only for sites that set
+`PUMP_WARN_ON_SUSPEND=true`, which today get nothing.
+
+### BF-120 · the clock view shows an old reading as current when its fetch fails
+
+The clock page (`views/clockviews/clock.html`, bundle `lib/client/clock-client.js`) polls
+`/api/v2/properties` every 20 seconds (`client.init`, `setInterval(client.query, 20 * 1000)`),
+and it updates the time of day every second (`setInterval(updateClock, 1000)`). Everything
+about the reading is drawn by `client.render()`: the value, the colour band, the age text
+(`.ag`), the `stale` class, the "🤷" face, and the grey background with the dimmed arrow once
+the reading is older than the face's stale threshold (13 minutes by default). `client.render()`
+is called only from the success callback of that fetch. The error callback only calls
+`console.error(err)`. So once fetches start failing, the face stays as it was at the last
+success, for as long as they keep failing. Nothing on the face changes except the time of day.
+
+The code is the same on both refs. `dev`'s only change to this file (#8699, the falling-low
+face) moves `normalizeDirection` above the face choice and does not touch fetching or timers:
+`git diff official/master official/dev -- lib/client/clock-client.js`.
+
+**Which faces show what.** When a face asks for it (`y` in the first face parameter, or
+`SHOW_CLOCK_LAST_TIME=true` for the built-in faces), the age text shows even when the reading
+is fresh. Such a face keeps saying "Just now" or "N minutes ago" with N frozen. Without it
+(the default, since `showClockLastTime` defaults to `false`), the age text appears only once
+the reading is stale. So on the default faces a failing fetch removes the only warning there
+is: the reading never turns grey and no age appears.
+
+**Reproduced 2026-09-25** by `tools/lab/triage-2026-09/clock-stale-offline.js`. It runs the
+shipping `clock-client.js` in the tree's own jsdom fixture (`tests/fixtures/benv-loader`) and
+calls the real `client.init()`, with `setInterval` and `Date` driven by a manual clock and
+`$.ajax` stubbed. The face is `cy13-sg40-ag6-tm10`. At t0 one fetch succeeds with a reading
+taken at t0. The probe then advances 30 minutes, and the page's own timers fire (91 fetch calls counted).
+
+| tree | arm | after 30 min: age text | `stale` class | background | exit |
+|---|---|---|---|---|---|
+| `v15.0.8` `92d08342` | fetches fail | "Just now" | no | `rgb(134, 207, 70)` (in range) | 1 |
+| `v15.0.8` `92d08342` | control: fetches succeed, same reading | "30 minutes ago" | yes | grey | — |
+| `dev` `4f705217` | fetches fail | "Just now" | no | in range | 1 |
+| `dev` `4f705217` | control: fetches succeed, same reading | "30 minutes ago" | yes | grey | — |
+
+In the same run the probe checks that the fetch timer fired and that the time-of-day text moved
+(12:00 to 12:30), so a harness that never advanced time would exit 2, not 1.
+
+**Ablation.** A copy of `dev` with the error callback changed to also call `client.render()`
+turns the failing arm to "30 minutes ago", stale and grey, and the probe exits 0. This shows
+that the probe can go green. It is not the recommended fix.
+
+**Not run:** a real browser, a real network drop, or a booted server for this defect. The stub
+calls jQuery's error callback directly, as a dropped connection does (read). A server that is
+up but has no new readings is a different case: the fetch succeeds and the age does advance.
+Also not run: #8186 (reading age out of sync), which may share this mechanism (triage: needs
+information).
+
+**Fix shape (not measured):** keep the age, stale state and face current without a successful
+fetch. That means re-rendering from `latestProperties` on its own timer (for example alongside
+`updateClock`) and on fetch error. Possibly the face should also show that the fetch is failing.
+It is small, and `tests/clock-client.test.js` is the pattern for the test.
+
+### BF-121 · two carb entries at the same time are stored as one
+
+**Mechanism.** `POST /api/v1/treatments` does not insert. It calls `replaceOne(filter, doc, {upsert: true})`,
+with a filter from `upsertQueryFor` in `lib/server/treatments.js`: `identifier` if the record has
+one, else `_id`, else `{created_at, eventType}`. The fallback is compared on the normalised ISO
+string (`prepareData` converts `created_at`, or `eventTime` when sent, with `toISOString()`, keeping
+milliseconds). A second carb entry with the same time and `eventType` therefore matches the first
+and replaces the whole document. The survivor has the second entry's carbs and the first entry's
+`_id`. The array form goes through `bulkWrite` with the same filter per item, and produces the same
+result inside one request. Fields a client sends to tell its records apart (`syncIdentifier` from
+Loop, `id` from Trio, `uuid` from xDrip+) are stored but not used for matching. The comment on
+`normalizeTreatmentId` says `syncIdentifier` is "used for dedup in upsertQueryFor()". The code does
+not do that.
+
+Two more paths do the same:
+
+- **API v3** (`lib/api3/generic/create/operation.js`) calls `resolveIdentifier`. When the client
+  sends no `identifier`, the identifier is computed as a UUID v5 of `device + '_' + date + '_' +
+  eventType` (`lib/api3/shared/operationTools.js:97`). Two entries with the same `device`, `date`
+  and `eventType` get the same identifier, and the second POST becomes an update. The fallback
+  dedup (`created_at` + `eventType`, only for records with no `identifier`, `setup.js:95`) also lets
+  a v3 write replace a v1 record. That fallback was read, not run.
+- **Websocket `dbAdd`** (`lib/server/websocket.js` `processSingleDbAdd`) looks up
+  `NSCLIENT_ID`, or else exact `created_at` + `eventType`. On a match it returns the existing record
+  and does not write the new one, so here it is the first entry that survives. It then applies the
+  ±2 s "similar" match that BF-09 describes, which also drops a second entry with the same carbs
+  and a different `eventType` 1 s later. That half is BF-09's, not a new finding.
+
+A v1 write can also replace a record that API v3 created (arm `v3-then-v1`). The survivor has
+lost the v3 record's `identifier`, `srvModified` and `srvCreated`, because `replaceOne` replaces the
+whole document. An API v3 client that knows the record by its `identifier` cannot find it again,
+and v3 history does not report the change (see the v1-history entry filed from issue #8244).
+
+**Who sends two carb entries with the same time** (read; `externals/<client>` at the heads listed):
+
+| client | path | time sent, precision | fields that tell entries apart | reachable? |
+|---|---|---|---|---|
+| Nightscout careportal and bolus wizard | v1 POST | `eventTime` from an `HH:mm` field when "other time" is ticked (`lib/client/careportal.js:327-329`, `lib/utils.js:84`, `lib/client/boluscalc.js:494-495`); otherwise the server's time in ms | none | **yes**: two back-dated entries of the same type at the same minute |
+| Loop (`LoopWorkspace` `f841285`, NightscoutKit `4ec9fd1`) | v1 POST `/api/v1/treatments`; PUT for edits | `created_at` in whole seconds (`NightscoutKit/.../ISO8601DateFormatter.swift:16`, `NightscoutTreatment.swift:107`) | `syncIdentifier` (`NightscoutService/.../SyncCarbObject.swift:18-27`), not `identifier` | yes when two entries fall in the same second: the case in the issue, remote carbs with a picked time. LoopCaregiver (`CarbInputView.swift:294-296`) and LoopFollow (`LoopAPNSCarbsView.swift:551-553`) now add the current seconds to the picked minute "to avoid issue with NS", which makes a collision less likely but does not rule it out |
+| Trio (`e41c9db37`) | v1 POST `/api/v1/treatments.json` | `created_at` in ms (`Formatters.swift:21`) | `id` (`CarbsStorage.swift:523`); fat/protein entries all carry the same `id` (`:564`) and are spaced minutes apart (`:174`, `:200`) | unlikely |
+| AndroidAPS (`7e1d537d49`) | v3 POST | `date` in ms, now plus a whole-minute offset (`CarbsDialogViewModel.kt:126`, `:206`) | `identifier` null on first upload, so the server computes it; `device` not set for carbs (`NSCarbs.kt:11`), so it is computed from `undefined_<date>_<eventType>` | unlikely (same millisecond needed) |
+| xDrip+ (`1ed760048`) | v1 PUT with `_id` derived from `uuid` (`NightscoutUploader.java:883-888`) | seconds | `_id` | no: matched by `_id` |
+| xdripswift (`c268542e`) | v1 POST | `eventTime` in ms (`Date.swift:49`) | none on create | possible with the minute picker (`TreatmentEditorView.swift:159`) if seconds are zeroed; not traced |
+| nightguard (`75404bd`) | v3 POST, v1 fallback | `created_at` in seconds, time is always now | none | unlikely |
+| Nightscout chart drag ("Move carbs") | socket `dbAdd` (`lib/client/renderer.js:904-918`) | new time in ms | `_id` and `NSCLIENT_ID` removed | not assessed |
+
+**What the reporter saw, and why** (read, matches the probe): Loop's first entry and its record in
+Nightscout stay linked through Loop's object-id cache. The second POST matched that record, so the
+response carried no new `_id` for the second entry. Deleting the older entry in Loop then deletes
+the only Nightscout record, which holds the newer entry's carbs. The reporter's comment says this
+happens (the second entry's edits and deletes have no effect in Nightscout). It was not run here. A
+maintainer comment on the issue says the upsert on an identical `created_at` is intended. Whether to
+change the key is a maintainer decision about API semantics.
+
+**Who is affected.** Anyone who reads carbs from Nightscout instead of from the app that entered
+them: the Nightscout COB and bolus wizard, reports (the Day to Day carb total in the issue),
+caregivers and follower apps. The looping app that entered both entries keeps both and doses from
+its own store. An app that takes carbs from Nightscout into its dosing takes the reduced amount.
+AndroidAPS taking careportal carbs is the case in point, but it is also subject to the v1-history
+gap filed from issue #8244 (read).
+
+**Run.** `node same-time-carbs.js <tree> <port> <mongodb uri>` boots the tree's server against a fresh
+MongoDB 7 database (`API_SECRET` set, `AUTH_DEFAULT_ROLES=denied`), writes each arm at its own hour,
+and counts stored documents with the driver. On `v15.0.8` `92d08342`, `dev` `4f705217` and #8758
+`ab7b22d6` (2026-09-25) the output was identical:
+
+| arm | stored | survivor |
+|---|---:|---|
+| v1-single (Loop shape, two POSTs) | 1 | second (15 g) |
+| v1-array (one POST, two items) | 1 | second |
+| v1-careportal (`Meal Bolus`, no ids) | 1 | second |
+| v3-noid (same device/date/eventType) | 1 | second |
+| v3-then-v1 | 1 | the v1 entry; `identifier` and `srvModified` gone |
+| ws-dbAdd | 1 | **first** (20 g) |
+| ws-similar (1 s apart, same carbs, other eventType; BF-09) | 1 | first |
+| control v1-1s | 2 | |
+| control v1-identifier (distinct `identifier`) | 2 | |
+| control v3-ids (distinct `identifier`) | 2 | |
+| control ws-1s | 2 | |
+
+Every write answered 2xx or a socket reply, and `/api/v1/status.json` answered 200 after the arms, so
+a count of 1 is the server's choice, not a refused write or a dead server. The `v1-identifier`
+control shows that the `created_at` + `eventType` fallback is the rule that collapses them:
+`identifier` is tried first and keeps them apart. Exit 1 on all three trees.
+
+**#8758.** It changes how `_id` forms are matched in `upsert`/`save` (`staleFormsFor`, `idForms`),
+not the fallback key. The result is unchanged on `ab7b22d6`.
+
+**Not run.** Loop, Trio, AndroidAPS or any client. The reporter's delete sequence. The v3
+fallback-dedup direction (a v3 write replacing a v1 record). The chart-drag `dbAdd` path. PUT
+through v1 (`save` uses the same `upsertQueryFor`, read).
+
+**Fix shape (not measured).** Options, each a maintainer decision because it changes which v1 POSTs
+update and which insert:
+1. Add a client key before the time fallback: `syncIdentifier` when present (Loop), perhaps `id`
+   (Trio, but its fat/protein entries share one `id`, so it cannot be used alone) and `uuid`
+   (xDrip+). This keeps today's dedup for clients that resend without ids.
+2. Add the amount (`carbs`, `insulin`) to the fallback key. A resend of the same entry still
+   matches, and a different amount at the same time inserts. An edit through POST would then insert
+   instead of update.
+3. For v3, fold a client-sent `syncIdentifier` or the amount into the computed identifier.
+A test for each: two POSTs at one time with different carbs store two; a resend of the same entry
+stores one.
+
+### BF-122 · API v1 writes never appear in API v3 history
+
+**Mechanism.** `GET /api/v3/<col>/history/<ms>` (or with a `Last-Modified` header) builds its filter
+from one field: `srvModified > ms` (or `>=`), sorted by `srvModified`
+(`lib/api3/generic/history/operation.js:102`, `:113`). `srvModified` and `srvCreated` are
+stamped only by the v3 handlers: create (`insert.js:25`), replace (`update/replace.js:29`) and
+patch (`patch/operation.js:77`). The v1 storage modules write documents without it. That covers
+`lib/server/treatments.js` `create`/`upsert`/`save`, `lib/server/entries.js` `create`
+(`:94` on 15.0.8, `:92` on dev) and `lib/server/devicestatus.js` `create` (`:41` / `:42` /
+`:73` on #8758). `git grep srvModified` over `lib/server`, `lib/api`, `lib/data` and
+`lib/plugins` finds only query-coercion tables on dev and #8758, and nothing on 15.0.8. The
+nightscout-connect data source running in-process calls the same `ctx.<kind>.create`
+(`nightscout-connect/lib/outputs/internal.js:40`, read), so its records are affected too.
+
+Plain v3 search and read do return v1 records. `Collection.resolveDates`
+(`lib/api3/generic/collection.js`) fills `srvModified` from `created_at`/`date` on each document
+it reads, but only in the response. History filters on the stored field, so the fill-in never
+reaches it. The `v3/lastModified` endpoint, which AndroidAPS uses to decide whether to poll, takes
+the larger of `srvModified` and the collection's date field (`lib/api3/specific/lastModified.js:16-35`).
+So a v1 write does start a poll, and the history call it leads to returns nothing.
+
+There are three ways in:
+
+1. **v1 create** (POST): stored without `srvModified`, never in history.
+2. **v1 update** (PUT `/api/v1/treatments`, `save`): `replaceOne` replaces the whole document. A v3
+   record changed through v1 keeps its `identifier` but loses `srvModified`, unless the client
+   sends the old value back. Either way it is not later than the reader's cursor, so the change
+   never appears.
+3. **v1 delete** (`DELETE /api/v1/treatments/<id>`, `deleteMany`, `lib/server/treatments.js:276`
+   on 15.0.8): the document is removed. v3 DELETE instead marks it `isValid: false` with a new
+   `srvModified`, which is how history tells a reader to delete its copy. A v1 deletion leaves a v3
+   reader holding the record.
+
+A v1 write also does not emit the v3 storage-socket events (`storage-socket-create` is emitted from
+the v3 handlers only, `insert.js:47`, `replace.js:59`, `patch/operation.js:94`, read). So a v3
+client in websocket mode misses them as well.
+
+**Consumer: AndroidAPS NSClientV3** (`externals/AndroidAPS` `7e1d537d49`, read):
+
+- Treatments: the first load pages `v3/treatments?created_at$gt=`. After that it polls
+  `v3/treatments/history/<lastModified>`
+  (`plugins/sync/.../nsclientV3/workers/LoadTreatmentsRunner.kt:50-54`;
+  `core/nssdk/.../networking/NightscoutApi.kt:146-158`). The cursor is the `lastServerModified`
+  of each response (`:57`), seeded from the last `created_at` at the end of the first load
+  (`:70-72`, `:79-81`).
+- Entries (glucose): the same pattern (`LoadBgRunner.kt:63-68`; `NightscoutApi.kt:121-125`),
+  when Nightscout is the BG source or CGM data from Nightscout is accepted.
+- Devicestatus: always `v3/devicestatus/history/<now − 7 min>` (`LoadDeviceStatusRunner.kt:32-33`).
+- A date-based reload happens only after a manual full sync (`NSClientV3Plugin.kt:683-689`,
+  started from `NSClientComposeContent.kt:105,119`), and it covers up to 100 days.
+- In websocket mode, polling stops after the first load (`NSClientV3Plugin.kt:1132`).
+
+The corpus AndroidAPS has only NSClientV3; the v1 socket NSClient is gone (the triage note on
+issue #8097). Whether released AndroidAPS versions that still offer the v1 NSClient are affected
+depends on which client the user picked. That was not checked.
+
+**Who writes through v1** (read, `externals/<client>`):
+
+| client | treatments | entries | devicestatus |
+|---|---|---|---|
+| Nightscout careportal and bolus wizard | v1 POST (`lib/client/careportal.js:398`, `boluscalc.js:544`); chart drag uses socket `dbAdd` (`renderer.js:904-918`), also without `srvModified` | – | – |
+| Loop (NightscoutKit `4ec9fd1`) | v1 (`NightscoutClient.swift:13-15`) | v1 | v1 |
+| Trio (`e41c9db37`) | v1 (`NightscoutAPI.swift:14-17`) | v1 | v1 |
+| xDrip+ (`1ed760048`) | v1 PUT (`NightscoutUploader.java:130-149`); optional direct MongoDB | v1 | v1 |
+| xdripswift (`c268542e`) | v1 (`NightscoutSyncManager.swift:54,58,61`) | v1 | v1 |
+| oref0 (`d219baf9`) | v1 (`bin/ns-upload.sh:13`, `oref0-ns-loop.sh:235`) | v1 (`ns-upload-entries.sh:22`) | v1 (`oref0-ns-loop.sh:213`) |
+| nightscout-connect (`04102f9`) | in-process `ctx.treatments.create` (`lib/outputs/internal.js:40,159-161`), or HTTP v1 (`lib/outputs/nightscout.js:109`) | in-process or v1 (`:63`) | in-process or v1 (`:161`) |
+| AndroidAPS | v3 | v3 | v3 |
+| nightguard (`75404bd`) | v3 POST, v1 fallback (`NightscoutService.swift:1950-1953`) | reads only | reads only |
+| LoopFollow (`4a74b781`) | no treatment writes (v2 notifications for overrides) | reads only | reads only |
+
+**Who is affected.** AndroidAPS users on NSClientV3 whose Nightscout also gets data written through
+API v1. From the code (not run), after the first sync these users would not get:
+
+- carbs, insulin, temp targets or notes entered in the Nightscout careportal or bolus wizard, or
+  by a caregiver through it;
+- glucose readings uploaded by xDrip+, xdripswift or nightscout-connect, when AndroidAPS takes
+  its BG from Nightscout;
+- any v1 edit or deletion of a record AndroidAPS already holds.
+
+Any other tool that syncs by v3 history has the same gap, such as the reporter's copy tool (xDrip+
+entries). Readers that use v1, or v3 search by date, are not affected. Loop and Trio are not
+affected as readers, because neither reads v3.
+
+**Run.** `node v1-writes-v3-history.js <tree> <port> <mongodb uri>` boots the tree's server against a
+fresh MongoDB 7 database (`API_SECRET` set, `AUTH_DEFAULT_ROLES=denied`) and gets a v3 token from an
+admin subject. It notes t0, writes the arms, and asks `history/<t0>` (for PUT and DELETE,
+`history/<t1>`, taken after the records were created). On `v15.0.8` `92d08342`, `dev` `4f705217`
+and #8758 `ab7b22d6` (2026-09-25) the output was identical:
+
+| arm | in v3 history | also printed |
+|---|---|---|
+| treatments-v1 (POST) | **no** | v3 search finds it; stored without `srvModified` |
+| entries-v1 (POST) | **no** | same |
+| devicestatus-v1 (POST) | **no** | same |
+| treatments-v1put (v3 record changed through v1 PUT) | **no** | change stored; `srvModified` removed; `identifier` kept |
+| treatments-v1del (v3 record deleted through v1) | **no** | document gone, no tombstone |
+| control treatments-v3 / entries-v3 / devicestatus-v3 | yes | |
+| control treatments-v3del (v3 DELETE) | yes, `isValid: false` | |
+| control v1+srvModified (the v1 treatment after `$set srvModified` in the database) | yes | shows `srvModified` is the missing key |
+
+Every write answered 2xx and `/api/v1/status.json` answered 200 after the arms. Exit 1 on all three
+trees.
+
+**#8758.** It touches `entries.js`, `devicestatus.js` and `treatments.js` for `_id` forms. It sets no
+`srvModified` (`git grep` on `ab7b22d6`). The result is unchanged.
+
+**Not run.** AndroidAPS, or any client. The v3 storage socket. xDrip+'s direct-MongoDB path. Existing
+records: every v1-written document in a live database lacks `srvModified`, which matters for any
+backfill.
+
+**Fix shape (not measured).** Stamp `srvModified` (and `srvCreated` on insert) in the v1 storage
+layer for create, upsert, save and the socket `dbAdd`/`dbUpdate` paths. Make v1 delete either
+soft-delete (`isValid: false` plus `srvModified`) or record a tombstone that history returns. That
+changes what v1 readers get back, so it is a maintainer decision. Also decide what to do with
+existing records. The issue lists the options: backfill `srvModified` from `created_at`/`date`, or
+have history fall back to the date field for documents without it. The fallback would hand old
+records to a reader whose cursor is earlier, which is what a first load does anyway. PR #8244's
+reporter notes neither is complete when clients upload old data late. Tests: a v1 write, update and
+delete each show in `history/<t>`, and a v3 record changed through v1 keeps a newer `srvModified`.
+
+### BF-123 · an AndroidAPS Profile Switch percentage is ignored in what Nightscout shows
+
+**What AAPS uploads (read, AndroidAPS `7e1d537d49`).** `PS.toNSProfileSwitch`
+(`plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/ProfileSwitchExtension.kt:52-78`)
+builds the upload from the running Profile Switch:
+
+- `profile`: the customised name, for example `"Default (150%)"` or `"Default (150%,2h)"`
+  (`core/objects/.../extensions/ProfileSwitchExtension.kt` `getCustomizedName`). The original
+  name goes in `originalProfileName`.
+- `percentage` (Int) and `timeShift`, sent as `timeshift`
+  (`core/nssdk/.../mapper/TreatmentMapper.kt:517-543`,
+  `core/nssdk/.../remotemodel/RemoteTreatment.kt:101-102`). **AAPS's `timeshift` is in
+  milliseconds** (`core/data/.../model/PS.kt:22`), and Nightscout's CircadianPercentageProfile
+  code treats it as hours.
+- `profileJson`: built from a copy with `timeshift = 0` and `percentage = 100`
+  (`ProfileSwitchExtension.kt:54-57, 70`: "ProfileSealed.PS doesn't provide unmodified json ->
+  reset it"). So it is the **unscaled** profile. Its schedule entries carry `time`,
+  `timeAsSeconds` and `value` (`ProfileSealed.kt:397-410`).
+- `duration` (minutes), `durationInMilliseconds`, `originalDuration`.
+- No `CircadianPercentageProfile`. The string is absent from the AAPS tree
+  (`git grep CircadianPercentageProfile` finds nothing). The last commit touching it is
+  `5747f97201` (2021-05-03), from the era of the old CircadianPercentageProfile plugin.
+
+AAPS also uploads an "Effective Profile Switch" as eventType `Note`, with a `profileJson` of
+the effective profile (`EffectiveProfileSwitchExtension.kt`, `toNSEffectiveProfileSwitch`).
+Nightscout's profile code reads only Profile Switch treatments, so this record does not
+reach it (read).
+
+**What Nightscout does (both refs).** `activeProfileTreatmentToTime` finds the switch and
+injects its `profileJson` into the store under `profile@@@@@mills`, so the switch's profile
+becomes active. `getValueByTime` then scales only when
+
+```js
+var isCcpProfile = !spec_profile && activeTreatment && activeTreatment.CircadianPercentageProfile;
+```
+
+(`lib/profilefunctions.js:128`). With the flag it multiplies basal by `percentage/100` and
+divides ISF and carb ratio by it. Without the flag it returns the stored value. An AAPS switch
+never has the flag, so the unscaled `profileJson` is reported as is. The profile pill shows
+"Default (150%)", and the basal beside it is the 100% rate.
+
+`dev`'s changes to `lib/profilefunctions.js` (#8701 and the `hasOwnProperty` hardening)
+precompute `timeAsSeconds` for embedded schedules and tighten the store lookup. They do not
+touch the percentage logic: `git diff official/master official/dev -- lib/profilefunctions.js`.
+
+**Reproduced 2026-09-25** by `tools/lab/triage-2026-09/profile-switch-percentage.js`. It
+calls the tree's `lib/profilefunctions.js` in-process. The stored profile "Default" has
+timezone UTC, basal 1.0 U/h, ISF 50 and IC 10. There is one Profile Switch 1 hour ago,
+120 minutes long, and the probe reads the values now.
+
+| arm | active profile | basal / totalbasal (U/h) | ISF | IC | result |
+|---|---|---|---|---|---|
+| no switch (control) | Default | 1.0 / 1.0 | 50 | 10 | as expected |
+| AAPS shape, 150%, no flag | "Default (150%)" | **1.0 / 1.0** | **50** | **10** | defect |
+| same + `CircadianPercentageProfile: true` (control) | "Default (150%)" | 1.5 / 1.5 | 33.33 | 6.67 | percentage applied |
+| AAPS shape + 0.4 U/h absolute temp (info) | "Default (150%)" | 1.0 / **0.4** | 50 | 10 | temp shown correctly |
+
+The results are identical on `v15.0.8` `92d08342` and `dev` `4f705217`. The probe exits 1 on
+both. The `profileJson` carries `timeAsSeconds`, as AAPS's does, so the 15.0.8 run does not
+depend on #8701.
+
+**Also measured (info arm, not this defect).** Nightscout's own CircadianPercentageProfile
+`timeshift` has no effect on the schedule. A flagged 100% switch with `timeshift` 0 or 2 on
+a stepped basal reads the same value at 11:00 UTC (2.0; a 2-hour shift would give 3.0 or
+1.0), on both refs. `getValueByTime` shifts `time` (by `offset * hours(offset)`, which
+squares the hours) but then looks up the schedule at the unshifted `minuteTime` (`:133-147`).
+So applying `timeshift` for AAPS is not a matter of adding the flag. The unit differs
+(AAPS sends milliseconds), and the existing shift code does not shift.
+
+**Other clients (read).** Loop (LoopWorkspace `f841285`, NightscoutKit) and Trio (`e41c9db37`)
+send no Profile Switch treatments. Loop uploads overrides as "Temporary Override" with
+`insulinNeedsScaleFactor` (`NightscoutKit/Sources/NightscoutKit/Models/Treatments/NightscoutTreatment.swift:21`,
+`LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/OverrideTreament.swift:59`).
+Nightscout shows that factor in the treatment tooltip and the treatments report
+(`lib/client/renderer.js:261`, `lib/report_plugins/treatments.js:359-360`) but does not
+apply it to the displayed basal. That is a separate question and is not measured here. Trio
+uploads overrides as `Exercise` with duration and notes, and no percentage
+(`Trio/Trio/Sources/Models/NightscoutExercise.swift`). xDrip only reads AAPS Profile Switches
+(`xDrip/app/src/main/java/com/eveningoutpost/dexdrip/profileeditor/ImportAapsProfile.java:48-52`).
+
+**Ablation.** A copy of `dev` that also applies `percentage` (and not `timeshift`) when the
+active switch has a `profileJson` makes the AAPS arm read 1.5 / 33.33 / 6.67, and the probe
+exits 0. This shows that the probe can go green. It is not the recommended fix.
+
+**Not run:** AAPS itself, a booted server, the browser pill and chart, the Bolus Wizard
+Preview output, and the reports. `lib/report_plugins/daytoday.js` and `loopalyzer.js` also
+call `getTempBasal` (read). So the issue's statement that reports were right is not
+explained here, and the triage note that reports use other data is not confirmed.
+
+**Fix shape (not measured):** treat a Profile Switch whose `profileJson` is present and whose
+`percentage` is not 100 as scaled, as `CircadianPercentageProfile` switches are, and leave
+`timeshift` alone until its unit (AAPS milliseconds against Nightscout hours) and the broken
+shift lookup are settled. Whether other uploaders' `profileJson` is already scaled is a
+compatibility question (none in the corpus was found sending a percentage). Small to medium,
+with a `profilefunctions` unit test in the pattern of
+`tests/profile-switch-preprocessing.test.js`.
+
+### BF-124 · the treatment tooltip converts a BG that is already in display units
+
+**Mechanism.** Treatments with carbs, insulin, protein or fat are drawn by
+`renderer.drawTreatment`, whose `mouseover` handler is `treatmentTooltip` inside
+`appendTreatments` (`lib/client/renderer.js:638-645` on `v15.0.8` `92d08342`, `:641-648` on `dev`
+`4f705217`). It starts from `treatment.glucose` and, when `client.settings.units !=
+client.ddata.profile.getUnits()`, multiplies by 1/18 (display mmol) or 18 (display mg/dL). The
+record's own `units` field is not consulted, so the conversion is right only when the record
+happens to be in the profile's units. The careportal saves a BG with `units:
+client.settings.units`, the display units (`lib/client/careportal.js:321`, `gatherData`), so an
+entered BG is converted a second time exactly when display and profile units differ. BG Check
+records (no carbs or insulin) are drawn by `addTreatmentCircles`, whose tooltip prints
+`d.glucose` as stored, which matches the report's observation that BG Check entries look right.
+The report's two affected sites being the ones fed by Loop is consistent with an mg/dL profile
+under an mmol/L display (read-derived; the sites were not examined).
+
+**Reproduced 2026-09-25** with [`tools/lab/triage-2026-09/tooltip-bg-units.js`](../../../tools/lab/triage-2026-09/tooltip-bg-units.js),
+which draws a Meal Bolus (10 g carbs, a BG) with the tree's own `renderer.drawTreatment` in a jsdom
+document (the tree's `tests/fixtures/secure-jsdom.js` and `dom-globals.js`, as
+`tests/stored-output-sinks.test.js` does for this tooltip), dispatches `mouseover` and reads the
+"BG:" value. d3 comes from the tree: 5.16.0 for `v15.0.8` (its own lockfile's `node_modules`),
+7.9.0 for `dev`. Identical results on both:
+
+| case | display | profile | stored | tooltip BG |
+|---|---|---|---|---|
+| **arm** | mmol | mg/dl | 5 mmol | **0.3** (want 5) |
+| **arm** | mg/dl | mmol | 90 mg/dl | **1621** (want 90) |
+| **arm** | mmol | mmol | 90 mg/dl | **90** (want 5) |
+| control | mmol | mmol | 5 mmol | 5 |
+| control | mg/dl | mg/dl | 90 mg/dl | 90 |
+| control, converted | mmol | mg/dl | 90 mg/dl | 5 |
+| control, BG Check dot | mmol | mg/dl | 5 mmol | 5 |
+
+**Break-it check:** on a scratch copy of `dev` `4f705217` where the tooltip converts from
+`treatment.units` (falling back to the profile's units when a record has none), the three arms
+show 5, 90 and 5, the controls are unchanged, and the probe exits 0.
+
+**Not run:** a real browser, the chart position of the bubble (the triage reading is that it is
+correct; not measured), the day-to-day and treatments reports, and a survey of which uploaders
+write `units` on treatments other than the careportal.
+
+**Fix shape (measured on a scratch copy only):** in `treatmentTooltip`, take the source units
+from `treatment.units` when present (normalising `mmol`/`mmol/L` and `mg/dl`/`mg/dL`), else from
+the profile, and convert only when they differ from the display units. Add a jsdom test beside
+the existing tooltip test in `tests/stored-output-sinks.test.js` or in
+`tests/client.renderer.test.js`.
+
+### BF-125 · IFTTT Maker events use translated level names; a failed call re-sends the alarm every check
+
+**Half 1, the event name.** `lib/server/pushnotify.js` `sendMakerEvent` (`:124-144`) builds the
+event with `level: levels.toLowerCase(notify.level)` (`:131`). `lib/levels.js` `toLowerCase`
+returns `toDisplay(level).toLowerCase()`, and `toDisplay` runs the English label through
+`levels.translate` (`:17-37`), which `lib/server/bootevent.js` points at the site's language
+(`:218` on `v15.0.8`, `:247` on `dev`). `lib/plugins/maker.js` `makeRequests` (`:82-97`) then
+triggers `ns-event`, `ns-<level>` and `ns-<level>-<plugin>`. Node percent-encodes the non-ASCII
+path, so the request is sent, but with an event name no applet written from the documentation
+listens for.
+
+**Half 2, the resend.** `emitNotification` stores the alarm's dedup key with a 30-second TTL before
+sending (`:50`). Only the success callbacks of the Pushover send (`:100`) and of the Maker send
+(`:141`) extend it to 15 minutes. `maker.makeKeyRequest` reports an error only when the HTTPS
+request itself errors (any HTTP response counts as success), and `async.series` stops at the first
+error. So when a Maker call errors, and Pushover is not configured, the key expires after 30 s and
+the same alarm goes out again at the next evaluation: the "every minute" in the report. The
+reporter's log shows `ns-event` sent and no `ns-<translated>` line, consistent with the second
+call failing; what made it fail there (their Node version, or IFTTT's answer to a non-ASCII event
+name) is not established.
+
+**Reproduced 2026-09-25** with [`tools/lab/triage-2026-09/maker-language.js`](../../../tools/lab/triage-2026-09/maker-language.js),
+which wires `lib/language`, `lib/levels`, `lib/plugins/maker` and `lib/server/pushnotify` the way
+`bootevent.js` does and emits a WARN alarm from `simplealarms`. Nothing reaches IFTTT: `https.get`
+is replaced by an `http.get` of the same URL to a stub on 127.0.0.1, which records the event name.
+Identical on `v15.0.8` (its own lockfile's `node_modules`) and `dev` `4f705217`:
+
+| arm | triggers |
+|---|---|
+| `en` (control) | `ns-event`, `ns-warning`, `ns-warning-simplealarms` |
+| `ru` | `ns-event`, `ns-осторожно`, `ns-осторожно-simplealarms` |
+| `de` | `ns-event`, `ns-warnung`, `ns-warnung-simplealarms` |
+
+| resend arm (same alarm at t = 0 / 45 s / 16 min) | triggers sent |
+|---|---|
+| stub answers 200, `en` (control) | 3 / 0 / 3 |
+| stub answers 200, `ru` | 3 / 0 / 3 |
+| stub resets the connection, `en` | 1 / 1 / 1 |
+
+Language count: on `v15.0.8`, 28 of the 29 non-English languages translate "Warning" or "Urgent"
+(Slovenian cannot be loaded there, its file name is wrong; fixed on `dev` by `470365b2`); on `dev`,
+30 of 30. **Break-it check:** on a scratch copy of `dev` `4f705217` with the event level taken
+from an untranslated map, `ru` and `de` give `ns-warning` and the probe exits 0.
+
+**Not run:** a real IFTTT call, Pushover, older Node versions (the engines field is `>=20`), and a
+booted server.
+
+**Fix shape (half 1 measured on a scratch copy only):** name Maker events from an untranslated
+level key (`urgent`, `warning`, `info`, …) and keep the translated label only in `value1`/`value2`.
+For half 2, decide whether a failed Maker call should hold the key for longer than 30 s (for
+example, the snooze period), so a failing integration does not re-send every check;
+`tests/pushnotify.test.js` with `language.set('ru')` is the pattern. Sites that renamed their
+applets to the translated event names would need a release note.
+
+### BF-126 · a nameless authorization subject ends the server at every boot
+
+**Mechanism.** Authorization subjects live in the `auth_subjects` collection. After any subject
+write, and once during boot (`setupAuthorization`), `storage.reload()` lists the subjects and, when
+`API_SECRET` is set, derives each one's access token: a prefix built from
+`subject.name.toLowerCase()` and a digest of its `_id`. Nothing on the write path requires a
+`name`: `storage.createSubject` stores the body it is given (on `dev`, after #8754, only the fields
+in `SUBJECT_FIELDS` — `name`, `roles`, `notes`, `created_at` — but none is required). For a row
+without `name`, the token derivation throws `TypeError: Cannot read properties of undefined
+(reading 'toLowerCase')`. The throw happens inside the MongoDB driver's callback, where nothing
+catches it, so the process exits. Every later boot reads the same row in the same place and exits
+the same way. The admin page is not the path: its form sends the input's value, which is always a
+string (`lib/admin_plugins/subjects.js:121`, read).
+
+Lines: `v15.0.8` `92d08342` — `lib/authorization/storage.js` `reload` `:161`, throw at `:190`,
+`createSubject` `:130`; `lib/authorization/endpoints.js` `:44`. `dev` `4f705217` —
+`storage.js` `reload` `:220`, throw at `:256`, `createSubject` `:189`, `SUBJECT_FIELDS` `:51`;
+`endpoints.js` `:48`.
+
+**Reproduced 2026-09-25** with a probe held outside this repository (the defect is live on 15.0.8),
+which boots the tree's `lib/server/server.js` against a fresh MongoDB 7 database (random
+`API_SECRET`, `AUTH_DEFAULT_ROLES=denied`, bound to 127.0.0.1) and authenticates as admin. On both
+`v15.0.8` (its own lockfile's `node_modules`) and `dev` `4f705217`:
+
+| step | `v15.0.8` | `dev` `4f705217` |
+|---|---|---|
+| server answers `/api/v1/status.json` | 200 | 200 |
+| control: create a subject with a name, then status 3 s later | 200, 200 | 200, 200 |
+| create a subject without a name | connection reset; process exit code 1; `TypeError … 'toLowerCase'` at `storage.js:190` | same, at `storage.js:256` |
+| nameless rows in `auth_subjects` | 1 | 1 |
+| restart on the same database | no 200 within 30 s; exit code 1, same `TypeError` | same |
+| remove the row in MongoDB, restart | 200 | 200 |
+
+The last row is the liveness check: the probe tells a dead server from a live one in the same run.
+**Break-it check:** on a scratch copy of `dev` `4f705217` with the token prefix computed from
+`String(subject.name || '')`, the same request answers 200 and the server stays up (probe exit 0).
+
+**Not run:** a role without a `name` (the roles list is sorted with `a.name.localeCompare` at
+`:180` / `:239`, which would throw the same way; read-derived), a subject whose `name` is not a
+string (also read-derived), and hosting platforms' restart behaviour (the outage lasts until the
+row is removed however often the platform restarts the process).
+
+**Fix shape (not measured beyond the one-line guard above):** refuse a subject or role without a
+non-empty string `name` in `create()` and `save()` with a 400, and make `reload()` skip and log a
+malformed row instead of throwing, so an existing bad row cannot keep a site down.
+`tests/authsubjects.test.js` is the pattern for the test.
+
+### BF-127 · clock views opened from the menu are blank for a token viewer on a denied site
+
+A viewer given a token link (`/?token=<subject token>`) reads the main page because
+`lib/client/index.js` takes the token from the page address (`browserUtils.queryParms().token`)
+and uses it for `/api/v1/status.json` and an authorization request. The token stays in the
+address and in memory (`client.authorized`). It is not written to storage.
+
+The Clock menu (`views/index.html:175-179`) links to `/clock/<face>` with no query string, and
+nothing in `lib/client/` rewrites those links (`git grep -E "clockcolorlink|bgclocklink|clocklink"
+origin/dev -- lib/client` finds nothing). The clock page then:
+
+1. Loads `/api/v1/status.js`, with `?secret=` if `localStorage` holds `apisecrethash`, or
+   `?token=` from its **own** address (`views/clockviews/clock.html:36-56`). Otherwise it
+   sends no credentials. `client.init()` runs only in that script's `onload`
+   (`clock.html:59-61`), and there is no `onerror` handler.
+2. Fetches `/api/v2/properties` the same way (`lib/client/clock-client.js:35-63`). A failed
+   fetch only logs (see the #7036 entry), so nothing is ever drawn.
+
+On a denied site a page opened from the menu has no credentials, so step 1 is refused. The
+script's `onload` does not fire for a 401, so the clock never starts (read: browser
+script-loading behaviour, not run in a browser). Even if it did, step 2 would be refused, and
+the probe measures that step. A viewer who signed in with the API secret is not affected,
+because the secret hash is in `localStorage`, which the clock reads.
+
+**Reproduced 2026-09-25** by `tools/lab/triage-2026-09/clock-token-link.js`:
+
+- **Server arm.** Two servers were booted, one per tree, against a fresh MongoDB 7.0
+  container. Settings: `AUTH_DEFAULT_ROLES=denied`, `ENABLE=careportal`, a random API secret.
+  On each, a subject with the `readable` role was created and one reading was posted.
+  Results, identical on `v15.0.8` `92d08342` and `dev` `4f705217`:
+
+  | request | no token | with the subject's token |
+  |---|---|---|
+  | `GET /clock/clock-color` | 200 | 200 |
+  | `GET /api/v1/status.js` | 401 | 200 |
+  | `GET /api/v2/properties` | 401 | 200 (the reading) |
+
+  The main page `/?token=…` served on both trees carries the four clock links as plain
+  paths.
+
+- **Client arm.** This runs the shipping `clock-client.js` in the tree's jsdom fixture, with
+  `$.ajax` stubbed as a denied site: success only when the URL carries the token, and a 401
+  error otherwise. The page URL is taken from the tree's own `views/index.html` menu link.
+  The arm tested is the page at `/clock/clock-color`: one request with no token, and nothing
+  drawn (`.sg` empty, `#inner` has no children). The control is the page at
+  `/clock/clock-color?token=…`: one request with the token, and the value drawn (`120`).
+  Both trees exit 1.
+
+The token used was generated for the run in a throwaway database, was never printed, and was
+deleted with the container.
+
+**Not run:** a real browser, so step 1's `onload` behaviour for a 401 is read, not measured.
+Also not run: the `/clock/config` face, and a site with `AUTH_DEFAULT_ROLES=readable`, where
+the clock needs no token and works.
+
+**Fix shape (not measured):** carry the token that opened the main page into the clock
+links, for example by appending the current `token` query parameter to the `#…clocklink`
+hrefs when the menu is built. A second option is for the clock to use the same credential
+the main page resolved. Either way, give the clock a visible message when its fetch is
+refused. It is small, with a client test in the `tests/clock-client.test.js` pattern.
+Whether a token should be copied into further URLs (and so into history and referrers) is a
+maintainer decision. The token is already in the main page's own URL.
+
+### BF-128 · `/pebble?units=mgdl` on an mmol site returns the delta in mmol
+
+**Mechanism.** In `lib/server/pebble.js` (identical on `v15.0.8` `92d08342` and `dev` `4f705217`)
+the route's middleware sets `req.mmol = (req.query.units || env.settings.units) === 'mmol'`
+(`:177`). The reading is scaled from `req.mmol` (`mapSGVs`, `:35-59`), so `?units=mgdl` gives
+mg/dL. The delta comes from the `bgnow` plugin's `delta.scaled`, which is scaled by the sandbox's
+`settings.units` (`lib/plugins/bgnow.js:171`). `prepareSandbox` (`:143-154`) copies the site's
+settings and sets `units = 'mmol'` when `req.mmol` is true (`:146-148`), but leaves the site's
+units in place otherwise. On an mmol/L site (`DISPLAY_UNITS` containing "mmol", normalised to
+`mmol` by `lib/server/env.js:201-202`) asking for mg/dL, the delta stays in mmol/L, and because
+`req.mmol` is false it is not passed through `toFixed(1)` either, so it is a bare number.
+
+**Reproduced 2026-09-25** with [`tools/lab/triage-2026-09/pebble-units.js`](../../../tools/lab/triage-2026-09/pebble-units.js),
+which runs the tree's own pebble middleware and handler in-process with a ctx built the way
+`bootevent.js` builds it (language, levels, the server plugin registry) and two readings 5 minutes
+apart, 92 then 90 mg/dL. Identical on `v15.0.8` (its own lockfile's `node_modules`) and `dev`
+`4f705217`:
+
+| case | `sgv` | `bgdelta` |
+|---|---|---|
+| **arm:** mmol site, `?units=mgdl` | `"90"` | `-0.1` (want `-2`) |
+| control: mmol site, no `units` | `"5.0"` | `"-0.1"` |
+| control: mg/dL site, `?units=mmol` | `"5.0"` | `"-0.1"` |
+| control: mg/dL site, no `units` | `"90"` | `-2` |
+
+**Break-it check:** on a scratch copy of `dev` `4f705217` with `prepareSandbox` setting the units
+in both directions, the arm gives `sgv "90"`, `bgdelta -2` and the probe exits 0.
+
+**Not run:** a booted server (authorization and the HTTP layer were not exercised; the probe
+calls the middleware and handler directly), `tests/pebble.test.js` (it boots against MongoDB), and
+any watch face. The IOB/BWP/COB fields `/pebble` adds were not checked for the same mismatch.
+
+**Clients (read).** No client in the corpora under `externals/` calls Nightscout's `/pebble`;
+xDrip serves its own `/pebble` locally
+(`externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/webservices/WebServicePebble.java`,
+read). The callers are watch faces and similar outside the corpora, so how many sites are
+affected is unknown. A past maintainer comment on the issue suggested deprecating the endpoint.
+
+**Fix shape (measured on a scratch copy only):** in `prepareSandbox`, set
+`clonedEnv.settings.units = req.mmol ? 'mmol' : 'mg/dl'`. Add a case to `tests/pebble.test.js` for
+an mmol site asked for mg/dL.
 
 ## 3. How to use this register
 

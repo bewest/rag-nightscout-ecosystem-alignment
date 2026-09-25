@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 99 | 36 | 18 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 110 | 47 | 18 |
 | **Modernization** | `release-train` | 25 | 5 | 3 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **144** | **50** | **24** |
+| | **total** | **155** | **61** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -134,6 +134,17 @@ cover more than one `BF-`:
 | `BFQ-114` | `in-flight-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
 | `BFQ-115` | `ready-to-push` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
 | `BFQ-117` | `ready-to-push` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
+| `BFQ-118` | `not-started` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
+| `BFQ-119` | `not-started` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
+| `BFQ-120` | `not-started` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
+| `BFQ-121` | `not-started` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
+| `BFQ-122` | `not-started` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
+| `BFQ-123` | `not-started` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
+| `BFQ-124` | `not-started` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) |
+| `BFQ-125` | `not-started` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
+| `BFQ-126` | `not-started` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
+| `BFQ-127` | `not-started` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
+| `BFQ-128` | `not-started` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
 | `BFQ-129` | `not-started` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -171,7 +182,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  | 1 | 1 |  |  | 16 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 4 |  | 5 | 2 | 7 | 1 |  |  |  | 1 | **25** |
-| `register-open` | 26 | 1 | 5 | 8 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **67** |
+| `register-open` | 37 | 1 | 5 | 8 | 4 | 3 | 13 | 4 |  | 2 | 1 |  | **78** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -212,14 +223,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 110 | 76% |
+| Maintainer | 121 | 78% |
 | SECURITY reviewer | 15 | 10% |
 | Maintainer + a second human | 7 | 5% |
 | SAFETY reviewer | 6 | 4% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **144** | |
+| **total** | **155** | |
 
 <!-- END GENERATED: reviewer-load -->
 

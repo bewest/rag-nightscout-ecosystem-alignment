@@ -57,7 +57,7 @@ pull/8419/head:refs/triage/pr-8419` first.
 
 ## Evidence
 
-- [`releases/cgm-remote-monitor-15.0.9/contents.md`](../../releases/cgm-remote-monitor-15.0.9/contents.md)
+- [`docs/60-research/remedial/github-triage-2026-09-25.md`](../../docs/60-research/remedial/github-triage-2026-09-25.md)
 
 ## Notes carried on the item
 

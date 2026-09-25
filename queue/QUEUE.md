@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 144 |
-| runnable gates | 212 |
-| explicit `no-gate:` markers | 190 |
+| items | 155 |
+| runnable gates | 223 |
+| explicit `no-gate:` markers | 204 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 190 of the 402 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 204 of the 427 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 50 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, BFQ-130, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 61 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, BFQ-130, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117 |
@@ -97,6 +97,17 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-115** BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value stops the server at every load
 - **BFQ-117** BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy
 - **BFQ-114** BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on
+- **BFQ-118** BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729)
+- **BFQ-119** BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)
+- **BFQ-120** BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036)
+- **BFQ-121** BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
+- **BFQ-122** BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244)
+- **BFQ-123** BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)
+- **BFQ-124** BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)
+- **BFQ-125** BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
+- **BFQ-126** BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)
+- **BFQ-127** BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
+- **BFQ-128** BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220)
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 
 ---
@@ -1691,7 +1702,7 @@ that costs.
 
 **Evidence.**
 
-- `releases/cgm-remote-monitor-15.0.9/contents.md`
+- `docs/60-research/remedial/github-triage-2026-09-25.md`
 
 **Notes.** Outside contributor (je-l), opened 2026-01-15. Decided 2026-09-25 (maintainer): carry into 15.0.9. It is a file-level rebase cost for #8605, which also edits tests/loop-server.test.js and the instance fixtures.
 
@@ -1721,7 +1732,7 @@ that costs.
 
 **Evidence.**
 
-- `releases/cgm-remote-monitor-15.0.9/contents.md`
+- `docs/60-research/remedial/github-triage-2026-09-25.md`
 
 **Notes.** Outside contributor (alanshurafa); the maintainer merged dev into it on 2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
 
@@ -1848,7 +1859,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 67 items
+`parcel: register-open` &mdash; 78 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1913,6 +1924,17 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-116` | BF-116 - on #8758, a devicestatus re-send answers 500 and loses the rest of the batch | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-117` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 reads and writes the older copy | `ready-to-push` | `wip/object-id-crud-fixes-2` | patch | 2 run + 1 no-gate |
 | `BFQ-114` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is back on | `in-flight-upstream` | `fix-loop-status-timeline` | patch | 1 run + 2 no-gate |
+| `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
+| `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
+| `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `not-started` | `none yet` | minor | 1 run + 1 no-gate |
+| `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244) | `not-started` | `none yet` | minor | 1 run + 2 no-gate |
+| `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
+| `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220) | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `not-started` | `-` | patch | 1 run |
@@ -3812,6 +3834,372 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/aaps-offline/probe.js`
 
 **Notes.** Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed 2026-09-25 from the open-PR triage. Loop's indefinite overrides (durationType indefinite) have been handled in lib/client/renderer.js since 13.0.0; this is a different record, and nothing on any branch handled it before #8568. Suggested to the contributor: also match the AAPS-dev shape (DISABLED_LOOP, originalDuration 0, a very long duration) and add an alert-level test. Decided 2026-09-25 (maintainer): carry #8568 into 15.0.9; the contributor is asked to also match the AAPS-dev shape and add an alert-level test.
+
+### `BFQ-118` &mdash; BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer, plus someone who runs an mmol/L site |
+| ships to operators today | **yes** |
+| register | `BF-118` |
+
+**Blast radius.** lib/settings.js processRawSettings threshold conversion (and verifyThresholds if designed together with BF-67/BF-86); tests/settings.test.js.
+
+**What an operator sees.** If your Nightscout site shows glucose in mmol/L and you set the target range (BG_TARGET_TOP and BG_TARGET_BOTTOM) in mmol/L without also setting BG_HIGH and BG_LOW in mmol/L, Nightscout reads your target numbers as mg/dL. Then Nightscout cannot raise a low or urgent-low alarm at all, and it raises a high warning for every reading, including low ones. To check, look at where the target lines are drawn on your chart. If they are near zero, this affects you. Setting all four values (BG_HIGH, BG_TARGET_TOP, BG_TARGET_BOTTOM and BG_LOW) in mmol/L avoids it. Keep the alarms on your phone, CGM app or receiver switched on. This is not medical advice; ask your care team which alarm levels are right for you.
+
+**Why `patch`.** a bug fix in how documented settings are read; a site that set all four values sees no change
+
+**Gates.**
+
+- `[static]` `sh -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/settings.js) && ! printf "%s" "$s" | grep -qF "&& thresholds.bgHigh < 50)"'`
+  - FAILS today: origin/dev's lib/settings.js still decides the unit of all four thresholds from BG_HIGH alone. A presence check only; it goes green when that test changes (and stays red if the file cannot be read), and the probe below says whether the change converts a partial mmol set.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/mmol-partial-thresholds.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (stored 260/8.5/3.9/2.9 mg/dL; 45 mg/dL raises Warning HIGH, no low alarm); both controls raise Urgent LOW at 45 on both. Done when the probe exits 0 on the candidate.
+- **NO GATE** &mdash; tools/queue/gates/threshold-silent-rewrite.js (BF-67) does not cover this input: its mmol control sets all four thresholds. A partial-mmol arm belongs in tests/settings.test.js with the fix.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/mmol-partial-thresholds.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7729, opened 2022-11-30). Same design decision as BF-67 and BF-86 (how threshold numbers are validated and interpreted), and should be decided with them; the trigger (conversion keyed on BG_HIGH alone, on a correctly configured mmol site) and the false high warning are this entry's own. Open PR #8522 does not touch it.
+
+### `BFQ-119` &mdash; BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-119` |
+
+**Blast radius.** lib/plugins/pump.js updateStatus and its caller prepareData (a few lines), plus tests/pump.test.js. Changes alarm behaviour only for sites that set PUMP_ENABLE_ALERTS=true and PUMP_WARN_ON_SUSPEND=true.
+
+**What an operator sees.** If you turned on the Nightscout setting that is supposed to warn you when your pump is suspended (PUMP_WARN_ON_SUSPEND), it has never worked: Nightscout does not raise that warning, even though the pump status on the page says "suspended". Do not rely on Nightscout to tell you the pump is suspended. Keep the alerts on your pump and your phone switched on. The fix is not in any release yet. This is not medical advice; talk to your care team about how you are alerted to a suspended pump.
+
+**Why `patch`.** a documented setting starts doing what it says; no stored data or API changes
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/plugins/pump.js && ! git -C externals/cgm-remote-monitor-official grep -qF "pump.warnOnSuspend && pump.status.suspended" origin/dev -- lib/plugins/pump.js'`
+  - FAILS today: origin/dev's updateStatus still tests warnOnSuspend on the wrong object. A presence check only; it goes green when that test is removed, and the probe below is what says whether the warning then fires without throwing.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/pump-suspend.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (no Pump notification); both controls behave. Exit 0 on a scratch copy of dev with the fix sketch. The fix is done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/pump-suspend.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #5622, opened 2020-04-14). Fixing only the misplaced test would turn the silent miss into a TypeError on every suspended status, so both mistakes go in one change with a test that asserts the WARN notification.
+
+### `BFQ-120` &mdash; BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-120` |
+
+**Blast radius.** lib/client/clock-client.js (client.query error path, client.render, client.init timers) and tests/clock-client.test.js. The main page is not touched.
+
+**What an operator sees.** If you or a family member watch glucose on a Nightscout clock page (the Clock, Color or Simple view, or a custom clock face), and that page loses its connection to your Nightscout site, it keeps showing the last glucose value as if it were current. It does not turn grey and does not say how old the value is, however long the connection is down. Only the time of day keeps changing. Do not rely on a clock page alone. Check the time of the reading in the main Nightscout page or your app, and keep the alarms on your phone, CGM app or receiver switched on. This is not medical advice.
+
+**Why `patch`.** a bug fix in how the clock page draws data it already has
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/client/clock-client.js | grep -A2 gotError | grep -q render'`
+  - FAILS today: origin/dev's clock-client.js fetch error handler only logs and does not redraw. A presence check only. It goes green if the error path calls render, but a fix that re-renders on a separate timer instead would leave it red, so the probe below decides.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/clock-stale-offline.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (30 minutes after the last successful fetch the face says "Just now", not stale, in-range colour); the online control shows "30 minutes ago" and stale on both. Done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/clock-stale-offline.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7036, opened 2021-05-31). Issue #8186 (clock reading age out of sync) may share the mechanism and needs browser console output to tell. Issue #7377 (clock blank with a URL token) is what a failing first fetch looks like: with no successful fetch nothing is ever drawn. Candidate for the remaining 15.0.9 cleanup; the maintainer decides.
+
+### `BFQ-121` &mdash; BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `none yet` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer (API semantics), plus someone who runs Loop |
+| ships to operators today | **yes** |
+| register | `BF-121` |
+
+**Blast radius.** lib/server/treatments.js upsertQueryFor (v1 POST, PUT and the array bulkWrite); lib/api3/shared/operationTools.js calculateIdentifier; lib/server/websocket.js processSingleDbAdd; tests for each. Changes which v1 writes update and which insert, so every uploader that resends records is in scope.
+
+**What an operator sees.** If two carb entries of the same kind are recorded for exactly the same time, Nightscout keeps only one of them. The other entry's carbs disappear from Nightscout's charts, carbs on board, reports and what followers see, with no error. This is most likely when you enter two back-dated carb entries for the same minute in the Nightscout careportal or bolus wizard, and it can happen with Loop remote carbs. The app you entered them in still has both. If the totals in Nightscout look lower than what you entered, check the app you entered them in, and give each entry a different time. The fix is not in 15.0.9. This is not medical advice; talk to your care team about how you enter carbs.
+
+**Why `minor`.** changes which v1 treatment writes update and which insert
+
+**Gates.**
+
+- `[static]` `sh -c "git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -q 'syncIdentifier: literal' || ! git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -Pzq 'created_at: literal\(results\.created_at\)\s*,\s*eventType: literal\(obj\.eventType\)\s*\}'"`
+  - FAILS today: origin/dev's v1 upsert fallback key is created_at + eventType alone, and nothing matches on syncIdentifier. Goes green when either changes (checked 2026-09-25 against two edited copies: a syncIdentifier branch, and carbs added to the key). A shape check only; the probe says whether it works.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/same-time-carbs.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (7 same-time arms store 1, 4 controls store 2). Done when it exits 0 on the candidate. The ws-similar arm is BF-09's behaviour and needs that entry's decision too.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/same-time-carbs.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8185, opened 2023-11-28). A maintainer comment on the issue says an identical created_at is expected to update; the reporter's case is Loop remote carbs at a picked minute. LoopCaregiver and LoopFollow now add the current seconds to the picked time as a workaround.
+
+### `BFQ-122` &mdash; BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `none yet` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer, plus someone who runs AndroidAPS with NSClientV3 |
+| ships to operators today | **yes** |
+| register | `BF-122` |
+
+**Blast radius.** lib/server/treatments.js, entries.js, devicestatus.js (create, upsert, save, remove); lib/server/websocket.js dbAdd/dbUpdate; possibly lib/api3/generic/history for a fallback; a backfill decision for existing records. Every v1 uploader's records gain srvModified and srvCreated fields.
+
+**What an operator sees.** Some apps, including AndroidAPS, keep up to date with Nightscout by asking it only for what changed since they last asked. Nightscout does not include anything that was added, changed or deleted through its older interface (API v1). That older interface is used by the Nightscout careportal and bolus wizard, Loop, Trio, xDrip+, xdripswift, OpenAPS and the built-in Nightscout Connect data source. So after its first sync, AndroidAPS may not receive carbs or insulin you enter in the Nightscout careportal, glucose readings uploaded by xDrip+ or Nightscout Connect when Nightscout is its glucose source, or an edit or deletion made elsewhere. Nothing tells you this has happened. Check that entries made elsewhere show up in AndroidAPS. AndroidAPS's full sync option reloads them. The fix is not in 15.0.9. This is not medical advice; talk to your care team before relying on entries made in one app reaching another.
+
+**Why `minor`.** v1-written records gain srvModified/srvCreated and v3 history returns more records
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q srvModified origin/dev -- lib/server/treatments.js lib/server/entries.js lib/server/devicestatus.js`
+  - FAILS today: none of origin/dev's v1 storage modules mention srvModified. A presence check only (the same grep finds it in lib/api3/generic/create/insert.js); it goes green when stamping lands, and the probe below is what says whether history then returns v1 creates, updates and deletes.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (5 v1 arms absent from history; 5 controls present). Done when it exits 0 on the candidate.
+- **NO GATE** &mdash; The AndroidAPS side (LoadTreatmentsRunner.kt, LoadBgRunner.kt) is read, not run. A run of AndroidAPS NSClientV3 against a site with a careportal entry made after its first load is the missing confirmation.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/v1-writes-v3-history.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8244, opened 2024-03-24 as a feature request by someone copying xDrip+ entries through v3 history). The consumer survey reports/consumer-impact-15.0.9/clients/android/androidaps.md S13 records AAPS's history paging but not this gap.
+
+### `BFQ-123` &mdash; BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer, plus someone who runs AndroidAPS |
+| ships to operators today | **yes** |
+| register | `BF-123` |
+
+**Blast radius.** lib/profilefunctions.js getValueByTime (which switches are scaled); everything that reads it: basal pill and chart basal line, Bolus Wizard Preview, IOB/COB plugins, day-to-day and loopalyzer reports. A new profilefunctions unit test.
+
+**What an operator sees.** If you use AndroidAPS and switch to a profile at a percentage (for example 150%), Nightscout shows the new profile name with the percentage, but the basal rate, insulin sensitivity and carb ratio it shows are still those of the profile at 100%. AndroidAPS itself uses the right values. Nightscout's own display and its Bolus Wizard Preview do not. Temporary basal rates are shown correctly. Use AndroidAPS, not Nightscout, to check the rates in effect during a percentage switch. This is not medical advice. Ask your care team about any change to your insulin settings.
+
+**Why `patch`.** a bug fix in how an existing record is read; nothing stored changes
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q -E "profileJson.*percentage|percentage.*profileJson" origin/dev -- lib/profilefunctions.js`
+  - FAILS today: origin/dev's lib/profilefunctions.js never reads a switch's percentage in connection with its profileJson; percentage is applied only under CircadianPercentageProfile. A presence check only; the probe below says whether a change applies it.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/profile-switch-percentage.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (AAPS-shaped 150% switch: basal 1.0, ISF 50, IC 10); the CircadianPercentageProfile control reads 1.5, 33.33, 6.67 on both. Done when the probe exits 0 on the candidate.
+- **NO GATE** &mdash; Nothing measures timeshift: AAPS sends it in milliseconds and Nightscout's CircadianPercentageProfile code reads hours and does not shift the schedule lookup (info arm of the same probe). A fix that applies timeshift needs its own test.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/profile-switch-percentage.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7771, opened 2022-12-10). AAPS side read at AndroidAPS 7e1d537d49 (ProfileSwitchExtension.kt toNSProfileSwitch; TreatmentMapper.kt). Loop and Trio send no Profile Switch; Loop's Temporary Override insulinNeedsScaleFactor is likewise not applied to the displayed basal, which is a separate question. Later cut; the maintainer decides which switches are scaled.
+
+### `BFQ-124` &mdash; BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-124` |
+
+**Blast radius.** lib/client/renderer.js treatmentTooltip (a few lines) and a jsdom test. Changes only the BG number in the chart tooltip of treatments with carbs or insulin; stored data and the API are unchanged.
+
+**What an operator sees.** On some Nightscout sites, when you hover over or tap a meal or bolus on the chart, the blood glucose (BG) value shown in the pop-up is in the wrong units, for example 0.3 instead of 5 mmol/L, or 1621 instead of 90 mg/dL. It happens when your profile uses different units from the ones your site displays. The value you entered is stored correctly; only the pop-up is wrong. Check BG values in your meter or CGM app rather than this pop-up. The fix is not in any release yet. This is not medical advice.
+
+**Why `patch`.** a display fix in the browser; no stored data or API changes
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/client/renderer.js && ! git -C externals/cgm-remote-monitor-official grep -qF "if (client.settings.units != client.ddata.profile.getUnits())" origin/dev -- lib/client/renderer.js'`
+  - FAILS today: origin/dev's treatmentTooltip still decides the conversion from the profile's units alone. A presence check only; it goes green when that line changes, and the probe below is what says whether the tooltip is then right.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/tooltip-bg-units.js, which needs a cgm-remote-monitor tree with node_modules (jsdom, d3) and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (tooltip BG 0.3, 1621 and 90 where 5, 90 and 5 were entered); the four controls behave. Exit 0 on a scratch copy of dev with the fix sketch. The fix is done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/tooltip-bg-units.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
+
+### `BFQ-125` &mdash; BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer, plus someone who uses IFTTT with a non-English language |
+| ships to operators today | **yes** |
+| register | `BF-125` |
+
+**Blast radius.** lib/server/pushnotify.js sendMakerEvent (event level from an untranslated key) and possibly the dedup TTL after a failed send; tests/pushnotify.test.js or tests/maker.test.js with a language set. Changes the IFTTT event names a non- English site sends.
+
+**What an operator sees.** If your Nightscout language is not English and you use IFTTT, the alarm events Nightscout sends are named in your language instead of the documented names such as ns-warning and ns-urgent. IFTTT applets set up with the documented names never run, so those alerts do not reach you; only the general ns-event still works. If Nightscout cannot reach IFTTT, it can also send the same alarm again about every minute. Do not rely on IFTTT alone for alarms: keep your phone's and devices' own alarms on. The fix is not in any release yet. This is not medical advice.
+
+**Why `patch`.** restores the documented IFTTT event names; a site that renamed its applets to the translated names needs a release note
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/pushnotify.js && ! git -C externals/cgm-remote-monitor-official grep -qF "levels.toLowerCase(notify.level)" origin/dev -- lib/server/pushnotify.js'`
+  - FAILS today: origin/dev still names Maker events from the translated display level. A presence check only; it goes green when that line changes, and the probe below is what says whether the names are right in every language.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/maker-language.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (ru and de give translated names; the en control and the resend controls behave). Exit 0 on a scratch copy of dev with an untranslated level key. The probe prints the resend half without scoring it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/maker-language.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #8104, opened 2023-10-08). The two halves are independent: the translated name happens whenever the language is not English; the resend happens whenever a Maker call errors, in any language. What makes a real IFTTT call fail for the reporter was not reproduced.
+
+### `BFQ-126` &mdash; BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-126` |
+
+**Blast radius.** lib/authorization/storage.js create/save validation and reload(), plus a test in tests/authsubjects.test.js. A subject or role without a string name is refused instead of stored; an existing malformed row is skipped with a log line instead of ending the process.
+
+**What an operator sees.** If an administrator's tool creates a Nightscout access subject without a name, Nightscout stops, and keeps stopping every time it restarts, until that record is removed from the database by hand. Only someone with administrator rights can cause this. While Nightscout is down, nobody following you sees new readings and Nightscout raises no alarms, so keep your phone's and devices' own alarms on. The fix is not in any release yet.
+
+**Why `patch`.** a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/authorization/storage.js && ! git -C externals/cgm-remote-monitor-official grep -qF "var abbrev = subject.name.toLowerCase()" origin/dev -- lib/authorization/storage.js'`
+  - FAILS today: origin/dev's reload() still derives the token prefix from subject.name without a guard. A presence check only; it goes green when that line changes, and the probe below is what says whether the server then survives.
+- **NO GATE** &mdash; The behaviour is measured by a probe held outside this repository (the defect is live on 15.0.8), which boots a cgm-remote-monitor tree against a disposable MongoDB and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (process exits, reboot exits, removing the row restores it); the named-subject control keeps the server up. Exit 0 on a scratch copy of dev with a guarded token prefix. The fix is done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `a probe held outside this repository (the defect is live on 15.0.8)`
+
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #7110, opened 2021-09-21). Admin-only, so not a security defect, but live on 15.0.8 and persistent across restarts; the register text gives the mechanism only. The probe file holds the request and is kept out of public text until the maintainer decides.
+
+### `BFQ-127` &mdash; BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `origin/dev` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-127` |
+
+**Blast radius.** views/index.html clock menu links, or lib/client code that builds them; possibly views/clockviews/clock.html and lib/client/clock-client.js for a refused-fetch message.
+
+**What an operator sees.** If your Nightscout site does not let visitors read data without signing in, and you share it with someone by giving them a link with an access token in it, the Clock views in the menu open blank for that person. The token is not passed on to the clock page. The workaround is to open the clock page with the token added to its own address, the same way as the main page link. Nothing wrong is shown, but the clock shows nothing at all, so keep the alarms on your phone, CGM app or receiver switched on.
+
+**Why `patch`.** a bug fix; the menu links do not work today for token viewers
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q -E "clockcolorlink|bgclocklink|clocklink" origin/dev -- lib/client`
+  - FAILS today: nothing in origin/dev's lib/client touches the Clock menu links, which is where a token would be carried into them. A presence check only; a fix made elsewhere (for example in the clock page itself) would leave it red, so the probe below decides.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/clock-token-link.js, which needs a cgm-remote-monitor tree with node_modules, and for its server arm a booted server with AUTH_DEFAULT_ROLES=denied and a readable token, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (menu-opened clock draws nothing; with the token in its own URL it draws the value; server 401 without a token and 200 with one). Done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/clock-token-link.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is refused draws nothing and says nothing. Whether to copy a token into more URLs is a maintainer decision.
+
+### `BFQ-128` &mdash; BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@4f705217` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-128` |
+
+**Blast radius.** lib/server/pebble.js prepareSandbox (one line) and a case in tests/pebble.test.js. Changes the bgdelta /pebble returns only for mmol/L sites asked for mg/dL.
+
+**What an operator sees.** If your Nightscout shows glucose in mmol/L and you use a watch face or other display that asks Nightscout's /pebble address for mg/dL, the change since the last reading (the delta) arrives in mmol/L while the reading is in mg/dL. The delta then looks about 18 times smaller than it is, for example -0.1 instead of -2. The reading itself is right. Check the delta against the Nightscout page or your CGM app before acting on it. The fix is not in any release yet. This is not medical advice.
+
+**Why `patch`.** the delta is returned in the units the request asked for; other responses are unchanged
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/pebble.js && git -C externals/cgm-remote-monitor-official grep -qiF "mg/dl" origin/dev -- lib/server/pebble.js'`
+  - FAILS today: origin/dev's pebble.js never sets the sandbox to mg/dl. A presence check only; it goes green when an mg/dl branch appears, and the probe below is what says whether the delta is then right.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/pebble-units.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (sgv "90", bgdelta -0.1); the three controls behave. Exit 0 on a scratch copy of dev with the one-line fix. The fix is done when the probe exits 0 on the candidate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/pebble-units.js`
+
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened 2020-10-10). A past maintainer comment suggested deprecating /pebble instead; that is the maintainer's decision. No client in the externals corpora calls it.
 
 ### `OID-LAB` &mdash; tools/lab/object-id - wrap the lab in queue gates and add the real-client replays
 
