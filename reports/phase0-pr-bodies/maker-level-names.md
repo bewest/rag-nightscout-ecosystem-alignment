@@ -1,4 +1,4 @@
-<!-- Body draft for branch bf/maker-level-names at 2f50ada9 (tree 2489b490), one commit on dev e3adc91d. BF-125, issue #8104. This comment is hidden on GitHub. -->
+<!-- Body draft for branch bf/maker-level-names at 2f50ada9 (tree 2489b490), one commit on dev e3adc91d. BF-125, issue #8104. This comment is hidden on GitHub. Opened as #8773; merged into dev 2026-09-26 as e759a989; the live body matches this file apart from this comment and the footer. -->
 IFTTT Maker alarm events are named `ns-warning`, `ns-urgent` and `ns-<level>-<name>` on every site, whatever its language. Fixes #8104 (BF-125, first half).
 
 ## What changes for you

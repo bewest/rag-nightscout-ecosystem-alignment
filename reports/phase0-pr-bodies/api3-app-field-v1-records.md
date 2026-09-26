@@ -1,4 +1,4 @@
-<!-- Body for bf/api3-app-field-v1-records at df6c04bc (tree 335fab7d), from origin/dev e3adc91d, 2026-09-26. This comment is hidden on GitHub. -->
+<!-- Body for bf/api3-app-field-v1-records at df6c04bc (tree 335fab7d), from origin/dev e3adc91d, 2026-09-26. This comment is hidden on GitHub. Opened as #8776; merged into dev 2026-09-26 as 13f235e9; the live body matches this file apart from this comment and the footer. -->
 API v3 can write to a treatment that was created through API v1, such as a careportal entry. Before this change, a v3 write that deduplicated onto such a record, replaced it, or patched it the way AndroidAPS does was refused with 400 "Field ... cannot be modified by the client". Fixes BF-136. One commit on `dev` `e3adc91d`.
 
 ## What changes for you

@@ -1,4 +1,4 @@
-<!-- Body for bf/alarm-anonymous-no-delay at cd2dfb1f (two commits on origin/dev e3adc91d: 8e295769, cd2dfb1f), 2026-09-26. This comment is hidden on GitHub. -->
+<!-- Body for bf/alarm-anonymous-no-delay at cd2dfb1f (two commits on origin/dev e3adc91d: 8e295769, cd2dfb1f), 2026-09-26. This comment is hidden on GitHub. Opened as #8779; merged into dev 2026-09-26 as 750801a9; the live body matches this file apart from this comment and the footer. -->
 **BF-80**: on a site where visitors who are not signed in may see readings (`AUTH_DEFAULT_ROLES=readable`), every web page and app connected to `/alarm` receives alarms straight away again, even when its address is being slowed down after failed logins. Checking a password or token is still slowed down exactly as before. On a site set to `denied`, nothing changes. `8e295769` and `cd2dfb1f`, two commits on `dev` `e3adc91d`.
 
 ## What changes for you

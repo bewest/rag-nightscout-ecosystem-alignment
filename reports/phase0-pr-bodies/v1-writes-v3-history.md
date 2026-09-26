@@ -1,4 +1,4 @@
-<!-- Draft body for branch bf/v1-writes-v3-history at dbc4c5fc (718efddc, the fix, plus two test commits, on dev e3adc91d), 2026-09-26. Not opened. This comment is hidden on GitHub. -->
+<!-- Draft body for branch bf/v1-writes-v3-history at dbc4c5fc (718efddc, the fix, plus two test commits, on dev e3adc91d), 2026-09-26. This comment is hidden on GitHub. Opened as #8775; merged into dev 2026-09-26 as 1157a8de; the live body matches this file apart from this comment and the footer. -->
 Records written through API v1, the websocket or inside the server now appear in API v3 history (BF-122, issue #8244). A record deleted with `isValid: false` stops counting on the site (JL-1). Three commits on `dev` `e3adc91d`: the fix and two test commits. v1 DELETE is left unchanged by the maintainer's decision: it stays a hard delete (see "Decision: v1 DELETE stays a hard delete").
 
 ## What changes for you

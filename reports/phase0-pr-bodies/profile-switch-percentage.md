@@ -1,4 +1,4 @@
-<!-- Draft body for branch bf/profile-switch-percentage at 5a895b49 (tree a93bf148), one commit on dev e3adc91d. Register BF-123, issue #7771. This comment is hidden on GitHub. -->
+<!-- Draft body for branch bf/profile-switch-percentage at 5a895b49 (tree a93bf148), one commit on dev e3adc91d. Register BF-123, issue #7771. This comment is hidden on GitHub. Opened as #8774; merged into dev 2026-09-26 as f0174d05; the live body matches this file apart from this comment and the footer. -->
 During an AndroidAPS Profile Switch at a percentage (for example 150%) or with a time shift, Nightscout shows and calculates with the same scaled basal, ISF and carb ratio that AndroidAPS uses. One commit on `dev` `e3adc91d`. Fixes #7771 (register BF-123).
 
 ## What changes for you

@@ -1,4 +1,4 @@
-<!-- Body for branch bf/entries-unknown-id at f79dc732 (one commit on dev e3adc91d, 2026-09-25). Register: BF-129. Not pushed. -->
+<!-- Body for branch bf/entries-unknown-id at f79dc732 (one commit on dev e3adc91d, 2026-09-25). Register: BF-129. Opened as #8772; merged into dev 2026-09-26 as f1151832; the live body matches this file apart from this comment and the footer. -->
 Asking for one glucose reading by an ID that names no reading answers "nothing found" (HTTP 200 with an empty list) instead of a server error (HTTP 500).
 
 ## What changes for you

@@ -1,4 +1,4 @@
-<!-- Draft body for branch bf/activity-date-coercion at 20c197bb (one commit on dev e3adc91d, tree bff28663). Not opened. BF-106. -->
+<!-- Draft body for branch bf/activity-date-coercion at 20c197bb (one commit on dev e3adc91d, tree bff28663). BF-106. Opened as #8771; merged into dev 2026-09-26 as ab9c96e6; the live body matches this file apart from this comment and the footer. -->
 Numeric `date` and `sgv` filters on API v1 `/activity`, and numeric `sgv` filters on API v1 `/devicestatus`, match the stored records again, as they did on 15.0.8.
 
 ## What changes for you

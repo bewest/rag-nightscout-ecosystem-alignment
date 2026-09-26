@@ -1,4 +1,4 @@
-<!-- Body for bf/pebble-delta-units at b3db0f36 (three commits on origin/dev e3adc91d: aa224c69 BF-128, b58b937c BF-139, b3db0f36 BF-138), 2026-09-26. This comment is hidden on GitHub. -->
+<!-- Body for bf/pebble-delta-units at b3db0f36 (three commits on origin/dev e3adc91d: aa224c69 BF-128, b58b937c BF-139, b3db0f36 BF-138), 2026-09-26. This comment is hidden on GitHub. Opened as #8777; merged into dev 2026-09-26 as d613c35f; the live body matches this file apart from this comment and the footer. -->
 > **Reproduction detail withheld.** One of these defects (BF-139) is present in the released `v15.0.8`, so this description explains how it happens and what it could do, but leaves out how to reproduce it. Reproduction detail will be added once a fixed release is out.
 
 Three fixes to `/pebble`, the older address that watch faces use to get the latest reading, all about units:
