@@ -32,22 +32,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 160 |
-| runnable gates | 225 |
-| explicit `no-gate:` markers | 206 |
+| runnable gates | 227 |
+| explicit `no-gate:` markers | 208 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 206 of the 431 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 208 of the 435 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-106, BFQ-108, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-127, BFQ-128, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, BFQ-129, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 50 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-106, BFQ-123, BFQ-125, BFQ-128, BFQ-129 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 59 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-126, BFQ-134, BFQ-130, BFQ-131 |
-| `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 8 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-121, BFQ-122 |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
@@ -100,7 +100,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-119** BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)
 - **BFQ-120** BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036)
 - **BFQ-121** BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
-- **BFQ-122** BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244)
+- **BFQ-122** BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting
 - **BFQ-123** BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)
 - **BFQ-124** BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)
 - **BFQ-125** BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
@@ -1884,7 +1884,7 @@ that costs.
 
 - `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'`
   - Holds while v3 replaceOne/updateOne remove no other stored form (the helper the v1 writes use for it is staleStringForms). A presence check only, inverted: it goes RED when the merge lands and must then be replaced by a behaviour gate.
-- **NO GATE** &mdash; Behaviour needs a booted server and a MongoDB. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits one copy and PUT replaces one, each leaving two records; on 63dd716c (BF-117 sort) both write the ObjectId copy (tests/api3.delete-every-form.test.js, PATCH in both storage orders) and still leave the string copy.
+- **NO GATE** &mdash; Behaviour needs a booted server and a MongoDB. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits one copy and PUT replaces one, each leaving two records; on 63dd716c (BF-117 sort) both write the ObjectId copy (tests/api3.delete-every-form.test.js, PATCH in both storage orders) and still leave the string copy. Re-measured 2026-09-25 on origin/dev e3adc91d and 15.0.8 (mongod 7.0.43, both insertion orders): still open. v3 PATCH and PUT edit the ObjectId copy and leave n=2. Websocket dbUpdate edits both copies and leaves n=2 (15.0.8: ObjectId copy only, n=2). v1 PUT is the only write that merges (n=1 on e3adc91d, n=2 on 15.0.8). Separately, on both builds a v3 PUT to a v1-born record without app is refused 400.
 
 **Evidence.**
 
@@ -1914,7 +1914,7 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: dbUpdate with a 24-hex _id matches both copies (updateMany over idForms) and edits both, leaving two records with the same edit. 15.0.8 matched the ObjectId copy only. A behaviour gate needs a booted server and a socket client, as tests/websocket.object-id.test.js does.
+- **NO GATE** &mdash; Not started. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: dbUpdate with a 24-hex _id matches both copies (updateMany over idForms) and edits both, leaving two records with the same edit. 15.0.8 matched the ObjectId copy only. A behaviour gate needs a booted server and a socket client, as tests/websocket.object-id.test.js does. Re-measured 2026-09-25 on origin/dev e3adc91d and 15.0.8 (mongod 7.0.43, both insertion orders): still open. v3 PATCH and PUT edit the ObjectId copy and leave n=2. Websocket dbUpdate edits both copies and leaves n=2 (15.0.8: ObjectId copy only, n=2). v1 PUT is the only write that merges (n=1 on e3adc91d, n=2 on 15.0.8). Separately, on both builds a v3 PUT to a v1-born record without app is refused 400.
 
 **Evidence.**
 
@@ -1973,7 +1973,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
 | `BFQ-103` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | `merged-upstream` | `bf/split-drag-time` | patch | 0 run + 1 no-gate |
-| `BFQ-106` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | `not-started` | `origin/dev` | patch | 1 run |
+| `BFQ-106` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | `ready-to-push` | `bf/activity-date-coercion` | patch | 1 run + 1 no-gate |
 | `BFQ-107` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 | `merged-upstream` | `fix/treatments-query-errors-8675` | patch | 1 run + 1 no-gate |
 | `BFQ-108` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing | `not-started` | `origin/dev` | patch | 1 run |
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `merged-upstream` | `fix/profile-sync-bounded-update` | patch | 0 run + 1 no-gate |
@@ -1994,18 +1994,18 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-118` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms cannot fire (issue #7729) | `merged-upstream` | `bf/mmol-partial-thresholds` | patch | 1 run + 2 no-gate |
 | `BFQ-119` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) | `merged-upstream` | `bf/pump-warn-on-suspend` | patch | 1 run + 1 no-gate |
 | `BFQ-120` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #7036) | `merged-upstream` | `bf/clock-stale-offline` | patch | 1 run + 1 no-gate |
-| `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `not-started` | `none yet` | minor | 1 run + 1 no-gate |
-| `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244) | `not-started` | `none yet` | minor | 1 run + 2 no-gate |
-| `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `not-started` | `origin/dev` | patch | 1 run + 2 no-gate |
+| `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `needs-decision` | `none yet` | minor | 1 run + 2 no-gate |
+| `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting | `needs-decision` | `bf/v1-writes-v3-history` | minor | 3 run + 2 no-gate |
+| `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `ready-to-push` | `bf/profile-switch-percentage` | patch | 1 run + 2 no-gate |
 | `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `not-started` | `-` | patch | 1 run + 1 no-gate |
-| `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `ready-to-push` | `bf/maker-level-names` | patch | 1 run + 1 no-gate |
 | `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
-| `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220) | `ready-to-push` | `bf/pebble-delta-units` | patch | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `not-started` | `-` | patch | 1 run |
+| `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `ready-to-push` | `bf/entries-unknown-id` | patch | 1 run |
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-PROFILE-RESEND` | Profile create still refuses a re-sent _id with 500; decide whether it should answer it as devicestatus now does (BF-116) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `TEST-FLAKE-REPOST-FIND-COUNT` | tests/api.entries.repost-with-id.test.js 'the read asks only for the matched entries' failed once in three combined runs | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -3200,7 +3200,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** Merged into dev by #8745 (2b22c0ce, 2026-09-21). origin's bf/alarm-socket- scope is at a198e308, not this item's measured tip 012f1623, because an integration merge of dev was added before it went in; nothing was re-measured on a198e308, so the ancestry gate tests containment in dev rather than tip equality. Not released: BF-75 and BF-76 are live on every instance running 15.0.8, and BF-80 is not yet a cost anyone is paying. The client half was verified by hand on 2026-09-23 (see review). Still owed: the reply to the GHSA-8849 reporter, drafted at docs/30-design/remedial/advisory- response-2026-09/pull-requests/reply-to-reporter-ghsa-8849.md and not sent, and the reconciliation and crediting of the reporter's own PR (see review). Decisions: - 2026-09-21 (maintainer): fix shape B (see review). Reproduced on v15.0.8 and dev 59430336, both arms, all five event classes (notification, announcement, alarm, urgent_alarm, clear_alarm), each caused through the real server path - threshold crossings into simplealarms, treatment writes into treatmentnotify - with no synthetic bus events. In every `denied` row the four v1 REST routes answered 401 in the same process at the same moment; that is the control that makes it a bypass rather than the documented default. Under `denied` the server tells a subscribing anonymous socket that it has neither read nor ack rights, and delivered everything anyway: subscribe gated acknowledgement rights and nothing on the receive side. The advisory's authenticationPromptOnLoad claim is confirmed exactly: the subscribe is refused, the socket is not disconnected, and it still receives all five. Range >=15.0.0 is correct; 89d7eb679 is first contained in tag 15.0.0. Turning careportal off via ENABLE= removes notification and announcement by removing the feature, and alarm/urgent_alarm/clear_alarm still arrive, so that is not a mitigation either. BF-80 is the cost of this fix and is filed against it deliberately. Once delivery depends on a resolved entitlement it inherits the failed-login delay list: a socket from an address that recently failed an authentication sits outside the delivery room for the accumulated penalty, 5 s per failure, and the list is keyed on the remote address, so a household behind one NAT address is one key. Measured on the fixed build with the alarm fired 2 s after connect: 0 failures -> received at 2.0 s (clean control), 1 -> 4.9 s, 3 -> 10.0 s, 6 -> 15.0 s. No shape of this fix avoids it; narrowing a brute-force control needs its own change and its own review.
+**Notes.** Merged into dev by #8745 (2b22c0ce, 2026-09-21). origin's bf/alarm-socket- scope is at a198e308, not this item's measured tip 012f1623, because an integration merge of dev was added before it went in; nothing was re-measured on a198e308, so the ancestry gate tests containment in dev rather than tip equality. Not released: BF-75 and BF-76 are live on every instance running 15.0.8, and BF-80 is not yet a cost anyone is paying. The client half was verified by hand on 2026-09-23 (see review). Still owed: the reply to the GHSA-8849 reporter, drafted at docs/30-design/remedial/advisory- response-2026-09/pull-requests/reply-to-reporter-ghsa-8849.md and not sent, and the reconciliation and crediting of the reporter's own PR (see review). Decisions: - 2026-09-21 (maintainer): fix shape B (see review). Reproduced on v15.0.8 and dev 59430336, both arms, all five event classes (notification, announcement, alarm, urgent_alarm, clear_alarm), each caused through the real server path - threshold crossings into simplealarms, treatment writes into treatmentnotify - with no synthetic bus events. In every `denied` row the four v1 REST routes answered 401 in the same process at the same moment; that is the control that makes it a bypass rather than the documented default. Under `denied` the server tells a subscribing anonymous socket that it has neither read nor ack rights, and delivered everything anyway: subscribe gated acknowledgement rights and nothing on the receive side. The advisory's authenticationPromptOnLoad claim is confirmed exactly: the subscribe is refused, the socket is not disconnected, and it still receives all five. Range >=15.0.0 is correct; 89d7eb679 is first contained in tag 15.0.0. Turning careportal off via ENABLE= removes notification and announcement by removing the feature, and alarm/urgent_alarm/clear_alarm still arrive, so that is not a mitigation either. BF-80 is the cost of this fix and is filed against it deliberately. Once delivery depends on a resolved entitlement it inherits the failed-login delay list: a socket from an address that recently failed an authentication sits outside the delivery room for the accumulated penalty, 5 s per failure, and the list is keyed on the remote address, so a household behind one NAT address is one key. Measured on the fixed build with the alarm fired 2 s after connect: 0 failures -> received at 2.0 s (clean control), 1 -> 4.9 s, 3 -> 10.0 s, 6 -> 15.0 s. No shape of this fix avoids it; narrowing a brute-force control needs its own change and its own review. 2026-09-25 - BF-80 re-measured on dev e3adc91d (mongod 7.0.43, Node 22.23.2, 75 runs), timing alarm receipt. The 4.9/10.0/15.0 s figures above were admission times, not alarm receipt. A device with valid web credentials (JWT or API secret), or an anonymous viewer on a readable site, that connects or reconnects to /alarm while its resolved address is in the failed-login delay is admitted only after that delay (about 5(N-1) s after N overlapping failures, about 5 s for serial retries), misses the alarm as first emitted and receives it at the next re- emission: 45-56 s late for N = 1-10, 81.7 s under AUTH_DEFAULT_ROLES=denied with N = 10. A successful authentication does not shorten the wait, because it precedes the credential check (lib/authorization/index.js:152-158, deliberate). Not affected: different resolved addresses, sockets already in the room, subscribe({accessToken}) (the AndroidAPS path, read). Only a bad Authorization Bearer, a bad api-secret header or bad socket credentials count as failures; a bad ?token= query token does not. 15.0.8 delivered every scenario in 0-2 ms. Fix options await the maintainer (register BF-80).
 
 ### `ADV-XSS-META` &mdash; GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
 
@@ -3311,32 +3311,33 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
-| base | `origin/dev@ddd9b600` |
-| worktree | `-` |
+| branch | `bf/activity-date-coercion` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-activity-date-coercion` |
 | semver | `patch` |
 | review | maintainer |
 | register | `BF-106` |
 
-**Blast radius.** lib/server/query.js default_options, or the activity entry in the coercion schema. Read path only; nothing is written or deleted differently.
+**Blast radius.** lib/server/query.js default_options (a named collection with no walker gets legacyNumericDefaults: date and sgv read as numbers where the schema does not type them) and lib/server/profile.js (walker: {} as on 15.0.8); tests/api.activity-date-coercion.test.js (new) and a group in tests/query.test.js. Read filters on activity and devicestatus, and the devicestatus bulk DELETE, which on dev deletes nothing for an sgv filter.
 
-**What an operator sees.** On 15.0.9 as it stands, a tool that asks the older API for activity records by their numeric date gets an empty list instead of the records it got on 15.0.8. Nothing stored changes, and the Nightscout pages do not use this filter.
+**What an operator sees.** On 15.0.9 as it stands, a tool that asks the older API for activity records by their numeric date gets an empty list instead of the records it got on 15.0.8, and a tool that deletes device status records by a glucose value deletes nothing. The Nightscout pages do not use these filters. The fix restores the 15.0.8 behaviour.
 
 **Why `patch`.** restores a 15.0.8 read behaviour that the coercion change removed
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/bf106-activity-date-coercion.js`
-  - Builds the activity query with origin/dev's own query.js and activity.js and checks that a find[date][$gte] bound is a number. Its control is origin/master (15.0.8), where the bound is a number. RED while BF-106 is present.
+- `[static]` `node tools/queue/gates/bf106-activity-date-coercion.js --ref bf/activity-date-coercion`
+  - Builds the activity query with the branch's own query.js and activity.js and checks that a find[date][$gte] bound is a number. Its control is origin/master (15.0.8), where the bound is a number. Exits 1 on origin/dev e3adc91d (the same script without --ref) and 0 on 20c197bb. Drop --ref once merged.
+- **NO GATE** &mdash; The HTTP behaviour (7 activity records on 15.0.8, 0 on dev; the devicestatus sgv filter and bulk DELETE) is measured by the branch's tests/api.activity-date-coercion.test.js, which boots a server against MongoDB and so is not a queue gate.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md`
 
-**Notes.** Open, no branch. Reproduced 2026-09-23 by the consumer-replay lab: 7 records on v15.0.8, 0 on dev ddd9b600 and on the candidate (tree 2ce67b27), with the created_at control at 7 on all three. The gate is red on origin/dev 153e5658 (2026-09-24). Filed with the maintainer's go-ahead (session -6a). Whether it goes into 15.0.9 is the maintainer's call; no decision is recorded.
+**Notes.** 2026-09-25 - FIXED on bf/activity-date-coercion 20c197bb (local, not pushed), one commit on dev e3adc91d: default walker restored per field where the schema does not type it; profile walker {} as on 15.0.8. 18 new tests; suite 3188/0/3 (Node 22.23.2, MongoDB 7.0.43). Correction: the item first said no write or delete was affected; the devicestatus bulk DELETE with an sgv filter deletes nothing on dev, and the fix restores it. The mis-transcription started in the SHIPPING_WALKERS comment of tools/nsschema/emit/coercion_emit.py, which records walker {} for activity and devicestatus although both inherited the default on 15.0.8 (register BF-106; the emitter is not edited). Earlier: open, no branch. Reproduced 2026-09-23 by the consumer-replay lab: 7 records on v15.0.8, 0 on dev ddd9b600 and on the candidate (tree 2ce67b27), with the created_at control at 7 on all three. The gate is red on origin/dev 153e5658 (2026-09-24). Filed with the maintainer's go-ahead (session -6a). Whether it goes into 15.0.9 is the maintainer's call; no decision is recorded.
 
 ### `BFQ-107` &mdash; BF-107 - a failed treatments query ends the Nightscout process on 15.0.8
 
@@ -3996,10 +3997,10 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `none yet` |
-| base | `origin/dev@4f705217` |
+| base | `origin/dev@e3adc91d` |
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer (API semantics), plus someone who runs Loop |
@@ -4017,39 +4018,44 @@ distinction is the only thing that makes the register mean anything - widening
 - `[static]` `sh -c "git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -q 'syncIdentifier: literal' || ! git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -Pzq 'created_at: literal\(results\.created_at\)\s*,\s*eventType: literal\(obj\.eventType\)\s*\}'"`
   - FAILS today: origin/dev's v1 upsert fallback key is created_at + eventType alone, and nothing matches on syncIdentifier. Goes green when either changes (checked 2026-09-25 against two edited copies: a syncIdentifier branch, and carbs added to the key). A shape check only; the probe says whether it works.
 - **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/same-time-carbs.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (7 same-time arms store 1, 4 controls store 2). Done when it exits 0 on the candidate. The ws-similar arm is BF-09's behaviour and needs that entry's decision too.
+- **NO GATE** &mdash; The design is measured by a lab prototype, lab/6a-fix-121 a8ca1798 (worktree externals/work/crm-6a-fix-same-time-treatments, one commit on dev e3adc91d, local and not for pushing), which switches the fallback key three ways. It is a measurement, not a fix branch.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/same-time-carbs.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8185, opened 2023-11-28). A maintainer comment on the issue says an identical created_at is expected to update; the reporter's case is Loop remote carbs at a picked minute. LoopCaregiver and LoopFollow now add the current seconds to the picked time as a workaround.
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8185, opened 2023-11-28). A maintainer comment on the issue says an identical created_at is expected to update; the reporter's case is Loop remote carbs at a picked minute. LoopCaregiver and LoopFollow now add the current seconds to the picked time as a workaround. 2026-09-25 - Design measured on dev e3adc91d with the lab prototype lab/6a-fix-121 a8ca1798, switching three keys. Identity-aware matching fixes the Loop, v3-then-v1 and similar-match arms with no re-send regression across 19 client shapes. Adding amounts fixes the remaining arms but makes an AAPS edit after a lost id a duplicate on v3 and the socket. Awaiting the maintainer's choice among three options.
 
-### `BFQ-122` &mdash; BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244)
+### `BFQ-122` &mdash; BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
-| branch | `none yet` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/v1-writes-v3-history` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-v1-writes-v3-history` |
 | semver | `minor` |
 | review | maintainer, plus someone who runs AndroidAPS with NSClientV3 |
 | ships to operators today | **yes** |
-| register | `BF-122` |
+| register | `BF-122`, `BF-135` |
 
-**Blast radius.** lib/server/treatments.js, entries.js, devicestatus.js (create, upsert, save, remove); lib/server/websocket.js dbAdd/dbUpdate; possibly lib/api3/generic/history for a fallback; a backfill decision for existing records. Every v1 uploader's records gain srvModified and srvCreated fields.
+**Blast radius.** lib/server/treatments.js, entries.js, devicestatus.js (create, upsert, save, remove); lib/server/websocket.js dbAdd/dbUpdate; possibly lib/api3/generic/history for a fallback; a backfill decision for existing records. Every v1 uploader's records gain srvModified and srvCreated fields. For BF-135, lib/server/soft-deleted.js (new), used by the v1 storage reads, the cache and the websocket dbAdd dedup, so records with isValid false stop counting outside API v3.
 
-**What an operator sees.** Some apps, including AndroidAPS, keep up to date with Nightscout by asking it only for what changed since they last asked. Nightscout does not include anything that was added, changed or deleted through its older interface (API v1). That older interface is used by the Nightscout careportal and bolus wizard, Loop, Trio, xDrip+, xdripswift, OpenAPS and the built-in Nightscout Connect data source. So after its first sync, AndroidAPS may not receive carbs or insulin you enter in the Nightscout careportal, glucose readings uploaded by xDrip+ or Nightscout Connect when Nightscout is its glucose source, or an edit or deletion made elsewhere. Nothing tells you this has happened. Check that entries made elsewhere show up in AndroidAPS. AndroidAPS's full sync option reloads them. The fix is not in 15.0.9. This is not medical advice; talk to your care team before relying on entries made in one app reaching another.
+**What an operator sees.** Some apps, including AndroidAPS, keep up to date with Nightscout by asking it only for what changed since they last asked. Nightscout does not include anything that was added, changed or deleted through its older interface (API v1). That older interface is used by the Nightscout careportal and bolus wizard, Loop, Trio, xDrip+, xdripswift, OpenAPS and the built-in Nightscout Connect data source. So after its first sync, AndroidAPS may not receive carbs or insulin you enter in the Nightscout careportal, glucose readings uploaded by xDrip+ or Nightscout Connect when Nightscout is its glucose source, or an edit or deletion made elsewhere. Nothing tells you this has happened. Check that entries made elsewhere show up in AndroidAPS. AndroidAPS's full sync option reloads them. Separately, a carb or insulin entry you delete in AndroidAPS keeps counting in the carbs and insulin on board that Nightscout shows, because Nightscout keeps using deleted records. The fix is not in any release yet. This is not medical advice; talk to your care team before relying on entries made in one app reaching another.
 
 **Why `minor`.** v1-written records gain srvModified/srvCreated and v3 history returns more records
 
 **Gates.**
 
 - `[static]` `git -C externals/cgm-remote-monitor-official grep -q srvModified origin/dev -- lib/server/treatments.js lib/server/entries.js lib/server/devicestatus.js`
-  - FAILS today: none of origin/dev's v1 storage modules mention srvModified. A presence check only (the same grep finds it in lib/api3/generic/create/insert.js); it goes green when stamping lands, and the probe below is what says whether history then returns v1 creates, updates and deletes.
-- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (5 v1 arms absent from history; 5 controls present). Done when it exits 0 on the candidate.
+  - FAILS today: none of origin/dev's v1 storage modules mention srvModified. A presence check only (the same grep finds it in lib/api3/generic/create/insert.js); it goes green when stamping lands, and the probe below is what says whether history then returns v1 creates, updates and deletes. Stays RED until the branch is merged.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -q srvModified bf/v1-writes-v3-history -- lib/server/treatments.js lib/server/entries.js && git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/srv-dates.js'`
+  - The branch's v1 storage modules stamp srvModified through lib/server/srv-dates.js (origin/dev has neither and fails this). A presence check; the probe and tests/api3.v1-writes-history.test.js decide.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/soft-deleted.js && git -C externals/cgm-remote-monitor-official grep -q soft-deleted bf/v1-writes-v3-history -- lib/server/cache.js lib/server/treatments.js'`
+  - BF-135: the branch has lib/server/soft-deleted.js and the cache and treatments reads use it (origin/dev has no such module and fails this). A presence check; tests/soft-deleted.jl1.test.js decides (COB 40 g to none after an AAPS v3 delete and after an AAPS v1 socket dbUpdate isValid false).
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (5 v1 arms absent from history; 5 controls present). Done when it exits 0 on the candidate. 2026-09-25 on the branch 718efddc: the treatments, entries and devicestatus v1 arms and the v1 PUT arm are present; still exit 1, only on the v1 DELETE arm (hard delete), whose design awaits the maintainer.
 - **NO GATE** &mdash; The AndroidAPS side (LoadTreatmentsRunner.kt, LoadBgRunner.kt) is read, not run. A run of AndroidAPS NSClientV3 against a site with a careportal entry made after its first load is the missing confirmation.
 
 **Evidence.**
@@ -4057,17 +4063,17 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/v1-writes-v3-history.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8244, opened 2024-03-24 as a feature request by someone copying xDrip+ entries through v3 history). The consumer survey reports/consumer-impact-15.0.9/clients/android/androidaps.md S13 records AAPS's history paging but not this gap.
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #8244, opened 2024-03-24 as a feature request by someone copying xDrip+ entries through v3 history). The consumer survey reports/consumer-impact-15.0.9/clients/android/androidaps.md S13 records AAPS's history paging but not this gap. 2026-09-25 - PARTLY FIXED (creates and updates) on bf/v1-writes-v3-history 718efddc (local, not pushed), one commit on dev e3adc91d: srvModified on every v1, websocket and in-process write (srvCreated on insert) for every v3-served collection; v1 PUT and replaceOne keep identifier and srvCreated; one monotonic server clock for all writers, v3 included. 26 new tests (20 fail on e3adc91d with the original symptom), 24 break-its, suite 3196/0/3 (Node 22.23.2, MongoDB 7.0.43). Three existing expectations adjusted (tests/api3.create.test.js two dedup tests, tests/websocket.input-validation.test.js selectors, tests/storage.selector- hardening.test.js harness). NEEDS DECISION: v1 DELETE design - (a) keep hard, (b) all soft, (c) single-record soft, (d) hard plus a minimal tombstone. Release note: careportal and caregiver carbs now reach AAPS; the same meal entered in both places may duplicate on the phone. Found, not filed: v3 history can skip a write whose commit lands after a later-stamped write was read (stamp before commit, a millisecond window, v3 too); after 15.0.9. BF-135 (JL-1, found by the journey lab) is fixed by the same commit: isValid false counts as deleted everywhere except v3 search and history; COB 40 g to none on both AAPS delete paths. Maintainer decision 2026-09-25: BF-135 goes into 15.0.9 with BF-122 on this branch.
 
 ### `BFQ-123` &mdash; BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/profile-switch-percentage` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-profile-switch-percentage` |
 | semver | `patch` |
 | review | maintainer, plus someone who runs AndroidAPS |
 | ships to operators today | **yes** |
@@ -4081,17 +4087,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official grep -q -E "profileJson.*percentage|percentage.*profileJson" origin/dev -- lib/profilefunctions.js`
-  - FAILS today: origin/dev's lib/profilefunctions.js never reads a switch's percentage in connection with its profileJson; percentage is applied only under CircadianPercentageProfile. A presence check only; the probe below says whether a change applies it.
-- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/profile-switch-percentage.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (AAPS-shaped 150% switch: basal 1.0, ISF 50, IC 10); the CircadianPercentageProfile control reads 1.5, 33.33, 6.67 on both. Done when the probe exits 0 on the candidate.
-- **NO GATE** &mdash; Nothing measures timeshift: AAPS sends it in milliseconds and Nightscout's CircadianPercentageProfile code reads hours and does not shift the schedule lookup (info arm of the same probe). A fix that applies timeshift needs its own test.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -q aapsSwitchAdjustment bf/profile-switch-percentage -- lib/profilefunctions.js`
+  - The branch's lib/profilefunctions.js recognises the AndroidAPS 3.x switch shape (aapsSwitchAdjustment; origin/dev has none and fails this, as it fails the earlier profileJson/percentage check). A presence check only; the probe and tests/profile-switch-percentage.test.js decide. Point it at origin/dev once merged.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/profile-switch-percentage.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (AAPS-shaped 150% switch: basal 1.0, ISF 50, IC 10); the CircadianPercentageProfile control reads 1.5, 33.33, 6.67 on both. Done when the probe exits 0 on the candidate. 2026-09-25: exit 1 on e3adc91d, 0 on the branch 5a895b49.
+- **NO GATE** &mdash; Timeshift for the AndroidAPS 3.x shape is measured by the branch's tests/profile-switch-percentage.test.js (+/-2 h at several times, midnight wrap, whole-hour truncation), which needs node_modules. The CircadianPercentageProfile path is unchanged and still does not shift the schedule lookup (info arm of the probe). Not checked in a browser (chart basal line, reports).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/profile-switch-percentage.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7771, opened 2022-12-10). AAPS side read at AndroidAPS 7e1d537d49 (ProfileSwitchExtension.kt toNSProfileSwitch; TreatmentMapper.kt). Loop and Trio send no Profile Switch; Loop's Temporary Override insulinNeedsScaleFactor is likewise not applied to the displayed basal, which is a separate question. Later cut; the maintainer decides which switches are scaled.
+**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7771, opened 2022-12-10). AAPS side read at AndroidAPS 7e1d537d49 (ProfileSwitchExtension.kt toNSProfileSwitch; TreatmentMapper.kt). Loop and Trio send no Profile Switch; Loop's Temporary Override insulinNeedsScaleFactor is likewise not applied to the displayed basal, which is a separate question. Later cut; the maintainer decides which switches are scaled. 2026-09-25 - FIXED on bf/profile-switch- percentage 5a895b49 (local, not pushed), one commit on dev e3adc91d: AAPS 3.x switches (embedded profileJson, numeric percentage, timeshift in ms, no CircadianPercentageProfile) read as AAPS reads them - basal x pct/100, ISF/IC x 100/pct, targets unscaled, schedules at t - trunc-hours (timeshift) (AndroidAPS BlockExtension.kt:14-18, ProfileSealed.kt:77, 324-365 at 7e1d537d49). 35 tests; suite 3205/0/3 (Node 22.23.2, MongoDB 7.0.43). The CircadianPercentageProfile path is unchanged: its intended timeshift direction (t + offset, AAPS 2.x) is opposite to AAPS 3.x (reversed in AndroidAPS 37e3c4532a) and it never applies the shift anyway; whether to leave it awaits the maintainer.
 
 ### `BFQ-124` &mdash; BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)
 
@@ -4130,17 +4136,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/maker-level-names` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-maker-level-names` |
 | semver | `patch` |
 | review | maintainer, plus someone who uses IFTTT with a non-English language |
 | ships to operators today | **yes** |
 | register | `BF-125` |
 
-**Blast radius.** lib/server/pushnotify.js sendMakerEvent (event level from an untranslated key) and possibly the dedup TTL after a failed send; tests/pushnotify.test.js or tests/maker.test.js with a language set. Changes the IFTTT event names a non- English site sends.
+**Blast radius.** lib/levels.js (new toKey) and lib/server/pushnotify.js sendMakerEvent (event level from the untranslated key); the dedup TTL after a failed send is unchanged; tests/maker-level-names.test.js (new). Changes the IFTTT event names a non-English site sends.
 
 **What an operator sees.** If your Nightscout language is not English and you use IFTTT, the alarm events Nightscout sends are named in your language instead of the documented names such as ns-warning and ns-urgent. IFTTT applets set up with the documented names never run, so those alerts do not reach you; only the general ns-event still works. If Nightscout cannot reach IFTTT, it can also send the same alarm again about every minute. Do not rely on IFTTT alone for alarms: keep your phone's and devices' own alarms on. The fix is not in any release yet. This is not medical advice.
 
@@ -4148,16 +4154,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/pushnotify.js && ! git -C externals/cgm-remote-monitor-official grep -qF "levels.toLowerCase(notify.level)" origin/dev -- lib/server/pushnotify.js'`
-  - FAILS today: origin/dev still names Maker events from the translated display level. A presence check only; it goes green when that line changes, and the probe below is what says whether the names are right in every language.
-- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/maker-language.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (ru and de give translated names; the en control and the resend controls behave). Exit 0 on a scratch copy of dev with an untranslated level key. The probe prints the resend half without scoring it.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/maker-level-names:lib/server/pushnotify.js && ! git -C externals/cgm-remote-monitor-official grep -qF "levels.toLowerCase(notify.level)" bf/maker-level-names -- lib/server/pushnotify.js && git -C externals/cgm-remote-monitor-official grep -qF "levels.toKey(notify.level)" bf/maker-level-names -- lib/server/pushnotify.js'`
+  - The branch names Maker events from levels.toKey, the untranslated level (origin/dev still uses the translated display level and fails this). A presence check only; the probe and tests/maker-level-names.test.js decide. Point it at origin/dev once merged.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/maker-language.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (ru and de give translated names; the en control and the resend controls behave). Exit 0 on a scratch copy of dev with an untranslated level key. The probe prints the resend half without scoring it. 2026-09-25: exit 1 on e3adc91d, 0 on the branch 2f50ada9.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/maker-language.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #8104, opened 2023-10-08). The two halves are independent: the translated name happens whenever the language is not English; the resend happens whenever a Maker call errors, in any language. What makes a real IFTTT call fail for the reporter was not reproduced.
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #8104, opened 2023-10-08). The two halves are independent: the translated name happens whenever the language is not English; the resend happens whenever a Maker call errors, in any language. What makes a real IFTTT call fail for the reporter was not reproduced. 2026-09-25 - HALF 1 FIXED on bf/maker-level-names 2f50ada9 (local, not pushed), one commit on dev e3adc91d: Maker event names from the new levels.toKey (untranslated level). 11 tests; suite 3181/0/3 (Node 22.23.2, MongoDB 7.0.43). Half 2 (a resend about every 30 s after a failed call) left unchanged by design: the 2015 commits f805633f and ea745065 say a failed send is retried, and the branch's tests now pin it; awaiting the maintainer's decision, which does not block pushing half 1. Release note: sites that renamed their applets to the translated names must rename them back.
 
 ### `BFQ-126` &mdash; BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)
 
@@ -4229,17 +4235,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/pebble-delta-units` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-pebble-delta-units` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-128` |
 
-**Blast radius.** lib/server/pebble.js prepareSandbox (one line) and a case in tests/pebble.test.js. Changes the bgdelta /pebble returns only for mmol/L sites asked for mg/dL.
+**Blast radius.** lib/server/pebble.js addExtraData (the delta follows the requested units; the sandbox units are unchanged) and tests/pebble-units.test.js (new). Changes the bgdelta /pebble returns only for mmol/L sites asked for mg/dL.
 
 **What an operator sees.** If your Nightscout shows glucose in mmol/L and you use a watch face or other display that asks Nightscout's /pebble address for mg/dL, the change since the last reading (the delta) arrives in mmol/L while the reading is in mg/dL. The delta then looks about 18 times smaller than it is, for example -0.1 instead of -2. The reading itself is right. Check the delta against the Nightscout page or your CGM app before acting on it. The fix is not in any release yet. This is not medical advice.
 
@@ -4247,16 +4253,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/pebble.js && git -C externals/cgm-remote-monitor-official grep -qiF "mg/dl" origin/dev -- lib/server/pebble.js'`
-  - FAILS today: origin/dev's pebble.js never sets the sandbox to mg/dl. A presence check only; it goes green when an mg/dl branch appears, and the probe below is what says whether the delta is then right.
-- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/pebble-units.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (sgv "90", bgdelta -0.1); the three controls behave. Exit 0 on a scratch copy of dev with the one-line fix. The fix is done when the probe exits 0 on the candidate.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -qF "delta.mgdl" bf/pebble-delta-units -- lib/server/pebble.js`
+  - The branch's pebble.js returns delta.mgdl when mg/dL is asked for (origin/dev has no delta.mgdl and fails this). Replaces a check for the text "mg/dl", which the branch passes only through a comment: the fix deliberately leaves the sandbox units alone, because switching them makes bwp wrong (register BF-128). A presence check only; the probe and tests/pebble-units.test.js decide. Point it at origin/dev once merged.
+- **NO GATE** &mdash; The behaviour is measured by tools/lab/triage-2026-09/pebble-units.js, which needs a cgm-remote-monitor tree with node_modules and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (sgv "90", bgdelta -0.1); the three controls behave. Exit 0 on a scratch copy of dev with the one-line fix. The fix is done when the probe exits 0 on the candidate. 2026-09-25: exit 1 on e3adc91d, 0 on the branch aa224c69.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/pebble-units.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened 2020-10-10). A past maintainer comment suggested deprecating /pebble instead; that is the maintainer's decision. No client in the externals corpora calls it.
+**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened 2020-10-10). A past maintainer comment suggested deprecating /pebble instead; that is the maintainer's decision. No client in the externals corpora calls it. 2026-09-25 - FIXED on bf/pebble-delta-units aa224c69 (local, not pushed), one commit on dev e3adc91d: addDelta uses delta.mgdl unless mmol is requested; sandbox units unchanged, because the register's first fix shape (prepareSandbox to mg/dl) gives bwp "20.32" against the site's "-0.96" on an mmol site asked for mg/dL (measured). 21 tests; suite 3191/0/3 (Node 22.23.2, MongoDB 7.0.43). Two further observations await the maintainer and are not filed: an mg/dL site asked for ?units=mmol computes BWP in an mmol sandbox against the mg/dL profile (bwp -2.17 against -0.96); and a shared-state mechanism in which one /pebble request's scaled values persist on shared data.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
@@ -4353,32 +4359,32 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@fbaa4a2a` |
-| worktree | `-` |
+| branch | `bf/entries-unknown-id` |
+| base | `origin/dev@e3adc91d` |
+| worktree | `externals/work/crm-6a-fix-entries-unknown-id` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-129` |
 
-**Blast radius.** lib/api/entries/index.js GET /entries/:spec (the No such id branch) and the entries formatter that turns entries_err into 500; a test in tests/api.entries.upper-case-id.test.js or a sibling.
+**Blast radius.** lib/api/entries/index.js GET /entries/:spec (an id that names no entry answers 200 [] instead of setting entries_err, which the formatter answered with 500); the spec description in lib/server/swagger.json and swagger.yaml; tests/api.entries.unknown-id.test.js (new).
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `patch`.** an error status for a read that finds nothing becomes a not-found answer
+**Why `patch`.** an error status for a read that finds nothing becomes 200 [], the answer every other v1 read gives
 
 **Gates.**
 
-- `[static]` `sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/dev -- lib/api/entries/index.js'`
-  - FAILS today: the route still builds the "No such id" error that the formatter answers with 500. A presence check only; the fix is done when a test shows an unknown id answers 404 or 200 [].
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/entries-unknown-id:lib/api/entries/index.js && ! git -C externals/cgm-remote-monitor-official grep -q "No such id" bf/entries-unknown-id -- lib/api/entries/index.js'`
+  - The branch's route no longer builds the "No such id" error that the formatter answers with 500 (origin/dev still does and fails this). Decided 200 []: tests/api.entries.unknown-id.test.js on the branch shows an unknown id answers 200 [] and a storage error 500. A presence check only. Point it at origin/dev once merged.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Open, found 2026-09-25 by the #8758 freeze review and queued at the maintainer's request. Live on 15.0.8 for a lower-case id; #8758 extends it to an upper-case id. Small enough to fold into #8758 if the maintainer wants; otherwise after 15.0.9. Decide 404 or 200 [] first.
+**Notes.** Open, found 2026-09-25 by the #8758 freeze review and queued at the maintainer's request. Live on 15.0.8 for a lower-case id; #8758 extends it to an upper-case id. Small enough to fold into #8758 if the maintainer wants; otherwise after 15.0.9. Decide 404 or 200 [] first. 2026-09-25 - FIXED on bf/entries-unknown-id f79dc732 (local, not pushed), one commit on dev e3adc91d: an unknown 24-hex id answers 200 [] (decided over 404); storage faults still 500; swagger updated. 11 tests; suite 3181/0/3 (Node 22.23.2, MongoDB 7.0.43). Measured: 15.0.8 lower-case unknown 500, upper-case 200 []; e3adc91d both 500; branch both 200 []. On 15.0.8 an entry stored under a lower-case hex string also answered 500; #8758 fixed that. The consumer survey finds no corpus client that fetches an entry by id. A BF-73 addendum came from this measurement (register BF-73).
 
 ### `OID-UNUSABLE-ID-OTHER-PATHS` &mdash; Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1
 
