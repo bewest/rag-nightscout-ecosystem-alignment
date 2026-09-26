@@ -1,23 +1,29 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-09-25, as of `dev` `e3adc91d`. Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-09-26, as of `dev` `ff93fa94`. Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
-BF-72 appears by mechanism only: it is live on the shipping release and this repository is public.*
+BF-72, BF-139 and BF-80 appear by mechanism only: BF-72 and BF-139 are live on the shipping release,
+and this repository is public.*
 
 ## What 15.0.9 is
 
 | decision | queue | as it stands |
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
+| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `ff93fa94`, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; CI on `ff93fa94` running when measured (2026-09-26) |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
 | **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |
 | **Outside contributors' PRs carried into 15.0.9**: #8568 (BF-114), #8419 (tests) and #8530 (a 48-hour chart option) (2026-09-25) | `BFQ-114`, `RT-PR-8419`, `RT-PR-8530` | all merged |
 | **Crowdin #8730 is held out of 15.0.9**, because its sync reverts translations `dev` corrected (BF-132); a reconciled translations branch is an option (2026-09-25, reversing the same day's decision to carry it) | `RT-PR-8730` | open, not in 15.0.9 |
 | **Five more fixes are in 15.0.9**: BF-118 (mmol/L alarm thresholds converted only when `BG_HIGH` is set), BF-119 (`PUMP_WARN_ON_SUSPEND` never warning), BF-120 (the clock view shows an old reading as current when its fetch fails), BF-126 (a subject without a name stops the server at boot) and BF-134 (each Loop remote command left an APNs connection open) (2026-09-25) | `BFQ-118`, `BFQ-119`, `BFQ-120`, `BFQ-126`, `BFQ-134` | #8766, #8767, #8768, #8769, #8770 merged |
+| **Ten more fixes are in 15.0.9**: BF-106 (v1 activity and devicestatus numeric filters, a `dev`-only regression), BF-129 (an unknown entry id answers 500), BF-125 (IFTTT Maker event names translated), BF-123 (AAPS percentage Profile Switch), BF-122 with BF-135 (v1 writes missing from v3 history; AAPS deletes still counted), BF-136 (v3 writes to v1-born records refused), BF-128 with BF-138 and BF-139 (`/pebble` units), BF-80 (the `/alarm` failed-login delay, a `dev`-only regression) and BF-121 (two treatments at the same time stored as one); and #8778 from AndyLow91 (BF-140, a `dev`-only regression in v3 DELETE) (2026-09-26) | `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `BFQ-80`, `BFQ-121` | #8771–#8780 merged (`ab9c96e6` … `ff93fa94`) |
+| **BF-138 and BF-139 ship in 15.0.9, in #8777 with BF-128**; BF-139 is live on 15.0.8, so the public PR describes its mechanism and outcome with no reproduction recipe, as for BF-70 / #8743 (2026-09-26) | `BFQ-128` | #8777 merged |
+| **Known issues of 15.0.9, by decision**: the BF-121 × BF-136 re-send duplicate; BF-124 (the treatment tooltip's BG units, display only); BF-127 (a clock view opened from the menu is blank for a token viewer on a denied site) (2026-09-26) | `BFQ-121`, `BFQ-136`, `BFQ-124`, `BFQ-127` | release notes, Known issues |
+| **After 15.0.9**: BF-137 (several IFTTT Maker keys), and making a v3 or websocket edit of a record stored twice merge the two copies (2026-09-26) | `BFQ-137`, `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` | not started |
 | **nightscout-connect 0.1.0 is pinned in 15.0.9**, after the prerelease had a lab soak with a seeded source Nightscout syncing into a second one, and the maintainer's judgement (2026-09-22, amended 2026-09-23) | `P0-TAG`, `P0-PIN` | released 2026-09-24; #8762 merged |
 | **No separate deprecation release.** The legacy-ingestion notice goes in 15.0.9's release notes (2026-09-23) | `RT-4` | release notes |
 | **MongoDB 4.4 is deprecated in 15.0.9**, and dropped in a later release (2026-09-23) | `RT-MONGO-FLOOR` | #8750 merged |
@@ -33,6 +39,12 @@ BF-72 appears by mechanism only: it is live on the shipping release and this rep
 | client address and failed-login delay | one setting, `TRUST_PROXY`, under the compatibility-flag rule ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)). Unset keeps `dev`'s address resolution | `BF2-AUTH` |
 | subject fields (BF-47) | the allow-list is the declared schema for subjects and roles, so it stays with no compatibility flag. The fix is the admin page, which cleared `notes` and `created_at` on every edit. The release notes declare the allow-list as a correction | `BFQ-47` |
 | `_id` handling (#8758) | **D1**: devicestatus create gets the hex-`_id` check, so a re-send of a text-stored `_id` collides as on `dev` rather than adding a copy. **D2**: API v3 reaches v1 records with a non-hex `_id`, as `lib/api3/swagger.yaml` documents. **D3**: an entries POST that matches an existing reading answers with the stored `_id`. **D4**: an upper-case hex string stored on disk is found only when asked in upper case; documented, not changed | `BFQ-102` |
+| v1 DELETE (BF-122) | **stays a hard delete** (option (a)). AAPS deletes are soft (`isValid: false`); with BF-135 they stop counting on the site and reach other AAPS instances through v3 history. A careportal, Loop, Trio or xDrip+ delete does not reach AAPS; the release notes tell people to delete in AAPS too (2026-09-26) | `BFQ-122` |
+| same-time treatments (BF-121) | **option 3**: client identity (`syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID`) must match on v1 and the websocket `dbAdd` exact match; carbs and insulin join the key only for v1 writes without identity; API v3 and the socket's no-identity key unchanged, so an AAPS edit re-sent after a lost reply still updates in place. Left as known issues: AAPS v3 same-millisecond `Meal Bolus` bolus and carbs; careportal same-minute same-amount entries. The BF-121 × BF-136 re-send duplicate is accepted as a known issue (2026-09-26) | `BFQ-121`, `BFQ-136` |
+| AAPS Profile Switch (BF-123) | AAPS 3.x percentage and time shift applied as AAPS applies them; the CircadianPercentageProfile (AAPS 2.x) path is left as it is (2026-09-26) | `BFQ-123` |
+| `/alarm` and the failed-login delay (BF-80) | a viewer presenting no credential is not held by the delay, at the connect-time admission and on `subscribe` (option 2 in the decision round, option 1 in the register's numbering; the connect-time admission added the same day); a credential is still checked only after the full delay, so on a denied site a signed-in viewer on a delayed address still waits (2026-09-26) | `BFQ-80`, `ADV-ALARM` |
+| IFTTT Maker resend (BF-125) | a failed send is retried at every check, as since 2015; not changed (2026-09-26) | `BFQ-125` |
+| Loop remote commands keep the previous profile's device (the journey lab's JL-2) | an ecosystem gap, not a Nightscout defect: `GAP-REMOTE-010` in [`traceability/treatments-gaps.md`](../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload) (2026-09-26) | — |
 | connector profile sync | each poll reads the newest profile and those saved since the last poll; no backfill on first sync; **the source wins**, so a profile edited on the receiving site is overwritten when the source's copy changes. The release notes say the third in plain words ([connector profile sync](../../docs/60-research/remedial/connector-profile-sync.md)) | `BFQ-97` |
 
 ## Security advisories

@@ -37,7 +37,8 @@ read the first three sections even if you usually skip release notes.
 
 ## Before you upgrade: what to check
 
-Work through this list first. Most people will find that nothing applies to them except item 10.
+Work through this list first. Most people will find that nothing applies to them except the last
+item.
 
 1. **Which MongoDB version your database runs.** MongoDB is the database Nightscout keeps your
    readings and treatments in. **MongoDB 4.4 is deprecated in this release.** It still works and
@@ -74,9 +75,16 @@ Work through this list first. Most people will find that nothing applies to them
 9. **If you turned on `PUMP_WARN_ON_SUSPEND`**, a "Pump Suspended" warning can now reach your
    phone; it never did before. See
    [The "pump suspended" warning now works](#the-pump-suspended-warning-now-works).
-10. **Have a second way to see your readings** while you upgrade and for a day afterwards —
-   your CGM app, your pump or your meter — in case something that connects to your site stops
-   working.
+10. **If you use AndroidAPS**, carbs and insulin entered in the careportal or by a caregiver can
+    now reach the phone, deleting an entry anywhere except AndroidAPS still does not reach the
+    phone, and during a percentage Profile Switch the numbers on your site change to match the
+    phone. See [AndroidAPS, the careportal and caregivers](#androidaps-the-careportal-and-caregivers).
+11. **If you get Nightscout alarms through IFTTT on a site that is not in English**, and you renamed
+    your IFTTT applets to translated names to make them work, rename them back. See
+    [IFTTT alerts on sites not set to English](#ifttt-alerts-on-sites-not-set-to-english).
+12. **Have a second way to see your readings** while you upgrade and for a day afterwards —
+    your CGM app, your pump or your meter — in case something that connects to your site stops
+    working.
 
 Node.js 20 or later is still required (as for 15.0.8). Versions 20, 22 and 24 are tested.
 
@@ -121,7 +129,7 @@ care team.
 
 ---
 
-## Alarm fixes: mmol/L alarm levels, and pump and loop alerts
+## Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT
 
 These fixes change which alarms Nightscout raises. None of them changes anything on your pump,
 CGM or looping app. **Nightscout is not a medical device: keep the alarms on your CGM, pump and
@@ -224,6 +232,163 @@ release, Nightscout sees that the loop was turned back on, and those alerts work
 - Keep the alerts in AAPS and on your pump switched on. This is not medical advice; talk to your
   care team about how you are alerted.
 
+### Watch faces, and a false low alarm on sites that use mg/dL
+
+Some watch faces and small displays get the latest reading from an older address on your site,
+`/pebble` (first written for Pebble watches). They can ask for the reading in mg/dL or in mmol/L,
+whatever your site uses.
+
+**A false low alarm.** On a site that shows mg/dL, a watch face asking `/pebble` for mmol/L could
+change the reading your site's own alarm check looks at, so that the check judged the reading in
+the wrong units. That could raise a **low alarm when your glucose was not low**, and the alarm
+message could show the wrong number. The values some apps and watch faces read from your site
+(`/api/v2/properties`), and what Alexa and Google Home said, could also be wrong until your site
+next loaded new data. This depended on timing and did not happen on every request. It is fixed:
+a watch-face request can no longer change what the rest of your site sees. The same was true on
+15.0.8 and earlier.
+
+If your site raised a low alarm that did not match your sensor, and a watch face on your site asks
+for mmol/L, this may have been the cause. **Always check a surprising alarm against your meter or
+CGM.**
+
+**Two more `/pebble` fixes:**
+
+- **The change since the last reading** (the *delta*, for example "falling 2") now comes back in the
+  same units as the reading. On a site that shows mmol/L, a watch face asking for mg/dL got the
+  reading in mg/dL but the change in mmol/L, so a fall looked about 18 times smaller than it was.
+- **The bolus estimate** some watch faces show (Nightscout's *Bolus Wizard Preview*, available when
+  insulin on board is turned on) is now worked out the same way your site works it out for itself,
+  whatever units the watch face asks for, and its expected glucose result comes back in the units
+  the watch face asked for. Before, a watch face asking for the other units could get a different
+  estimate from the one your site shows. The estimate is a rough indicator, not a dosing
+  recommendation.
+
+If you adjusted a watch face to make these numbers look right, for example by multiplying or
+dividing by 18, undo that adjustment after upgrading. Keep the alarms on your CGM, pump and phone
+app switched on. This is not medical advice; talk to your care team about how you are alerted.
+
+### IFTTT alerts on sites not set to English
+
+**IFTTT** ("If This Then That") is an outside service that can turn an alert from Nightscout into a
+phone notification, a call or a smart-light flash. Nightscout sends it a named *event* for each
+alarm, and each IFTTT *applet* you set up listens for one event name. Nightscout's documentation
+tells you to name your applets `ns-warning`, `ns-urgent`, `ns-warning-low`, `ns-urgent-high` and
+so on.
+
+On a site whose language (`LANGUAGE`) is not English, Nightscout translated the alarm level in the
+event name, for example `ns-warnung` on a German site, so applets named as the documentation says
+**never fired**. In this release every site sends the documented names, whatever its language.
+The text of the alert itself stays in your site's language. English sites see no change.
+
+**What to do:** if your applets use the documented names, nothing. **If you renamed your applets to
+the translated names** to make them work, rename them back to `ns-warning`, `ns-urgent` and the
+other documented names after upgrading, or they will stop firing. Then send a test alarm and check
+that it arrives.
+
+Not changed: when a send to IFTTT fails, Nightscout tries the same alarm again at its next check
+until a send succeeds, so a failed alarm is not silently dropped. An IFTTT alert is an extra, not a
+replacement for your CGM app's own alarms. This is not medical advice.
+
+---
+
+## AndroidAPS, the careportal and caregivers
+
+These changes are about how treatments (carbs, insulin, temporary targets, notes) move between
+your Nightscout site and the apps connected to it. They matter most if you use **AndroidAPS**
+(AAPS), an automated insulin delivery app for Android phones, together with Nightscout's
+**careportal** (the form on your site for entering treatments) or a caregiver who enters
+treatments for you. AndroidAPS talks to Nightscout through its **NSClient** settings. Nightscout's
+web pages, Loop, Trio, xDrip+ and OpenAPS use Nightscout's older interface (API version 1);
+AndroidAPS uses the newer one (API version 3).
+
+**None of these changes alters how any app doses insulin.** They change what Nightscout stores,
+shows and passes on. This is not medical advice; if the carbs or insulin on your site and on your
+phone do not match, go by the app that doses and by your meter, and talk to your care team before
+relying on the Nightscout numbers.
+
+### Careportal and caregiver entries now reach AndroidAPS
+
+Before, after its first sync AndroidAPS asked Nightscout only for "what changed since last time",
+and Nightscout left out everything written through the older interface: carbs, insulin, temporary
+targets and notes entered in the careportal or bolus wizard, including a caregiver's entries,
+readings uploaded by other apps, and edits made that way. AndroidAPS never received them unless
+someone ran a full sync.
+
+In this release they reach AndroidAPS at its next regular check. **What the phone does with them
+depends on its own settings:**
+
+- On a phone that loops, AndroidAPS takes carbs and insulin from Nightscout only if **"accept
+  carbs"** and **"accept insulin"** are switched on in its NSClient settings. **Both are off unless
+  you turned them on.**
+- The **AAPSClient** follower app always takes them, and does not show these two settings.
+- **If you have been entering the same meal both in the careportal and on the phone** as a
+  workaround, the phone may now see it **twice**. Check the phone's treatment list after the
+  update.
+- Entries written before the update are not sent again.
+
+When an app using the older interface edits a record that AndroidAPS created, the record keeps the
+label AndroidAPS knows it by, so AndroidAPS updates its copy instead of adding a second one.
+
+### Deleting a treatment
+
+- **A treatment you delete in AndroidAPS now stops counting on your site.** AndroidAPS deletes by
+  marking a record as deleted rather than removing it. Nightscout used to ignore that mark, so a
+  deleted entry kept counting in carbs on board (COB) and insulin on board (IOB), on the chart, in
+  reports and in what followers and other apps read. It now disappears from all of them, and a
+  deleted profile is no longer taken as the current one.
+- **Deleting a treatment in the careportal, Loop, Trio or xDrip+ still does not reach AndroidAPS.**
+  This stays as it is by decision. An entry deleted that way keeps counting on the phone. **Delete
+  it in AndroidAPS as well.**
+
+### AndroidAPS changes to careportal entries are no longer lost
+
+When AndroidAPS changed a treatment that had been entered in the careportal (for example a
+temporary target entered on your site), Nightscout refused the change and AndroidAPS did not try
+again, so your site kept the old version and nothing said so. An AndroidAPS entry recorded at
+exactly the same moment, to the thousandth of a second, as an existing entry of the same kind was
+refused the same way and never reached your site. Both are now accepted. In the same-moment case,
+the AndroidAPS version replaces the existing entry; it does not add a second one. Entries that were
+refused in the past are not sent again.
+
+### Two treatments at the same time are no longer stored as one
+
+When two treatments of the same kind had exactly the same time, Nightscout kept only one of them,
+with no error. In the report behind this fix, a caregiver sent 16 g and then 4 g of carbs through
+Loop, both back-dated to the same time, and Nightscout kept only the 4 g. The 16 g disappeared from
+the chart, the reports and the daily totals, and from what followers saw. The app that entered the
+carbs kept both and dosed from its own records.
+
+Now two entries at the same time are kept apart when anything tells them apart: the app's own label
+for each entry (Loop, Trio, xDrip+ and NSClient each send one), or, for entries that arrive without
+one (such as the careportal), a different carb or insulin amount. An app that sends the same entry
+again, or an updated version of it, still updates the one record. Entries lost before this update
+are not brought back. Some cases are still stored as one; see
+[Known issues](#known-issues--not-fixed-in-this-release).
+
+### AndroidAPS percentage Profile Switches: the numbers on your site change
+
+In AndroidAPS a **Profile Switch** can run your profile at a percentage (for example 150% during
+illness, or 80% for exercise), or shift its schedule a few hours earlier or later. Your profile
+holds your **basal** rate (background insulin, in units per hour), your **ISF** (insulin
+sensitivity factor: how far one unit is expected to lower glucose) and your **carb ratio** (grams
+of carbohydrate one unit covers).
+
+During such a switch, Nightscout named the profile correctly, for example "Default (150%)", but
+showed and calculated with the 100% values and ignored a time shift. It now reads the switch the
+way AndroidAPS does: basal is multiplied by the percentage, ISF and carb ratio are divided by it,
+glucose targets are not changed, and a time shift moves the whole schedule. **So the basal, ISF and
+carb ratio your site shows change to match the phone**, and so do the basal pill, the chart's basal
+line, the Bolus Wizard Preview, Nightscout's own IOB and COB, and the reports. Nothing stored
+changes.
+
+- AndroidAPS's own insulin delivery was never affected: it works out its doses on the phone.
+- If AndroidAPS uses **Dynamic ISF** or another feature that changes ISF on the phone, the ISF it
+  doses with can still differ from the profile ISF your site shows.
+- Switches from older AndroidAPS versions (2.x) are read exactly as before.
+
+If the numbers on your site and in AndroidAPS still do not match, or you are unsure which numbers
+are right, check with your care team.
+
 ---
 
 ## Security fixes
@@ -237,7 +402,12 @@ security advisories are published.
    `AUTH_DEFAULT_ROLES=denied` so that only people you have given access can see your site, it
    now checks a visitor's access the same way the rest of the site does before sending live
    information, alarms or notifications. If your site uses the standard setting, where anyone
-   with the address can read it (`AUTH_DEFAULT_ROLES=readable`), nothing changes.
+   with the address can read it (`AUTH_DEFAULT_ROLES=readable`), nothing changes. On a site set to
+   `denied`, a page that is signed in, on an internet connection where another device (for example
+   an app with an old password on the same home Wi-Fi) has recently failed to sign in, starts
+   receiving alarms only after the failed-login delay described in item 7. An alarm raised in that
+   time reaches it when the site repeats the alarm. Fix the device that is failing to sign in; the
+   admin page's "Failed authentication" notice helps you find it.
 2. **Silencing alarms through the live-update connection now requires the permission meant for
    it.** Among the built-in roles only `admin` has it, on the standard setting too. An app that
    silences Nightscout alarms with an access token needs a user with the `admin` role; with any
@@ -395,6 +565,21 @@ Anything else gets an error (HTTP 400) that names the refused condition, instead
 error or a silently empty answer. A survey of 14 Nightscout apps found none that use a refused
 condition. One condition that used to work is now refused: `$expr` on the profiles address. An
 undocumented `pipeline` option on the counting addresses is also refused.
+
+### Asking for a glucose reading by an ID that does not exist
+
+When an app asks for one glucose reading by its ID (API version 1, `GET /api/v1/entries/<id>`) and
+no reading has that ID, the answer is now "nothing found" (HTTP 200 with an empty list), as for any
+other search that finds nothing. 15.0.8 answered with a server error (HTTP 500), which an app could
+take to mean your site was down. If the database cannot be reached, the answer is still a server
+error.
+
+### Records deleted by AndroidAPS, and two server time fields
+
+Records that AndroidAPS has deleted (marked `isValid: false`) are no longer returned by version 1
+reads and counts. A tool that needs them can still ask for them with `find[isValid]=false`. Records
+read through version 1 now also carry the server's `srvModified` and `srvCreated` times, as records
+written by AndroidAPS already did. The server sets both; a value an app sends for them is replaced.
 
 ### Saving a glucose reading that is already stored
 
@@ -763,6 +948,11 @@ and a site that already holds one starts normally and notes it in the server log
   both units, so the figure may drop. It is an estimate, not a lab result.
 - **Reports** no longer throw away valid readings after two closely spaced ones, so charts,
   averages and time-in-range may change slightly.
+- **Basal, ISF and carb ratio during an AndroidAPS percentage Profile Switch**, and the IOB, COB,
+  Bolus Wizard Preview and reports worked out from them, now match the phone. **Carbs and insulin
+  that AndroidAPS deleted** no longer count in COB, IOB and reports. **Two treatments at the same
+  time** are now both counted in daily totals. See
+  [AndroidAPS, the careportal and caregivers](#androidaps-the-careportal-and-caregivers).
 
 ### A 48-hour view on the main chart
 
@@ -824,8 +1014,13 @@ software library updates.
     [Low alarms on sites that use mmol/L](#low-alarms-on-sites-that-use-mmoll)).
 11. **If you use `PUMP_WARN_ON_SUSPEND`**, tell whoever receives your alerts that a "Pump
     Suspended" warning can now arrive.
-12. **After upgrading, check that everything connected to your site still works**, and watch for
-   a day.
+12. **If you use AndroidAPS with the careportal or a caregiver**, check the phone's treatment list
+    for meals entered twice, and delete treatments in AndroidAPS as well as elsewhere (see
+    [AndroidAPS, the careportal and caregivers](#androidaps-the-careportal-and-caregivers)).
+13. **If you renamed IFTTT applets to translated names**, rename them back to the documented names
+    (see [IFTTT alerts on sites not set to English](#ifttt-alerts-on-sites-not-set-to-english)).
+14. **After upgrading, check that everything connected to your site still works**, and watch for
+    a day.
 
 ## What to check afterwards
 
@@ -848,6 +1043,10 @@ software library updates.
 - If you moved from `MMCONNECT_` or `BRIDGE_` settings: readings arrive through the connector.
 - If you changed your CGM account password: the new password is in Nightscout's connector
   settings, and readings arrive.
+- If you use AndroidAPS: the treatment list on the phone has no meal twice, and during a percentage
+  Profile Switch the basal, ISF and carb ratio on your site match the phone.
+- If you use IFTTT on a site not set to English: a test alarm reaches your applets.
+- If a watch face reads your site: its delta and bolus estimate look right without any adjustment.
 
 ---
 
@@ -889,6 +1088,23 @@ software library updates.
 - **The carbs-on-board detail can name an older carb entry as "last carbs".** After an older
   carb entry is edited, the pill's "last carbs" line can show that entry instead of the newest
   one. The carbs-on-board total is not affected. The same happens on 15.0.8.
+- **Deleting a treatment anywhere except AndroidAPS does not reach AndroidAPS.** A treatment
+  deleted in the careportal, Loop, Trio or xDrip+ is removed from your site but keeps counting on
+  an AndroidAPS phone. Delete it in AndroidAPS as well.
+- **Rarely, an entry can appear twice.** When the careportal and AndroidAPS record the same kind of
+  treatment at exactly the same moment, and an app later sends the careportal entry again,
+  Nightscout can show it twice. Check your treatment list if totals look high.
+- **Some treatments at the same time are still stored as one.** Two careportal entries in the same
+  minute with the same amount are stored as one, because nothing tells them apart from pressing
+  Save twice. A bolus and carbs that AndroidAPS records in the same thousandth of a second, both as
+  "Meal Bolus", can also be stored as one.
+- **A treatment's pop-up on the chart can show its glucose in the wrong units** when your profile
+  and your site use different units (one mg/dL, the other mmol/L). This affects only that pop-up;
+  what is stored and calculated is not changed.
+- **A clock view opened from the menu can be blank** on a site that requires sign-in
+  (`AUTH_DEFAULT_ROLES=denied`) when you opened Nightscout with an access token in the address.
+  Opening the clock's own address with the token (`/clock/<face>?token=…`) works. A clock view is
+  a display, not an alarm.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
 
@@ -946,6 +1162,6 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*DRAFT, 2026-09-25. Requires maintainer review before publishing. Nightscout is not a medical
+*DRAFT, 2026-09-26. Requires maintainer review before publishing. Nightscout is not a medical
 device, and nothing in these notes is medical advice or guidance about insulin dosing. Where a
 change here could affect decisions about your therapy, discuss it with your care team.*
