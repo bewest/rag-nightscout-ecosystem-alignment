@@ -27,12 +27,13 @@ of its address (the cost of BF-75's fix)**
 
 ## What this changes
 
-One commit at 8e295769. lib/authorization/index.js (new resolveAnonymous;
-resolve() and every HTTP path unchanged), lib/api3/alarmSocket.js (a subscribe
-with no credential uses it), tests/api3.alarm-socket.anonymous-delay.test.js
-(new) and an authFailDelay option in tests/fixtures/api3/instance.js (default
-0 as before). It narrows a brute-force control for the no-credential case, so
-it goes in its own PR with its own review.
+Two commits, 8e295769 and cd2dfb1f. lib/authorization/index.js (new
+resolveAnonymous; resolve() and every HTTP path unchanged),
+lib/api3/alarmSocket.js (a subscribe with no credential, and the connect-time
+admission, use it), tests/api3.alarm-socket.anonymous-delay.test.js (new) and
+an authFailDelay option in tests/fixtures/api3/instance.js (default 0 as
+before). It narrows a brute-force control for the no-credential case, so it
+goes in its own PR with its own review.
 
 ## Why that semver
 
@@ -46,12 +47,13 @@ every credentialed path is unchanged
 > with an old API secret), a Nightscout page open in a browser on the same
 > home network can receive an alarm late, by about a minute or more, with
 > nothing on the page saying so. 15.0.8 does not have this delay. With this
-> fix, a page where nobody is signed in is no longer held back. A page or
-> app that is signed in still is, so fix the device that keeps failing to
-> sign in. A fix is ready for review for 15.0.9 and is not in any release
-> yet. Nightscout is not a medical device and this is not medical advice;
-> keep a second way of being alerted and talk to your care team if you rely
-> on these alarms.
+> fix, a page where nobody is signed in is no longer held back, and on a
+> site that anyone with the address may read, a signed-in page is not held
+> back either. On a site that requires signing in, a signed-in page still
+> is, so fix the device that keeps failing to sign in. A fix is ready for
+> review for 15.0.9 and is not in any release yet. Nightscout is not a
+> medical device and this is not medical advice; keep a second way of being
+> alerted and talk to your care team if you rely on these alarms.
 
 ## Who should review this, and why
 
@@ -79,11 +81,12 @@ decides. Point it at origin/dev once merged.
   valid or not, unchanged (ack about 10 s, alarm at the next repeat, 37.7 s
   readable, 49.5 s denied). The probe script is held outside version control
   (mechanism, not recipe).
-- Not covered by the fix, by the decision: a signed-in viewer on an address
-  in the delay, a socket that connects without subscribing, and main-
-  namespace chart data still wait. Making connect-time admission skip the
-  delay for a no-credential socket too is a one-hunk option awaiting the
-  maintainer.
+- cd2dfb1f (maintainer, 2026-09-26): the connect-time admission is also
+  answered without the delay, so on a readable site every /alarm socket gets
+  the alarm at once (booted server 10-14 ms); on a denied site an anonymous
+  or never-subscribing socket still gets nothing. Still waiting: a signed-in
+  viewer on a denied site behind an address in the delay, and main-namespace
+  chart data.
 
 ## Evidence
 
@@ -99,11 +102,15 @@ pushed), one commit on dev e3adc91d: a /alarm subscribe carrying no credential
 (secret, jwtToken, token and accessToken all absent, null or empty) is
 answered with AUTH_DEFAULT_ROLES without the failed-login delay; #8754's
 anonymous-waits test still passes. Suite 3180/0/3, 10 new tests (4 fail on
-e3adc91d) (Node 22.23.2, MongoDB 7.0.43, fresh database). Decisions: -
-2026-09-26 (maintainer): option 1 in the register's numbering (the decision
-round called it option 2) - a viewer presenting no credential is not held by
-the failed-login delay; signed-in viewers keep it. Recorded in ADV-ALARM as
-well.
+e3adc91d) (Node 22.23.2, MongoDB 7.0.43, fresh database). 2026-09-26 -
+cd2dfb1f added (maintainer chose the wider option): the connect-time admission
+skips the delay too. 18 tests in the file (4 fail on 8e295769), suite 3188/0/3
+twice on a fresh database, and again 3188/0/3 through tools/review/prcheck. A
+credential is still checked only after the full delay; BF-75's denied-site
+guarantee holds. Decisions: - 2026-09-26 (maintainer): option 1 in the
+register's numbering (the decision round called it option 2) - a viewer
+presenting no credential is not held by the failed-login delay; signed-in
+viewers keep it. Recorded in ADV-ALARM as well.
 
 ---
 
