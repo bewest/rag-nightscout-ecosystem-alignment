@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 166 |
-| runnable gates | 234 |
-| explicit `no-gate:` markers | 219 |
+| items | 167 |
+| runnable gates | 238 |
+| explicit `no-gate:` markers | 220 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 219 of the 453 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 220 of the 458 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,13 +44,13 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-141, BFQ-142 |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-142 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `merged-upstream` | 69 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, BFQ-134, BFQ-129, BFQ-130, BFQ-131 |
+| `merged-upstream` | 70 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
-| `closed` | 1 | BFQ-41 |
+| `closed` | 2 | BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
 
 ### Reaches an operator on today's release
@@ -1004,7 +1004,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 28 items
+`parcel: release-train` &mdash; 29 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1036,6 +1036,7 @@ that costs.
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `merged-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
 | `RT-PR-8778` | #8778 - API v3 deletes v1 records whose identifier is null or empty (AndyLow91; BF-140), merged for 15.0.9 | `merged-upstream` | `codex/fix-api3-empty-identifier-delete` | patch | 2 run + 1 no-gate |
+| `RT-PR-8781` | #8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9 | `merged-upstream` | `codex/fix-treatment-retries-history-restart` | patch | 4 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `in-progress` | `main` | n/a | 1 run + 2 no-gate |
@@ -1350,7 +1351,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `BFQ-141`, `BFQ-142` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent merges, 226 files, +18167/-1403. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. One open PR is planned to join it: #8758. Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1373,7 +1374,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** 2026-09-26 (maintainer): BF-141, a regression from #8780 found in the review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later): BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-identifier 1c3aeb8c on official/dev ce7d754a, ready- to-push), and BFQ-142 is added to blocks_on; it is not merged-upstream. Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (the two approvals were given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree, tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the integration record). On the same tree the round-2 probes give their expected exit codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1 with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier- delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision). The browser-check gate's --with list and the release notes are not updated here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR decided for 15.0.9 except #8730, which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin sync reverts dev's corrected translations). Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126), #8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except RT-VERSION, whose red gate is on the cut branches, which are renumbered when rebased (decided 2026-09-23). Still before the tag: - The browser checks. client-unchanged-since-hand-check.js on e3adc91d names 12 files that changed after the hand-checked 8d797ba4: lib/api2/index.js and notifications-v2.js (the Loop remote-command path, #8764), lib/client/clock-client.js (#8768), lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js (#8767), lib/profile/profileeditor.js, lib/settings.js (#8766), views/index.html, .gitignore and .nycrc.json. The last two are not browser code; the rest need the checks repeated by hand. - The release-candidate soak (RT-SOAK) and the npm audit triage, both open on the integration record's run 017. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md) for everything merged on 2026-09-25. - The maintainer tagging. Evidence: run 017 in docs/30-design/remedial/rc-15.0.9-integration-record.md, dev e3adc91d itself (tree d7383aae): 3170/0/3 in all six cells (Node 20/22/24 x MongoDB 4.4/7). The earlier hand checks were on ec70aab0 (docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md) and the drag again on #8760's head 8d797ba4. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote- monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT- COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
+**Notes.** 2026-09-26 (maintainer): BF-141, a regression from #8780 found in the review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later): BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-identifier 1c3aeb8c on official/dev ce7d754a, ready- to-push), and BFQ-142 is added to blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91; BF-141, BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces BFQ-141 (closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498 commits and 82 first-parent merges ahead of master; release PR #8598 at ce7d754a, 27 checks green, 3 skipped, APPROVED. Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (the two approvals were given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree, tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the integration record). On the same tree the round-2 probes give their expected exit codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1 with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier- delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision). The browser-check gate's --with list and the release notes are not updated here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR decided for 15.0.9 except #8730, which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin sync reverts dev's corrected translations). Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126), #8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except RT-VERSION, whose red gate is on the cut branches, which are renumbered when rebased (decided 2026-09-23). Still before the tag: - The browser checks. client-unchanged-since-hand-check.js on e3adc91d names 12 files that changed after the hand-checked 8d797ba4: lib/api2/index.js and notifications-v2.js (the Loop remote-command path, #8764), lib/client/clock-client.js (#8768), lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js (#8767), lib/profile/profileeditor.js, lib/settings.js (#8766), views/index.html, .gitignore and .nycrc.json. The last two are not browser code; the rest need the checks repeated by hand. - The release-candidate soak (RT-SOAK) and the npm audit triage, both open on the integration record's run 017. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md) for everything merged on 2026-09-25. - The maintainer tagging. Evidence: run 017 in docs/30-design/remedial/rc-15.0.9-integration-record.md, dev e3adc91d itself (tree d7383aae): 3170/0/3 in all six cells (Node 20/22/24 x MongoDB 4.4/7). The earlier hand checks were on ec70aab0 (docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md) and the drag again on #8760's head 8d797ba4. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote- monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT- COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 
@@ -1809,6 +1810,46 @@ that costs.
 
 **Notes.** 2026-09-26 - MERGED into dev as aa1111b2 (#8778, head 18141136), the same day it was opened, before #8780. Not released; goes into 15.0.9. Outside contributor (AndyLow91). The defect (BF-140) came with #8758's cb7d4110 (merge 4d9ecc3b, 2026-09-25) and was never on 15.0.8, whose v3 delete matched by _id whatever the identifier. Review (after merge, 2026-09-26): safe. Every fallback clause still pins _id to a form of the requested identifier, so no unrelated record can match; $in [null, ""] also matches an absent field, so the earlier case is kept; the array exclusion only decides whether the record whose _id was asked for is reached. The BF-117 guard holds: a record with its own identifier is not deleted through its _id (404 on aa1111b2 and ff93fa94). Consistent with #8775's soft-deleted.js (a refused delete was the only reason such a record kept counting) and independent of #8776's validate.js rule. Full suite on ff93fa94 (which carries #8778 and #8780): 3396/0/3, Node 22.23.2, MongoDB 7.0.43, fresh database. Two things left, measured on ff93fa94, not filed: a record stored with identifier 0 or an array (v1 entries and devicestatus accept these) is still listed under its _id by v3 GET and refused by v3 DELETE; and with #8780 a v1 treatment re-sent with identifier "" is stored twice (BF-121's key treats null, not "", as no identity). No corpus client writes identifier null, "", 0 or an array; AndroidAPS omits a null identifier and is the only client that deletes through v3. Branch ref for re- reading: `git -C externals/cgm-remote-monitor-official fetch official pull/8778/head:refs/triage/pr-8778`.
 
+### `RT-PR-8781` &mdash; #8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `merged-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/fix-treatment-retries-history-restart` |
+| base | `origin/dev@ff93fa94` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-141`, `BF-143`, `BF-144` |
+
+**Blast radius.** lib/server/srv-dates.js: restore() sets the shared srvModified clock from the latest numeric srvModified in the six v3 collections; sameValue treats a wanted null as equal to an absent field; matches evaluates the empty-identity selector and hands array comparisons to MongoDB. lib/server/bootevent.js: restoreHistoryClock runs after setupStorage and before authorization, uploaders and the API; a failure is a boot error, and setupConnect is skipped on boot errors. lib/server/treatment-fallback-key.js: the no-identity clause becomes {$in: [null, ""], $not: {$type: 'array'}}. Tests: new tests/api3.history-restart.test.js, tests/bootevent-history-clock.test.js and fixture; tests/api.same-time-treatments.test.js (+41), selector and websocket expectations adjusted. Fix a28fcecb, merge ce7d754a.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** repairs three regressions that exist only on dev (none is on 15.0.8); no setting or migration
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce7d754a origin/dev`
+  - #8781's merge ce7d754a (2026-09-26) is contained in origin/dev.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a28fcecb origin/dev`
+  - #8781's fix commit a28fcecb is contained in origin/dev.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -qF restoreHistoryClock origin/dev -- lib/server/bootevent.js`
+  - origin/dev's boot restores the history clock (BF-144; ff93fa94 has no restoreHistoryClock and fails this). A presence check; tests/api3.history-restart.test.js decides.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -qF "b === null && a === undefined" origin/dev -- lib/server/srv-dates.js`
+  - origin/dev's in-memory pre-read treats a wanted null as matching an absent field (BF-143; ff93fa94 fails this). A presence check; tests/api.same-time-treatments.test.js decides.
+- **NO GATE** &mdash; The behaviour is measured by booted-server probes that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: tools/lab/triage-2026-09/retry-keeps-srvcreated.js (BF-143) exit 1 - srvCreated moves 30-41 ms on the four no-identity v1 re-POST arms on ff93fa94 only; kept on aa1111b2 and ce7d754a; v15.0.8 writes none. tools/lab/triage-2026-09/history-clock-restart.js (BF-144, 30,000 v1 entries) exit 1 - clock lead 25-26 s; after a restart the v3 and v1 writes land 23.5-24.8 s below the cursor and history returns 0 records on aa1111b2 and ff93fa94; on ce7d754a they land at cursor +1/+2 and both are returned; v15.0.8 has no lead (v1 entries carry no srvModified).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/retry-keeps-srvcreated.js`
+- `tools/lab/triage-2026-09/history-clock-restart.js`
+
+**Notes.** 2026-09-26 - MERGED into dev as ce7d754a (#8781, fix a28fcecb) at 19:34Z. Not released; goes into 15.0.9. Outside contributor (AndyLow91). BF-141 came with #8780 (ff93fa94); BF-143 needs #8780's {$eq: null} identity filter meeting #8775's in-memory pre-read, and aa1111b2 (#8775 without #8780) does not show it; BF-144 came with #8775 (1157a8de). None is on 15.0.8. Reproduced independently with the two probes above (not #8781's tests). Against the PR body: in the BF-143 arms the stored _id was never lost on ff93fa94, only srvCreated moved (a second record is the empty-identity case, BF-141). Supersedes BFQ-141 (#8782, closed). Branch ref for re-reading: `git -C externals/cgm-remote-monitor-official fetch official pull/8781/head:refs/triage/pr-8781`.
+
 ### `OID-MIGRATION` &mdash; Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms
 
 | | |
@@ -2057,7 +2098,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
 | `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-141` | BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice | `ready-to-push` | `bf/fallback-key-empty-identifier` | patch | 1 run + 1 no-gate |
+| `BFQ-141` | BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice (closed, superseded by #8781) | `closed` | `bf/fallback-key-empty-identifier` | patch | 1 run + 1 no-gate |
 | `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id | `ready-to-push` | `bf/api3-delete-nonstring-identifier` | patch | 1 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
@@ -4808,11 +4849,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be 15.0.8 behaviour, not a 15.0.9 regression. Not for 15.0.9 unless the maintainer wants it; the fix is small.
 
-### `BFQ-141` &mdash; BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice
+### `BFQ-141` &mdash; BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice (closed, superseded by #8781)
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/fallback-key-empty-identifier` |
 | base | `origin/dev@ff93fa94` |
@@ -4830,8 +4871,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -q "query\[field\] = noIdentity()" bf/fallback-key-empty-identifier -- lib/server/treatment-fallback-key.js'`
-  - The branch's no-identity clause uses noIdentity(), which matches null and "" (origin/dev ff93fa94 matches null only and fails this). A presence check only; tests/api.same-time-treatments.test.js decides (29 of its tests fail on ff93fa94). Point it at origin/dev once merged.
+- `[static]` `git -C externals/cgm-remote-monitor-official grep -qF "[null, ''], \$not" origin/dev -- lib/server/treatment-fallback-key.js`
+  - origin/dev's no-identity clause is #8781's {$in: [null, ""], $not: {$type: 'array'}}, which matches null, "" and absent (ff93fa94 matches null only and fails this). A presence check only; #8782's tests/api.same-time-treatments.test.js, 89/0 on ce7d754a, decides.
 - **NO GATE** &mdash; The behaviour is measured by booted-server probes that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: tools/lab/triage-2026-09/api3-empty-identifier-delete.js re-send arm, identifier "" stored 2 on ff93fa94 and 1 on aaf67785 and v15.0.8 92d08342 (no other line differs between ff93fa94 and aaf67785); same-time-resend-shapes.js and same-time-carbs.js give the same table on ff93fa94 and aaf67785, exit 0.
 
 **Evidence.**
@@ -4841,7 +4882,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/triage-2026-09/same-time-resend-shapes.js`
 - `reports/phase0-pr-bodies/fallback-key-empty-identifier.md`
 
-**Notes.** Filed 2026-09-26 from the review of #8778 (BF-140). The maintainer decided the same day to fix it for 15.0.9. 2026-09-26 - FIXED on bf/fallback-key-empty- identifier aaf67785 (local, not pushed), one commit on origin/dev ff93fa94. 29 of 71 new tests fail on ff93fa94 (2 records where 1 was expected); reverting the query line turns the same 29 red. Full suite 3467/0/3 on a fresh database (ff93fa94: 3396/0/3). PR body draft: reports/phase0-pr-bodies/fallback-key- empty-identifier.md.
+**Notes.** Filed 2026-09-26 from the review of #8778 (BF-140). The maintainer decided the same day to fix it for 15.0.9. 2026-09-26 - FIXED on bf/fallback-key-empty- identifier aaf67785 (local, not pushed), one commit on origin/dev ff93fa94. 29 of 71 new tests fail on ff93fa94 (2 records where 1 was expected); reverting the query line turns the same 29 red. Full suite 3467/0/3 on a fresh database (ff93fa94: 3396/0/3). PR body draft: reports/phase0-pr-bodies/fallback-key- empty-identifier.md. 2026-09-26 - CLOSED, superseded. #8781 (AndyLow91, merge ce7d754a, fix a28fcecb) repaired BF-141 with the same null/"" rule, also excluding arrays ($not $type array), which aaf67785 did not. Our PR #8782 was closed on 2026-09-26 (20:13Z) as superseded; all 89 tests of its tests/api.same-time-treatments.test.js pass on ce7d754a without #8782's change (Node 22.23.2, MongoDB 7.0.43). The defect's record now lives in RT-PR-8781.
 
 ### `BFQ-142` &mdash; BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id
 

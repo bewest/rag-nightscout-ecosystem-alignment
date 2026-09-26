@@ -3,7 +3,7 @@
 *Contributor-facing. Living document, maintained alongside the
 [multitenancy execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 Entries name the refs they were measured on. Status and the counts below are as of 2026-09-26 (with the maintainer's decisions of that day),
-cgm-remote-monitor `origin/dev` `ff93fa94` and `origin/master` `92d08342` (= tag `15.0.8`, the
+cgm-remote-monitor `origin/dev` `ce7d754a` and `origin/master` `92d08342` (= tag `15.0.8`, the
 shipping release), nightscout-connect `0.1.0`. Nothing here is medical advice.*
 
 **What belongs here.** An entry in §1 is a defect that
@@ -49,14 +49,14 @@ release, so such an entry is still present on 15.0.8, which pins connector `v0.0
 **What a status means for an operator.** Every §1 entry marked `fixed`, `partly merged` or
 `merged` is **still present for every operator running today's release, 15.0.8, until it is
 released.** Merging to `dev` is not releasing: a push to `dev` publishes a Docker Hub image, but
-`origin/master` and its tags are what operators install. On 2026-09-26 `origin/master` is **496
-commits (81 first-parent merges) behind `origin/dev` (`ff93fa94`) and 0 ahead**
+`origin/master` and its tags are what operators install. On 2026-09-26 `origin/master` is **498
+commits (82 first-parent merges) behind `origin/dev` (`ce7d754a`) and 0 ahead**
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`),
-and the release PR #8598 (`dev` → `master`) is open at `ff93fa94`, approved by the maintainer
+and the release PR #8598 (`dev` → `master`) is open at `ce7d754a`, approved by the maintainer
 (2026-09-26 00:39Z, at `e3adc91d`; reviewDecision APPROVED), mergeable, with 27 checks green and 3
 skipped.
 
-| question | answer, 2026-09-26 (`origin/dev` `ff93fa94`) | reproduce with |
+| question | answer, 2026-09-26 (`origin/dev` `ce7d754a`) | reproduce with |
 |---|---|---|
 | How many §1 defects are there, and how many reach an operator on 15.0.8? | **100** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 71 merged, 1 partly merged (BF-07), 2 fixed on unmerged local branches** (BF-52 and BF-142). The twelve that were fixed on local branches (BF-80, BF-106, BF-121, BF-122, BF-123, BF-125, BF-128, BF-129, BF-135, BF-136, BF-138 and BF-139) merged on 2026-09-26 through PRs #8771 to #8777, #8779 and #8780. **97** reach an operator on 15.0.8 — BF-80, BF-106 and BF-142 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
 | How much work is outstanding? | **52 ids not repaired**. The halves left on BF-122 (v1 deletes stay hard deletes), BF-125 (a failed call is retried) and BF-121 (the cases no key can separate) were decided as intended on 2026-09-26 | `make queue-coverage` (counts `partly merged` as not fixed and `partly fixed` as fixed) |
@@ -85,7 +85,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-26 the highest is BF-142 (BF-141 and BF-142 filed that day from the review of PR #8778; BF-140 from the PR itself; BF-136 to BF-139 from the maintainer's decisions), so the next free id is BF-143. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-26 the highest is BF-144 (BF-143 and BF-144 filed that day from PR #8781; BF-141 and BF-142 from the review of PR #8778; BF-140 from the PR itself; BF-136 to BF-139 from the maintainer's decisions), so the next free id is BF-145. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -270,7 +270,9 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-131** | On #8758, **a record deleted by its `_id` through API v1 stays in the server's in-memory cache**: `DELETE /api/v1/{entries,treatments,devicestatus}/<id>` answers 200 and removes the document from MongoDB, but unfiltered reads (`entries.json?count=…`, `treatments.json?count=…`, `devicestatus.json?count=…`) and a newly opened web page keep being given it until the server restarts or the record leaves the cache window. `remove()` reports `opts.find._id` to the cache as the id removed, and #8758's `query_for` rewrites that value in place into an either-form filter, which no cached record equals. Websocket `dbRemove` of both copies of an id stored twice left one copy cached as well | #8758 `ab7b22d6` `lib/server/{entries,treatments,devicestatus}.js` `remove`, `lib/server/object-id-forms.js` `matchEitherForm` (in-place rewrite), `lib/server/websocket.js` `dbRemove`, `lib/server/cache.js` `removeFromArray` (first match only) | **high** — pre-release; a treatment deleted because it was a mistake (a bolus or carbs entry) keeps being shown on newly opened pages and to unfiltered API readers, and insulin and carbs on board computed from the cache can include it. 15.0.8 and `dev` `4f705217` remove it | **merged 2026-09-25** (PR #8758, merge `4d9ecc3b`, head `f1e8398b`; fix `e9dbb1fb`); found 2026-09-25 by the 15.0.9 A/B soak (queue BFQ-131). **Reproduced**: `tools/lab/rc-soak/probe-deleted-entry.js` exits 1 on `ab7b22d6` and 0 on `92d08342` and `4f705217`; an ablation of `entries.remove` alone (`f76e6fd5`) exits 0; `tests/cache.remove-by-id.test.js` (6 cache cases) and one websocket case fail on `6c3ccce6` with the record still cached, and pass on `e9dbb1fb` |
 | **BF-132** | On #8730 (the Crowdin translation sync opened 2026-09-21), **translations that dev corrected are put back**: Traditional Chinese **"ml" becomes 克 (grams) instead of 毫升 (millilitres)**, so a volume is shown as a weight, and "Carbs" loses its full form; Swedish "Days with food" reverts to English; a Russian status line loses its values' wording. Crowdin still holds the older strings, so the sync undoes dev's `9f249815` ("preserve existing Chinese and Swedish translations") | #8730 `f99c0e54` `translations/zh_TW.json`, `sv_SE.json`, `ru_RU.json`; dev `ecb63223` is correct | **safety-visible** — a wrong unit label in a diabetes UI for Traditional Chinese users; bounded to that language's display, no stored value changes | **open, found 2026-09-25** in the release-candidate pre-flight (tree `dd51bb8a`, 4 language tests fail in all six cells; dev passes them). **Reproduced**: `tests/language.test.js` on the merge, and read from the two JSON files. Not on dev or 15.0.8 |
 | **BF-140** | On `dev` after #8758, **API v3 DELETE answers 404 for a record that API v3 GET returns**, when the record was stored through API v1 with an `identifier` of `null` or `""`. v3 reads show such a record with its `_id` as its identifier (`normalizeDoc` fills any falsy identifier), and GET finds it by `_id`; but the delete filter (`filterForEveryForm`) allows the `_id` fallback only when `identifier` is absent. So soft and permanent DELETE find nothing, the record stays valid, and after #8775 it keeps counting on the site (COB 30 g before and after an AndroidAPS-style v3 delete). Treatments and entries alike | `lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm` (the absent-only fallback came with #8758's `cb7d4110`, for BF-117) against `normalizeDoc`; `lib/api3/generic/delete/operation.js` | **medium** — pre-release; a delete the client sees refused while the record keeps counting in COB/IOB; narrow reach: v1 treatments accept only a string or `null` identifier, and no client in the corpus sends `null` or `""` (AndroidAPS omits a null identifier; Nocturne write-back could send one only for a record without an id) | **merged 2026-09-26** (PR #8778 by AndyLow91, an outside contributor, merge `aa1111b2`, head `18141136`, fix `15f01f33`); not released, goes into 15.0.9; not a programme branch. Present on `dev` from #8758's merge `4d9ecc3b` (2026-09-25) to `aa1111b2`; not on `v15.0.8`, whose delete used `filterForOne`. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js), Node 22.23.2, MongoDB 7.0.43): exit 1 on `750801a9` (null and `""`: GET 200, soft and permanent DELETE 404, v1 still lists it, COB 30 → 30), exit 0 on `92d08342`, `aa1111b2` and `ff93fa94`; #8778's tests fail 14 of 31 on `750801a9` |
-| **BF-141** | On `dev` after #8780 (BF-121), **the same API v1 treatment POSTed twice with `identifier: ""` is stored twice**. The fallback key treats `""` as no identity on the incoming write but matched a stored record without identity only where `syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID` and `identifier` were `null` or absent, so a record stored with any of them as `""` was never matched by its re-send. The websocket `dbAdd` exact match uses the same helper and had the same gap (hidden by its similar match when the amounts are equal) | `lib/server/treatment-fallback-key.js` `fallbackQuery` (the no-identity clause), used by `lib/server/treatments.js` `upsertQueryFor` and `lib/server/websocket.js` `processSingleDbAdd` | **low** — pre-release; a duplicate treatment (double-counted carbs or insulin) from a client that sends an empty identity; no corpus client is known to send `""` | **fixed 2026-09-26** on `bf/fallback-key-empty-identifier` `aaf67785` (one commit on `origin/dev` `ff93fa94`; local, not pushed); goes into 15.0.9 (maintainer, 2026-09-26). Present on `dev` from #8780's merge `ff93fa94`; not on `v15.0.8`. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js) re-send arm, Node 22.23.2, MongoDB 7.0.43): `""` stored 2 on `ff93fa94`, 1 on `92d08342` and on `aaf67785`; 29 new tests fail on `ff93fa94` |
+| **BF-141** | On `dev` after #8780 (BF-121), **the same API v1 treatment POSTed twice with `identifier: ""` is stored twice**. The fallback key treats `""` as no identity on the incoming write but matched a stored record without identity only where `syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID` and `identifier` were `null` or absent, so a record stored with any of them as `""` was never matched by its re-send. The websocket `dbAdd` exact match uses the same helper and had the same gap (hidden by its similar match when the amounts are equal) | `lib/server/treatment-fallback-key.js` `fallbackQuery` (the no-identity clause), used by `lib/server/treatments.js` `upsertQueryFor` and `lib/server/websocket.js` `processSingleDbAdd` | **low** — pre-release; a duplicate treatment (double-counted carbs or insulin) from a client that sends an empty identity; no corpus client is known to send `""` | **merged 2026-09-26** through PR #8781 by AndyLow91, an outside contributor (merge `ce7d754a`, fix `a28fcecb`), which also excludes array values from the no-identity clause (`$not: {$type: 'array'}`); not released, goes into 15.0.9. Our PR #8782 (`bf/fallback-key-empty-identifier` `aaf67785`) was closed as superseded on 2026-09-26: all 89 tests of its `tests/api.same-time-treatments.test.js` pass on `ce7d754a` without its change. Present on `dev` from #8780's merge `ff93fa94` to `ce7d754a`; not on `v15.0.8`. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js) re-send arm, Node 22.23.2, MongoDB 7.0.43): `""` stored 2 on `ff93fa94`, 1 on `92d08342` and on `aaf67785`; 29 new tests fail on `ff93fa94` |
+| **BF-143** | On `dev` after #8780 (BF-121) on top of #8775 (BF-122), **an identical API v1 treatment re-POST without identity rewrites the stored record's `srvCreated`** to the time of the re-send (single POST and batch alike). #8775's replacement pre-read (`carryForReplace`) matches the stored documents against each write's filter in memory, and its `sameValue` treated a filter value `null` as not equal to an absent field; #8780's fallback key filters the five identity fields with `{$eq: null}`, which MongoDB matches against an absent field. So the pre-read found no stored record, `carry` stamped `srvCreated` as for an insert, and `replaceOne` then matched the stored record and kept its `_id` | `lib/server/srv-dates.js` `sameValue`/`matches` (from #8775 `1157a8de`) against `lib/server/treatment-fallback-key.js` `fallbackQuery` (from #8780 `ff93fa94`); reached through `lib/server/treatments.js` `upsert` and the batch path | **low** — pre-release; the record, its `_id` and its amounts are unchanged and `srvModified` moves as for any update; only the creation time the server reports moves. AndroidAPS maps `srvCreated` into its model (read; no use of it found) | **merged 2026-09-26** (PR #8781 by AndyLow91, an outside contributor, merge `ce7d754a`, fix `a28fcecb`); not released, goes into 15.0.9. **Introduced by #8780's merge `ff93fa94`** (not by #8775 alone: `aa1111b2`, which has #8775 and not #8780, keeps `srvCreated`); not on `v15.0.8`, which writes no `srvCreated` on v1. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/retry-keeps-srvcreated.js), Node 22.23.2, MongoDB 7.0.43): on `ff93fa94` the four no-identity v1 re-POST arms (single, one-item array, two-item array, carbs + insulin) move `srvCreated` by 30-41 ms, one record and `_id` kept; uuid and identifier re-POSTs, v1 PUT and socket `dbAdd` keep it; `aa1111b2` and `ce7d754a` keep it in every arm |
+| **BF-144** | On `dev` after #8775 (BF-122), **API v3 history can miss a record written after a restart**. The shared server clock (`srv-dates` `next()`) never returns the same value twice, so a large v1 batch stamps `srvModified` up to one millisecond per document ahead of wall time; a reader that pages history to the end holds a cursor that far ahead. The clock lived only in the process: after a restart it began again from wall time, so a new write got a `srvModified` below the reader's cursor, and history (`srvModified > cursor`) never returned it. AndroidAPS pages this way | `lib/server/srv-dates.js` `next()` (from #8775 `1157a8de`), used by v1 writes and API v3 create/update/patch/delete | **medium** — pre-release; a record written after a restart that follows a large import is never delivered to a history-syncing client (AndroidAPS NSClientV3) until later writes pass the cursor; the window is the clock lead (about 26 s for 30,000 entries here) | **merged 2026-09-26** (PR #8781 by AndyLow91, an outside contributor, merge `ce7d754a`, fix `a28fcecb`): boot restores the clock from the latest numeric `srvModified` across the six v3 collections before any writer starts; not released, goes into 15.0.9. **Introduced by #8775's merge `1157a8de`**; not on `v15.0.8`, whose v1 writes carry no `srvModified` (so they are not in history at all, BF-122) and whose v3 writes take wall time. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/history-clock-restart.js), 30,000 v1 entries, Node 22.23.2, MongoDB 7.0.43): clock lead 25.2-26.4 s; after reading 30 pages and restarting, the v3 and v1 writes land 23.5-24.8 s below the cursor and history returns 0 records on `ff93fa94` and `aa1111b2`; on `ce7d754a` they land at cursor + 1 and + 2 and history returns both |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -5908,11 +5910,22 @@ keys a write without identity on `identifier: null`, which matches an absent or 
 Whether `""` should count as no identity everywhere, as #8778 now does for deletes, is for the
 maintainer. Decided 2026-09-26: (2) is BF-141, fixed for 15.0.9; (1) is BF-142, after 15.0.9 (reversed the same day: BF-142 is fixed for 15.0.9).
 
-### BF-141 · on `dev` after #8780, a treatment re-sent with an empty identity is stored twice
+### BF-141 · on `dev` after #8780, a treatment re-sent with an empty identity is stored twice — **merged 2026-09-26** (PR #8781)
 
-**Fixed 2026-09-26** on `bf/fallback-key-empty-identifier` `aaf67785`, one commit on `origin/dev`
-`ff93fa94` (local, not pushed); for 15.0.9 (maintainer, 2026-09-26). Found in the review of #8778
-(BF-140). Never released: present on `dev` from #8780's merge `ff93fa94` only.
+**Merged 2026-09-26** through PR #8781 (AndyLow91, merge `ce7d754a`, fix `a28fcecb`); not
+released, goes into 15.0.9. Found in the review of #8778 (BF-140). Never released: present on `dev`
+from #8780's merge `ff93fa94` to `ce7d754a`. Our fix, `bf/fallback-key-empty-identifier`
+`aaf67785` (PR #8782), was closed as superseded on 2026-09-26.
+
+**#8781's rule.** The no-identity clause matches each of the five fields with
+`{$in: [null, ""], $not: {$type: 'array'}}`: the same forms as ours, and it also refuses a stored
+array such as `["", "abc"]`, which `$in` would otherwise match through its `""` element although
+the record has a real identity. #8775's in-memory pre-read (`srv-dates` `matches`) learned the same
+selector in that PR (see BF-143). Measured 2026-09-26 (Node 22.23.2, MongoDB 7.0.43): #8782's
+`tests/api.same-time-treatments.test.js` (89 tests, the 71 for BF-141 among them) passes 89/0 on
+`ce7d754a` without #8782's change.
+
+The rest of this section is the record of our fix as it stood before #8781.
 
 **Mechanism.** BF-121 made the API v1 and websocket fallback key (`created_at` + `eventType`)
 identity-aware in `lib/server/treatment-fallback-key.js`. A write that carries none of
@@ -6035,6 +6048,108 @@ a record stored with identifier `null`, `""` or `0` do not find it: they use `id
 whose `_id` fallback needs the identifier absent (read, so any falsy identifier; run for `null`,
 `""` and `0`). PATCH answers 404 and PUT inserts a second record (201, two stored), while GET shows
 that `_id` as the identifier. The same on `v15.0.8` `92d08342`, `ce7d754a` and `1c3aeb8c`, so not a regression; not filed.
+
+### BF-143 · on `dev` after #8780, an identical treatment re-send rewrites `srvCreated` — **merged 2026-09-26** (PR #8781)
+
+**Merged 2026-09-26** through PR #8781 by AndyLow91, an outside contributor (merge `ce7d754a`, fix
+`a28fcecb`); not released, goes into 15.0.9. Present on `dev` from #8780's merge `ff93fa94` to
+`ce7d754a`; never released.
+
+**Mechanism.** Since #8775 (BF-122), a v1 treatment write keeps the stored record's `srvCreated`
+by reading the stored documents its `replaceOne` filters name before the write
+(`srv-dates` `carryForReplace`), one query per 500 items, and deciding in memory which stored
+document each filter names (`matches`, `sameValue`). `sameValue(stored, want)` returned false
+whenever either side was `null` or absent. #8780 (BF-121) gave a write without identity a filter
+that includes `{$eq: null}` for `syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID` and `identifier`
+(and for `carbs` or `insulin` when the write has none). MongoDB's `{$eq: null}` matches an absent
+field; the in-memory match did not, and it answered "no match" rather than "ask MongoDB", so no
+stored record was found. `carry` then stamped `srvCreated` as for a new record, and `replaceOne`,
+which MongoDB evaluates, matched the stored record and replaced it with the new `srvCreated`. The
+stored `_id` is kept, since `replaceOne` does not change it.
+
+**Not affected.** A write that carries an identity (its filter names only present values), a v1
+PUT (its filter is the `_id`), and the socket `dbAdd` (it updates with `$set`, not a replacement).
+Measured below.
+
+**Fix (#8781).** `sameValue` treats a wanted `null` as equal to an absent field, as MongoDB does;
+`matches` evaluates the new empty-identity selector (BF-141) in memory, and hands any array
+comparison back to MongoDB.
+
+**Reproduced 2026-09-26** with
+[`retry-keeps-srvcreated.js`](../../../tools/lab/triage-2026-09/retry-keeps-srvcreated.js)
+(Node 22.23.2, MongoDB 7.0.43 in a dedicated container; synthetic 20 g treatments; each arm writes
+once, reads the stored document, waits 20 ms and re-sends):
+
+| arm | `v15.0.8` `92d08342` | `aa1111b2` (#8775, not #8780) | `ff93fa94` (before #8781) | `ce7d754a` (after) |
+|---|---|---|---|---|
+| R1 v1 POST, no identity; identical re-POST | 1 record, `_id` kept, no `srvCreated` | kept | **`srvCreated` +41 ms**, `_id` kept | kept |
+| R2 the same, re-POST as `[it]` | no `srvCreated` | kept | **+31 ms** | kept |
+| R3 the same, re-POST as `[it, a new one]` | no `srvCreated` | kept | **+30 ms** | kept |
+| R4 carbs + insulin, no identity; re-POST | no `srvCreated` | kept | **+37 ms** | kept |
+| R5 with `uuid`; re-POST (control) | no `srvCreated` | kept | kept | kept |
+| R6 with `identifier`; re-POST (control) | no `srvCreated` | kept | kept | kept |
+| R7 v1 PUT of the document v1 GET returns | no `srvCreated` | kept | kept | kept |
+| R8 v1 PUT without `srvCreated`/`srvModified` | no `srvCreated` | kept | kept | kept |
+| R9 socket `dbAdd` identical re-send | no `srvCreated` | kept | kept | kept |
+
+Every arm on every tree stores one record and keeps its `_id`; `srvModified` moves on every v1
+re-send and not on the socket re-send, on all three `dev` trees. Probe exit 1 (a FAIL row on
+`ff93fa94` only).
+
+**Against #8781's description.** It says retries "retain the original `_id` and `srvCreated`". In
+these arms the `_id` was never lost on `ff93fa94`; only `srvCreated` moved. A lost `_id` (a second
+record) is the empty-identity case, BF-141. It dates the regression to "after #8775 and #8780": it
+needs both, and `aa1111b2` (after #8775, before #8780) does not show it.
+
+**Reach (read).** AndroidAPS maps `srvCreated` into its model; no use of it in a decision was
+found. The creation time is informational; history and sync use `srvModified`.
+
+### BF-144 · on `dev` after #8775, a restart after a large import can hide new records from API v3 history — **merged 2026-09-26** (PR #8781)
+
+**Merged 2026-09-26** through PR #8781 by AndyLow91, an outside contributor (merge `ce7d754a`, fix
+`a28fcecb`); not released, goes into 15.0.9. Present on `dev` from #8775's merge `1157a8de` to
+`ce7d754a`; never released.
+
+**Mechanism.** #8775 (BF-122) gave every server write a `srvModified` from one process-wide clock,
+`srv-dates` `next()`, which never returns a value twice and never goes back: two writes in the same
+millisecond get consecutive values, so a v1 batch of N documents ends about N ms ahead of wall
+time, and later writes continue from there. API v3 history returns records with
+`srvModified > cursor`, and a reader (AndroidAPS NSClientV3) takes the largest value it received
+as its next cursor. Within one process that is safe. But the clock was only a variable: after a
+restart it began again from wall time, which could still be behind the cursor a reader had taken
+from the batch. A record written then got a `srvModified` below that cursor, and history never
+returned it.
+
+**Fix (#8781).** At boot, before authorization, uploaders and the API start, the clock is set from
+the largest numeric `srvModified` stored in the six v3 collections (entries, treatments,
+devicestatus, profile, food, settings; configured collection names honoured; one indexed read per
+collection). A failure of that read is a boot error. Later writes continue above it.
+
+**Reproduced 2026-09-26** with
+[`history-clock-restart.js`](../../../tools/lab/triage-2026-09/history-clock-restart.js) (Node
+22.23.2, MongoDB 7.0.43 in a dedicated container; synthetic sgv entries): 30,000 entries through
+v1 in three back-to-back requests of 10,000 (the v1 maximum), v3 entries history read to the end
+by ETag (`limit=1000`), SIGTERM, restart on the same database, one entry through v3 and one through
+v1, history read from the saved cursor.
+
+| tree | clock lead after the batch | history read | writes after restart, relative to the cursor | history from the cursor |
+|---|---|---|---|---|
+| `v15.0.8` `92d08342` | none: v1 entries get no `srvModified` | 0 records (v1 records are not in history, BF-122) | v3 write at wall time | v3 record only; not the defect's precondition |
+| `aa1111b2` (#8775) | 26,423 ms | 30 pages, 30,000 records | v3 −24,763 ms, v1 −24,755 ms | **0 records** |
+| `ff93fa94` (before #8781) | 25,201 ms | 30 pages, 30,000 records | v3 −23,553 ms, v1 −23,547 ms | **0 records** |
+| `ce7d754a` (after) | 25,592 ms | 30 pages, 30,000 records | v3 +1 ms, v1 +2 ms | both records |
+
+Restarts took 0.8-1.0 s. The writes happened 23.6-24.8 s before wall time reached the cursor, so
+the window after such a restart is as long as the clock lead; a batch of 60,000 gave a lead of
+53 s. Probe exit 1 (FAIL rows on `aa1111b2` and `ff93fa94`).
+
+**Against #8781's description.** None found. Its reproduction (30,000 readings, all history pages,
+restart, a v3 write; history empty before, returning it after) is what the probe shows, and the v1
+write behaves the same.
+
+**Left (read).** A reader whose cursor is ahead of every stored `srvModified` (a hard-deleted
+record's, or a clock rollback with a cursor from another server) is outside the restored value;
+#8781 says it does not change the hard-delete and pre-commit history semantics.
 
 ## 3. How to use this register
 
