@@ -978,8 +978,9 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 ### 6.1 Why a checklist and a gate are both needed
 
 All 495 modernization commits have one author; the 100 child PRs were self-merged with zero human
-reviews; release PR #8598 and integration PR #8605 each carry zero approving reviews (#8598:
-`REVIEW_REQUIRED` and no reviews; #8605: two comment-only reviews; read from GitHub 2026-09-24). **When there is no second reader, the version number is the only
+reviews; integration PR #8605 carries two comment-only reviews and no approval. Release PR #8598
+was approved by the maintainer on 2026-09-26, after being opened by the modernization author (read
+from GitHub 2026-09-25). **When there is no second reader, the version number is the only
 signal an operator gets about how carefully to upgrade.**
 
 A checklist asks a human who may be the only human; a gate cannot read intent. The design: the gate
