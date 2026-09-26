@@ -5,6 +5,9 @@
 set -euo pipefail
 WT=${1:?usage: prcheck.sh <worktree>}
 HERE=${PRCHECK_OUT:-/tmp/prcheck}; mkdir -p "$HERE"
+# One run at a time: every run shares one database and port.
+exec 9>"$HERE/.lock"
+flock -n 9 || { echo "== another prcheck run is in progress; waiting for it"; flock 9; }
 NODE22=$HOME/n/n/versions/node/22.23.2/bin
 cd "$WT"
 B=$(git branch --show-current)
