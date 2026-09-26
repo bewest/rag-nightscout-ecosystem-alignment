@@ -21,9 +21,19 @@
  *           whether the record is still stored.
  *   entry   the same soft DELETE for an entry v1 stored with that identifier.
  * Direct-insert shapes (not writable through v1 treatments, which refuses a
- * non-string identifier): identifier [null], ["", "other"], 0. Printed only.
- * Non-string shapes through v1 entries and devicestatus: 0, [null], [""].
- * Printed only.
+ * non-string identifier): identifier [null], [""], ["", "other"], 0, false.
+ * For each: the identifier v3 GET shows (the _id, or the stored value), soft
+ * DELETE, permanent DELETE of a second copy, and PATCH by the _id. Printed
+ * only (BF-142: the falsy ones, which GET shows as the _id, should delete;
+ * arrays, which GET shows as stored, are kept out of the _id fallback).
+ * Non-string shapes through v1 entries and devicestatus: 0, false, [null],
+ * [""], with the same columns. Printed only.
+ * Bystanders: records with identifier null, "", 0, false, [null], [""],
+ * ["", "other"] under other _ids are untouched by a DELETE of another
+ * record. Printed only.
+ * Other users of the id lookup (printed only): PATCH and PUT by the _id of a
+ * v1 record whose identifier is null, "" or 0 (they use identifyingFilter,
+ * whose _id fallback needs the identifier absent).
  * Re-send: the same v1 treatment POSTed twice with each shape; how many are
  * stored. Printed only.
  * Guard: a record with its own identifier "own-<n>" whose _id is asked for is
@@ -167,31 +177,93 @@ async function main () {
     }
   }
 
+  const gidOf = (g, _id) => {
+    const doc = g.json && (g.json.result || g.json);
+    if (!doc) return '-';
+    return doc.identifier === String(_id) ? '= _id' : JSON.stringify(doc.identifier);
+  };
+  // soft DELETE, then permanent DELETE and PATCH on two more copies of the shape
+  const arms = async (colName, col, seed) => {
+    const a = await seed(); const b = await seed(); const c = await seed();
+    const g = await http('GET', `/api/v3/${colName}/${a}`, undefined, v3);
+    const s = await http('DELETE', `/api/v3/${colName}/${a}`, undefined, v3);
+    const sa = await col.findOne({ _id: a });
+    const p = await http('DELETE', `/api/v3/${colName}/${b}?permanent=true`, undefined, v3);
+    const pb = await col.countDocuments({ _id: b });
+    const pa = await http('PATCH', `/api/v3/${colName}/${c}`, { notes: 'patched' }, v3);
+    return `GET ${g.status} identifier ${gidOf(g, a).padEnd(12)} | soft DELETE ${s.status} isValid ${sa && sa.isValid}`
+      + ` | permanent DELETE ${p.status} stored ${pb} | PATCH ${pa.status}`;
+  };
+
   console.log('direct-insert shapes (printed only)');
-  for (const [name, value] of [['[null]', [null]], ['["","other"]', ['', 'other']], ['0', 0]]) {
-    const T = nextT(); const _id = new ObjectId();
-    await tcol.insertOne({ _id, eventType: 'Note', created_at: iso(T), notes: 'probe', identifier: value });
-    const g = await http('GET', '/api/v3/treatments/' + _id, undefined, v3);
-    const s = await http('DELETE', '/api/v3/treatments/' + _id, undefined, v3);
-    const after = await tcol.findOne({ _id });
-    console.log(`  ..   ${name.padEnd(14)} GET ${g.status} | soft DELETE ${s.status} isValid ${after && after.isValid}`);
+  for (const [name, value] of [['[null]', [null]], ['[""]', ['']], ['["","other"]', ['', 'other']], ['0', 0], ['false', false]]) {
+    const seed = async () => {
+      const T = nextT(); const _id = new ObjectId();
+      await tcol.insertOne({ _id, eventType: 'Note', created_at: iso(T), notes: 'probe', identifier: value });
+      return _id;
+    };
+    console.log(`  ..   treatments   ${name.padEnd(14)} ${await arms('treatments', tcol, seed)}`);
   }
 
   console.log('non-string shapes through v1 entries and devicestatus (printed only)');
-  for (const [name, value] of [['0', 0], ['[null]', [null]], ['[""]', ['']]]) {
+  for (const [name, value] of [['0', 0], ['false', false], ['[null]', [null]], ['[""]', ['']]]) {
     for (const [colName, col, mk] of [
       ['entries', ecol, (T) => [{ type: 'sgv', sgv: 120, date: T, dateString: iso(T), device: 'probe', identifier: value }]],
       ['devicestatus', db.db().collection('devicestatus'), (T) => ({ device: 'probe', created_at: iso(T), identifier: value })]
     ]) {
-      const T = nextT();
-      const c = await http('POST', '/api/v1/' + colName, mk(T));
-      const d = await col.findOne(colName === 'entries' ? { date: T } : { created_at: iso(T) });
-      if (!d) { console.log(`  ..   ${colName.padEnd(12)} ${name.padEnd(6)} v1 POST ${c.status}, not stored`); continue; }
-      const g = await http('GET', `/api/v3/${colName}/${d._id}`, undefined, v3);
-      const s = await http('DELETE', `/api/v3/${colName}/${d._id}`, undefined, v3);
-      const after = await col.findOne({ _id: d._id });
-      console.log(`  ..   ${colName.padEnd(12)} ${name.padEnd(6)} v1 POST ${c.status} stored ${JSON.stringify(d.identifier)} | GET ${g.status} | soft DELETE ${s.status} isValid ${after && after.isValid}`);
+      let status = null;
+      const seed = async () => {
+        const T = nextT();
+        const c = await http('POST', '/api/v1/' + colName, mk(T));
+        status = c.status;
+        const d = await col.findOne(colName === 'entries' ? { date: T } : { created_at: iso(T) });
+        if (!d) throw new Error(`${colName} ${name}: v1 POST ${c.status}, not stored`);
+        return d._id;
+      };
+      const line = await arms(colName, col, seed);
+      const stored = await col.findOne({ device: 'probe', identifier: value });
+      console.log(`  ..   ${colName.padEnd(12)} ${name.padEnd(14)} v1 POST ${status} stored ${JSON.stringify(stored && stored.identifier)} | ${line}`);
     }
+  }
+
+  console.log('bystanders: a DELETE of another record leaves these untouched (printed only)');
+  {
+    const target = new ObjectId();
+    await tcol.insertOne({ _id: target, eventType: 'Note', created_at: iso(nextT()), notes: 'probe', identifier: null });
+    const values = [null, '', 0, false, [null], [''], ['', 'other']];
+    const ids = [];
+    for (const value of values) {
+      const _id = new ObjectId(); ids.push(_id);
+      await tcol.insertOne({ _id, eventType: 'Note', created_at: iso(nextT()), notes: 'bystander', identifier: value });
+    }
+    const s = await http('DELETE', '/api/v3/treatments/' + target, undefined, v3);
+    const p = await http('DELETE', '/api/v3/treatments/' + target + '?permanent=true', undefined, v3);
+    const touched = await tcol.countDocuments({ _id: { $in: ids }, isValid: false });
+    const left = await tcol.countDocuments({ _id: { $in: ids } });
+    console.log(`  ${touched === 0 && left === ids.length ? 'ok  ' : 'FAIL'} soft ${s.status} permanent ${p.status} | bystanders marked ${touched}, stored ${left}/${ids.length}`);
+  }
+
+  console.log('other users: PATCH and PUT by the _id of a v1 record with identifier null, "" or 0 (printed only)');
+  for (const [name, value, colName, col] of [['null', null, 'treatments', tcol], ['empty', '', 'treatments', tcol], ['0', 0, 'entries', ecol]]) {
+    const T = nextT();
+    let _id;
+    if (colName === 'treatments') {
+      await http('POST', '/api/v1/treatments', { eventType: 'Note', created_at: iso(T), notes: 'probe', enteredBy: 'probe', identifier: value });
+      _id = (await tcol.findOne({ created_at: iso(T) }))._id;
+    } else {
+      await http('POST', '/api/v1/entries', [{ type: 'sgv', sgv: 130, date: T, dateString: iso(T), device: 'probe', identifier: value }]);
+      _id = (await ecol.findOne({ date: T }))._id;
+    }
+    const g = await http('GET', `/api/v3/${colName}/${_id}`, undefined, v3);
+    const gid = gidOf(g, _id);
+    const pa = await http('PATCH', `/api/v3/${colName}/${_id}`, { notes: 'patched' }, v3);
+    const body = colName === 'treatments'
+      ? { eventType: 'Note', created_at: iso(T), notes: 'put', enteredBy: 'probe', app: 'probe' }
+      : { type: 'sgv', sgv: 131, date: T, dateString: iso(T), device: 'probe', app: 'probe' };
+    const pu = await http('PUT', `/api/v3/${colName}/${_id}`, body, v3);
+    const copies = await col.countDocuments(colName === 'treatments' ? { created_at: iso(T) } : { date: T });
+    const puMsg = pu.status >= 400 && pu.json && pu.json.message ? ` (${pu.json.message})` : '';
+    console.log(`  ..   ${colName.padEnd(12)} ${name.padEnd(6)} GET ${g.status} identifier ${gid} | PATCH ${pa.status} | PUT ${pu.status}${puMsg} | stored copies after ${copies}`);
   }
 
   console.log('guard: a record with its own identifier is not deleted by its _id (15.0.8 deletes it; #8758 changed that)');

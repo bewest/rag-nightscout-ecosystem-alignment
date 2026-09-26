@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 9 items
+### Maintainer &mdash; 10 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,6 +39,7 @@ that it was reviewed.
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-141` | `ready-to-push` | BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier  | &mdash; |
+| `BFQ-142` | `ready-to-push` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
