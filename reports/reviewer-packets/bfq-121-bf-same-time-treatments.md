@@ -56,8 +56,12 @@ changes which v1 treatment writes update and which insert
 > release yet. Even with the fix, two entries for the same minute with the
 > same amount are still kept as one, because nothing tells them apart from
 > the same entry sent twice; and in AndroidAPS, a bolus and carbs saved at
-> the same instant as one "meal bolus" can still be kept as one. This is not
-> medical advice; talk to your care team about how you enter carbs.
+> the same instant as one "meal bolus" can still be kept as one. Rarely,
+> when the careportal and AndroidAPS record the same kind of treatment at
+> exactly the same moment and an app later re-sends the careportal entry,
+> Nightscout can show it twice. Check your treatment list if totals look
+> high. This is not medical advice; talk to your care team about how you
+> enter carbs.
 
 ## Who should review this, and why
 
@@ -133,24 +137,27 @@ with bf/v1-writes-v3-history (the websocket.js requires, one input-validation
 expectation); resolved in a trial merge, 3215/0/3. Ready to push once BFQ-122
 has merged and this branch is merged up onto it (blocks_on). Interacts with
 BF-09 (BFQ-09): X1/X2 fixed by this change; Z2, Z5, P2, B2, C2 remain; a BF-09
-branch will conflict on the similar-match lines. Open question for the
-maintainer: with BF-136's fix and this one both present, an AAPS v3 POST at
-the same created_at and eventType as a v1 record takes that record over (it
-gains an identifier); a later identical v1 re-send of the original then no
-longer matches, so it is stored as a duplicate when the amounts are equal
-(with different amounts both are kept). It needs all three conditions; no
-corpus client was found that does all three. PR body draft: reports/phase0-pr-
-bodies/same-time-treatments.md. Decisions: - 2026-09-26 (maintainer): option 3
-- identity-aware matching for v1 and the websocket, plus the carbs and insulin
-amounts in the key only for v1 REST writes with no client identity; AAPS v3
-and socket dbAdd unchanged. The maintainer asked whether it occurs: yes, issue
-#8185 is a real report (a caregiver sent Loop remote carbs 16 g then 4 g, both
-back-dated to 7:40; the 16 g disappeared from Nightscout's chart, reports and
-daily total, while Loop's own COB kept 20 g). Known issues that remain after
-the fix: an AAPS v3 bolus and carbs in the same millisecond, both Meal Bolus,
-still merge; careportal same-minute same-amount double entries still merge (no
-design separates them). Fix in progress for 15.0.9 on bf/same-time-treatments
-(worktree externals/work/crm-r2-fix-121), no commit recorded yet.
+branch will conflict on the similar-match lines. Known issue, accepted by the
+maintainer 2026-09-26 (not a defect to fix for 15.0.9): with BF-136's fix and
+this one both present, an AAPS v3 POST at the same created_at and eventType as
+a v1 record takes that record over (it gains an identifier); a later identical
+v1 re-send of the original then no longer matches, so it is stored as a
+duplicate when the amounts are equal (with different amounts both are kept).
+It needs a same-millisecond collision, AndroidAPS uploading and a v1 uploader
+re-sending an old record; no corpus client does all three. PR body draft:
+reports/phase0-pr-bodies/same-time-treatments.md. Decisions: - 2026-09-26
+(maintainer): option 3 - identity-aware matching for v1 and the websocket,
+plus the carbs and insulin amounts in the key only for v1 REST writes with no
+client identity; AAPS v3 and socket dbAdd unchanged. The maintainer asked
+whether it occurs: yes, issue #8185 is a real report (a caregiver sent Loop
+remote carbs 16 g then 4 g, both back-dated to 7:40; the 16 g disappeared from
+Nightscout's chart, reports and daily total, while Loop's own COB kept 20 g).
+Known issues that remain after the fix: an AAPS v3 bolus and carbs in the same
+millisecond, both Meal Bolus, still merge; careportal same-minute same-amount
+double entries still merge (no design separates them). Fix in progress for
+15.0.9 on bf/same-time-treatments (worktree externals/work/crm-r2-fix-121), no
+commit recorded yet. - 2026-09-26 (maintainer): the BF-121 x BF-136 re-send
+duplicate is accepted as a known issue of 15.0.9, not fixed for it.
 
 ---
 

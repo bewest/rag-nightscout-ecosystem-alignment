@@ -57,14 +57,16 @@ asked for; other responses are unchanged
 > wrong in size and even in sign; for example -2.17 instead of -0.96. Do not
 > use a watch face's bolus preview to decide a dose; use your looping or
 > pump app. Such a request can also leave glucose values in the wrong units
-> for other displays until the next reading arrives. Fixes are ready for
-> review for 15.0.9 and are not in any release yet. This is not medical
-> advice.
+> for other displays, and for your site's own alarm check, until the site
+> next loads new data, so your site could raise a false low alarm when your
+> glucose is not low. Check a surprising alarm against your meter or CGM
+> app. Fixes are ready for review for 15.0.9 and are not in any release yet.
+> This is not medical advice.
 
 ## Who should review this, and why
 
-maintainer. Awaiting the maintainer's BF-139 disclosure decision (public PR or
-private advisory) before the branch is pushed.
+maintainer. BF-139 disclosure decided 2026-09-26: public PR, mechanism only,
+no reproduction recipe (the BF-70 / #8743 precedent).
 
 ## What was measured
 
@@ -110,6 +112,8 @@ it at origin/dev once merged.
 
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`tools/lab/triage-2026-09/pebble-units.js`](../../tools/lab/triage-2026-09/pebble-units.js)
+- [`tools/lab/triage-2026-09/pebble-shared-scaled.js`](../../tools/lab/triage-2026-09/pebble-shared-scaled.js)
+- [`reports/phase0-pr-bodies/pebble-delta-units.md`](../../reports/phase0-pr-bodies/pebble-delta-units.md)
 
 ## Notes carried on the item
 
@@ -147,15 +151,19 @@ evaluation. On an mmol site asked for mg/dL, bwpo stayed in mmol (1.3) next to
 an mg/dL sgv. One BF-128 test expectation changed by design (bwpo now moves
 with ?units=mgdl). Suite on b06eb014 3216/0/3 (Node 22.23.2, MongoDB 7.0.43,
 fresh database). BF-139 reaches the server's own alarm evaluation (reproduced
-on a booted server 2026-09-26); severity raised to safety (alarm integrity);
-detail withheld pending the maintainer's disclosure decision. Ready to push,
-but awaiting the maintainer's BF-139 disclosure decision (public PR or private
-advisory) before anything is pushed; the PR body's update for BF-138/BF-139 is
-held back from this repository until then. Decisions: - 2026-09-26
+on a booted server 2026-09-26); severity raised to safety (alarm integrity):
+the server's own alarm evaluation could judge a reading in the wrong units and
+raise a false low alarm, and values shown by /api/v2/properties, Alexa and
+Google Home could be wrong until the next data load. Ready to push: the PR
+body (reports/phase0-pr-bodies/pebble-delta-units.md) opens by saying
+reproduction detail is withheld because BF-139 is live on 15.0.8, and gives
+the mechanism, outcome, fix and tests only. Decisions: - 2026-09-26
 (maintainer): file BF-138 and BF-139, both fixed in 15.0.9 on this branch with
 BF-128, one PR. The item goes back from ready-to-push to in-progress, because
 the branch will gain their commits (fix in progress). BF-139 is described by
-mechanism only (live on 15.0.8).
+mechanism only (live on 15.0.8). - 2026-09-26 (maintainer): BF-139 ships in
+the public /pebble PR with the mechanism in the body and no reproduction
+recipe, as BF-70 did (#8743, mechanism public, merged quickly). Ready to push.
 
 ---
 

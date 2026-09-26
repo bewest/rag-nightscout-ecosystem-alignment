@@ -9296,8 +9296,11 @@ items:
       two entries for the same minute with the same amount are still kept
       as one, because nothing tells them apart from the same entry sent
       twice; and in AndroidAPS, a bolus and carbs saved at the same instant
-      as one "meal bolus" can still be kept as one. This is not medical
-      advice; talk to your care team about how you enter carbs.
+      as one "meal bolus" can still be kept as one. Rarely, when the careportal and AndroidAPS record
+      the same kind of treatment at exactly the same moment and an app later
+      re-sends the careportal entry, Nightscout can show it twice. Check
+      your treatment list if totals look high. This is
+      not medical advice; talk to your care team about how you enter carbs.
     semver: minor
     semver_reason: changes which v1 treatment writes update and which insert
     register: [BF-121]
@@ -9371,13 +9374,14 @@ items:
       merged and this branch is merged up onto it (blocks_on). Interacts
       with BF-09 (BFQ-09): X1/X2 fixed by this change; Z2, Z5, P2, B2, C2
       remain; a BF-09 branch will conflict on the similar-match lines.
-      Open question for the maintainer: with BF-136's fix and this one both
-      present, an AAPS v3 POST at the same created_at and eventType as a v1
-      record takes that record over (it gains an identifier); a later
-      identical v1 re-send of the original then no longer matches, so it is
-      stored as a duplicate when the amounts are equal (with different
-      amounts both are kept). It needs all three conditions; no corpus
-      client was found that does all three. PR body draft:
+      Known issue, accepted by the maintainer 2026-09-26 (not a defect to
+      fix for 15.0.9): with BF-136's fix and this one both present, an AAPS
+      v3 POST at the same created_at and eventType as a v1 record takes that
+      record over (it gains an identifier); a later identical v1 re-send of
+      the original then no longer matches, so it is stored as a duplicate
+      when the amounts are equal (with different amounts both are kept). It
+      needs a same-millisecond collision, AndroidAPS uploading and a v1
+      uploader re-sending an old record; no corpus client does all three. PR body draft:
       reports/phase0-pr-bodies/same-time-treatments.md.
 
       Decisions:
@@ -9394,6 +9398,9 @@ items:
       same-amount double entries still merge (no design separates them).
       Fix in progress for 15.0.9 on bf/same-time-treatments (worktree
       externals/work/crm-r2-fix-121), no commit recorded yet.
+
+      - 2026-09-26 (maintainer): the BF-121 x BF-136 re-send duplicate is
+      accepted as a known issue of 15.0.9, not fixed for it.
   - id: BFQ-122
     title: "BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting"
     parcel: register-open
@@ -9929,8 +9936,8 @@ items:
       (new). Changes bgdelta, bwp and bwpo only when a request asks for the
       units the site does not use.
     review: >
-      maintainer. Awaiting the maintainer's BF-139 disclosure decision
-      (public PR or private advisory) before the branch is pushed.
+      maintainer. BF-139 disclosure decided 2026-09-26: public PR, mechanism
+      only, no reproduction recipe (the BF-70 / #8743 precedent).
     operator_visible: >
       If your Nightscout shows glucose in mmol/L and you use a watch face
       or other display that asks Nightscout's /pebble address for mg/dL,
@@ -9945,7 +9952,10 @@ items:
       sign; for example -2.17 instead of -0.96. Do not use a watch face's
       bolus preview to decide a dose; use your looping or pump app. Such a
       request can also leave glucose values in the wrong units for other
-      displays until the next reading arrives. Fixes are ready for review
+      displays, and for your site's own alarm check, until the site next
+      loads new data, so your site could raise a false low alarm when your
+      glucose is not low. Check a surprising alarm against your meter or
+      CGM app. Fixes are ready for review
       for 15.0.9 and are not in any release yet. This is not medical advice.
     semver: patch
     semver_reason: the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged
@@ -9995,6 +10005,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/pebble-units.js
+      - tools/lab/triage-2026-09/pebble-shared-scaled.js
+      - reports/phase0-pr-bodies/pebble-delta-units.md
     notes: >
       Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened
       2020-10-10). A past maintainer comment suggested deprecating /pebble
@@ -10036,11 +10048,13 @@ items:
       with ?units=mgdl). Suite on b06eb014 3216/0/3 (Node 22.23.2, MongoDB
       7.0.43, fresh database). BF-139 reaches the server's own alarm
       evaluation (reproduced on a booted server 2026-09-26); severity raised
-      to safety (alarm integrity); detail withheld pending the maintainer's
-      disclosure decision. Ready to push, but awaiting the maintainer's
-      BF-139 disclosure decision (public PR or private advisory) before
-      anything is pushed; the PR body's update for BF-138/BF-139 is held
-      back from this repository until then.
+      to safety (alarm integrity): the server's own alarm evaluation could
+      judge a reading in the wrong units and raise a false low alarm, and
+      values shown by /api/v2/properties, Alexa and Google Home could be
+      wrong until the next data load. Ready to push: the PR body
+      (reports/phase0-pr-bodies/pebble-delta-units.md) opens by saying
+      reproduction detail is withheld because BF-139 is live on 15.0.8, and
+      gives the mechanism, outcome, fix and tests only.
 
       Decisions:
 
@@ -10049,6 +10063,10 @@ items:
       ready-to-push to in-progress, because the branch will gain their
       commits (fix in progress). BF-139 is described by mechanism only (live
       on 15.0.8).
+
+      - 2026-09-26 (maintainer): BF-139 ships in the public /pebble PR with
+      the mechanism in the body and no reproduction recipe, as BF-70 did
+      (#8743, mechanism public, merged quickly). Ready to push.
   - id: BFQ-136
     title: "BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it"
     parcel: register-open
@@ -10084,8 +10102,11 @@ items:
       such an entry works. A fix is ready for review for 15.0.9 and is not
       in any release yet. With the fix, if the careportal and AndroidAPS
       save an entry for exactly the same moment, the AndroidAPS entry
-      replaces the careportal one, including its notes. This is not
-      medical advice.
+      replaces the careportal one, including its notes. Rarely, when the careportal and AndroidAPS record
+      the same kind of treatment at exactly the same moment and an app later
+      re-sends the careportal entry, Nightscout can show it twice. Check
+      your treatment list if totals look high. This
+      is not medical advice.
     semver: patch
     semver_reason: a v3 write that was refused with 400 is accepted; nothing that was accepted changes
     register: [BF-136]
@@ -10148,12 +10169,18 @@ items:
       record, e.g. careportal 20 g becomes AAPS 30 g and the careportal
       notes/enteredBy are lost; before, the AAPS entry was lost instead.
       Rare: careportal times are whole minutes. With BF-121's fix as well,
-      the takeover raises an open question for the maintainer (BFQ-121).
+      a later identical v1 re-send of the taken-over record no longer
+      matches it and is stored again (a duplicate when the amounts are
+      equal); accepted by the maintainer 2026-09-26 as a known issue, not a
+      defect to fix for 15.0.9 (BFQ-121).
 
       Decisions:
 
       - 2026-09-26 (maintainer): fix in 15.0.9, on
       bf/api3-app-field-v1-records (worktree externals/work/crm-r2-fix-136).
+
+      - 2026-09-26 (maintainer): the BF-121 x BF-136 re-send duplicate is
+      accepted as a known issue of 15.0.9, not fixed for it.
   - id: BFQ-80
     title: "BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix)"
     parcel: register-open

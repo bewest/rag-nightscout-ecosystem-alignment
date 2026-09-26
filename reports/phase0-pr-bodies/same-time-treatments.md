@@ -28,6 +28,7 @@ Re-sends still work as before. An uploader that sends the same entry again, or s
 
 - Two careportal entries in the same minute with the **same** amount are still stored as one. Nothing tells them apart from pressing Save twice.
 - Entries uploaded by **AndroidAPS** are matched as before. Two AndroidAPS entries of the same kind in the same millisecond can still be stored as one. This was left alone on purpose, so that an AndroidAPS edit that is re-sent after a lost reply still updates its entry instead of becoming a second copy.
+- Rarely, when the careportal and AndroidAPS record the same kind of treatment at exactly the same moment and an app later re-sends the careportal entry, Nightscout can show it twice (with BF-136's fix also in place; accepted as a known issue on 2026-09-26). Check your treatment list if totals look high.
 
 **Do you need to do anything?** No. Entries that were already lost before this update are not brought back. If a past day's carbs or insulin looked too low in Nightscout, the app that entered them still has the full record.
 
@@ -126,11 +127,11 @@ The shapes are synthetic records in each client's upload shape, read from the cl
 
 - **BF-122 (`bf/v1-writes-v3-history` `718efddc`).** A trial merge conflicts in `lib/server/websocket.js` (the `require` lines) and in `tests/websocket.input-validation.test.js` (the exact-match selector: both branches changed it; the resolved expectation carries the identity nulls and `isValid: {$ne: false}`). Resolved, the full suite is 3215/0/3 and the harness table is identical to this PR's column. BF-122's `srvDates.carryForReplace` reads the record the same filter matches, so it carries `identifier` only from a record the new key matches.
 - **BF-09 (socket dedup truthiness, awaiting the maintainer).** This commit makes the similar match always key on `eventType`, which is the second half of BF-09's option 3, and removes the `selected` flag BF-09's option 2 lines sit next to. Measured with `tools/remedial/bf3/bf09-dedup-zero.js`: on this commit X1 and X2 (zero temp and a temporary target of the same duration, either order) are kept (both dropped on `dev`); Z2, Z5, P2, B2 and C2 are still dropped by the truthiness tests; with BF-09's `zero-real` patch on top, every case is kept and every control is unchanged. BF-09's choice is left to the maintainer; a BF-09 branch will conflict textually with the similar-match hunk here.
-- **BF-136 (`bf/api3-app-field-v1-records` `df6c04bc`).** Merges cleanly. With both, an AndroidAPS v3 POST at the same time and type as a v1 record now succeeds and takes that record over (giving it an `identifier`), and a later identical v1 re-send of the original record no longer matches it: two records (harness rows O1, O2). With a different amount that keeps both entries (BF-136 alone leaves only the v1 amount). With the same amount it is a duplicate. See "Open question".
+- **BF-136 (`bf/api3-app-field-v1-records` `df6c04bc`).** Merges cleanly. With both, an AndroidAPS v3 POST at the same time and type as a v1 record now succeeds and takes that record over (giving it an `identifier`), and a later identical v1 re-send of the original record no longer matches it: two records (harness rows O1, O2). With a different amount that keeps both entries (BF-136 alone leaves only the v1 amount). With the same amount it is a duplicate. See "Known issue".
 
-## Open question
+## Known issue
 
-Whether a v1 re-send without identity should still match a v1 record that an API v3 deduplication has taken over. It needs both this PR and BF-136, the same `created_at` and `eventType` from a v1 uploader and AndroidAPS, and a v1 uploader that re-sends old records. No corpus client was found doing all three. It is left to the maintainer.
+A v1 re-send without identity no longer matches a v1 record that an API v3 deduplication has taken over, so it is stored again. It needs both this PR and BF-136, the same `created_at` and `eventType` (to the millisecond) from a v1 uploader and AndroidAPS, and a v1 uploader that re-sends old records. No corpus client was found doing all three. The maintainer accepted this as a known issue on 2026-09-26; it is not fixed for 15.0.9.
 
 ## Client impact (read from the corpus unless marked run)
 

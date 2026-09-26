@@ -56,8 +56,11 @@ changes
 > Nightscout; deleting such an entry works. A fix is ready for review for
 > 15.0.9 and is not in any release yet. With the fix, if the careportal and
 > AndroidAPS save an entry for exactly the same moment, the AndroidAPS entry
-> replaces the careportal one, including its notes. This is not medical
-> advice.
+> replaces the careportal one, including its notes. Rarely, when the
+> careportal and AndroidAPS record the same kind of treatment at exactly the
+> same moment and an app later re-sends the careportal entry, Nightscout can
+> show it twice. Check your treatment list if totals look high. This is not
+> medical advice.
 
 ## Who should review this, and why
 
@@ -121,10 +124,13 @@ fresh database). Trade-off, pinned by a test: v3 fallback dedup (created_at +
 eventType, amounts not compared) now replaces a same-millisecond v1 record,
 e.g. careportal 20 g becomes AAPS 30 g and the careportal notes/enteredBy are
 lost; before, the AAPS entry was lost instead. Rare: careportal times are
-whole minutes. With BF-121's fix as well, the takeover raises an open question
-for the maintainer (BFQ-121). Decisions: - 2026-09-26 (maintainer): fix in
-15.0.9, on bf/api3-app-field-v1-records (worktree
-externals/work/crm-r2-fix-136).
+whole minutes. With BF-121's fix as well, a later identical v1 re-send of the
+taken-over record no longer matches it and is stored again (a duplicate when
+the amounts are equal); accepted by the maintainer 2026-09-26 as a known
+issue, not a defect to fix for 15.0.9 (BFQ-121). Decisions: - 2026-09-26
+(maintainer): fix in 15.0.9, on bf/api3-app-field-v1-records (worktree
+externals/work/crm-r2-fix-136). - 2026-09-26 (maintainer): the BF-121 x BF-136
+re-send duplicate is accepted as a known issue of 15.0.9, not fixed for it.
 
 ---
 

@@ -48,8 +48,13 @@ g), and the careportal entry's note and "entered by" are gone. Before this chang
 the careportal entry and lost the AAPS one. Entries of different types (AAPS calls anything under
 12 g "Carb Correction" and 12 g or more "Meal Bolus") are never merged, so both stay. An exact
 millisecond match between two separate meals is unlikely, because careportal times are whole
-minutes and AAPS times are not. How Nightscout should handle two different entries with the same
-time is a separate open question (BF-121), and this change does not answer it.
+minutes and AAPS times are not. Two different entries with the same time are handled by a
+separate change (BF-121).
+
+**Known issue (accepted 2026-09-26):** with this change and BF-121's together, rarely, when the
+careportal and AAPS record the same kind of treatment at exactly the same moment and an app later
+re-sends the careportal entry, Nightscout can show it twice. Check your treatment list if totals
+look high.
 
 **Do you need to do anything?** No. Entries that AAPS skipped in the past are not sent again
 automatically.
@@ -115,6 +120,13 @@ The replacement is v3's deduplication behaving as designed. It was unreachable a
 because of this defect. BF-121's chosen fix leaves v3 deduplication as it is. The new test
 `a deduplicating POST with other carbs replaces the whole v1 record` pins this behaviour, so a
 later change to it will show up in the tests.
+
+With BF-121's fix as well, the taken-over record carries an `identifier`, so a later identical v1
+re-send of the original record, which carries no client identity, no longer matches it and is
+stored again: a duplicate when the amounts are equal, and both kept when they differ. It needs a
+same-millisecond collision, AAPS uploading, and a v1 uploader re-sending an old record; no corpus
+client does all three. The maintainer accepted this as a known issue on 2026-09-26; it is not
+fixed for 15.0.9.
 
 ### Tests
 
