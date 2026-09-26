@@ -89,7 +89,7 @@ function classify (sig) {
   // ---------------- http
   const reqs = jsonl('requests.jsonl');
   const by = {};
-  let transport = { a: 0, b: 0 };
+  let transport = { a: 0, b: 0 }; const firstOk = {};
   for (const r of reqs) {
     const arms = r.arm ? [r.arm] : ['a', 'b'];
     r.r.forEach((x, i) => {
@@ -97,9 +97,12 @@ function classify (sig) {
       const arm = arms[i]; const k = r.label; by[k] = by[k] || { a: { n: 0, st: {}, ms: [], dep: 0 }, b: { n: 0, st: {}, ms: [], dep: 0 } };
       const o = by[k][arm]; o.n += 1; o.st[x[0]] = (o.st[x[0]] || 0) + 1; o.ms.push(x[1]); o.dep += x[3] || 0;
       if (x[0] === 0 && !inWindow(r.t)) transport[arm] += 1;
+      if (x[0] >= 200 && x[0] < 300) firstOk[arm + '|' + k] = firstOk[arm + '|' + k] || r.t;
       if (x[0] >= 500) {
-        const allow = expected.allow_5xx.find((e) => new RegExp(e.label).test(k));
-        if (!allow) find('http-5xx', `arm ${arm}: ${k} answered ${x[0]} at ${r.t}`);
+        // with the fake APNs server on, a Loop remote command must succeed once the profile with
+        // loopSettings has loaded; only the ones before this arm's first success are allowed
+        const allow = expected.allow_5xx.find((e) => new RegExp(e.label).test(k)) && !(run.apns && firstOk[arm + '|' + k]);
+        if (!allow && !inWindow(r.t)) find('http-5xx', `arm ${arm}: ${k} answered ${x[0]} at ${r.t}`);
       }
     });
   }
@@ -370,6 +373,37 @@ function classify (sig) {
     report.pageload.differ_between_arms = differ; report.pageload.ignored_just_written = fresh;
     if (differ) find('pageload', `${differ} page-load collections differ between the arms`, { examples: ex });
   }
+  // Loop remote commands and APNs: sessions each arm's server leaves open on its fake APNs server
+  report.apns = { enabled: Boolean(run.apns) };
+  if (run.apns) {
+    for (const arm of ['a', 'b']) {
+      const f = jsonl('apns-' + arm + '.jsonl'); const m = jsonl('metrics-' + arm + '.jsonl');
+      const ok = by['loop.remote.override'] ? (by['loop.remote.override'][arm].st['200'] || 0) : 0;
+      // the state while traffic ran: the last sample at or before the end of traffic (the final
+      // line is written after the servers stop, when every session has closed)
+      const endT = done ? Date.parse(done.t) : Infinity;
+      const during = f.filter((x) => Date.parse(x.t) <= endT);
+      const last = during[during.length - 1] || f[f.length - 1] || {};
+      const ss = samples.map((s) => s.samples.find((y) => y.arm === arm)).filter((x) => x && x.proc && x.proc.fds);
+      report.apns[arm] = { commands_200: ok, providers_built: m.length ? m[m.length - 1].apnsProviders : null, sessions_opened: last.opened, sessions_open_end: last.open, sessions_open_max: f.length ? Math.max(...f.map((x) => x.open)) : null, pushes: last.pushes,
+        fds_first: ss.length ? ss[0].proc.fds : null, fds_last: ss.length ? ss[ss.length - 1].proc.fds : null, fds_max: ss.length ? Math.max(...ss.map((x) => x.proc.fds)) : null,
+        handles_first: m.length ? m[0].handles : null, handles_last: m.length ? m[m.length - 1].handles : null };
+      if (!last.pushes) invalid.push(`arm ${arm}: the fake APNs server received no pushes (Loop remote commands not exercised)`);
+    }
+    for (const [x, y] of [['a', 'b'], ['b', 'a']]) {
+      const ax = report.apns[x]; const ay = report.apns[y];
+      if (ax.sessions_open_end - ay.sessions_open_end > expected.thresholds.apns_open_sessions) {
+        const known = expected.known_a_behaviour.find((e) => x === 'a' && run.arms.a.head.startsWith(e.head) && e.kind === 'apns');
+        const msg = `arm ${x}: ${ax.sessions_open_end} APNs sessions still open after ${ax.pushes} pushes (arm ${y}: ${ay.sessions_open_end})`;
+        if (known) expectedSeen.push({ kind: 'apns', sig: msg, why: known.why, section: known.section }); else find('apns', msg);
+      }
+      if (ax.fds_last - ay.fds_last > expected.thresholds.fd_growth) {
+        const known = expected.known_a_behaviour.find((e) => x === 'a' && run.arms.a.head.startsWith(e.head) && e.kind === 'apns');
+        const msg = `arm ${x}: ${ax.fds_last} open fds at the end vs ${ay.fds_last} on arm ${y}`;
+        if (known) expectedSeen.push({ kind: 'fds', sig: msg, why: known.why, section: known.section }); else find('fds', msg);
+      }
+    }
+  }
   report.proxy_drops = {};
   for (const arm of ['a', 'b']) { const l = rd('proxy-' + arm + '.log').split('\n').filter((x) => x.includes('"dropped"')); if (l.length || run.fault.drop_devicestatus) report.proxy_drops[arm] = l.length; }
 
@@ -406,6 +440,10 @@ function print (r) {
   L('\n## page loads (full dataUpdate sent to a newly opened page)');
   for (const a of ['a', 'b']) if (r.pageload[a]) L(`${a}: ${r.pageload[a].loads} loads, ${r.pageload[a].errors} errors, deleted records shown ${r.pageload[a].deleted_records_shown}`);
   if (r.pageload.differ_between_arms !== undefined) L(`differ between arms: ${r.pageload.differ_between_arms} (records acknowledged under 10 s before a load are not compared: ${r.pageload.ignored_just_written})`);
+  if (r.apns && r.apns.enabled) {
+    L('\n## Loop remote commands and APNs (fake server per arm)');
+    for (const a of ['a', 'b']) { const x = r.apns[a]; L(`${a}: ${x.commands_200} commands 200, providers built ${x.providers_built}, pushes ${x.pushes}, sessions opened ${x.sessions_opened}, open at end ${x.sessions_open_end} (max ${x.sessions_open_max}); fds ${x.fds_first}->${x.fds_last} (max ${x.fds_max}); active handles ${x.handles_first}->${x.handles_last}`); }
+  }
   if (Object.keys(r.proxy_drops).length) L(`\nproxy silent drops (fault injection): ${JSON.stringify(r.proxy_drops)}`);
   if (r.expected_seen.length) { L('\n## expected differences seen'); for (const e of r.expected_seen) L(`- ${e.kind}: ${e.sig || e.label}${e.n ? ' x' + e.n : ''} -- ${e.section || ''} ${e.why}`); }
   L(`\n## invalid (${r.invalid.length})`); r.invalid.forEach((x) => L('- ' + x));

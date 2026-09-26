@@ -5,12 +5,14 @@
   "leak_min_span_min": 20,
   "lag_ms": 50,
   "_doc": "leak: one arm's heap-minima slope minus the other's, times the evaluated span (the last 75% of the longest process lifetime), must exceed leak_growth_mb. Calibrated 2026-09-25: a 25-min A/A control of 15.0.8 against itself differed by 3.1 MB; the same run with arm b retaining 16 KB per request differed by 80 MB. rss_growth_mb is the same test on RSS minima; RSS is noisier (allocator and GC release timing), so its margin is wider.",
-  "rss_growth_mb": 100
+  "rss_growth_mb": 100,
+  "apns_open_sessions": 2,
+  "fd_growth": 20
  },
  "allow_5xx": [
   {
    "label": "^loop\\.remote\\.",
-   "why": "POST /api/v2/notifications/loop answers 500 when no Apple push key (LOOP_APNS_*) is configured; the lab has none, so both arms answer 500"
+   "why": "POST /api/v2/notifications/loop answers 500 when no Apple push key (LOOP_APNS_*) is configured (--no-apns), or before the profile with loopSettings has loaded; with the fake APNs server on, a 500 after this arm's first success is a finding"
   }
  ],
  "diffs": [
@@ -50,6 +52,14 @@
    "why": "/api/v2/properties cob.treatmentCOB (Nightscout's own estimate, an object on 15.0.8) is a number on 15.0.9 and absent when zero (commit 34e9b2da)",
    "section": "Other changes > Numbers that may look different on the same data: COB",
    "release_notes_gap": true
+  }
+ ],
+ "known_a_behaviour": [
+  {
+   "kind": "apns",
+   "head": "92d08342",
+   "why": "15.0.8 leaves one APNs HTTP/2 session (and its 60 s heartbeat) open per Loop remote command; fixed in 15.0.9 by #8770 (BF-134), which shuts the provider down after each send",
+   "section": "not in release-notes.md yet (BF-134, #8770 merged 2026-09-25)"
   }
  ]
 }

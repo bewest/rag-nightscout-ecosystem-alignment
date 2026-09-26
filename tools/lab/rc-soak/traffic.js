@@ -39,7 +39,8 @@
  *                     socket dbUpdate n%24==21 (tb n-17), socket dbRemove n%48==45 (tb n-15),
  *                     v1 DELETE entry n%72==60
  *                     v1 DELETE devicestatus n%72==30
- *   profile           tick 0 and n%288==144; Loop remote command n%144==100
+ *   profile           tick 0 and n%288==144 (with loopSettings); Loop remote command
+ *                     every LOOP_EVERY ticks (default 1)
  *   page load         n%12==11 and at the end: a new socket per arm records the
  *                     full dataUpdate a newly opened web page is sent
  *   followers         LoopFollow, nightguard, oref0 count=1?..., GluPredKit
@@ -75,6 +76,7 @@ const note = (m) => fs.appendFileSync(path.join(RUN, 'traffic.log'), new Date().
 const md5 = (s) => crypto.createHash('md5').update(s).digest('hex');
 const hexId = (k) => md5('id:' + k).slice(0, 24);
 const uuid = (k) => { const h = md5('uuid:' + k); return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`; };
+const LOOP_EVERY = Number(process.env.LOOP_EVERY || 1); // one Loop remote command every LOOP_EVERY ticks (144 before harness 5)
 const DUMP_TICKS = new Set((process.env.DUMP_TICKS || '').split(',').filter(Boolean).map(Number)); // debugging: raw replies at these ticks
 const CLIENT_IDS = new Set(); // hex _id and identifiers the client chose; kept when normalising
 const num = (k, lo, hi, dp) => { const x = parseInt(md5('n:' + k).slice(0, 8), 16) / 0xffffffff; return Number((lo + x * (hi - lo)).toFixed(dp || 0)); };
@@ -308,7 +310,9 @@ function aapsStatus (n) {
 }
 function profileDoc (n) {
   const t = simAt(n); const sched = (v) => [{ time: '00:00', value: v, timeAsSeconds: 0 }];
+  // loopSettings as Loop uploads them: the Loop remote-command path needs a device token and bundle id
   return { soakKey: 'profile-' + n, defaultProfile: 'Default', startDate: iso(t), created_at: iso(t), mills: t, units: 'mg/dl', enteredBy: 'Loop',
+    loopSettings: { deviceToken: 'soakdevicetoken0123456789abcdef', bundleIdentifier: 'org.example.soak.loop', dosingEnabled: true },
     store: { Default: { dia: 6, carbratio: sched(10 + (n % 3)), sens: sched(45), basal: [{ time: '00:00', value: 0.8, timeAsSeconds: 0 }, { time: '06:00', value: 1.0, timeAsSeconds: 21600 }],
       target_low: sched(100), target_high: sched(110), units: 'mg/dl', timezone: 'UTC', delay: 20, startDate: '1970-01-01T00:00:00.000Z' } } };
 }
@@ -423,7 +427,7 @@ async function writes (n) {
   if (n % 72 === 60) { const key = 'sgv-' + (n - 31); await op('v1.delete.entry', byId(key, (arm, id) => ({ method: 'DELETE', path: '/api/v1/entries/' + id, headers: SEC(arm) })), { write: { coll: 'entries', key, act: 'delete' } }); }
   // profile, Loop remote command
   if (n === 0 || n % 288 === 144) { const p = profileDoc(n); await op('loop.profile.post', (arm) => ({ method: 'POST', path: '/api/v1/profile', body: p, headers: SEC(arm) }), { write: { coll: 'profile', key: p.soakKey } }); }
-  if (n % 144 === 100) await op('loop.remote.override', (arm) => ({ method: 'POST', path: '/api/v2/notifications/loop', body: { eventType: 'Temporary Override', reason: 'Exercise', reasonDisplay: 'Exercise', duration: 60, notes: 'soak', enteredBy: 'caregiver' }, headers: SEC(arm) }));
+  if (n % LOOP_EVERY === LOOP_EVERY - 1) await op('loop.remote.override', (arm) => ({ method: 'POST', path: '/api/v2/notifications/loop', body: { eventType: 'Temporary Override', reason: 'Exercise', reasonDisplay: 'Exercise', duration: 60, notes: 'soak', enteredBy: 'caregiver' }, headers: SEC(arm) }));
 }
 async function reads (n, sub) {
   const now = simAt(n) + Math.round(sub * P / FOLLOW) + 60000;
@@ -472,7 +476,7 @@ process.on('SIGINT', () => stop('SIGINT'));
   for (const arm of ARMS) await subjects(arm);
   for (const arm of ARMS) { followerSocket(arm); await editorSocket(arm); }
   note(`start mode=${REAL ? 'realtime' : 'compressed'} ticks=${N} realTickMs=${Math.round(REAL_TICK)} simStart=${iso(simStart)} simEnd=${iso(simAt(N - 1))} arms=${ARMS.map((a) => a.name + '@' + a.base).join(',')}`);
-  fs.writeFileSync(path.join(RUN, 'traffic.json'), JSON.stringify({ harness: 4, mode: REAL ? 'realtime' : 'compressed', ticks: N, realTickMs: REAL_TICK, followPerTick: FOLLOW, realStart: iso(realStart), simStart: iso(simStart), simEnd: iso(simAt(N - 1)), arms: ARMS.map((a) => ({ name: a.name, base: a.base, sock: a.sock })) }, null, 1));
+  fs.writeFileSync(path.join(RUN, 'traffic.json'), JSON.stringify({ harness: 5, loopEvery: LOOP_EVERY, mode: REAL ? 'realtime' : 'compressed', ticks: N, realTickMs: REAL_TICK, followPerTick: FOLLOW, realStart: iso(realStart), simStart: iso(simStart), simEnd: iso(simAt(N - 1)), arms: ARMS.map((a) => ({ name: a.name, base: a.base, sock: a.sock })) }, null, 1));
   let late = 0;
   for (let n = 0; n < N && !stopping; n++) {
     tickN = n;

@@ -2581,7 +2581,7 @@ items:
       carry the stored-address notice.
 
   - id: RT-REBASE
-    title: Cuts 1-4 are 133 commits behind dev and now all five conflict
+    title: Cuts 1-5 are far behind dev and all five conflict
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
@@ -2664,9 +2664,11 @@ items:
     notes: >
       The published cuts are unrebased and far behind dev; the real
       propagation is done on dev after 15.0.9 is tagged. Measured
-      2026-09-24 against origin/dev 153e5658 (see blast_radius): cuts
-      1-4 are 175 commits behind with 9 / 15 / 17 / 22 conflicting
-      paths; cut 5 is 51 behind with 9. Two local rehearsals exist,
+      2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits
+      behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind
+      and 498 ahead with 25 (`git rev-list --left-right --count
+      official/dev...<cut>`; `git merge-tree --write-tree --name-only
+      official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist,
       neither pushed, and every count in them must be re-measured when
       the real propagation is done:
 
@@ -10242,6 +10244,16 @@ items:
       Every A/B difference on e9dbb1fb is an expected 15.0.9 change or one
       of the two release-notes gaps above. Next: the 24-72 h soak on the
       release candidate once it is green.
+      2026-09-25 RC soak, A = 15.0.8 92d08342, B = origin/dev e3adc91d (the
+      15.0.9 candidate), harness 5 with a fake APNs server per arm so Loop
+      remote commands create providers: R17 (48 h), R18 (72 h with MongoDB
+      and server restarts), R19 (Node 24, MongoDB 4.4, outage), R21 (Node
+      24, no APNs) PASS; A/A R20 PASS. BF-134 visible: APNs sessions 575 of
+      575 left open and fds 30 -> 604 on 15.0.8, 0 and 28 -> 29 on e3adc91d;
+      the check fires with the arms swapped (R22). The Node 24 RSS level
+      (about 280 to 330 MB) is the same on both arms without APNs, so it is
+      not BF-134. Recorded in the integration record, run 017. Left: the
+      24-72 h real-time soak, lab.sh soak --hours 72 (README).
   - id: BFQ-133
     title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one"
     parcel: register-open

@@ -12,6 +12,24 @@ const fs = require('fs');
 const { monitorEventLoopDelay, performance } = require('perf_hooks');
 
 const OUT = process.env.SOAK_METRICS;
+
+// SOAK_APNS_PORT: send this server's APNs pushes to the lab's fake APNs server on 127.0.0.1
+// instead of Apple. Neither build has a setting for the APNs host, so this wraps the tree's
+// @parse/node-apn Provider the way tools/lab/apns-shutdown/probe.js and PR #8419's test do
+// (address, port, and accept the test TLS certificate). Only the destination changes; every
+// provider is still built, used and (or not) shut down by the build's own lib/server/loop.js.
+let apnsProviders = 0;
+if (process.env.SOAK_APNS_PORT) {
+  const apn = require(require('path').join(process.cwd(), 'node_modules/@parse/node-apn'));
+  const Original = apn.Provider;
+  apn.Provider = function SoakProvider (options) {
+    apnsProviders += 1;
+    options.address = 'localhost'; // as the probe; the fake server listens on 127.0.0.1
+    options.port = Number(process.env.SOAK_APNS_PORT);
+    options.rejectUnauthorized = false;
+    return new Original(options);
+  };
+}
 const EVERY = Number(process.env.SOAK_METRICS_SEC || 10) * 1000;
 
 if (OUT) {
@@ -39,7 +57,7 @@ if (OUT) {
       t: new Date().toISOString(), pid: process.pid, rss: m.rss, heapUsed: m.heapUsed, heapTotal: m.heapTotal,
       external: m.external, arrayBuffers: m.arrayBuffers,
       lag_p50: ms(h.percentile(50)), lag_p99: ms(h.percentile(99)), lag_max: ms(h.max),
-      elu: Math.round(e.utilization * 1000) / 1000, handles: process._getActiveHandles().length, requests,
+      elu: Math.round(e.utilization * 1000) / 1000, handles: process._getActiveHandles().length, requests, apnsProviders,
       ...(leakKb ? { fault_leak_kb: leakKb } : {})
     };
     h.reset();

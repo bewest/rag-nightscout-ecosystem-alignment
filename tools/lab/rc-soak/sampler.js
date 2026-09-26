@@ -81,13 +81,13 @@ async function tick () {
   fs.appendFileSync(path.join(RUN, 'samples.jsonl'), JSON.stringify({ t: new Date().toISOString(), n: state.n, samples: rows }) + '\n');
 }
 
-let stop = false;
-process.on('SIGTERM', () => { stop = true; });
+let stop = false; let wake = null;
+process.on('SIGTERM', () => { stop = true; if (wake) wake(); }); // do not wait out the interval
 (async () => {
   while (!stop) {
     const t0 = Date.now();
     try { await tick(); } catch (err) { console.log(new Date().toISOString() + ' sample failed: ' + err.message); }
-    await new Promise((r) => setTimeout(r, Math.max(500, INTERVAL - (Date.now() - t0))));
+    if (!stop) await new Promise((r) => { const t = setTimeout(r, Math.max(500, INTERVAL - (Date.now() - t0))); wake = () => { clearTimeout(t); r(); }; });
   }
   for (const c of Object.values(clients)) await c.close().catch(() => {});
   process.exit(0);

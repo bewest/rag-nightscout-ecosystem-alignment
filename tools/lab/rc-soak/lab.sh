@@ -26,15 +26,17 @@
 #   --fault-drop RATE   silently drop RATE of devicestatus POSTs to the fault arm
 #   --fault-leak KB     the fault arm's server retains KB of heap per request
 #   --fault-arm a|b     which arm gets the fault (default b)
+#   --no-apns           no Loop APNs settings (remote commands then answer 500, as without a key)
 #
 # Environment (defaults in brackets):
 #   SOAK_STATE   state root outside any git tree [${TMPDIR:-/tmp}/rc-soak]
 #   ARM_A_DIR    build A worktree [externals/work/crm-6a-soak-a = 15.0.8]
-#   ARM_B_DIR    build B worktree [externals/work/crm-6a-soak-b = candidate]
+#   ARM_B_DIR    build B worktree [externals/work/crm-6a-soak-rc = 15.0.9 candidate e3adc91d]
 #   NODE_VER     node for the servers, via `n exec` [22.23.2]
 #   MONGO_IMAGE  [mongo:7.0.43]; mongo:4.4 works too (use another PFX and ports)
 #   PFX          container name prefix [s6a-soak]
 #   MONGO_PORT_A/B [27531/27532]  NS_PORT_A/B [17531/17532]  PROXY_PORT_A/B [17533/17534]
+#   APNS_PORT_A/B [17537/17538]  (fake APNs servers; on unless --no-apns)
 #   SAMPLE_SEC   sampler interval [10 compressed, 60 real-time]
 #
 # Secrets: API_SECRET is generated per run into <run>/secrets (mode 700) and
@@ -45,13 +47,14 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
 STATE=${SOAK_STATE:-${TMPDIR:-/tmp}/rc-soak}
 ARM_A_DIR=${ARM_A_DIR:-$ROOT/externals/work/crm-6a-soak-a}
-ARM_B_DIR=${ARM_B_DIR:-$ROOT/externals/work/crm-6a-soak-b}
+ARM_B_DIR=${ARM_B_DIR:-$ROOT/externals/work/crm-6a-soak-rc}
 NODE_VER=${NODE_VER:-22.23.2}
 MONGO_IMAGE=${MONGO_IMAGE:-mongo:7.0.43}
 PFX=${PFX:-s6a-soak}
 MONGO_PORT_A=${MONGO_PORT_A:-27531}; MONGO_PORT_B=${MONGO_PORT_B:-27532}
 NS_PORT_A=${NS_PORT_A:-17531}; NS_PORT_B=${NS_PORT_B:-17532}
 PROXY_PORT_A=${PROXY_PORT_A:-17533}; PROXY_PORT_B=${PROXY_PORT_B:-17534}
+APNS_PORT_A=${APNS_PORT_A:-17537}; APNS_PORT_B=${APNS_PORT_B:-17538}
 export N_PREFIX=${N_PREFIX:-$HOME/n}
 
 die () { echo "lab.sh: $*" >&2; exit 1; }
@@ -61,10 +64,10 @@ listener () { ss -ltnpH "sport = :$1" | grep -o 'pid=[0-9]*' | head -1 | cut -d=
 is_ours () { [ -n "${1:-}" ] && [ -r "/proc/$1/cmdline" ] && tr '\0' ' ' < "/proc/$1/cmdline" | grep -q "$2"; }
 
 parse () { # sets AA MINUTES SIMH HOURS CONFIG FDROP FLEAK FARM
-  AA=0 MINUTES=45 SIMH=72 HOURS= CONFIG=denied FDROP=0 FLEAK=0 FARM=b
+  AA=0 MINUTES=45 SIMH=72 HOURS= CONFIG=denied FDROP=0 FLEAK=0 FARM=b APNS=1
   while [ $# -gt 0 ]; do case $1 in
     --aa) AA=1 ;; --minutes) MINUTES=$2; shift ;; --sim-hours) SIMH=$2; shift ;; --hours) HOURS=$2; shift ;;
-    --config) CONFIG=$2; shift ;; --fault-drop) FDROP=$2; shift ;; --fault-leak) FLEAK=$2; shift ;; --fault-arm) FARM=$2; shift ;;
+    --config) CONFIG=$2; shift ;; --no-apns) APNS=0 ;; --fault-drop) FDROP=$2; shift ;; --fault-leak) FLEAK=$2; shift ;; --fault-arm) FARM=$2; shift ;;
     *) die "unknown option $1" ;; esac; shift; done
   case $CONFIG in denied|readable) ;; *) die "--config denied|readable" ;; esac
 }
@@ -73,6 +76,7 @@ arm_dir () { if [ "$1" = a ] || [ "$(cat "$RUN/aa")" = 1 ]; then echo "$ARM_A_DI
 arm_port () { [ "$1" = a ] && echo "$NS_PORT_A" || echo "$NS_PORT_B"; }
 arm_mport () { [ "$1" = a ] && echo "$MONGO_PORT_A" || echo "$MONGO_PORT_B"; }
 arm_pport () { [ "$1" = a ] && echo "$PROXY_PORT_A" || echo "$PROXY_PORT_B"; }
+arm_aport () { [ "$1" = a ] && echo "$APNS_PORT_A" || echo "$APNS_PORT_B"; }
 mongo_url () { echo "mongodb://127.0.0.1:$(arm_mport "$1")/rcsoak_test"; }
 
 mongo_up () { # mongo_up <arm>
@@ -103,6 +107,11 @@ server_env () { # server_env <arm>: env file (mode 600) the launcher sources
     echo "ALARM_TIMEAGO_WARN='off'"; echo "ALARM_TIMEAGO_URGENT='off'"
     echo "NODE_OPTIONS='--require $HERE/preload.js'"; echo "SOAK_METRICS='$RUN/metrics-$1.jsonl'"; echo "SOAK_METRICS_SEC='${METRICS_SEC:-10}'"
     if [ "$(cat "$RUN/fault_arm")" = "$1" ] && [ "$(cat "$RUN/fault_leak")" != 0 ]; then echo "SOAK_FAULT_LEAK_KB='$(cat "$RUN/fault_leak")'"; fi
+    if [ "$(cat "$RUN/apns")" = 1 ]; then # Loop remote commands reach this arm's fake APNs server
+      echo "LOOP_APNS_KEY='$(cat "$RUN/secrets/apns_key.pem")'"; echo "LOOP_APNS_KEY_ID='SOAKKEYID1'"
+      echo "LOOP_DEVELOPER_TEAM_ID='SOAKTEAM01'"; echo "LOOP_PUSH_SERVER_ENVIRONMENT='development'"
+      echo "SOAK_APNS_PORT='$(arm_aport "$1")'"
+    fi
   } > "$f"
 }
 
@@ -130,6 +139,14 @@ server_stop () {
 }
 hash () { printf %s "$(cat "$RUN/secrets/api_secret")" | sha1sum | cut -c1-40; }
 
+apns_start () { # apns_start <arm>: this arm's fake APNs server (tools/lab/rc-soak/fake-apns.js)
+  local p; p=$(arm_aport "$1"); port_free "$p" || die "port $p is in use"
+  PORT=$p TREE="$ARM_A_DIR" OUT="$RUN/apns-$1.jsonl" PIDFILE="$RUN/pid-apns-$1" SAMPLE_SEC="${METRICS_SEC:-10}" \
+    setsid nohup n exec "$NODE_VER" node "$HERE/fake-apns.js" < /dev/null > "$RUN/apns-$1.log" 2>&1 &
+  for _ in $(seq 1 30); do [ -n "$(listener "$p")" ] && break; sleep 0.5; done
+  [ -n "$(listener "$p")" ] || die "fake APNs for arm $1 did not start"
+}
+
 proxy_start () { # proxy_start <arm> <rate>
   local p; p=$(arm_pport "$1"); port_free "$p" || die "port $p is in use"
   UPSTREAM="http://127.0.0.1:$(arm_port "$1")" PORT=$p DROP_RATE=$2 setsid nohup n exec "$NODE_VER" node "$HERE/proxy.js" < /dev/null > "$RUN/proxy-$1.log" 2>&1 &
@@ -144,8 +161,13 @@ up () {
   RUN=$STATE/runs/$id; mkdir -p "$RUN/secrets"; chmod 700 "$RUN/secrets"
   ( umask 077; openssl rand -hex 24 > "$RUN/secrets/api_secret" )
   echo "$AA" > "$RUN/aa"; echo "$CONFIG" > "$RUN/config"; echo "$FARM" > "$RUN/fault_arm"; echo "$FLEAK" > "$RUN/fault_leak"; echo "$FDROP" > "$RUN/fault_drop"
-  : > "$RUN/containers"
+  : > "$RUN/containers"; echo "$APNS" > "$RUN/apns"
   for p in "$MONGO_PORT_A" "$MONGO_PORT_B" "$NS_PORT_A" "$NS_PORT_B"; do port_free "$p" || die "port $p is in use"; done
+  if [ "$APNS" = 1 ]; then
+    # a fresh P-256 key for the provider token, as the probe makes; it never leaves 127.0.0.1
+    ( umask 077; openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt > "$RUN/secrets/apns_key.pem" )
+    for a in a b; do apns_start "$a"; done
+  fi
   [ -d "$ARM_A_DIR/node_modules" ] && [ -d "$ARM_B_DIR/node_modules" ] || die "npm ci both worktrees first"
   mongo_up a; mongo_up b
   server_start a; server_start b
@@ -158,6 +180,7 @@ up () {
  "arms":{"a":{"dir":"$(arm_dir a)","head":"$ha","tree":"$ta","dirty_tracked_files":$dirty_a,"version":"$(nodex -p "require('$(arm_dir a)/package.json').version")"},
          "b":{"dir":"$(arm_dir b)","head":"$hb","tree":"$tb","dirty_tracked_files":$dirty_b,"version":"$(nodex -p "require('$(arm_dir b)/package.json').version")"}},
  "mongo_url":{"a":"$(mongo_url a)","b":"$(mongo_url b)"},"ports":{"a":$NS_PORT_A,"b":$NS_PORT_B},
+ "apns":$APNS,"apns_ports":{"a":$APNS_PORT_A,"b":$APNS_PORT_B},
  "fault":{"arm":"$FARM","drop_devicestatus":$FDROP,"leak_kb":$FLEAK}}
 EOF
   if [ "$FDROP" != 0 ]; then
@@ -179,7 +202,7 @@ traffic () { # traffic <run> [opts]
   rm -f "$RUN/pid-traffic" "$RUN/pid-sampler"
   env RUN="$RUN" ARMS="$arms_s" MODULES="$ARM_A_DIR/node_modules" INTERVAL_SEC="$si" \
     setsid nohup n exec "$NODE_VER" node "$HERE/sampler.js" < /dev/null > "$RUN/sampler.log" 2>&1 &
-  env RUN="$RUN" ARMS="$arms_t" MODULES="$ARM_A_DIR/node_modules" DUMP_TICKS="${DUMP_TICKS:-}" "${mode[@]}" \
+  env RUN="$RUN" ARMS="$arms_t" MODULES="$ARM_A_DIR/node_modules" DUMP_TICKS="${DUMP_TICKS:-}" LOOP_EVERY="${LOOP_EVERY:-1}" "${mode[@]}" \
     setsid nohup n exec "$NODE_VER" node "$HERE/traffic.js" < /dev/null > "$RUN/traffic.out" 2>&1 &
   for _ in $(seq 1 30); do [ -s "$RUN/pid-traffic" ] && [ -s "$RUN/pid-sampler" ] && break; sleep 0.5; done  # each writes its own PID
   is_ours "$(cat "$RUN/pid-traffic")" traffic.js || { cat "$RUN/traffic.out"; die "traffic did not start"; }
@@ -199,6 +222,7 @@ stop_run () { # stop <run>: traffic, sampler, proxies, servers, by recorded PID;
   p=$(cat "$RUN/pid-traffic" 2>/dev/null || true); for _ in $(seq 1 60); do is_ours "$p" traffic.js || break; sleep 1; done
   for a in a b; do p=$(cat "$RUN/pid-proxy-$a" 2>/dev/null || true); if is_ours "$p" proxy.js; then kill "$p"; echo "proxy $a stopped (pid $p)"; fi; done
   server_stop a; server_stop b
+  for a in a b; do p=$(cat "$RUN/pid-apns-$a" 2>/dev/null || true); if is_ours "$p" fake-apns.js; then kill "$p"; echo "fake APNs $a stopped (pid $p)"; fi; done
 }
 down_run () { # down <run>: remove the containers this run created
   RUN=$(readlink -f "$1")

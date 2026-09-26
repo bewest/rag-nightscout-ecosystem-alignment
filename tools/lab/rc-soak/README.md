@@ -16,6 +16,7 @@ release candidate.
 | `sampler.js` | every 10 s (60 s real-time): is each server alive, answering, and serving the newest reading; RSS, open files, document counts from MongoDB |
 | `preload.js` | loaded into each server with `NODE_OPTIONS=--require` (the build is not modified): heap, RSS, event-loop delay every 10 s |
 | `proxy.js` | fault injection only: a proxy that silently drops a fraction of devicestatus uploads |
+| `fake-apns.js` | a local stand-in for Apple's push service, one per arm, counting the HTTP/2 sessions each server leaves open |
 | `analyze.js` | turns a run directory into a verdict: PASS, FAIL (findings) or INVALID |
 | `probe-deleted-entry.js` | a one-shot check against one server: is a reading deleted by `_id` still returned by `GET /api/v1/entries.json?count=10`? |
 | `expected-diffs.json` | the differences 15.0.9 makes on purpose, each tied to a release-notes section; thresholds |
@@ -29,13 +30,38 @@ shapes follow the client surveys in `tools/lab/object-id/probes.js` and
 
 | arm | build | worktree |
 |---|---|---|
-| A | 15.0.8 = origin/master 92d08342 | `externals/work/crm-6a-soak-a` |
-| B, current candidate | e9dbb1fb on `wip/object-id-crud-fixes-2`: #8758 head ab7b22d6 plus six fix commits (BF-115, BF-116, BF-117, review fixes, BF-130, BF-131); tree ea4c4852 | `externals/work/crm-6a-soak-b2` (`ARM_B_DIR=$PWD/externals/work/crm-6a-soak-b2`) |
-| B, earlier candidate | ab7b22d6 (origin/dev 4f705217 + #8758); kept as the control for BF-131 | `externals/work/crm-6a-soak-b` (the default `ARM_B_DIR`) |
+| A | 15.0.8 = origin/master 92d08342 | `externals/work/crm-6a-soak-a` (the default `ARM_A_DIR`) |
+| B, **release candidate** | origin/dev e3adc91d, package version 15.0.9, tree d7383aae: #8758 with the e9dbb1fb fixes, #8568, #8768 (BF-120), #8769 (BF-126), #8419, #8770 (BF-134) | `externals/work/crm-6a-soak-rc` (the default `ARM_B_DIR`) |
+| B, earlier | e9dbb1fb (`wip/object-id-crud-fixes-2`) | `externals/work/crm-6a-soak-b2` |
+| B, earlier | ab7b22d6 (#8758 head; the control for BF-131) | `externals/work/crm-6a-soak-b` |
 
-The default `ARM_B_DIR` still points at ab7b22d6, so a plain `lab.sh run` reproduces the
-BF-131 control. To soak the current candidate, set `ARM_B_DIR` to the `crm-6a-soak-b2`
-worktree. Results: `results/proof-2026-09-25.md`.
+Results: `results/proof-2026-09-25.md`.
+
+## Start the 72-hour soak of the release candidate
+
+From the root of the alignment repository, with the two worktrees above present and `npm ci`
+done in each:
+
+```sh
+export SOAK_STATE=$HOME/rc-soak-state          # anywhere outside a git tree
+tools/lab/rc-soak/lab.sh soak --hours 72
+```
+
+That is A = 15.0.8 against B = e3adc91d, `AUTH_DEFAULT_ROLES=denied`, one CGM reading every
+5 minutes, followers every minute, one Loop remote command every 5 minutes to a fake push
+server per arm. It prints the run directory and the PIDs. After 72 hours (or to stop early):
+
+```sh
+tools/lab/rc-soak/lab.sh stop    <run>
+tools/lab/rc-soak/lab.sh analyze <run>    # before down: it reads both databases
+tools/lab/rc-soak/lab.sh down    <run>
+```
+
+Expect arm A's open APNs sessions and open files to grow by one per remote command (15.0.8's
+leak, fixed in 15.0.9 by #8770); the report lists that under expected differences. Pass: verdict
+PASS, `leak check: evaluated`, and arm B's APNs sessions and fds flat. Before starting, confirm
+the instrument: `(cd externals/work/crm-6a-soak-a && node ../../../tools/lab/apns-shutdown/probe.js .)`
+exits 1, and the same in `crm-6a-soak-rc` exits 0.
 
 ## Before the first run
 
@@ -105,6 +131,21 @@ tools/lab/rc-soak/lab.sh down    <run>   # remove this run's MongoDB containers
 `stop` only kills a PID whose command line is the expected process (`lib/server/server.js`,
 `traffic.js`, `sampler.js`, `proxy.js`); it never kills by name.
 
+### How the APNs traffic reaches the fake server
+
+Neither build has a setting for the APNs host: `lib/server/loop.js` builds `new apn.Provider(options)`
+with only the key and `production`, and `@parse/node-apn` 5.2.3 picks Apple's address from
+`production`. `preload.js` (loaded with `NODE_OPTIONS=--require`, no build file changed) wraps the
+tree's `@parse/node-apn` `Provider` to set `address: 'localhost'`, the fake server's port and
+`rejectUnauthorized: false`, exactly as `tools/lab/apns-shutdown/probe.js` and PR #8419's test do.
+Every provider is still built, used and shut down (or not) by the build's own code. The fake server
+uses the tree's test TLS pair and answers 200 to every push; nothing leaves 127.0.0.1.
+
+The report's "Loop remote commands and APNs" section gives per arm: commands answered 200,
+providers built, pushes received, sessions opened and still open at the end of traffic, open fds
+and active handles. B leaving more than 2 more sessions open than A, or ending with more than 20
+more open fds, is a finding. A leaving sessions open is listed as expected when A is 15.0.8.
+
 ## What the traffic does
 
 One tick is 5 simulated minutes. Every value is generated in `traffic.js`, and every record
@@ -122,7 +163,7 @@ either build's ids.
 | web page | a socket.io client that authorizes with a JWT and records every `dataUpdate`; an editor socket that sends `dbUpdate` and `dbRemove`; every hour of simulated time (and at the end) a "page load": a new socket per arm records the full `dataUpdate` a newly opened page is sent |
 | careportal | v1 `PUT` and `DELETE` of treatments by `_id`, v1 `DELETE` of an entry and of a devicestatus, each using the `_id` that arm's own reply gave |
 | other followers | `treatments.json?count=50&token=…` (a follower); the same read and `devicestatus.json?count=10` authenticated by header, as an uploader sends them. A v1 treatments or devicestatus read is answered from the in-memory copy only when `count` is its only query parameter, so only the header form exercises that path; an entries read ignores `token` when choosing |
-| Loop caregiver | `POST /api/v2/notifications/loop` (no Apple push key is configured, so both arms answer 500; allowed in `expected-diffs.json`) |
+| Loop caregiver | `POST /api/v2/notifications/loop` ("Temporary Override") every tick (`LOOP_EVERY`, default 1). Each arm has its own fake APNs server (`fake-apns.js`, ports `APNS_PORT_A/B`, default 17537/17538): the arm gets `LOOP_APNS_KEY` (a P-256 key generated per run), `LOOP_APNS_KEY_ID`, `LOOP_DEVELOPER_TEAM_ID` and `LOOP_PUSH_SERVER_ENVIRONMENT=development`, the profile carries `loopSettings`, and `preload.js` sends the build's APNs connections to the fake server (below). `--no-apns` turns this off; the command then answers 500 on both arms, which `expected-diffs.json` allows |
 
 ## Reading the result
 
@@ -174,6 +215,14 @@ node tools/lab/rc-soak/probe-deleted-entry.js http://127.0.0.1:17532 <run>/secre
 # exit 0: a reading deleted by _id is gone from entries.json; 1: still returned; 2: could not run
 ```
 
+The APNs check (arm B leaving push connections open) is proven by swapping the arms, so the
+leaking build is B:
+
+```sh
+ARM_A_DIR=$PWD/externals/work/crm-6a-soak-rc ARM_B_DIR=$PWD/externals/work/crm-6a-soak-a \
+  tools/lab/rc-soak/lab.sh run --minutes 5 --sim-hours 12     # must FAIL with [apns] and [fds] on arm b
+```
+
 `--fault-drop RATE` puts `proxy.js` in front of both arms and silently drops RATE of arm B's
 devicestatus uploads while answering 200, so only the database checks can see it.
 `--fault-leak KB` makes arm B's server keep KB of heap per request. `--fault-arm a` moves either
@@ -192,8 +241,10 @@ per arm), `socket-<arm>.jsonl`, `samples.jsonl`, `metrics-<arm>.jsonl`, `server-
 the difference can be read. `DUMP_TICKS=57,60 lab.sh run …` writes both arms' raw replies for
 every operation at those ticks to `dump.jsonl` (debugging only; large).
 
-`traffic.json` carries `harness` (currently 4: 2 added page loads, 3 `diffs-values.jsonl`, 4 the
-header-authenticated count reads); page loads are only required from harness 2 on.
+`traffic.json` carries `harness` (currently 5: 2 added page loads, 3 `diffs-values.jsonl`, 4 the
+header-authenticated count reads, 5 the fake APNs servers and one Loop remote command per tick);
+page loads are only required from harness 2 on. `apns-<arm>.jsonl` holds the fake APNs server's
+session counts every 10 s.
 
 `<SOAK_STATE>/current` points at the most recent `up`; with several labs at once, use the run
 path `up` prints instead.
