@@ -87,7 +87,17 @@ no branch. Reproduced 2026-09-23 by the consumer-replay lab: 7 records on
 v15.0.8, 0 on dev ddd9b600 and on the candidate (tree 2ce67b27), with the
 created_at control at 7 on all three. The gate is red on origin/dev 153e5658
 (2026-09-24). Filed with the maintainer's go-ahead (session -6a). Whether it
-goes into 15.0.9 is the maintainer's call; no decision is recorded.
+goes into 15.0.9 is the maintainer's call; no decision is recorded. 2026-09-26
+- Combined run: all six round-1 branches (bf/activity-date-coercion 20c197bb,
+bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9, bf/profile-
+switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests), Node
+22.23.2, MongoDB 7.0.43. All five probes gave their expected exit codes: bf106
+gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0,
+v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision, BFQ-122).
+The run carried 718efddc, not the later test commit d45987f7.
 
 ---
 

@@ -90,9 +90,21 @@ was not reproduced. 2026-09-25 - HALF 1 FIXED on bf/maker-level-names 2f50ada9
 new levels.toKey (untranslated level). 11 tests; suite 3181/0/3 (Node 22.23.2,
 MongoDB 7.0.43). Half 2 (a resend about every 30 s after a failed call) left
 unchanged by design: the 2015 commits f805633f and ea745065 say a failed send
-is retried, and the branch's tests now pin it; awaiting the maintainer's
-decision, which does not block pushing half 1. Release note: sites that
+is retried, and the branch's tests now pin it. Release note: sites that
 renamed their applets to the translated names must rename them back.
+2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests), Node
+22.23.2, MongoDB 7.0.43. All five probes gave their expected exit codes: bf106
+gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0,
+v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision, BFQ-122).
+The run carried 718efddc, not the later test commit d45987f7. Decisions: -
+2026-09-26 (maintainer): keep half 2 as it is - a failed Maker call keeps
+retrying about every 30 s, by design since 2015. BF-125 is recorded fixed. A
+related multi-key defect is BF-137 (BFQ-137, after 15.0.9).
 
 ---
 

@@ -176,7 +176,9 @@ Loop and Trio rows are read from the apps' code; a real app confirms them.
   into the Profile Editor. A profile made there breaks Loop's remote commands (J3.6).
 - **Found by the lab (JL-2, also on 15.0.8):** after any new profile upload, remote commands keep
   going to the phone in the *previous* profile until the next reading or status arrives. On a new
-  phone that means a few minutes of commands still going to the old phone.
+  phone that means a few minutes of commands still going to the old phone. Recorded as
+  [GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload):
+  an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26).
 
 ### Path D: new phone or reinstall, restoring from the site
 
@@ -484,7 +486,9 @@ The lab's steps, on `cp-aaps` (no device status, so COB comes from treatments):
 reports; those were read, not run.
 
 **JL-2: remote commands use the previous profile until new data arrives** (reproduced
-2026-09-25 on `e3adc91d` and 15.0.8; not in the register). After a new profile is uploaded, Loop
+2026-09-25 on `e3adc91d` and 15.0.8). Recorded as
+[GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload):
+an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26). After a new profile is uploaded, Loop
 remote commands keep using the previous profile's `loopSettings` until the next reading, device
 status or treatment is written. Measured with `loop`'s `switch-to-trio`: the careportal override
 answered 200 and pushed to Loop's old token right after the upload and again 20 s later. It failed

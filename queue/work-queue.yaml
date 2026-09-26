@@ -7411,8 +7411,17 @@ items:
       subscribe({accessToken}) (the AndroidAPS path, read). Only a bad
       Authorization Bearer, a bad api-secret header or bad socket
       credentials count as failures; a bad ?token= query token does not.
-      15.0.8 delivered every scenario in 0-2 ms. Fix options await the
-      maintainer (register BF-80).
+      15.0.8 delivered every scenario in 0-2 ms.
+
+      - 2026-09-26 (maintainer): BF-80, the no-credential exemption (register
+      BF-80 option 1; the decision round numbered it option 2). A viewer
+      presenting no credential is not held by the failed-login delay; an
+      anonymous viewer on a readable site should be fine, and doing nothing
+      was also acceptable, since a misbehaving device will likely be
+      noticed and fixed. Signed-in viewers keep the delay (unchanged). The
+      other two options were not chosen. Fix in progress for 15.0.9 on
+      bf/alarm-anonymous-no-delay (worktree externals/work/crm-r2-fix-80),
+      no commit recorded yet.
 
   - id: ADV-XSS-META
     title: "GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)"
@@ -8035,6 +8044,17 @@ items:
       is red on origin/dev 153e5658 (2026-09-24). Filed with the
       maintainer's go-ahead (session -6a). Whether it goes into 15.0.9
       is the maintainer's call; no decision is recorded.
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
   - id: BFQ-107
     title: BF-107 - a failed treatments query ends the Nightscout process on 15.0.8
     parcel: register-open
@@ -9240,9 +9260,10 @@ items:
     title: "BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: none yet
+    branch: bf/same-time-treatments
     base: origin/dev@e3adc91d
-    state: needs-decision
+    worktree: externals/work/crm-r2-fix-121
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       lib/server/treatments.js upsertQueryFor (v1 POST, PUT and the array
@@ -9260,9 +9281,13 @@ items:
       careportal or bolus wizard, and it can happen with Loop remote carbs.
       The app you entered them in still has both. If the totals in
       Nightscout look lower than what you entered, check the app you
-      entered them in, and give each entry a different time. The fix is not
-      in 15.0.9. This is not medical advice; talk to your care team about
-      how you enter carbs.
+      entered them in, and give each entry a different time. A fix is being
+      prepared for 15.0.9 and is not in any release yet. Even with the fix,
+      two entries for the same minute with the same amount are still kept
+      as one, because nothing tells them apart from the same entry sent
+      twice; and in AndroidAPS, a bolus and carbs saved at the same instant
+      as one "meal bolus" can still be kept as one. This is not medical
+      advice; talk to your care team about how you enter carbs.
     semver: minor
     semver_reason: changes which v1 treatment writes update and which insert
     register: [BF-121]
@@ -9286,7 +9311,10 @@ items:
           The design is measured by a lab prototype, lab/6a-fix-121 a8ca1798
           (worktree externals/work/crm-6a-fix-same-time-treatments, one commit
           on dev e3adc91d, local and not for pushing), which switches the
-          fallback key three ways. It is a measurement, not a fix branch.
+          fallback key three ways. It is a measurement, not a fix branch. The
+          fix (option 3, decided 2026-09-26) is in progress on
+          bf/same-time-treatments, which on 2026-09-26 has no commit beyond
+          e3adc91d; its gates are defined when the commit is recorded.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -9302,8 +9330,22 @@ items:
       matching fixes the Loop, v3-then-v1 and similar-match arms with no
       re-send regression across 19 client shapes. Adding amounts fixes the
       remaining arms but makes an AAPS edit after a lost id a duplicate on
-      v3 and the socket. Awaiting the maintainer's choice among three
-      options.
+      v3 and the socket.
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): option 3 - identity-aware matching for v1
+      and the websocket, plus the carbs and insulin amounts in the key only
+      for v1 REST writes with no client identity; AAPS v3 and socket dbAdd
+      unchanged. The maintainer asked whether it occurs: yes, issue #8185 is
+      a real report (a caregiver sent Loop remote carbs 16 g then 4 g, both
+      back-dated to 7:40; the 16 g disappeared from Nightscout's chart,
+      reports and daily total, while Loop's own COB kept 20 g). Known issues
+      that remain after the fix: an AAPS v3 bolus and carbs in the same
+      millisecond, both Meal Bolus, still merge; careportal same-minute
+      same-amount double entries still merge (no design separates them).
+      Fix in progress for 15.0.9 on bf/same-time-treatments (worktree
+      externals/work/crm-r2-fix-121), no commit recorded yet.
   - id: BFQ-122
     title: "BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting"
     parcel: register-open
@@ -9311,15 +9353,18 @@ items:
     branch: bf/v1-writes-v3-history
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-v1-writes-v3-history
-    state: needs-decision
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/treatments.js, entries.js, devicestatus.js (create, upsert,
-      save, remove); lib/server/websocket.js dbAdd/dbUpdate; possibly
-      lib/api3/generic/history for a fallback; a backfill decision for
-      existing records. Every v1 uploader's records gain srvModified and
-      srvCreated fields. For BF-135, lib/server/soft-deleted.js (new), used
+      Two commits at d45987f7 (718efddc the fix, then one test commit).
+      lib/server/srv-dates.js (new) and the v1 storage writes in
+      treatments.js, entries.js, devicestatus.js, profile.js and food.js
+      (create, upsert, save); lib/server/websocket.js dbAdd, dbUpdate and
+      dbUpdateUnset; the v3 handlers take srvModified from the same clock.
+      v1 DELETE and websocket dbRemove are unchanged (hard delete, decided
+      2026-09-26). Existing records are not backfilled. Every v1 uploader's
+      records gain srvModified and srvCreated fields. For BF-135, lib/server/soft-deleted.js (new), used
       by the v1 storage reads, the cache and the websocket dbAdd dedup, so
       records with isValid false stop counting outside API v3.
     review: maintainer, plus someone who runs AndroidAPS with NSClientV3
@@ -9337,30 +9382,33 @@ items:
       that entries made elsewhere show up in AndroidAPS. AndroidAPS's full
       sync option reloads them. Separately, a carb or insulin entry you
       delete in AndroidAPS keeps counting in the carbs and insulin on board
-      that Nightscout shows, because Nightscout keeps using deleted records.
-      The fix is not in any release yet. This is not
-      medical advice; talk to your care team before relying on entries made
-      in one app reaching another.
+      (COB and IOB) that Nightscout shows, because Nightscout keeps using
+      deleted records. A fix for both is ready for review for 15.0.9 and is
+      not in any release yet. With the fix, new entries and edits made
+      through the older interface reach AndroidAPS, and entries deleted in
+      AndroidAPS stop counting on your site. One thing stays as it is, by
+      decision: an entry deleted in the Nightscout careportal, Loop, Trio or
+      xDrip+ is still not removed from AndroidAPS, so delete it in
+      AndroidAPS as well. A looping AndroidAPS phone only takes carbs and
+      insulin from Nightscout if "accept carbs" and "accept insulin" are
+      switched on in its NSClient settings; both are off unless you turned
+      them on. The AAPSClient follower app always takes them. If you enter
+      the same meal in both the careportal and AndroidAPS, AndroidAPS may
+      show it twice after the fix. This is not medical advice; talk to your
+      care team before relying on entries made in one app reaching another.
     semver: minor
     semver_reason: v1-written records gain srvModified/srvCreated and v3 history returns more records
     register: [BF-122, BF-135]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q srvModified origin/dev -- lib/server/treatments.js lib/server/entries.js lib/server/devicestatus.js
-        kind: static
-        describe: >
-          FAILS today: none of origin/dev's v1 storage modules mention
-          srvModified. A presence check only (the same grep finds it in
-          lib/api3/generic/create/insert.js); it goes green when stamping
-          lands, and the probe below is what says whether history then
-          returns v1 creates, updates and deletes. Stays RED until the
-          branch is merged.
       - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q srvModified bf/v1-writes-v3-history -- lib/server/treatments.js lib/server/entries.js && git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/srv-dates.js'
         kind: static
         describe: >
           The branch's v1 storage modules stamp srvModified through
           lib/server/srv-dates.js (origin/dev has neither and fails this). A
           presence check; the probe and tests/api3.v1-writes-history.test.js
-          decide.
+          decide. Point it at origin/dev once merged. (The origin/dev form of
+          this check was dropped on 2026-09-26, when the item became
+          ready-to-push: it could only go green by merging.)
       - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/soft-deleted.js && git -C externals/cgm-remote-monitor-official grep -q soft-deleted bf/v1-writes-v3-history -- lib/server/cache.js lib/server/treatments.js'
         kind: static
         describe: >
@@ -9369,15 +9417,28 @@ items:
           this). A presence check; tests/soft-deleted.jl1.test.js decides
           (COB 40 g to none after an AAPS v3 delete and after an AAPS v1
           socket dbUpdate isValid false).
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" bf/v1-writes-v3-history -- tests/api3.v1-writes-history.test.js
+        kind: static
+        describe: >
+          The maintainer's v1 DELETE decision (2026-09-26, keep hard delete)
+          is pinned by a test on the branch: "a v1 DELETE still removes the
+          record, and history does not report it". origin/dev has no such
+          test file and fails this. A presence check; the test itself
+          decides. The test's name and comment on d45987f7 still say
+          "decision pending" and should be reworded before the PR opens.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
           2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758
           ab7b22d6 (5 v1 arms absent from history; 5 controls present).
-          Done when it exits 0 on the candidate. 2026-09-25 on the branch
-          718efddc: the treatments, entries and devicestatus v1 arms and the
-          v1 PUT arm are present; still exit 1, only on the v1 DELETE arm
-          (hard delete), whose design awaits the maintainer.
+          2026-09-25 on the branch 718efddc: the treatments, entries and
+          devicestatus v1 arms and the v1 PUT arm are present; exit 1 only on
+          the v1 DELETE arm. Since the 2026-09-26 decision that arm measures
+          the decided behaviour (a v1 hard delete is not in history), not a
+          pending defect, so the expected result on the candidate is exit 1
+          with every other arm present; exit 1 on any other arm is a
+          regression. 2026-09-26 in the combined run lab/round1-combined
+          bda225e4: exit 1 on the v1 DELETE arm only.
       - no-gate: >
           The AndroidAPS side (LoadTreatmentsRunner.kt, LoadBgRunner.kt) is
           read, not run. A run of AndroidAPS NSClientV3 against a site with a
@@ -9415,6 +9476,51 @@ items:
       history; COB 40 g to none on both AAPS delete paths. Maintainer
       decision 2026-09-25: BF-135 goes into 15.0.9 with BF-122 on this
       branch.
+      2026-09-26 - Branch head d45987f7: one test commit on 718efddc, only
+      tests/soft-deleted.jl1.test.js (a v1 profile search by date leaves out
+      a deleted profile with the same date, and returns it for
+      find[isValid]=false). 30 new tests across the two files; suite
+      3200/0/3 (Node 22.23.2, MongoDB 7.0.43). Still merges cleanly with
+      bf/activity-date-coercion.
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
+
+      Decisions:
+
+      - 2026-09-25 (maintainer): BF-135 into 15.0.9 with BF-122, on this
+      branch.
+      - 2026-09-26 (maintainer): v1 DELETE, option (a), keep hard delete.
+      Reason given: people are likely to use AndroidAPS as the controller,
+      not the careportal; AAPS deletes are soft (isValid false), and with
+      BF-135 they stop counting on the site and reach other AAPS instances
+      through v3 history. Deletes made in the careportal, Loop, Trio or
+      xDrip+ still do not reach AndroidAPS. "Make sure documentation is
+      accurate." AAPS applies carbs and insulin from Nightscout, and their
+      deletions, only when NSClient "accept carbs" / "accept insulin"
+      (ns_receive_carbs, ns_receive_insulin) are on; both default off
+      (AndroidAPS 7e1d537d49 core/keys BooleanKey.kt:224-225); the
+      AAPSClient build always accepts them and hides the settings
+      (showInNsClientMode = false; NsIncomingDataProcessor.kt:163-167,
+      StoreDataForDbImpl.kt:420-426; read). BFQ-122 moves from
+      needs-decision to ready-to-push.
+
+      Known-issue wording for the 15.0.9 release notes, for the release pass
+      and only once this branch is merged: "An entry you delete in the
+      Nightscout careportal, Loop, Trio or xDrip+ is not removed from
+      AndroidAPS. Delete it in AndroidAPS as well. A looping AndroidAPS
+      phone takes carbs and insulin from Nightscout only if you switched on
+      'accept carbs' and 'accept insulin' in its NSClient settings." The
+      release files list only what is on dev, so the line is not in them
+      yet.
   - id: BFQ-123
     title: "BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)"
     parcel: register-open
@@ -9491,7 +9597,23 @@ items:
       MongoDB 7.0.43). The CircadianPercentageProfile path is unchanged: its
       intended timeshift direction (t + offset, AAPS 2.x) is opposite to
       AAPS 3.x (reversed in AndroidAPS 37e3c4532a) and it never applies the
-      shift anyway; whether to leave it awaits the maintainer.
+      shift anyway.
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): leave the CircadianPercentageProfile path as
+      it is; not a defect to fix.
   - id: BFQ-124
     title: "BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)"
     parcel: register-open
@@ -9605,9 +9727,26 @@ items:
       22.23.2, MongoDB 7.0.43). Half 2 (a resend about every 30 s after a
       failed call) left unchanged by design: the 2015 commits f805633f and
       ea745065 say a failed send is retried, and the branch's tests now pin
-      it; awaiting the maintainer's decision, which does not block pushing
-      half 1. Release note: sites that renamed their applets to the
+      it. Release note: sites that renamed their applets to the
       translated names must rename them back.
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): keep half 2 as it is - a failed Maker call
+      keeps retrying about every 30 s, by design since 2015. BF-125 is
+      recorded fixed. A related multi-key defect is BF-137 (BFQ-137, after
+      15.0.9).
   - id: BFQ-126
     title: "BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)"
     parcel: register-open
@@ -9718,20 +9857,22 @@ items:
       fetch is refused draws nothing and says nothing. Whether to copy a
       token into more URLs is a maintainer decision.
   - id: BFQ-128
-    title: "BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220)"
+    title: "BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/pebble-delta-units
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-pebble-delta-units
-    state: ready-to-push
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
       lib/server/pebble.js addExtraData (the delta follows the requested
       units; the sandbox units are unchanged) and tests/pebble-units.test.js
       (new). Changes the bgdelta /pebble returns only for mmol/L sites asked
-      for mg/dL.
+      for mg/dL. BF-138 and BF-139 (decided 2026-09-26 to ship in the same
+      PR) will add the Bolus Wizard Preview fields and the data the /pebble
+      sandbox scales; not yet committed.
     review: maintainer
     operator_visible: >
       If your Nightscout shows glucose in mmol/L and you use a watch face
@@ -9740,11 +9881,18 @@ items:
       the reading is in mg/dL. The delta then looks about 18 times smaller
       than it is, for example -0.1 instead of -2. The reading itself is
       right. Check the delta against the Nightscout page or your CGM app
-      before acting on it. The fix is not in any release yet. This is not
-      medical advice.
+      before acting on it. Also, when such a display asks for the units your
+      site does not use, the bolus wizard preview it shows (Nightscout's
+      estimate of insulin needed or in excess) is worked out against
+      settings in the other units, so it can be wrong in size and even in
+      sign; for example -2.17 instead of -0.96. Do not use a watch face's
+      bolus preview to decide a dose; use your looping or pump app. Such a
+      request can also leave glucose values in the wrong units for other
+      displays until the next reading arrives. Fixes are being prepared for
+      15.0.9 and are not in any release yet. This is not medical advice.
     semver: patch
-    semver_reason: the delta is returned in the units the request asked for; other responses are unchanged
-    register: [BF-128]
+    semver_reason: the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged
+    register: [BF-128, BF-138, BF-139]
     gates:
       - run: git -C externals/cgm-remote-monitor-official grep -qF "delta.mgdl" bf/pebble-delta-units -- lib/server/pebble.js
         kind: static
@@ -9764,6 +9912,13 @@ items:
           0 on a scratch copy of dev with the one-line fix. The fix is done
           when the probe exits 0 on the candidate. 2026-09-25: exit 1 on
           e3adc91d, 0 on the branch aa224c69.
+      - no-gate: >
+          BF-138 and BF-139 have no gate yet: their fix is in progress on this
+          branch (2026-09-26) with no commit recorded. BF-138's figures (bwp
+          -2.17 and bwpo -61.8 against the site's -0.96 and 23) were measured
+          in-process on 15.0.8 and dev; BF-139's reach to other readers and to
+          the alarm evaluation is being measured. Gates are defined when the
+          commits are recorded; until then the item is in-progress.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -9783,6 +9938,139 @@ items:
       asked for ?units=mmol computes BWP in an mmol sandbox against the
       mg/dL profile (bwp -2.17 against -0.96); and a shared-state mechanism
       in which one /pebble request's scaled values persist on shared data.
+      Filed 2026-09-26 as BF-138 and BF-139.
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): file BF-138 and BF-139, both fixed in
+      15.0.9 on this branch with BF-128, one PR. The item goes back from
+      ready-to-push to in-progress, because the branch will gain their
+      commits (fix in progress). BF-139 is described by mechanism only (live
+      on 15.0.8, needs only api:pebble read).
+  - id: BFQ-136
+    title: "BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/api3-app-field-v1-records
+    base: origin/dev@e3adc91d
+    worktree: externals/work/crm-r2-fix-136
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/update/validate.js (the immutable-field check for app
+      and device when the stored record has none) and the v3 create dedup
+      path that calls it (lib/api3/generic/create/operation.js); tests for a
+      v3 POST that deduplicates onto a v1-born record and for a v3 PUT of
+      one. Changes which v3 writes to v1-born records are accepted.
+    review: maintainer, plus someone who runs AndroidAPS with NSClientV3
+    operator_visible: >
+      If a treatment such as carbs or insulin was saved in Nightscout by the
+      careportal or another app that uses Nightscout's older interface, and
+      AndroidAPS then uploads its own entry for exactly the same time and
+      type, Nightscout refuses the AndroidAPS entry. AndroidAPS does not try
+      again, so that entry never appears on your Nightscout site, in carbs or
+      insulin on board (COB and IOB), in reports or for followers. Your
+      AndroidAPS phone still has it and doses from its own records. If
+      something you entered in AndroidAPS is missing from Nightscout, check
+      whether the same entry was also made in the careportal at the same
+      time. A fix is being prepared for 15.0.9 and is not in any release
+      yet. This is not medical advice.
+    semver: patch
+    semver_reason: a v3 write that was refused with 400 is accepted; nothing that was accepted changes
+    register: [BF-136]
+    gates:
+      - no-gate: >
+          Fix in progress on bf/api3-app-field-v1-records, which on 2026-09-26
+          has no commit beyond e3adc91d; its gates are defined when the commit
+          is recorded. Reproduced 2026-09-25 on v15.0.8 92d08342 and dev
+          e3adc91d: a v1 Meal Bolus with 20 g carbs at T, then a v3 Meal
+          Bolus at T from app AAPS with no identifier, answered 400 "Field
+          app cannot be modified by the client"; a v3 PUT to a v1-born record
+          without app answered 400 on both builds. The behaviour needs a
+          booted server and MongoDB, so it is not a queue gate.
+      - no-gate: >
+          The AndroidAPS side is read, not run: NSClientV3Plugin.kt:1019
+          (AndroidAPS 7e1d537d49) logs a 400 as FAIL and moves on, so the
+          record is not retried. A run of AndroidAPS against a site where the
+          same meal was entered in the careportal is the missing confirmation.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-09-26 from the 2026-09-25 measurement (the v3 PUT refusal
+      was first noted under OID-V3-EDIT-MERGE). Severity: data loss of
+      AAPS-uploaded treatments in Nightscout in that collision
+      (dosing-relevant data in Nightscout; the phone's own dosing is
+      unaffected).
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): fix in 15.0.9. Fix in progress on
+      bf/api3-app-field-v1-records (worktree externals/work/crm-r2-fix-136),
+      no commit recorded yet.
+  - id: BFQ-137
+    title: "BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@e3adc91d
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/maker.js makeKeyRequests (one callback after every key has
+      answered, an error if any failed) and a tests/maker.test.js case with
+      two keys and a failing stub. Changes only sites with more than one
+      Maker key.
+    review: maintainer, plus someone who uses IFTTT with more than one key
+    operator_visible: >
+      If you give Nightscout more than one IFTTT key (several keys separated
+      by spaces), the alarm events for each key are sent out of order, and
+      when the call to one key fails while another succeeds, the failed key
+      is not tried again for up to 15 minutes, so that alarm may not reach
+      whoever uses that key. Do not rely on IFTTT alone for alarms: keep
+      your phone's and devices' own alarms on. The fix is planned for after
+      15.0.9. This is not medical advice.
+    semver: patch
+    semver_reason: a bug fix in how several Maker keys are sent; one-key sites are unchanged
+    register: [BF-137]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "maker.makeKeyRequest(key, event, eventName, callback);" origin/dev -- lib/plugins/maker.js
+        kind: static
+        describe: >
+          Holds while origin/dev's makeKeyRequests passes the one step
+          callback to every key's request (the mechanism of BF-137). A
+          presence check only, inverted in meaning: it goes RED when that
+          line changes, and must then be replaced by a behaviour gate.
+      - no-gate: >
+          Reproduced in-process 2026-09-25 with two keys against a local
+          stand-in for IFTTT: 6 requests in interleaved order and 4 final
+          callbacks. The script was in a scratch directory and was not
+          retained. The missed retry follows from the 15-minute dedup key
+          (read).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-09-26. Found with BF-125. Live on 15.0.8: lib/plugins/maker.js
+      and lib/server/pushnotify.js are identical on v15.0.8 92d08342 and dev
+      e3adc91d (async ^0.9.2 on both).
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): after 15.0.9.
   - id: RT-PR-8730
     title: "#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)"
     parcel: release-train
@@ -10064,6 +10352,17 @@ items:
       string also answered 500; #8758 fixed that. The consumer survey finds
       no corpus client that fetches an entry by id. A BF-73 addendum came
       from this measurement (register BF-73).
+      2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+      20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+      bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+      bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+      lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+      full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests),
+      Node 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit
+      codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+      pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
+      decision, BFQ-122). The run carried 718efddc, not the later test commit
+      d45987f7.
   - id: OID-UNUSABLE-ID-OTHER-PATHS
     title: "Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1"
     parcel: register-open
@@ -10512,6 +10811,12 @@ items:
       removal in v3 history (srvModified), or a follower keeps the
       removed copy. Until this lands, #8758's advice names the profile
       editor and the Reports treatment list as the way to merge a pair.
+      The v3 PUT refusal on v1-born records without app is filed as BF-136
+      (BFQ-136, fixed in 15.0.9).
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): after 15.0.9.
   - id: OID-WS-EDIT-MERGE
     title: "Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them"
     parcel: release-train
@@ -10561,6 +10866,10 @@ items:
       still see the edited _id. Best done with OID-V3-EDIT-MERGE and
       OID-STORAGE-HELPER, which would give v1, v3 and the websocket one
       rule for writes by _id.
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): after 15.0.9.
   - id: OID-DOCS
     title: "Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy"
     parcel: docs-truth

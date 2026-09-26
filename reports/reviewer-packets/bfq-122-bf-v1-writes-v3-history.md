@@ -22,20 +22,23 @@ counting**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/v1-writes-v3-history` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=BFQ-122` is the measurement |
+| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-122` is the measurement |
 | semver | `minor` |
 | register entries | `BF-122`, `BF-135` |
 | operator exposure | **reaches an operator on today's release** |
 
 ## What this changes
 
-lib/server/treatments.js, entries.js, devicestatus.js (create, upsert, save,
-remove); lib/server/websocket.js dbAdd/dbUpdate; possibly
-lib/api3/generic/history for a fallback; a backfill decision for existing
-records. Every v1 uploader's records gain srvModified and srvCreated fields.
-For BF-135, lib/server/soft-deleted.js (new), used by the v1 storage reads,
-the cache and the websocket dbAdd dedup, so records with isValid false stop
-counting outside API v3.
+Two commits at d45987f7 (718efddc the fix, then one test commit).
+lib/server/srv-dates.js (new) and the v1 storage writes in treatments.js,
+entries.js, devicestatus.js, profile.js and food.js (create, upsert, save);
+lib/server/websocket.js dbAdd, dbUpdate and dbUpdateUnset; the v3 handlers
+take srvModified from the same clock. v1 DELETE and websocket dbRemove are
+unchanged (hard delete, decided 2026-09-26). Existing records are not
+backfilled. Every v1 uploader's records gain srvModified and srvCreated
+fields. For BF-135, lib/server/soft-deleted.js (new), used by the v1 storage
+reads, the cache and the websocket dbAdd dedup, so records with isValid false
+stop counting outside API v3.
 
 ## Why that semver
 
@@ -56,10 +59,20 @@ records
 > Nothing tells you this has happened. Check that entries made elsewhere
 > show up in AndroidAPS. AndroidAPS's full sync option reloads them.
 > Separately, a carb or insulin entry you delete in AndroidAPS keeps
-> counting in the carbs and insulin on board that Nightscout shows, because
-> Nightscout keeps using deleted records. The fix is not in any release yet.
-> This is not medical advice; talk to your care team before relying on
-> entries made in one app reaching another.
+> counting in the carbs and insulin on board (COB and IOB) that Nightscout
+> shows, because Nightscout keeps using deleted records. A fix for both is
+> ready for review for 15.0.9 and is not in any release yet. With the fix,
+> new entries and edits made through the older interface reach AndroidAPS,
+> and entries deleted in AndroidAPS stop counting on your site. One thing
+> stays as it is, by decision: an entry deleted in the Nightscout
+> careportal, Loop, Trio or xDrip+ is still not removed from AndroidAPS, so
+> delete it in AndroidAPS as well. A looping AndroidAPS phone only takes
+> carbs and insulin from Nightscout if "accept carbs" and "accept insulin"
+> are switched on in its NSClient settings; both are off unless you turned
+> them on. The AAPSClient follower app always takes them. If you enter the
+> same meal in both the careportal and AndroidAPS, AndroidAPS may show it
+> twice after the fix. This is not medical advice; talk to your care team
+> before relying on entries made in one app reaching another.
 
 ## Who should review this, and why
 
@@ -67,19 +80,13 @@ maintainer, plus someone who runs AndroidAPS with NSClientV3
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official grep -q srvModified origin/dev -- lib/server/treatments.js lib/se`** &nbsp;·&nbsp; kind: `static`
-
-FAILS today: none of origin/dev's v1 storage modules mention srvModified. A
-presence check only (the same grep finds it in
-lib/api3/generic/create/insert.js); it goes green when stamping lands, and the
-probe below is what says whether history then returns v1 creates, updates and
-deletes. Stays RED until the branch is merged.
-
 **`sh -c 'git -C externals/cgm-remote-monitor-official grep -q srvModified bf/v1-writes-v3-history -- lib/server/`** &nbsp;·&nbsp; kind: `static`
 
 The branch's v1 storage modules stamp srvModified through lib/server/srv-
 dates.js (origin/dev has neither and fails this). A presence check; the probe
-and tests/api3.v1-writes-history.test.js decide.
+and tests/api3.v1-writes-history.test.js decide. Point it at origin/dev once
+merged. (The origin/dev form of this check was dropped on 2026-09-26, when the
+item became ready-to-push: it could only go green by merging.)
 
 **`sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/soft-delete`** &nbsp;·&nbsp; kind: `static`
 
@@ -87,6 +94,15 @@ BF-135: the branch has lib/server/soft-deleted.js and the cache and treatments
 reads use it (origin/dev has no such module and fails this). A presence check;
 tests/soft-deleted.jl1.test.js decides (COB 40 g to none after an AAPS v3
 delete and after an AAPS v1 socket dbUpdate isValid false).
+
+**`git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" bf/v1-writes-v3-h`** &nbsp;·&nbsp; kind: `static`
+
+The maintainer's v1 DELETE decision (2026-09-26, keep hard delete) is pinned
+by a test on the branch: "a v1 DELETE still removes the record, and history
+does not report it". origin/dev has no such test file and fails this. A
+presence check; the test itself decides. The test's name and comment on
+d45987f7 still say "decision pending" and should be reworded before the PR
+opens.
 
 ## What these gates do NOT prove
 
@@ -96,10 +112,14 @@ delete and after an AAPS v1 socket dbUpdate isValid false).
   tools/lab/triage-2026-09/v1-writes-v3-history.js, which boots a server and
   needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8
   92d08342, dev 4f705217 and #8758 ab7b22d6 (5 v1 arms absent from history;
-  5 controls present). Done when it exits 0 on the candidate. 2026-09-25 on
-  the branch 718efddc: the treatments, entries and devicestatus v1 arms and
-  the v1 PUT arm are present; still exit 1, only on the v1 DELETE arm (hard
-  delete), whose design awaits the maintainer.
+  5 controls present). 2026-09-25 on the branch 718efddc: the treatments,
+  entries and devicestatus v1 arms and the v1 PUT arm are present; exit 1
+  only on the v1 DELETE arm. Since the 2026-09-26 decision that arm measures
+  the decided behaviour (a v1 hard delete is not in history), not a pending
+  defect, so the expected result on the candidate is exit 1 with every other
+  arm present; exit 1 on any other arm is a regression. 2026-09-26 in the
+  combined run lab/round1-combined bda225e4: exit 1 on the v1 DELETE arm
+  only.
 - The AndroidAPS side (LoadTreatmentsRunner.kt, LoadBgRunner.kt) is read,
   not run. A run of AndroidAPS NSClientV3 against a site with a careportal
   entry made after its first load is the missing confirmation.
@@ -132,7 +152,41 @@ read (stamp before commit, a millisecond window, v3 too); after 15.0.9. BF-135
 (JL-1, found by the journey lab) is fixed by the same commit: isValid false
 counts as deleted everywhere except v3 search and history; COB 40 g to none on
 both AAPS delete paths. Maintainer decision 2026-09-25: BF-135 goes into
-15.0.9 with BF-122 on this branch.
+15.0.9 with BF-122 on this branch. 2026-09-26 - Branch head d45987f7: one test
+commit on 718efddc, only tests/soft-deleted.jl1.test.js (a v1 profile search
+by date leaves out a deleted profile with the same date, and returns it for
+find[isValid]=false). 30 new tests across the two files; suite 3200/0/3 (Node
+22.23.2, MongoDB 7.0.43). Still merges cleanly with bf/activity-date-coercion.
+2026-09-26 - Combined run: all six round-1 branches (bf/activity-date-coercion
+20c197bb, bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9,
+bf/profile-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
+bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
+lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
+full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests), Node
+22.23.2, MongoDB 7.0.43. All five probes gave their expected exit codes: bf106
+gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0,
+v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision, BFQ-122).
+The run carried 718efddc, not the later test commit d45987f7. Decisions: -
+2026-09-25 (maintainer): BF-135 into 15.0.9 with BF-122, on this branch. -
+2026-09-26 (maintainer): v1 DELETE, option (a), keep hard delete. Reason
+given: people are likely to use AndroidAPS as the controller, not the
+careportal; AAPS deletes are soft (isValid false), and with BF-135 they stop
+counting on the site and reach other AAPS instances through v3 history.
+Deletes made in the careportal, Loop, Trio or xDrip+ still do not reach
+AndroidAPS. "Make sure documentation is accurate." AAPS applies carbs and
+insulin from Nightscout, and their deletions, only when NSClient "accept
+carbs" / "accept insulin" (ns_receive_carbs, ns_receive_insulin) are on; both
+default off (AndroidAPS 7e1d537d49 core/keys BooleanKey.kt:224-225); the
+AAPSClient build always accepts them and hides the settings
+(showInNsClientMode = false; NsIncomingDataProcessor.kt:163-167,
+StoreDataForDbImpl.kt:420-426; read). BFQ-122 moves from needs-decision to
+ready-to-push. Known-issue wording for the 15.0.9 release notes, for the
+release pass and only once this branch is merged: "An entry you delete in the
+Nightscout careportal, Loop, Trio or xDrip+ is not removed from AndroidAPS.
+Delete it in AndroidAPS as well. A looping AndroidAPS phone takes carbs and
+insulin from Nightscout only if you switched on 'accept carbs' and 'accept
+insulin' in its NSClient settings." The release files list only what is on
+dev, so the line is not in them yet.
 
 ---
 

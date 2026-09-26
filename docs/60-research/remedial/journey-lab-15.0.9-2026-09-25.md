@@ -69,8 +69,9 @@ id). This lasts until the next reading, device status or treatment write. Measur
 The problem exists on 15.0.8, so it is not a regression. Profile writes do emit `data-received`
 (`lib/server/profile.js:46,86,125,201`), and **the mechanism was not determined**. Impact: after a
 new phone or reinstall uploads a new device token, commands in that window go to the old phone.
-With a looping phone that window is at most one upload cycle (about 5 minutes). Filing it is the
-maintainer's call.
+With a looping phone that window is at most one upload cycle (about 5 minutes). Recorded as
+[GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload):
+an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26).
 
 ## JL-1: an entry AndroidAPS deletes keeps counting
 

@@ -11,7 +11,7 @@ This document is an index of gaps organized by domain.
 - [Pumps](pumps-gaps.md) - 10 gaps
 - [Sync Identity](sync-identity-gaps.md) - 71 gaps
 - [Telemetry and Observability](telemetry-observability-gaps.md) - 5 gaps
-- [Treatments](treatments-gaps.md) - 26 gaps
+- [Treatments](treatments-gaps.md) - 29 gaps
 
 ## Quick Reference
 
@@ -22,11 +22,11 @@ This document is an index of gaps organized by domain.
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
 | connectors | 71 | [connectors-gaps.md](connectors-gaps.md) | 2026-07-07 |
 | cgm-sources | 53 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-07-16 |
-| treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
+| treatments | 29 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
 | telemetry-observability | 5 | [telemetry-observability-gaps.md](telemetry-observability-gaps.md) | 2026-07-16 |
 
-Total: 384 unique GAP IDs reported by `python tools/find_gap_duplicates.py` after adding GAP-CGM-035 on 2026-07-16. The quick-reference table remains a human-maintained domain index.
+Total: 386 unique GAP IDs reported by `python tools/find_gap_duplicates.py` after adding GAP-REMOTE-010 on 2026-09-26 (384 after GAP-CGM-035 on 2026-07-16). The treatments count is the number of `### GAP-` headings in treatments-gaps.md on 2026-09-26. The quick-reference table remains a human-maintained domain index.
 
 ## Duplicate Resolution (2026-02-01)
 

@@ -1,5 +1,5 @@
-<!-- Draft body for branch bf/v1-writes-v3-history at 718efddc (one commit on dev e3adc91d), 2026-09-25. Not opened. This comment is hidden on GitHub. -->
-Records written through API v1, the websocket or inside the server now appear in API v3 history (BF-122, issue #8244). A record deleted with `isValid: false` stops counting on the site (JL-1). One commit on `dev` `e3adc91d`. v1 DELETE is left unchanged: whether it should keep a deletion marker is an open decision (see "Open decision: v1 DELETE").
+<!-- Draft body for branch bf/v1-writes-v3-history at d45987f7 (718efddc, the fix, plus one test commit, on dev e3adc91d), 2026-09-26. Not opened. This comment is hidden on GitHub. -->
+Records written through API v1, the websocket or inside the server now appear in API v3 history (BF-122, issue #8244). A record deleted with `isValid: false` stops counting on the site (JL-1). Two commits on `dev` `e3adc91d`: the fix and one test commit. v1 DELETE is left unchanged by the maintainer's decision: it stays a hard delete (see "Decision: v1 DELETE stays a hard delete").
 
 ## What changes for you
 
@@ -26,10 +26,10 @@ A few words used below:
 
 ### What to check after you update
 
-- **Carbs and insulin you entered in the careportal will now reach AndroidAPS**, if AndroidAPS is set to accept them. If you have been entering the same meal both in the careportal and on the phone as a workaround, AndroidAPS may now see it **twice**. Check the phone's treatment list after the update.
+- **Carbs and insulin you entered in the careportal will now reach AndroidAPS**, if AndroidAPS is set to accept them. On a phone that loops, AndroidAPS takes carbs and insulin from Nightscout only if **"accept carbs"** and **"accept insulin"** are switched on in its NSClient settings. Both are off unless you turned them on. The AAPSClient follower app always takes them, and does not show these two settings. If you have been entering the same meal both in the careportal and on the phone as a workaround, AndroidAPS may now see it **twice**. Check the phone's treatment list after the update.
 - AndroidAPS applies what it receives according to its own settings. For carbs it already knows about, it accepts a deletion and a shorter duration, but not a changed amount (AAPS `SyncNsCarbsTransaction.kt:20-34`, read).
 - Records written before the update are not changed. AndroidAPS gets only what is written or edited after the update.
-- **Deleting in the careportal (or by Loop, Trio or xDrip+) still removes the record completely, and AndroidAPS still does not hear about it.** An entry deleted that way keeps counting on the phone. Delete it in AndroidAPS as well until that is decided (see "Open decision: v1 DELETE").
+- **Deleting in the careportal (or by Loop, Trio or xDrip+) still removes the record completely, and AndroidAPS still does not hear about it.** An entry deleted that way keeps counting on the phone. This stays as it is by decision. **Delete the entry in AndroidAPS as well.** An entry you delete in AndroidAPS stops counting on your site, and other phones running AndroidAPS hear about the delete, if they are set to accept carbs and insulin.
 
 ## Technical detail
 
@@ -61,9 +61,18 @@ What the commit does:
 
 Which numbers and displays change (measured in the tests and the lab below): COB and IOB from treatments, the treatment glyphs on the chart, Reports (they read v1), `/api/v1/treatments|entries|devicestatus|food|profile*`, `/api/v1/count`, `/api/v2/properties` (cob, iob and the rest built from `ddata`), `/api/v2/ddata`, and the websocket data followers and the web page receive. COB and IOB that AndroidAPS uploads in its device status are unchanged, because they are the phone's own numbers.
 
-### Open decision: v1 DELETE (not changed)
+### Decision: v1 DELETE stays a hard delete
 
-v1 `DELETE /api/v1/<col>/<id>`, `DELETE /api/v1/<col>?find…` and websocket `dbRemove` still remove documents, so v3 history has no tombstone to report. AAPS then keeps its copy of the record. It is still counted on the phone after the careportal deletes it (read: `SyncNsCarbsTransaction.kt:20-26` invalidates only on `isValid: false`; a record missing from history changes nothing). The test "a v1 DELETE still removes the record…" pins this behaviour.
+**Decided 2026-09-26 by the maintainer: option (a), keep hard delete.** The reason given: people are likely to use AndroidAPS as the controller, not the careportal. AndroidAPS deletes are soft (`isValid: false`). With JL-1's fix below they stop counting on the site, and they reach other AndroidAPS instances through v3 history. Consequences:
+
+- A careportal, Loop, Trio or xDrip+ delete still removes the record, never appears in v3 history, and does not reach AndroidAPS, which keeps counting its copy. The plain-language section tells people to delete in AndroidAPS as well.
+- The Admin Tools and API purges keep freeing space, and no tombstones build up.
+- The probe's v1 DELETE arm now measures the decision: the record is expected to be absent from history, and the probe exits 1 on that arm alone.
+- What reaches AndroidAPS through history is applied according to its NSClient settings (AAPS `7e1d537d49`, read). With the looping app, carbs and insulin from Nightscout, and their deletions, are applied only when "accept carbs" and "accept insulin" (`ns_receive_carbs`, `ns_receive_insulin`) are on; both default to off (`core/keys/.../BooleanKey.kt:224-225`). The AAPSClient build always applies them and hides both settings (`showInNsClientMode = false`; the checks are `preferences.get(...) || config.AAPSCLIENT` in `NsIncomingDataProcessor.kt:163-167` and `StoreDataForDbImpl.kt:420-426`). A full sync applies them too.
+
+The options considered, kept as the record:
+
+v1 `DELETE /api/v1/<col>/<id>`, `DELETE /api/v1/<col>?find…` and websocket `dbRemove` still remove documents, so v3 history has no tombstone to report. AAPS then keeps its copy of the record. It is still counted on the phone after the careportal deletes it (read: `SyncNsCarbsTransaction.kt:20-26` invalidates only on `isValid: false`; a record missing from history changes nothing). The test "a v1 DELETE still removes the record…" pins this behaviour. Its name and comment on `d45987f7` still say "decision pending" and are to be reworded to name the decision.
 
 With JL-1 in place, a soft delete is possible without changing what the site shows. Soft deletes were not made the default because some things in the corpus would get worse:
 
@@ -74,7 +83,7 @@ With JL-1 in place, a soft delete is possible without changing what the site sho
 | (c) soft for single-record deletes (by `_id`, `find[_id]`, `find[id]`, `dbRemove`), hard for range and `*` deletes | AAPS hears about record deletes | Trio deletes with `find[id][$eq]` and with `find[created_at][$eq]&find[eventType][$eq]` (`Trio/.../NightscoutAPI.swift:160-173`, `:235-240`), so "single record" has to be judged from the query. A re-insert by the same `_id` needs a revive path in profile, devicestatus and websocket `dbAdd` |
 | (d) hard delete plus a minimal tombstone (`_id`, `identifier`, `isValid: false`, `srvModified`, date field) for records modified in the last 100 days (AAPS `maxAge`, `NSClientV3Plugin.kt:228`) | AAPS hears about recent deletes | space is freed except for small tombstones. Tombstones need a purge path. A date-ranged v1 read hides them (JL-1), but an unranged tool reading MongoDB directly sees them |
 
-The maintainer decides. (c) or (d) is the smallest change that gives AAPS careportal deletions.
+(c) or (d) would have been the smallest change that gives AAPS careportal deletions. Neither was chosen.
 
 ### History paging: what the v3 design still allows
 
@@ -90,14 +99,15 @@ The maintainer decides. (c) or (d) is the smallest change that gives AAPS carepo
 
 ## Tests
 
-New files: `tests/api3.v1-writes-history.test.js` (15 tests) and `tests/soft-deleted.jl1.test.js` (11 tests).
+New files: `tests/api3.v1-writes-history.test.js` (15 tests) and `tests/soft-deleted.jl1.test.js` (15 tests): 30 new tests.
 
 - v1 POST of a treatment, entry, device status, profile and food, and in-process `ctx.entries.create` and `ctx.treatments.create`, each appear in `history/<t>`, with `srvModified` a number and `srvCreated === srvModified`.
 - A v1 PUT of a v3 record by `_id` alone keeps `identifier` and `srvCreated`, and the change appears in history. A PUT that sends the record back with a stale `srvModified`/`srvCreated` gets them replaced or kept. A food and profile PUT keeps `srvCreated`. An entry re-sent for the same reading keeps `srvCreated`.
 - Websocket `dbAdd`, `dbUpdate` (including `isValid: false`, reported as deleted) and `dbUpdateUnset` (which cannot unset the server fields) appear in history, with `srvCreated` kept.
 - A 25-entry v1 batch is read in full by paging with limit 10 on the ETag cursor. A v3 write right after a 1,500-entry batch sorts after it. `next()` is strictly increasing.
-- Pinned: a v1 DELETE is not in history. Control: a v3 DELETE is in history with `isValid: false`.
+- Pinned (the maintainer's decision): a v1 DELETE is not in history. Control: a v3 DELETE is in history with `isValid: false`.
 - JL-1: AAPS v3 carbs 40 g give COB 40. After v3 DELETE, COB is 0, the record is absent from `ddata`, v1 list and v1 count, present with `find[isValid]=false`, present in v3 history and absent from v3 search. The same through the v1 socket (`dbAdd`, then `dbUpdate isValid:false`, which also takes it out of the cache). Control: v1 hard DELETE gives COB 0. Control: undeleted carbs keep counting. A 2 U bolus stops counting in IOB after v3 DELETE. A re-added treatment is stored. A deleted profile is not `/profile/current`. A deleted entry is absent from v1 and the cache, and re-sending it stores it again. A deleted device status and food are absent. A v1 DELETE by query removes tombstones. A cache unit test.
+- `tests/soft-deleted.jl1.test.js` also checks that a v1 profile search by date (`/api/v1/profiles/?find[date]=…`) leaves out a deleted profile with the same date, and still returns it when `find[isValid]=false` is asked for. Without the profile read filter, the deleted profile comes back.
 - Red on `e3adc91d`: 20 of the 25 then in the files fail there, and the 5 controls pass (run 2026-09-25 by copying the files into a clean `e3adc91d` worktree). Each fails with the original symptom, for example "expected 0 to be 1" (absent from history) and "expected 40 to be 0" (COB after delete). The shared-clock test was added afterwards and has its own break-it (B16).
 
 Changed expectations, marked `// CHANGED EXPECTATION` in the files: `tests/api3.create.test.js` (two dedup tests: the v3 copy of a v1 record no longer carries the v1 record's server times), and `tests/websocket.input-validation.test.js` (the dedup selectors now carry `isValid: {$ne: false}`, and the fake collection understands `$ne`). The fake collection in `tests/storage.selector-hardening.test.js` gains `find`, because food now reads before it writes.
@@ -141,7 +151,7 @@ Every one turned the named test red, and the others stayed green.
 |---|---|---|
 | treatments-v1, entries-v1, devicestatus-v1 | absent | **present** |
 | treatments-v1put | absent (`srvModified` removed) | **present** (`identifier` kept) |
-| treatments-v1del | absent | absent (open decision) |
+| treatments-v1del | absent | absent (kept by decision) |
 | controls (v3 ×3, v3del, v1+srvModified) | present | present |
 | exit | 1 | 1 (the delete arm only) |
 
@@ -161,7 +171,9 @@ After the delete, the soft-deleted site answers exactly as the hard-deleted cont
 
 ### Full suite
 
-`npm test` on `718efddc`, Node 22.23.2, MongoDB 7.0.43 (read from the server): **3196 passing, 0 failing, 3 pending** (3170 on `e3adc91d` plus the 26 new tests), exit 0.
+`npm test` on `d45987f7`, Node 22.23.2, MongoDB 7.0.43 (read from the server): **3200 passing, 0 failing, 3 pending** (3170 on `e3adc91d` plus the 30 new tests), exit 0. On `718efddc` alone it was 3196/0/3.
+
+Combined with the other five fix branches for 15.0.9 (local `lab/round1-combined` `bda225e4`, carrying `718efddc`), the full suite gave 3292 passing, 0 failing, 3 pending on 2026-09-26 (3170 plus 122 new tests), and this probe exited 1 on the v1 DELETE arm only.
 
 ## Client impact (read from the corpus unless marked run)
 
@@ -171,7 +183,7 @@ After the delete, the soft-deleted site answers exactly as the hard-deleted cont
   - device statuses and profiles written through v1;
   - v1 and websocket edits of its own records, which keep their `identifier`.
 
-  Records it already knows by NS id change only by invalidation, or a shorter duration for carbs (`SyncNsCarbsTransaction.kt:20-34`). Records it does not know are inserted, unless it matches them by pump ids or timestamp (`:37-67`). **Worse for anyone?** Someone who enters the same meal in both the careportal and AAPS, at different timestamps, now gets two carb records in AAPS. That is the NSClient receive path working as designed, and it is a behaviour change to put in the release notes. v1 deletes still do not reach AAPS (see the open decision).
+  Records it already knows by NS id change only by invalidation, or a shorter duration for carbs (`SyncNsCarbsTransaction.kt:20-34`). Records it does not know are inserted, unless it matches them by pump ids or timestamp (`:37-67`). **Worse for anyone?** Someone who enters the same meal in both the careportal and AAPS, at different timestamps, now gets two carb records in AAPS. That is the NSClient receive path working as designed, and it is a behaviour change to put in the release notes. v1 deletes still do not reach AAPS (see the decision on v1 DELETE).
 - **Uploaders using v1** (careportal `lib/client/careportal.js:398`, `boluscalc.js:544`, chart drag `renderer.js:904-918`; Loop/NightscoutKit `4ec9fd1` `NightscoutClient.swift:13-15`; Trio `e41c9db37` `NightscoutAPI.swift:14-17`; xDrip+ `1ed760048` `NightscoutUploader.java:130-149`; xdripswift `c268542e` `NightscoutSyncManager.swift:54,58,61`; oref0 `d219baf9` `ns-upload.sh:13`, `ns-upload-entries.sh:22`; nightscout-connect `04102f9` `lib/outputs/internal.js:40`, `nightscout.js:63,109,161`). Their requests are unchanged. Responses and v1 reads now also carry `srvModified` and `srvCreated`, as records written by AAPS already did. A client that sends those fields back has them replaced by the server. No corpus client reads them.
 - **Readers of v1** (Loop, Trio, LoopFollow `4a74b781`, nightguard `75404bd`, xDrip+ followers, Nightscout Reporter, oref0): they no longer receive records deleted with `isValid: false`. No corpus client asks for `find[isValid]` or treats `isValid` from Nightscout specially (grep of the clients' sources: the only `isValid` hits are their own local model properties, read). For oref0 and Trio, which read Nightscout treatments, deleted carbs stop reaching them (read). That is the intended fix.
 - **Older AndroidAPS on the v1 socket NSClient** (not in the corpus; released versions not checked): when another AAPS deletes a treatment, a v1-socket client now gets a websocket delta with `action: 'remove'` (`calcdelta.js:64-68`) instead of an update carrying `isValid: false`. Whether those versions act on `remove` was not checked. That is the open item for this change.

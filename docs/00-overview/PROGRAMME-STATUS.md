@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 113 | 36 | 14 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 115 | 37 | 12 |
 | **Modernization** | `release-train` | 27 | 5 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **160** | **50** | **18** |
+| | **total** | **162** | **51** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -134,17 +134,19 @@ cover more than one `BF-`:
 | `BFQ-118` | `merged-upstream` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
 | `BFQ-119` | `merged-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `merged-upstream` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
-| `BFQ-121` | `needs-decision` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
-| `BFQ-122` | `needs-decision` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
+| `BFQ-121` | `in-progress` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
+| `BFQ-122` | `ready-to-push` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
 | `BFQ-123` | `ready-to-push` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
 | `BFQ-124` | `not-started` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) |
 | `BFQ-125` | `ready-to-push` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
 | `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
 | `BFQ-127` | `not-started` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
-| `BFQ-128` | `ready-to-push` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
+| `BFQ-128` | `in-progress` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
 | `BFQ-129` | `ready-to-push` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-133` | `not-started` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
 | `BFQ-134` | `merged-upstream` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
+| `BFQ-136` | `in-progress` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
+| `BFQ-137` | `not-started` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -181,7 +183,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 | 1 | 5 |  | 5 | 9 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 26 | 1 | 5 | 5 | 4 | 31 | 6 |  | 2 | 1 |  | **81** |
+| `register-open` | 27 | 4 | 5 | 5 | 4 | 31 | 4 |  | 2 | 1 |  | **83** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -222,14 +224,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 126 | 79% |
+| Maintainer | 128 | 79% |
 | SECURITY reviewer | 15 | 9% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 4% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **160** | |
+| **total** | **162** | |
 
 <!-- END GENERATED: reviewer-load -->
 
