@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-122
+# Review packet — BFQ-122 (PR #8775)
 
 **BF-122 - records written, changed or deleted through API v1 never appear in
 API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps
@@ -22,7 +22,7 @@ counting**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/v1-writes-v3-history` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-122` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-122` is the measurement |
 | semver | `minor` |
 | register entries | `BF-122`, `BF-135` |
 | operator exposure | **reaches an operator on today's release** |
@@ -130,17 +130,19 @@ comment record the decision (hard delete kept).
 
 ## Notes carried on the item
 
-Filed 2026-09-25 from the GitHub triage (issue #8244, opened 2024-03-24 as a
-feature request by someone copying xDrip+ entries through v3 history). The
-consumer survey reports/consumer-impact-15.0.9/clients/android/androidaps.md
-S13 records AAPS's history paging but not this gap. 2026-09-25 - PARTLY FIXED
-(creates and updates) on bf/v1-writes-v3-history 718efddc (local, not pushed),
-one commit on dev e3adc91d: srvModified on every v1, websocket and in-process
-write (srvCreated on insert) for every v3-served collection; v1 PUT and
-replaceOne keep identifier and srvCreated; one monotonic server clock for all
-writers, v3 included. 26 new tests (20 fail on e3adc91d with the original
-symptom), 24 break-its, suite 3196/0/3 (Node 22.23.2, MongoDB 7.0.43). Three
-existing expectations adjusted (tests/api3.create.test.js two dedup tests,
+2026-09-26 - OPENED upstream as #8775 (pushed to official, head unchanged from
+the tested commit; dev e3adc91d). Filed 2026-09-25 from the GitHub triage
+(issue #8244, opened 2024-03-24 as a feature request by someone copying xDrip+
+entries through v3 history). The consumer survey reports/consumer-
+impact-15.0.9/clients/android/androidaps.md S13 records AAPS's history paging
+but not this gap. 2026-09-25 - PARTLY FIXED (creates and updates) on
+bf/v1-writes-v3-history 718efddc (local, not pushed), one commit on dev
+e3adc91d: srvModified on every v1, websocket and in-process write (srvCreated
+on insert) for every v3-served collection; v1 PUT and replaceOne keep
+identifier and srvCreated; one monotonic server clock for all writers, v3
+included. 26 new tests (20 fail on e3adc91d with the original symptom), 24
+break-its, suite 3196/0/3 (Node 22.23.2, MongoDB 7.0.43). Three existing
+expectations adjusted (tests/api3.create.test.js two dedup tests,
 tests/websocket.input-validation.test.js selectors, tests/storage.selector-
 hardening.test.js harness). NEEDS DECISION: v1 DELETE design - (a) keep hard,
 (b) all soft, (c) single-record soft, (d) hard plus a minimal tombstone.

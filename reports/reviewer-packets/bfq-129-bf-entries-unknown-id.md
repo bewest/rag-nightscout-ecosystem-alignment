@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-129
+# Review packet — BFQ-129 (PR #8772)
 
 **BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500**
 
@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/entries-unknown-id` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-129` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-129` is the measurement |
 | semver | `patch` |
 | register entries | `BF-129` |
 | operator exposure | **reaches an operator on today's release** |
@@ -61,28 +61,29 @@ once merged.
 
 ## Notes carried on the item
 
-Open, found 2026-09-25 by the #8758 freeze review and queued at the
-maintainer's request. Live on 15.0.8 for a lower-case id; #8758 extends it to
-an upper-case id. Small enough to fold into #8758 if the maintainer wants;
-otherwise after 15.0.9. Decide 404 or 200 [] first. 2026-09-25 - FIXED on
-bf/entries-unknown-id f79dc732 (local, not pushed), one commit on dev
-e3adc91d: an unknown 24-hex id answers 200 [] (decided over 404); storage
-faults still 500; swagger updated. 11 tests; suite 3181/0/3 (Node 22.23.2,
-MongoDB 7.0.43). Measured: 15.0.8 lower-case unknown 500, upper-case 200 [];
-e3adc91d both 500; branch both 200 []. On 15.0.8 an entry stored under a
-lower-case hex string also answered 500; #8758 fixed that. The consumer survey
-finds no corpus client that fetches an entry by id. A BF-73 addendum came from
-this measurement (register BF-73). 2026-09-26 - Combined run: all six round-1
-branches (bf/activity-date-coercion 20c197bb, bf/entries-unknown-id f79dc732,
-bf/maker-level-names 2f50ada9, bf/profile-switch-percentage 5a895b49,
-bf/pebble-delta-units aa224c69, bf/v1-writes-v3-history 718efddc) merged on
-dev e3adc91d as local lab/round1-combined bda225e4 (worktree
-externals/work/crm-round1-combined): full suite 3292 passing / 0 failing / 3
-pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43. All five
-probes gave their expected exit codes: bf106 gate 0, maker-language 0,
-profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the v1
-DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not the
-later test commit d45987f7.
+2026-09-26 - OPENED upstream as #8772 (pushed to official, head unchanged from
+the tested commit; dev e3adc91d). Open, found 2026-09-25 by the #8758 freeze
+review and queued at the maintainer's request. Live on 15.0.8 for a lower-case
+id; #8758 extends it to an upper-case id. Small enough to fold into #8758 if
+the maintainer wants; otherwise after 15.0.9. Decide 404 or 200 [] first.
+2026-09-25 - FIXED on bf/entries-unknown-id f79dc732 (local, not pushed), one
+commit on dev e3adc91d: an unknown 24-hex id answers 200 [] (decided over
+404); storage faults still 500; swagger updated. 11 tests; suite 3181/0/3
+(Node 22.23.2, MongoDB 7.0.43). Measured: 15.0.8 lower-case unknown 500,
+upper-case 200 []; e3adc91d both 500; branch both 200 []. On 15.0.8 an entry
+stored under a lower-case hex string also answered 500; #8758 fixed that. The
+consumer survey finds no corpus client that fetches an entry by id. A BF-73
+addendum came from this measurement (register BF-73). 2026-09-26 - Combined
+run: all six round-1 branches (bf/activity-date-coercion 20c197bb, bf/entries-
+unknown-id f79dc732, bf/maker-level-names 2f50ada9, bf/profile-switch-
+percentage 5a895b49, bf/pebble-delta-units aa224c69, bf/v1-writes-v3-history
+718efddc) merged on dev e3adc91d as local lab/round1-combined bda225e4
+(worktree externals/work/crm-round1-combined): full suite 3292 passing / 0
+failing / 3 pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43.
+All five probes gave their expected exit codes: bf106 gate 0, maker-language
+0, profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the
+v1 DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not
+the later test commit d45987f7.
 
 ---
 

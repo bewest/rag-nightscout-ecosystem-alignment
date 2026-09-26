@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-128
+# Review packet — BFQ-128 (PR #8777)
 
 **BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked
 for (issue #6220); BF-138 - /pebble in the other units computes the Bolus
@@ -23,7 +23,7 @@ other requests share**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/pebble-delta-units` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-128` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-128` is the measurement |
 | semver | `patch` |
 | register entries | `BF-128`, `BF-138`, `BF-139` |
 | operator exposure | **reaches an operator on today's release** |
@@ -117,53 +117,55 @@ it at origin/dev once merged.
 
 ## Notes carried on the item
 
-Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened
-2020-10-10). A past maintainer comment suggested deprecating /pebble instead;
-that is the maintainer's decision. No client in the externals corpora calls
-it. 2026-09-25 - FIXED on bf/pebble-delta-units aa224c69 (local, not pushed),
-one commit on dev e3adc91d: addDelta uses delta.mgdl unless mmol is requested;
-sandbox units unchanged, because the register's first fix shape
-(prepareSandbox to mg/dl) gives bwp "20.32" against the site's "-0.96" on an
-mmol site asked for mg/dL (measured). 21 tests; suite 3191/0/3 (Node 22.23.2,
-MongoDB 7.0.43). Two further observations await the maintainer and are not
-filed: an mg/dL site asked for ?units=mmol computes BWP in an mmol sandbox
-against the mg/dL profile (bwp -2.17 against -0.96); and a shared-state
-mechanism in which one /pebble request's scaled values persist on shared data.
-Filed 2026-09-26 as BF-138 and BF-139. 2026-09-26 - Combined run: all six
-round-1 branches (bf/activity-date-coercion 20c197bb, bf/entries-unknown-id
-f79dc732, bf/maker-level-names 2f50ada9, bf/profile-switch-percentage
-5a895b49, bf/pebble-delta-units aa224c69, bf/v1-writes-v3-history 718efddc)
-merged on dev e3adc91d as local lab/round1-combined bda225e4 (worktree
-externals/work/crm-round1-combined): full suite 3292 passing / 0 failing / 3
-pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43. All five
-probes gave their expected exit codes: bf106 gate 0, maker-language 0,
-profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the v1
-DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not the
-later test commit d45987f7. 2026-09-26 - FIXED BF-139 on b58b937c (the /pebble
-sandbox gets its own copies of the readings without a stored scaled value) and
-BF-138 on b3db0f36 (iob, cob and bwp computed in a site-units sandbox; bwpo
-converted to the requested units; bwp not converted), both on aa224c69, local,
-not pushed. Correction to BF-138's figures: on a booted server the usual wrong
-output on an mg/dL site asked for mmol is bwp -0.96 (right by coincidence)
-with bwpo 23.2, an mg/dL number in an mmol response, because of BF-139;
--2.17/-61.8 appears only in-process on fresh data or between a load and its
-evaluation. On an mmol site asked for mg/dL, bwpo stayed in mmol (1.3) next to
-an mg/dL sgv. One BF-128 test expectation changed by design (bwpo now moves
-with ?units=mgdl). Suite on b3db0f36 3216/0/3 (Node 22.23.2, MongoDB 7.0.43,
-fresh database). BF-139 reaches the server's own alarm evaluation (reproduced
-on a booted server 2026-09-26); severity raised to safety (alarm integrity):
-the server's own alarm evaluation could judge a reading in the wrong units and
-raise a false low alarm, and values shown by /api/v2/properties, Alexa and
-Google Home could be wrong until the next data load. Ready to push: the PR
-body (reports/phase0-pr-bodies/pebble-delta-units.md) opens by saying
-reproduction detail is withheld because BF-139 is live on 15.0.8, and gives
-the mechanism, outcome, fix and tests only. Decisions: - 2026-09-26
-(maintainer): file BF-138 and BF-139, both fixed in 15.0.9 on this branch with
-BF-128, one PR. The item goes back from ready-to-push to in-progress, because
-the branch will gain their commits (fix in progress). BF-139 is described by
-mechanism only (live on 15.0.8). - 2026-09-26 (maintainer): BF-139 ships in
-the public /pebble PR with the mechanism in the body and no reproduction
-recipe, as BF-70 did (#8743, mechanism public, merged quickly). Ready to push.
+2026-09-26 - OPENED upstream as #8777 (pushed to official, head unchanged from
+the tested commit; dev e3adc91d). Filed 2026-09-25 from the GitHub issue
+triage (issue #6220, opened 2020-10-10). A past maintainer comment suggested
+deprecating /pebble instead; that is the maintainer's decision. No client in
+the externals corpora calls it. 2026-09-25 - FIXED on bf/pebble-delta-units
+aa224c69 (local, not pushed), one commit on dev e3adc91d: addDelta uses
+delta.mgdl unless mmol is requested; sandbox units unchanged, because the
+register's first fix shape (prepareSandbox to mg/dl) gives bwp "20.32" against
+the site's "-0.96" on an mmol site asked for mg/dL (measured). 21 tests; suite
+3191/0/3 (Node 22.23.2, MongoDB 7.0.43). Two further observations await the
+maintainer and are not filed: an mg/dL site asked for ?units=mmol computes BWP
+in an mmol sandbox against the mg/dL profile (bwp -2.17 against -0.96); and a
+shared-state mechanism in which one /pebble request's scaled values persist on
+shared data. Filed 2026-09-26 as BF-138 and BF-139. 2026-09-26 - Combined run:
+all six round-1 branches (bf/activity-date-coercion 20c197bb, bf/entries-
+unknown-id f79dc732, bf/maker-level-names 2f50ada9, bf/profile-switch-
+percentage 5a895b49, bf/pebble-delta-units aa224c69, bf/v1-writes-v3-history
+718efddc) merged on dev e3adc91d as local lab/round1-combined bda225e4
+(worktree externals/work/crm-round1-combined): full suite 3292 passing / 0
+failing / 3 pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43.
+All five probes gave their expected exit codes: bf106 gate 0, maker-language
+0, profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the
+v1 DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not
+the later test commit d45987f7. 2026-09-26 - FIXED BF-139 on b58b937c (the
+/pebble sandbox gets its own copies of the readings without a stored scaled
+value) and BF-138 on b3db0f36 (iob, cob and bwp computed in a site-units
+sandbox; bwpo converted to the requested units; bwp not converted), both on
+aa224c69, local, not pushed. Correction to BF-138's figures: on a booted
+server the usual wrong output on an mg/dL site asked for mmol is bwp -0.96
+(right by coincidence) with bwpo 23.2, an mg/dL number in an mmol response,
+because of BF-139; -2.17/-61.8 appears only in-process on fresh data or
+between a load and its evaluation. On an mmol site asked for mg/dL, bwpo
+stayed in mmol (1.3) next to an mg/dL sgv. One BF-128 test expectation changed
+by design (bwpo now moves with ?units=mgdl). Suite on b3db0f36 3216/0/3 (Node
+22.23.2, MongoDB 7.0.43, fresh database). BF-139 reaches the server's own
+alarm evaluation (reproduced on a booted server 2026-09-26); severity raised
+to safety (alarm integrity): the server's own alarm evaluation could judge a
+reading in the wrong units and raise a false low alarm, and values shown by
+/api/v2/properties, Alexa and Google Home could be wrong until the next data
+load. Ready to push: the PR body (reports/phase0-pr-bodies/pebble-delta-
+units.md) opens by saying reproduction detail is withheld because BF-139 is
+live on 15.0.8, and gives the mechanism, outcome, fix and tests only.
+Decisions: - 2026-09-26 (maintainer): file BF-138 and BF-139, both fixed in
+15.0.9 on this branch with BF-128, one PR. The item goes back from ready-to-
+push to in-progress, because the branch will gain their commits (fix in
+progress). BF-139 is described by mechanism only (live on 15.0.8). -
+2026-09-26 (maintainer): BF-139 ships in the public /pebble PR with the
+mechanism in the body and no reproduction recipe, as BF-70 did (#8743,
+mechanism public, merged quickly). Ready to push.
 
 ---
 

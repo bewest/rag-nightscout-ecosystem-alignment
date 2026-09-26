@@ -7994,8 +7994,8 @@ items:
     branch: bf/activity-date-coercion
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-activity-date-coercion
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8771]
     blast_radius: >
       lib/server/query.js default_options (a named collection with no walker
       gets legacyNumericDefaults: date and sgv read as numbers where the
@@ -8033,6 +8033,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-09-26 - OPENED upstream as #8771 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       2026-09-25 - FIXED on bf/activity-date-coercion 20c197bb (local, not
       pushed), one commit on dev e3adc91d: default walker restored per field
       where the schema does not type it; profile walker {} as on 15.0.8. 18
@@ -9408,8 +9409,8 @@ items:
     branch: bf/v1-writes-v3-history
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-v1-writes-v3-history
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8775]
     ships_to_operators_today: true
     blast_radius: >
       Three commits at dbc4c5fc (718efddc the fix, then two test commits,
@@ -9505,6 +9506,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/v1-writes-v3-history.js
     notes: >
+      2026-09-26 - OPENED upstream as #8775 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub triage (issue #8244, opened
       2024-03-24 as a feature request by someone copying xDrip+ entries
       through v3 history). The consumer survey
@@ -9588,8 +9590,8 @@ items:
     branch: bf/profile-switch-percentage
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-profile-switch-percentage
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8774]
     ships_to_operators_today: true
     blast_radius: >
       lib/profilefunctions.js getValueByTime (which switches are scaled);
@@ -9640,6 +9642,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/profile-switch-percentage.js
     notes: >
+      2026-09-26 - OPENED upstream as #8774 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub triage (issue #7771, opened
       2022-12-10). AAPS side read at AndroidAPS 7e1d537d49
       (ProfileSwitchExtension.kt toNSProfileSwitch; TreatmentMapper.kt).
@@ -9731,8 +9734,8 @@ items:
     branch: bf/maker-level-names
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-maker-level-names
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8773]
     ships_to_operators_today: true
     blast_radius: >
       lib/levels.js (new toKey) and lib/server/pushnotify.js sendMakerEvent
@@ -9776,6 +9779,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/maker-language.js
     notes: >
+      2026-09-26 - OPENED upstream as #8773 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub issue triage (issue #8104, opened
       2023-10-08). The two halves are independent: the translated name
       happens whenever the language is not English; the resend happens
@@ -9923,8 +9927,8 @@ items:
     branch: bf/pebble-delta-units
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-pebble-delta-units
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8777]
     ships_to_operators_today: true
     blast_radius: >
       Three commits at b3db0f36: aa224c69 (BF-128), b58b937c (BF-139),
@@ -10008,6 +10012,7 @@ items:
       - tools/lab/triage-2026-09/pebble-shared-scaled.js
       - reports/phase0-pr-bodies/pebble-delta-units.md
     notes: >
+      2026-09-26 - OPENED upstream as #8777 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened
       2020-10-10). A past maintainer comment suggested deprecating /pebble
       instead; that is the maintainer's decision. No client in the
@@ -10074,8 +10079,8 @@ items:
     branch: bf/api3-app-field-v1-records
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-136
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8776]
     ships_to_operators_today: true
     blast_radius: >
       One commit at df6c04bc. lib/api3/generic/update/validate.js only
@@ -10142,6 +10147,7 @@ items:
       - tools/lab/triage-2026-09/api3-app-field.js
       - reports/phase0-pr-bodies/api3-app-field-v1-records.md
     notes: >
+      2026-09-26 - OPENED upstream as #8776 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-26 from the 2026-09-25 measurement (the v3 PUT refusal
       was first noted under OID-V3-EDIT-MERGE). Severity: data loss of
       AAPS-uploaded treatments in Nightscout in that collision
@@ -10563,8 +10569,8 @@ items:
     branch: bf/entries-unknown-id
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-entries-unknown-id
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8772]
     ships_to_operators_today: true
     blast_radius: >
       lib/api/entries/index.js GET /entries/:spec (an id that names no
@@ -10590,6 +10596,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-09-26 - OPENED upstream as #8772 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Open, found 2026-09-25 by the #8758 freeze review and queued at the
       maintainer's request. Live on 15.0.8 for a lower-case id; #8758
       extends it to an upper-case id. Small enough to fold into #8758 if the

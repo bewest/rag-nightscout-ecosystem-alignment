@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-136
+# Review packet — BFQ-136 (PR #8776)
 
 **BF-136 - API v3 refuses an AndroidAPS write that lands on a record written
 through v1 (Field app cannot be modified), and AndroidAPS drops it**
@@ -21,7 +21,7 @@ through v1 (Field app cannot be modified), and AndroidAPS drops it**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/api3-app-field-v1-records` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-136` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-136` is the measurement |
 | semver | `patch` |
 | register entries | `BF-136` |
 | operator exposure | **reaches an operator on today's release** |
@@ -101,36 +101,38 @@ at origin/dev once merged.
 
 ## Notes carried on the item
 
-Filed 2026-09-26 from the 2026-09-25 measurement (the v3 PUT refusal was first
-noted under OID-V3-EDIT-MERGE). Severity: data loss of AAPS-uploaded
-treatments in Nightscout in that collision (dosing-relevant data in
-Nightscout; the phone's own dosing is unaffected). 2026-09-26 - FIXED on
-bf/api3-app-field-v1-records df6c04bc (local, not pushed), one commit on dev
-e3adc91d. Correction to the filed facts: a careportal-shaped v1 record is
-refused on date (careportal records have no date), on app only when the v1
-record carries a date; a v3 PUT is refused on date whether or not app is sent;
-a v3 PATCH with isValid true (what AndroidAPS sends on every update) is
-refused with "Field isValid", so every AndroidAPS edit of a v1-born record was
-silently dropped (for example a careportal temp target that AAPS changes);
-deletes are unaffected. AAPS treats the 400 as final and advances its cursor
-(NSClientV3Plugin.kt:1019, DataSyncSelectorV3.kt:256, read). Fix rule
-(isSameAsStored in lib/api3/generic/update/validate.js; POST dedup, PUT,
-PATCH): a field the stored record lacks is accepted when it contradicts
-nothing - app/device first value; isValid true (false stays refused); date
-only if equal to the stored created_at instant; identifier, utcOffset,
-eventType and server fields stay strict. 16 new tests (9 fail on dev); suite
-3186/0/3, and with BF-122 718efddc 3212/0/3 (Node 22.23.2, MongoDB 7.0.43,
-fresh database). Trade-off, pinned by a test: v3 fallback dedup (created_at +
-eventType, amounts not compared) now replaces a same-millisecond v1 record,
-e.g. careportal 20 g becomes AAPS 30 g and the careportal notes/enteredBy are
-lost; before, the AAPS entry was lost instead. Rare: careportal times are
-whole minutes. With BF-121's fix as well, a later identical v1 re-send of the
-taken-over record no longer matches it and is stored again (a duplicate when
-the amounts are equal); accepted by the maintainer 2026-09-26 as a known
-issue, not a defect to fix for 15.0.9 (BFQ-121). Decisions: - 2026-09-26
-(maintainer): fix in 15.0.9, on bf/api3-app-field-v1-records (worktree
-externals/work/crm-r2-fix-136). - 2026-09-26 (maintainer): the BF-121 x BF-136
-re-send duplicate is accepted as a known issue of 15.0.9, not fixed for it.
+2026-09-26 - OPENED upstream as #8776 (pushed to official, head unchanged from
+the tested commit; dev e3adc91d). Filed 2026-09-26 from the 2026-09-25
+measurement (the v3 PUT refusal was first noted under OID-V3-EDIT-MERGE).
+Severity: data loss of AAPS-uploaded treatments in Nightscout in that
+collision (dosing-relevant data in Nightscout; the phone's own dosing is
+unaffected). 2026-09-26 - FIXED on bf/api3-app-field-v1-records df6c04bc
+(local, not pushed), one commit on dev e3adc91d. Correction to the filed
+facts: a careportal-shaped v1 record is refused on date (careportal records
+have no date), on app only when the v1 record carries a date; a v3 PUT is
+refused on date whether or not app is sent; a v3 PATCH with isValid true (what
+AndroidAPS sends on every update) is refused with "Field isValid", so every
+AndroidAPS edit of a v1-born record was silently dropped (for example a
+careportal temp target that AAPS changes); deletes are unaffected. AAPS treats
+the 400 as final and advances its cursor (NSClientV3Plugin.kt:1019,
+DataSyncSelectorV3.kt:256, read). Fix rule (isSameAsStored in
+lib/api3/generic/update/validate.js; POST dedup, PUT, PATCH): a field the
+stored record lacks is accepted when it contradicts nothing - app/device first
+value; isValid true (false stays refused); date only if equal to the stored
+created_at instant; identifier, utcOffset, eventType and server fields stay
+strict. 16 new tests (9 fail on dev); suite 3186/0/3, and with BF-122 718efddc
+3212/0/3 (Node 22.23.2, MongoDB 7.0.43, fresh database). Trade-off, pinned by
+a test: v3 fallback dedup (created_at + eventType, amounts not compared) now
+replaces a same-millisecond v1 record, e.g. careportal 20 g becomes AAPS 30 g
+and the careportal notes/enteredBy are lost; before, the AAPS entry was lost
+instead. Rare: careportal times are whole minutes. With BF-121's fix as well,
+a later identical v1 re-send of the taken-over record no longer matches it and
+is stored again (a duplicate when the amounts are equal); accepted by the
+maintainer 2026-09-26 as a known issue, not a defect to fix for 15.0.9
+(BFQ-121). Decisions: - 2026-09-26 (maintainer): fix in 15.0.9, on
+bf/api3-app-field-v1-records (worktree externals/work/crm-r2-fix-136). -
+2026-09-26 (maintainer): the BF-121 x BF-136 re-send duplicate is accepted as
+a known issue of 15.0.9, not fixed for it.
 
 ---
 

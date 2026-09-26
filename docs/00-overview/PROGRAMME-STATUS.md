@@ -135,17 +135,17 @@ cover more than one `BF-`:
 | `BFQ-119` | `merged-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
 | `BFQ-120` | `merged-upstream` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
 | `BFQ-121` | `ready-to-push` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
-| `BFQ-122` | `ready-to-push` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
-| `BFQ-123` | `ready-to-push` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
+| `BFQ-122` | `in-flight-upstream` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
+| `BFQ-123` | `in-flight-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
 | `BFQ-124` | `not-started` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) |
-| `BFQ-125` | `ready-to-push` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
+| `BFQ-125` | `in-flight-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
 | `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
 | `BFQ-127` | `not-started` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
-| `BFQ-128` | `ready-to-push` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
-| `BFQ-129` | `ready-to-push` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
+| `BFQ-128` | `in-flight-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
+| `BFQ-129` | `in-flight-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-133` | `not-started` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
 | `BFQ-134` | `merged-upstream` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
-| `BFQ-136` | `ready-to-push` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
+| `BFQ-136` | `in-flight-upstream` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
 | `BFQ-137` | `not-started` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -179,14 +179,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 5 |  | 5 | 9 | 1 |  |  |  | 1 | **27** |
-| `register-open` | 27 | 1 | 5 | 9 | 4 | 31 | 4 |  | 2 | 1 |  | **84** |
-| `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 | 1 | 5 |  | 5 |  | 9 | 1 |  |  |  | 1 | **27** |
+| `register-open` | 27 | 1 | 5 | 2 | 4 | 7 | 31 | 4 |  | 2 | 1 |  | **84** |
+| `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

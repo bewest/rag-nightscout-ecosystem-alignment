@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-106
+# Review packet — BFQ-106 (PR #8771)
 
 **BF-106 - a numeric date filter on API v1 activity matches nothing on dev**
 
@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/activity-date-coercion` |
 | base | `origin/dev@e3adc91d` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-106` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-106` is the measurement |
 | semver | `patch` |
 | register entries | `BF-106` |
 
@@ -74,30 +74,32 @@ same script without --ref) and 0 on 20c197bb. Drop --ref once merged.
 
 ## Notes carried on the item
 
-2026-09-25 - FIXED on bf/activity-date-coercion 20c197bb (local, not pushed),
-one commit on dev e3adc91d: default walker restored per field where the schema
-does not type it; profile walker {} as on 15.0.8. 18 new tests; suite 3188/0/3
-(Node 22.23.2, MongoDB 7.0.43). Correction: the item first said no write or
-delete was affected; the devicestatus bulk DELETE with an sgv filter deletes
-nothing on dev, and the fix restores it. The mis-transcription started in the
-SHIPPING_WALKERS comment of tools/nsschema/emit/coercion_emit.py, which
-records walker {} for activity and devicestatus although both inherited the
-default on 15.0.8 (register BF-106; the emitter is not edited). Earlier: open,
-no branch. Reproduced 2026-09-23 by the consumer-replay lab: 7 records on
-v15.0.8, 0 on dev ddd9b600 and on the candidate (tree 2ce67b27), with the
-created_at control at 7 on all three. The gate is red on origin/dev 153e5658
-(2026-09-24). Filed with the maintainer's go-ahead (session -6a). Whether it
-goes into 15.0.9 is the maintainer's call; no decision is recorded. 2026-09-26
-- Combined run: all six round-1 branches (bf/activity-date-coercion 20c197bb,
-bf/entries-unknown-id f79dc732, bf/maker-level-names 2f50ada9, bf/profile-
-switch-percentage 5a895b49, bf/pebble-delta-units aa224c69,
-bf/v1-writes-v3-history 718efddc) merged on dev e3adc91d as local
-lab/round1-combined bda225e4 (worktree externals/work/crm-round1-combined):
-full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests), Node
-22.23.2, MongoDB 7.0.43. All five probes gave their expected exit codes: bf106
-gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0,
-v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision, BFQ-122).
-The run carried 718efddc, not the later test commit d45987f7.
+2026-09-26 - OPENED upstream as #8771 (pushed to official, head unchanged from
+the tested commit; dev e3adc91d). 2026-09-25 - FIXED on bf/activity-date-
+coercion 20c197bb (local, not pushed), one commit on dev e3adc91d: default
+walker restored per field where the schema does not type it; profile walker {}
+as on 15.0.8. 18 new tests; suite 3188/0/3 (Node 22.23.2, MongoDB 7.0.43).
+Correction: the item first said no write or delete was affected; the
+devicestatus bulk DELETE with an sgv filter deletes nothing on dev, and the
+fix restores it. The mis-transcription started in the SHIPPING_WALKERS comment
+of tools/nsschema/emit/coercion_emit.py, which records walker {} for activity
+and devicestatus although both inherited the default on 15.0.8 (register
+BF-106; the emitter is not edited). Earlier: open, no branch. Reproduced
+2026-09-23 by the consumer-replay lab: 7 records on v15.0.8, 0 on dev ddd9b600
+and on the candidate (tree 2ce67b27), with the created_at control at 7 on all
+three. The gate is red on origin/dev 153e5658 (2026-09-24). Filed with the
+maintainer's go-ahead (session -6a). Whether it goes into 15.0.9 is the
+maintainer's call; no decision is recorded. 2026-09-26 - Combined run: all six
+round-1 branches (bf/activity-date-coercion 20c197bb, bf/entries-unknown-id
+f79dc732, bf/maker-level-names 2f50ada9, bf/profile-switch-percentage
+5a895b49, bf/pebble-delta-units aa224c69, bf/v1-writes-v3-history 718efddc)
+merged on dev e3adc91d as local lab/round1-combined bda225e4 (worktree
+externals/work/crm-round1-combined): full suite 3292 passing / 0 failing / 3
+pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43. All five
+probes gave their expected exit codes: bf106 gate 0, maker-language 0,
+profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the v1
+DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not the
+later test commit d45987f7.
 
 ---
 
