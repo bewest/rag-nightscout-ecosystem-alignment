@@ -30,23 +30,14 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 8 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-106` | `in-flight-upstream` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | #8771 |
-| `BFQ-122` | `in-flight-upstream` | BF-122 - records written, changed or deleted through API v1 never appear in API  | #8775 |
-| `BFQ-123` | `in-flight-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF an | #8774 |
-| `BFQ-125` | `in-flight-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-s | #8773 |
-| `BFQ-128` | `in-flight-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked f | #8777 |
-| `BFQ-129` | `in-flight-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | #8772 |
-| `BFQ-136` | `in-flight-upstream` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written throu | #8776 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-121` | `ready-to-push` | BF-121 - two carb entries at the same time are stored as one, and the carbs of o | &mdash; |
-| `BFQ-80` | `ready-to-push` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
@@ -82,13 +73,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8771** | `BFQ-106` | `bf/activity-date-coercion` | BF-106 - a numeric date filter on API v1 activity matches no | Maintainer |
-| **#8772** | `BFQ-129` | `bf/entries-unknown-id` | BF-129 - GET /api/v1/entries/<id> for an id that names no en | Maintainer |
-| **#8773** | `BFQ-125` | `bf/maker-level-names` | BF-125 - IFTTT Maker alarm events use translated level names | Maintainer |
-| **#8774** | `BFQ-123` | `bf/profile-switch-percentage` | BF-123 - an AndroidAPS Profile Switch percentage is ignored  | Maintainer |
-| **#8775** | `BFQ-122` | `bf/v1-writes-v3-history` | BF-122 - records written, changed or deleted through API v1  | Maintainer |
-| **#8776** | `BFQ-136` | `bf/api3-app-field-v1-records` | BF-136 - API v3 refuses an AndroidAPS write that lands on a  | Maintainer |
-| **#8777** | `BFQ-128` | `bf/pebble-delta-units` | BF-128 - /pebble on an mmol site returns the delta in mmol w | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
@@ -195,6 +179,6 @@ gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-25**, against cgm-remote-monitor-official `e3adc91d` and this repository at `366a8206`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-26**, against cgm-remote-monitor-official `ff93fa94` and this repository at `a2d1e803`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

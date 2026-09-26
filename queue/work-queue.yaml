@@ -22,14 +22,14 @@ meta:
   schema_version: 1
   generated_view: queue/QUEUE.md
   repo_root: /home/bewest/src/rag-nightscout-ecosystem-alignment
-  measured_at: "2026-09-25"
+  measured_at: "2026-09-26"
   measured_against:
-    cgm-remote-monitor-official: "e3adc91d"        # official/dev, 2026-09-25, after #8770; make queue-status run then
+    cgm-remote-monitor-official: "ff93fa94"        # official/dev, 2026-09-26, after #8771-#8780; make queue-status run then
     nightscout-connect: "04102f9"                  # official/dev, unchanged 2026-09-25 (0.1.1 line; v0.1.0 is main 4dde1ec)
     # The alignment repo's own HEAD when this manifest was measured. It can never
     # be the CURRENT head - recording it is itself a commit - so it names the tree
     # the measurements were taken against, one commit back.
-    main_repo_head: 366a8206
+    main_repo_head: a2d1e803
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
   gate_kinds:
@@ -2846,12 +2846,34 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of
+      #8780) and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is
+      496 commits and 81 first-parent merges ahead, 0 behind; 291 files,
+      +27503/-1699. Merged 2026-09-26, in this order: #8771 (BF-106,
+      ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774
+      (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776
+      (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779
+      (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780
+      (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable,
+      27 checks green and 3 skipped, reviewDecision APPROVED (the two
+      approvals were given at e3adc91d). Full suite on ff93fa94 itself
+      (fresh detached worktree, tree c342bce0, fresh database): 3396 passing
+      / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43, one cell only
+      (not the six-cell matrix of the integration record). On the same tree
+      the round-2 probes give their expected exit codes: bf106 gate 0,
+      maker-language 0, profile-switch-percentage 0, pebble-units 0,
+      pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1 with
+      --strict: v3-noid and ws-dbAdd, left by design),
+      api3-empty-identifier-delete 0, v1-writes-v3-history 1 on the v1
+      DELETE arm only (kept by decision). The browser-check gate's --with
+      list and the release notes are not updated here.
+
       Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of
       #8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0
       (P0-PIN). master is 92d08342 = tag 15.0.8; dev is 461 commits and 71
@@ -7994,7 +8016,7 @@ items:
     branch: bf/activity-date-coercion
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-activity-date-coercion
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8771]
     blast_radius: >
       lib/server/query.js default_options (a named collection with no walker
@@ -8006,23 +8028,30 @@ items:
       filter.
     review: maintainer
     operator_visible: >
-      On 15.0.9 as it stands, a tool that asks the older API for activity
-      records by their numeric date gets an empty list instead of the
-      records it got on 15.0.8, and a tool that deletes device status
-      records by a glucose value deletes nothing. The Nightscout pages do not
-      use these filters. The fix restores the 15.0.8 behaviour.
+      On the development version before 2026-09-26, a tool that asks the older
+      API for activity records by their numeric date gets an empty list
+      instead of the records it got on 15.0.8, and a tool that deletes device
+      status records by a glucose value deletes nothing. The Nightscout pages
+      do not use these filters. The fix restores the 15.0.8 behaviour; it was
+      merged before 15.0.9 was released, so 15.0.9 does not have this problem
+      and 15.0.8 never had it.
     semver: patch
     semver_reason: restores a 15.0.8 read behaviour that the coercion change removed
     register: [BF-106]
     gates:
-      - run: node tools/queue/gates/bf106-activity-date-coercion.js --ref bf/activity-date-coercion
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab9c96e6 origin/dev
         kind: static
         describe: >
-          Builds the activity query with the branch's own query.js and
-          activity.js and checks that a find[date][$gte] bound is a number.
-          Its control is origin/master (15.0.8), where the bound is a number.
-          Exits 1 on origin/dev e3adc91d (the same script without --ref) and 0
-          on 20c197bb. Drop --ref once merged.
+          #8771's merge ab9c96e6 (2026-09-26) is contained in origin/dev. It
+          carries bf/activity-date-coercion 20c197bb.
+      - run: node tools/queue/gates/bf106-activity-date-coercion.js
+        kind: static
+        describe: >
+          Builds the activity query with origin/dev's own query.js and
+          activity.js and checks that a find[date][$gte] bound is a number, as
+          on 15.0.8; its control is origin/master (15.0.8). Exits 0 on
+          origin/dev ff93fa94 (2026-09-26); it exited 1 on e3adc91d, before
+          #8771.
       - no-gate: >
           The HTTP behaviour (7 activity records on 15.0.8, 0 on dev; the
           devicestatus sgv filter and bulk DELETE) is measured by the branch's
@@ -8033,6 +8062,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-09-26 - MERGED into dev as ab9c96e6 (#8771, head 20c197bb). Not
+      released; goes into 15.0.9. The bf106 gate without --ref exits 0 on
+      origin/dev ff93fa94.
       2026-09-26 - OPENED upstream as #8771 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       2026-09-25 - FIXED on bf/activity-date-coercion 20c197bb (local, not
       pushed), one commit on dev e3adc91d: default walker restored per field
@@ -9269,8 +9301,8 @@ items:
     branch: bf/same-time-treatments
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-121
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8780]
     ships_to_operators_today: true
     blast_radius: >
       One commit at fc821024. lib/server/treatment-fallback-key.js (new),
@@ -9284,38 +9316,33 @@ items:
       bf/v1-writes-v3-history (BFQ-122), which merges first.
     review: maintainer (API semantics), plus someone who runs Loop
     operator_visible: >
-      If two carb entries of the same kind are recorded for exactly the
-      same time, Nightscout keeps only one of them. The other entry's
-      carbs disappear from Nightscout's charts, carbs on board, reports and
-      what followers see, with no error. This is most likely when you enter
-      two back-dated carb entries for the same minute in the Nightscout
-      careportal or bolus wizard, and it can happen with Loop remote carbs.
-      The app you entered them in still has both. If the totals in
-      Nightscout look lower than what you entered, check the app you
-      entered them in, and give each entry a different time. A fix is ready
-      for review for 15.0.9 and is not in any release yet. Even with the fix,
-      two entries for the same minute with the same amount are still kept
-      as one, because nothing tells them apart from the same entry sent
-      twice; and in AndroidAPS, a bolus and carbs saved at the same instant
-      as one "meal bolus" can still be kept as one. Rarely, when the careportal and AndroidAPS record
-      the same kind of treatment at exactly the same moment and an app later
-      re-sends the careportal entry, Nightscout can show it twice. Check
-      your treatment list if totals look high. This is
-      not medical advice; talk to your care team about how you enter carbs.
+      If two carb entries of the same kind are recorded for exactly the same
+      time, Nightscout keeps only one of them. The other entry's carbs
+      disappear from Nightscout's charts, carbs on board, reports and what
+      followers see, with no error. This is most likely when you enter two
+      back-dated carb entries for the same minute in the Nightscout careportal
+      or bolus wizard, and it can happen with Loop remote carbs. The app you
+      entered them in still has both. If the totals in Nightscout look lower
+      than what you entered, check the app you entered them in, and give each
+      entry a different time. This is fixed in the development version and
+      arrives with 15.0.9; 15.0.8 still has it. Even with the fix, two entries
+      for the same minute with the same amount are still kept as one, because
+      nothing tells them apart from the same entry sent twice; and in
+      AndroidAPS, a bolus and carbs saved at the same instant as one "meal
+      bolus" can still be kept as one. Rarely, when the careportal and
+      AndroidAPS record the same kind of treatment at exactly the same moment
+      and an app later re-sends the careportal entry, Nightscout can show it
+      twice. Check your treatment list if totals look high. This is not
+      medical advice; talk to your care team about how you enter carbs.
     semver: minor
     semver_reason: changes which v1 treatment writes update and which insert
     register: [BF-121]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/same-time-treatments:lib/server/treatment-fallback-key.js && git -C externals/cgm-remote-monitor-official grep -q treatment-fallback-key bf/same-time-treatments -- lib/server/treatments.js lib/server/websocket.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ff93fa94 origin/dev
         kind: static
         describe: >
-          The branch's v1 upsert and socket dbAdd take their key from
-          lib/server/treatment-fallback-key.js (origin/dev has no such file
-          and fails this). A presence check only; the probe and
-          tests/api.same-time-treatments.test.js decide. Point it at
-          origin/dev once merged. (The origin/dev shape check this replaces
-          was dropped on 2026-09-26, when the item became ready-to-push: it
-          could only go green by merging.)
+          #8780's merge ff93fa94 (2026-09-26) is contained in origin/dev. It
+          carries bf/same-time-treatments fc821024.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/same-time-carbs.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
@@ -9345,6 +9372,16 @@ items:
       - tools/lab/triage-2026-09/same-time-resend-shapes.js
       - reports/phase0-pr-bodies/same-time-treatments.md
     notes: >
+      2026-09-26 - MERGED into dev as ff93fa94 (#8780, head f3eb68de: fc821024
+      merged with dev 13f235e9 as f55fd8d8, suite 3310/0/3, then with dev
+      aa1111b2). Not released; goes into 15.0.9. On ff93fa94:
+      same-time-carbs.js exit 0 (exit 1 with --strict, the two known-issue
+      arms v3-noid and ws-dbAdd). Found with BF-140's probe on ff93fa94, not
+      filed: a v1 treatment re-sent with identifier "" is stored twice (1 on
+      v15.0.8 and aa1111b2), because treatment-fallback-key.js keys a write
+      without identity on identifier null, which does not match ""; null and
+      absent re-sends are unchanged. No corpus client sends "" (register
+      BF-140, "Left").
       Filed 2026-09-25 from the GitHub triage (issue #8185, opened
       2023-11-28). A maintainer comment on the issue says an identical
       created_at is expected to update; the reporter's case is Loop remote
@@ -9409,7 +9446,7 @@ items:
     branch: bf/v1-writes-v3-history
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-v1-writes-v3-history
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8775]
     ships_to_operators_today: true
     blast_radius: >
@@ -9429,60 +9466,47 @@ items:
       Some apps, including AndroidAPS, keep up to date with Nightscout by
       asking it only for what changed since they last asked. Nightscout does
       not include anything that was added, changed or deleted through its
-      older interface (API v1). That older interface is used by the
-      Nightscout careportal and bolus wizard, Loop, Trio, xDrip+, xdripswift,
-      OpenAPS and the built-in Nightscout Connect data source. So after its
-      first sync, AndroidAPS may not receive carbs or insulin you enter in
-      the Nightscout careportal, glucose readings uploaded by xDrip+ or
-      Nightscout Connect when Nightscout is its glucose source, or an edit or
-      deletion made elsewhere. Nothing tells you this has happened. Check
-      that entries made elsewhere show up in AndroidAPS. AndroidAPS's full
-      sync option reloads them. Separately, a carb or insulin entry you
-      delete in AndroidAPS keeps counting in the carbs and insulin on board
-      (COB and IOB) that Nightscout shows, because Nightscout keeps using
-      deleted records. A fix for both is ready for review for 15.0.9 and is
-      not in any release yet. With the fix, new entries and edits made
-      through the older interface reach AndroidAPS, and entries deleted in
-      AndroidAPS stop counting on your site. One thing stays as it is, by
-      decision: an entry deleted in the Nightscout careportal, Loop, Trio or
-      xDrip+ is still not removed from AndroidAPS, so delete it in
-      AndroidAPS as well. A looping AndroidAPS phone only takes carbs and
-      insulin from Nightscout if "accept carbs" and "accept insulin" are
-      switched on in its NSClient settings; both are off unless you turned
-      them on. The AAPSClient follower app always takes them. If you enter
-      the same meal in both the careportal and AndroidAPS, AndroidAPS may
-      show it twice after the fix. This is not medical advice; talk to your
-      care team before relying on entries made in one app reaching another.
+      older interface (API v1). That older interface is used by the Nightscout
+      careportal and bolus wizard, Loop, Trio, xDrip+, xdripswift, OpenAPS and
+      the built-in Nightscout Connect data source. So after its first sync,
+      AndroidAPS may not receive carbs or insulin you enter in the Nightscout
+      careportal, glucose readings uploaded by xDrip+ or Nightscout Connect
+      when Nightscout is its glucose source, or an edit or deletion made
+      elsewhere. Nothing tells you this has happened. Check that entries made
+      elsewhere show up in AndroidAPS. AndroidAPS's full sync option reloads
+      them. Separately, a carb or insulin entry you delete in AndroidAPS keeps
+      counting in the carbs and insulin on board (COB and IOB) that Nightscout
+      shows, because Nightscout keeps using deleted records. Both are fixed in
+      the development version and arrive with 15.0.9; 15.0.8 still has them.
+      With the fix, new entries and edits made through the older interface
+      reach AndroidAPS, and entries deleted in AndroidAPS stop counting on
+      your site. One thing stays as it is, by decision: an entry deleted in
+      the Nightscout careportal, Loop, Trio or xDrip+ is still not removed
+      from AndroidAPS, so delete it in AndroidAPS as well. A looping
+      AndroidAPS phone only takes carbs and insulin from Nightscout if "accept
+      carbs" and "accept insulin" are switched on in its NSClient settings;
+      both are off unless you turned them on. The AAPSClient follower app
+      always takes them. If you enter the same meal in both the careportal and
+      AndroidAPS, AndroidAPS may show it twice after the fix. This is not
+      medical advice; talk to your care team before relying on entries made in
+      one app reaching another.
     semver: minor
     semver_reason: v1-written records gain srvModified/srvCreated and v3 history returns more records
     register: [BF-122, BF-135]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q srvModified bf/v1-writes-v3-history -- lib/server/treatments.js lib/server/entries.js && git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/srv-dates.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1157a8de origin/dev
         kind: static
         describe: >
-          The branch's v1 storage modules stamp srvModified through
-          lib/server/srv-dates.js (origin/dev has neither and fails this). A
-          presence check; the probe and tests/api3.v1-writes-history.test.js
-          decide. Point it at origin/dev once merged. (The origin/dev form of
-          this check was dropped on 2026-09-26, when the item became
-          ready-to-push: it could only go green by merging.)
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/v1-writes-v3-history:lib/server/soft-deleted.js && git -C externals/cgm-remote-monitor-official grep -q soft-deleted bf/v1-writes-v3-history -- lib/server/cache.js lib/server/treatments.js'
-        kind: static
-        describe: >
-          BF-135: the branch has lib/server/soft-deleted.js and the cache and
-          treatments reads use it (origin/dev has no such module and fails
-          this). A presence check; tests/soft-deleted.jl1.test.js decides
-          (COB 40 g to none after an AAPS v3 delete and after an AAPS v1
-          socket dbUpdate isValid false).
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" bf/v1-writes-v3-history -- tests/api3.v1-writes-history.test.js
+          #8775's merge 1157a8de (2026-09-26) is contained in origin/dev. It
+          carries bf/v1-writes-v3-history dbc4c5fc (BF-122 and BF-135).
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" origin/dev -- tests/api3.v1-writes-history.test.js
         kind: static
         describe: >
           The maintainer's v1 DELETE decision (2026-09-26, keep hard delete)
-          is pinned by a test on the branch: "a v1 DELETE still removes the
-          record, and history does not report it". origin/dev has no such
-          test file and fails this. A presence check; the test itself
-          decides. Since dbc4c5fc the test's name and comment record the
-          decision (hard delete kept).
+          is pinned by a test in origin/dev: "a v1 DELETE still removes the
+          record, and history does not report it". A presence check; the test
+          itself decides, and it passes in the full suite on ff93fa94
+          (3396/0/3).
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
@@ -9506,6 +9530,15 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/v1-writes-v3-history.js
     notes: >
+      2026-09-26 - MERGED into dev as 1157a8de (#8775, head 4658b233 =
+      dbc4c5fc merged with dev). Not released; goes into 15.0.9. CodeQL on
+      #8775: alert #122 (js/sql-injection, the deleteMany in
+      lib/server/entries.js) was dismissed, the same flow as #110.
+      v1-writes-v3-history.js on origin/dev ff93fa94: exit 1 on the v1 DELETE
+      arm only (the decided behaviour). A v3 soft delete of a v1 record stored
+      with identifier null or "" still answered 404 on dev until #8778
+      (BF-140, RT-PR-8778), so such a record kept counting after an AndroidAPS
+      delete; fixed in aa1111b2.
       2026-09-26 - OPENED upstream as #8775 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub triage (issue #8244, opened
       2024-03-24 as a feature request by someone copying xDrip+ entries
@@ -9590,7 +9623,7 @@ items:
     branch: bf/profile-switch-percentage
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-profile-switch-percentage
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8774]
     ships_to_operators_today: true
     blast_radius: >
@@ -9603,25 +9636,22 @@ items:
       If you use AndroidAPS and switch to a profile at a percentage (for
       example 150%), Nightscout shows the new profile name with the
       percentage, but the basal rate, insulin sensitivity and carb ratio it
-      shows are still those of the profile at 100%. AndroidAPS itself uses
-      the right values. Nightscout's own display and its Bolus Wizard
-      Preview do not. Temporary basal rates are shown correctly. Use
-      AndroidAPS, not Nightscout, to check the rates in effect during a
-      percentage switch. This is not medical advice. Ask your care team
-      about any change to your insulin settings.
+      shows are still those of the profile at 100%. AndroidAPS itself uses the
+      right values. Nightscout's own display and its Bolus Wizard Preview do
+      not. Temporary basal rates are shown correctly. Use AndroidAPS, not
+      Nightscout, to check the rates in effect during a percentage switch.
+      This is fixed in the development version and arrives with 15.0.9; 15.0.8
+      still has it. This is not medical advice. Ask your care team about any
+      change to your insulin settings.
     semver: patch
     semver_reason: a bug fix in how an existing record is read; nothing stored changes
     register: [BF-123]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q aapsSwitchAdjustment bf/profile-switch-percentage -- lib/profilefunctions.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f0174d05 origin/dev
         kind: static
         describe: >
-          The branch's lib/profilefunctions.js recognises the AndroidAPS 3.x
-          switch shape (aapsSwitchAdjustment; origin/dev has none and fails
-          this, as it fails the earlier profileJson/percentage check). A
-          presence check only; the probe and
-          tests/profile-switch-percentage.test.js decide. Point it at
-          origin/dev once merged.
+          #8774's merge f0174d05 (2026-09-26) is contained in origin/dev. It
+          carries bf/profile-switch-percentage 5a895b49.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/profile-switch-percentage.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9642,6 +9672,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/profile-switch-percentage.js
     notes: >
+      2026-09-26 - MERGED into dev as f0174d05 (#8774, head 9d2e9c24). Not
+      released; goes into 15.0.9. profile-switch-percentage.js exits 0 on
+      origin/dev ff93fa94.
       2026-09-26 - OPENED upstream as #8774 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub triage (issue #7771, opened
       2022-12-10). AAPS side read at AndroidAPS 7e1d537d49
@@ -9734,7 +9767,7 @@ items:
     branch: bf/maker-level-names
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-maker-level-names
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8773]
     ships_to_operators_today: true
     blast_radius: >
@@ -9744,27 +9777,25 @@ items:
       IFTTT event names a non-English site sends.
     review: maintainer, plus someone who uses IFTTT with a non-English language
     operator_visible: >
-      If your Nightscout language is not English and you use IFTTT, the
-      alarm events Nightscout sends are named in your language instead of
-      the documented names such as ns-warning and ns-urgent. IFTTT applets
-      set up with the documented names never run, so those alerts do not
-      reach you; only the general ns-event still works. If Nightscout
-      cannot reach IFTTT, it can also send the same alarm again about every
-      minute. Do not rely on IFTTT alone for alarms: keep your phone's and
-      devices' own alarms on. The fix is not in any release yet. This is not
-      medical advice.
+      If your Nightscout language is not English and you use IFTTT, the alarm
+      events Nightscout sends are named in your language instead of the
+      documented names such as ns-warning and ns-urgent. IFTTT applets set up
+      with the documented names never run, so those alerts do not reach you;
+      only the general ns-event still works. If Nightscout cannot reach IFTTT,
+      it can also send the same alarm again about every minute. Do not rely on
+      IFTTT alone for alarms: keep your phone's and devices' own alarms on.
+      The event names are fixed in the development version and arrive with
+      15.0.9; 15.0.8 still has this. The repeat after a failed call stays, by
+      decision. This is not medical advice.
     semver: patch
     semver_reason: restores the documented IFTTT event names; a site that renamed its applets to the translated names needs a release note
     register: [BF-125]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/maker-level-names:lib/server/pushnotify.js && ! git -C externals/cgm-remote-monitor-official grep -qF "levels.toLowerCase(notify.level)" bf/maker-level-names -- lib/server/pushnotify.js && git -C externals/cgm-remote-monitor-official grep -qF "levels.toKey(notify.level)" bf/maker-level-names -- lib/server/pushnotify.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e759a989 origin/dev
         kind: static
         describe: >
-          The branch names Maker events from levels.toKey, the untranslated
-          level (origin/dev still uses the translated display level and
-          fails this). A presence check only; the probe and
-          tests/maker-level-names.test.js decide. Point it at origin/dev once
-          merged.
+          #8773's merge e759a989 (2026-09-26) is contained in origin/dev. It
+          carries bf/maker-level-names 2f50ada9.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/maker-language.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9779,6 +9810,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/maker-language.js
     notes: >
+      2026-09-26 - MERGED into dev as e759a989 (#8773, head 54bf05d2). Not
+      released; goes into 15.0.9. maker-language.js exits 0 on origin/dev
+      ff93fa94.
       2026-09-26 - OPENED upstream as #8773 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub issue triage (issue #8104, opened
       2023-10-08). The two halves are independent: the translated name
@@ -9927,7 +9961,7 @@ items:
     branch: bf/pebble-delta-units
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-pebble-delta-units
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8777]
     ships_to_operators_today: true
     blast_radius: >
@@ -9943,38 +9977,35 @@ items:
       maintainer. BF-139 disclosure decided 2026-09-26: public PR, mechanism
       only, no reproduction recipe (the BF-70 / #8743 precedent).
     operator_visible: >
-      If your Nightscout shows glucose in mmol/L and you use a watch face
-      or other display that asks Nightscout's /pebble address for mg/dL,
-      the change since the last reading (the delta) arrives in mmol/L while
-      the reading is in mg/dL. The delta then looks about 18 times smaller
-      than it is, for example -0.1 instead of -2. The reading itself is
-      right. Check the delta against the Nightscout page or your CGM app
-      before acting on it. Also, when such a display asks for the units your
-      site does not use, the bolus wizard preview it shows (Nightscout's
-      estimate of insulin needed or in excess) is worked out against
-      settings in the other units, so it can be wrong in size and even in
-      sign; for example -2.17 instead of -0.96. Do not use a watch face's
-      bolus preview to decide a dose; use your looping or pump app. Such a
-      request can also leave glucose values in the wrong units for other
-      displays, and for your site's own alarm check, until the site next
-      loads new data, so your site could raise a false low alarm when your
-      glucose is not low. Check a surprising alarm against your meter or
-      CGM app. Fixes are ready for review
-      for 15.0.9 and are not in any release yet. This is not medical advice.
+      If your Nightscout shows glucose in mmol/L and you use a watch face or
+      other display that asks Nightscout's /pebble address for mg/dL, the
+      change since the last reading (the delta) arrives in mmol/L while the
+      reading is in mg/dL. The delta then looks about 18 times smaller than it
+      is, for example -0.1 instead of -2. The reading itself is right. Check
+      the delta against the Nightscout page or your CGM app before acting on
+      it. Also, when such a display asks for the units your site does not use,
+      the bolus wizard preview it shows (Nightscout's estimate of insulin
+      needed or in excess) is worked out against settings in the other units,
+      so it can be wrong in size and even in sign; for example -2.17 instead
+      of -0.96. Do not use a watch face's bolus preview to decide a dose; use
+      your looping or pump app. Such a request can also leave glucose values
+      in the wrong units for other displays, and for your site's own alarm
+      check, until the site next loads new data, so your site could raise a
+      false low alarm when your glucose is not low. Check a surprising alarm
+      against your meter or CGM app. These are fixed in the development
+      version and arrive with 15.0.9; 15.0.8 still has them. This is not
+      medical advice.
     semver: patch
     semver_reason: the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged
     register: [BF-128, BF-138, BF-139]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "delta.mgdl" bf/pebble-delta-units -- lib/server/pebble.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d613c35f origin/dev
         kind: static
         describe: >
-          The branch's pebble.js returns delta.mgdl when mg/dL is asked for
-          (origin/dev has no delta.mgdl and fails this). Replaces a check for
-          the text "mg/dl", which the branch passes only through a comment:
-          the fix deliberately leaves the sandbox units alone, because
-          switching them makes bwp wrong (register BF-128). A presence check
-          only; the probe and tests/pebble-units.test.js decide. Point it at
-          origin/dev once merged.
+          #8777's merge d613c35f (2026-09-26) is contained in origin/dev. It
+          carries aa224c69 (BF-128), b58b937c (BF-139) and b3db0f36 (BF-138).
+          The local branch bf/pebble-delta-units is at bd8f383b, a local-only
+          merge that is not in dev, so no gate names the branch.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/pebble-units.js,
           which needs a cgm-remote-monitor tree with node_modules and so is
@@ -9983,22 +10014,6 @@ items:
           0 on a scratch copy of dev with the one-line fix. The fix is done
           when the probe exits 0 on the candidate. 2026-09-25: exit 1 on
           e3adc91d, 0 on the branch aa224c69.
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "unscaledCopy" bf/pebble-delta-units -- lib/server/pebble.js
-        kind: static
-        describe: >
-          BF-139: the branch's prepareSandbox gives the /pebble sandbox its
-          own copies of the readings (origin/dev has no unscaledCopy and
-          fails this). A presence check only;
-          tests/pebble-shared-state.test.js decides. Point it at origin/dev
-          once merged.
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "outcomeInRequestedUnits" bf/pebble-delta-units -- lib/server/pebble.js
-        kind: static
-        describe: >
-          BF-138: the branch converts bwpo to the requested units and
-          computes bwp in a sandbox in the site's units (origin/dev has no
-          outcomeInRequestedUnits and fails this). A presence check only;
-          tests/pebble-units.test.js decides. Point it at origin/dev once
-          merged.
       - no-gate: >
           BF-138 and BF-139 are decided by the branch's tests, which boot
           against MongoDB, so they are not queue gates: suite on b3db0f36
@@ -10012,6 +10027,10 @@ items:
       - tools/lab/triage-2026-09/pebble-shared-scaled.js
       - reports/phase0-pr-bodies/pebble-delta-units.md
     notes: >
+      2026-09-26 - MERGED into dev as d613c35f (#8777, head 4864d679 =
+      b3db0f36 merged with dev). Not released; goes into 15.0.9.
+      pebble-units.js and pebble-shared-scaled.js exit 0 on origin/dev
+      ff93fa94.
       2026-09-26 - OPENED upstream as #8777 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-25 from the GitHub issue triage (issue #6220, opened
       2020-10-10). A past maintainer comment suggested deprecating /pebble
@@ -10079,7 +10098,7 @@ items:
     branch: bf/api3-app-field-v1-records
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-136
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8776]
     ships_to_operators_today: true
     blast_radius: >
@@ -10100,30 +10119,27 @@ items:
       insulin on board (COB and IOB), in reports or for followers. Your
       AndroidAPS phone still has it and doses from its own records. If
       something you entered in AndroidAPS is missing from Nightscout, check
-      whether the same entry was also made in the careportal at the same
-      time. Changes made in AndroidAPS to an entry that was first saved
-      through the older interface, for example a temporary target set in
-      the careportal, are also refused and never reach Nightscout; deleting
-      such an entry works. A fix is ready for review for 15.0.9 and is not
-      in any release yet. With the fix, if the careportal and AndroidAPS
-      save an entry for exactly the same moment, the AndroidAPS entry
-      replaces the careportal one, including its notes. Rarely, when the careportal and AndroidAPS record
-      the same kind of treatment at exactly the same moment and an app later
-      re-sends the careportal entry, Nightscout can show it twice. Check
-      your treatment list if totals look high. This
-      is not medical advice.
+      whether the same entry was also made in the careportal at the same time.
+      Changes made in AndroidAPS to an entry that was first saved through the
+      older interface, for example a temporary target set in the careportal,
+      are also refused and never reach Nightscout; deleting such an entry
+      works. This is fixed in the development version and arrives with 15.0.9;
+      15.0.8 still has it. With the fix, if the careportal and AndroidAPS save
+      an entry for exactly the same moment, the AndroidAPS entry replaces the
+      careportal one, including its notes. Rarely, when the careportal and
+      AndroidAPS record the same kind of treatment at exactly the same moment
+      and an app later re-sends the careportal entry, Nightscout can show it
+      twice. Check your treatment list if totals look high. This is not
+      medical advice.
     semver: patch
     semver_reason: a v3 write that was refused with 400 is accepted; nothing that was accepted changes
     register: [BF-136]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "isSameAsStored" bf/api3-app-field-v1-records -- lib/api3/generic/update/validate.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 13f235e9 origin/dev
         kind: static
         describe: >
-          The branch's update validator compares a field the stored record
-          lacks through isSameAsStored (origin/dev has none and fails this).
-          A presence check only; the probe and
-          tests/api3.v1-record-immutable-fields.test.js decide. Point it at
-          origin/dev once merged.
+          #8776's merge 13f235e9 (2026-09-26) is contained in origin/dev. It
+          carries bf/api3-app-field-v1-records df6c04bc.
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/api3-app-field.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
@@ -10147,6 +10163,10 @@ items:
       - tools/lab/triage-2026-09/api3-app-field.js
       - reports/phase0-pr-bodies/api3-app-field-v1-records.md
     notes: >
+      2026-09-26 - MERGED into dev as 13f235e9 (#8776, head 962d189b). Not
+      released; goes into 15.0.9. api3-app-field.js on origin/dev ff93fa94:
+      13/13 arms, 0 controls failed (exit 0). #8778 (BF-140) changes only the
+      v3 delete filter; identifier stays immutable on update.
       2026-09-26 - OPENED upstream as #8776 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Filed 2026-09-26 from the 2026-09-25 measurement (the v3 PUT refusal
       was first noted under OID-V3-EDIT-MERGE). Severity: data loss of
@@ -10194,8 +10214,8 @@ items:
     branch: bf/alarm-anonymous-no-delay
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-80
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8779]
     blast_radius: >
       Two commits, 8e295769 and cd2dfb1f. lib/authorization/index.js (new
       resolveAnonymous; resolve() and every HTTP path unchanged),
@@ -10207,31 +10227,28 @@ items:
       so it goes in its own PR with its own review.
     review: maintainer (security; it narrows the failed-login delay)
     operator_visible: >
-      On the next release as it stands (15.0.9), if a device in your home
+      On the development version before 2026-09-26, if a device in your home
       keeps failing to sign in to Nightscout (for example an uploader or
       follower app with an old API secret), a Nightscout page open in a
-      browser on the same home network can receive an alarm late, by about
-      a minute or more, with nothing on the page saying so. 15.0.8 does not
-      have this delay. With this fix, a page where nobody is signed in is
-      no longer held back, and on a site that anyone with the address may
-      read, a signed-in page is not held back either. On a site that requires
-      signing in, a signed-in page still is, so fix the device that keeps
-      failing to sign in. A fix is ready for review
-      for 15.0.9 and is not in any release yet. Nightscout is not a medical
-      device and this is not medical advice; keep a second way of being
-      alerted and talk to your care team if you rely on these alarms.
+      browser on the same home network can receive an alarm late, by about a
+      minute or more, with nothing on the page saying so. 15.0.8 does not have
+      this delay. With this fix, a page where nobody is signed in is no longer
+      held back, and on a site that anyone with the address may read, a
+      signed-in page is not held back either. On a site that requires signing
+      in, a signed-in page still is, so fix the device that keeps failing to
+      sign in. The fix is in the development version and arrives with 15.0.9,
+      so 15.0.9 does not have this delay for these pages. Nightscout is not a
+      medical device and this is not medical advice; keep a second way of
+      being alerted and talk to your care team if you rely on these alarms.
     semver: patch
     semver_reason: an anonymous /alarm subscribe is answered without the failed-login delay; every credentialed path is unchanged
     register: [BF-80]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "resolveAnonymous" bf/alarm-anonymous-no-delay -- lib/authorization/index.js lib/api3/alarmSocket.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 750801a9 origin/dev
         kind: static
         describe: >
-          The branch answers a no-credential /alarm subscribe through
-          authorization.resolveAnonymous (origin/dev has no such function
-          and fails this). A presence check only;
-          tests/api3.alarm-socket.anonymous-delay.test.js decides. Point it
-          at origin/dev once merged.
+          #8779's merge 750801a9 (2026-09-26) is contained in origin/dev. It
+          carries 8e295769 and cd2dfb1f.
       - no-gate: >
           The alarm timing needs a booted server and MongoDB, so it is not a
           queue gate. Measured 2026-09-26 on a booted server with the
@@ -10254,6 +10271,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-09-26 - MERGED into dev as 750801a9 (#8779, head 1b243f14 =
+      cd2dfb1f merged with dev). Not released; goes into 15.0.9. CodeQL on
+      #8779: alert #123 (js/weak-cryptographic-algorithm, the sha1 in the new
+      test) was dismissed by the maintainer, as #117 was.
       Split out of ADV-ALARM (which keeps BF-75 and BF-76 and names BF-80)
       so that the branch has one item, as every fix branch does. BF-80 is
       only on dev (it is the cost of BF-75's fix), so it does not reach an
@@ -10377,6 +10398,79 @@ items:
       Opened by the Crowdin integration (sulkaharo), last updated
       2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9.
       Translations changed after it was opened are not in it.
+  - id: RT-PR-8778
+    title: "#8778 - API v3 deletes v1 records whose identifier is null or empty (AndyLow91; BF-140), merged for 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: codex/fix-api3-empty-identifier-delete
+    base: origin/dev@750801a9
+    state: merged-upstream
+    pr: [8778]
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/api3/storage/mongoCollection/utils.js filterForEveryForm: the _id
+      fallback of a v3 DELETE (soft and permanent, through updateEveryForm
+      and deleteEveryForm, and the cached collection's findEveryForm) now
+      also matches a record whose identifier is null or "", not only one
+      without the field; an array identifier stays excluded.
+      tests/api3.delete-every-form.test.js (+99/-22). Fix 15f01f33, head
+      18141136 (dev 750801a9 merged in), merge aa1111b2.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a delete that answered 404 for a record the API lists now deletes it; nothing else changes
+    register: [BF-140]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor aa1111b2 origin/dev
+        kind: static
+        describe: >
+          #8778's merge aa1111b2 (2026-09-26) is contained in origin/dev.
+      - run: git -C externals/cgm-remote-monitor-official grep -qF emptyIdentifier origin/dev -- lib/api3/storage/mongoCollection/utils.js
+        kind: static
+        describe: >
+          origin/dev's filterForEveryForm takes its _id fallback through
+          emptyIdentifier (null or "", not an array; dev 750801a9 has none
+          and fails this). A presence check;
+          tests/api3.delete-every-form.test.js decides.
+      - no-gate: >
+          The behaviour is measured by
+          tools/lab/triage-2026-09/api3-empty-identifier-delete.js, which
+          boots a server and needs MongoDB, so it is not a queue gate.
+          2026-09-26 (Node 22.23.2, MongoDB 7.0.43): exit 1 on dev 750801a9
+          (null and "": v3 GET 200, soft and permanent DELETE 404, COB 30 g
+          before and after), exit 0 on v15.0.8 92d08342, aa1111b2 and
+          ff93fa94. #8778's test file on 750801a9 without the fix: 17
+          passing, 14 failing.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/triage-2026-09/api3-empty-identifier-delete.js
+    notes: >
+      2026-09-26 - MERGED into dev as aa1111b2 (#8778, head 18141136), the
+      same day it was opened, before #8780. Not released; goes into 15.0.9.
+      Outside contributor (AndyLow91). The defect (BF-140) came with #8758's
+      cb7d4110 (merge 4d9ecc3b, 2026-09-25) and was never on 15.0.8, whose
+      v3 delete matched by _id whatever the identifier.
+      Review (after merge, 2026-09-26): safe. Every fallback clause still
+      pins _id to a form of the requested identifier, so no unrelated
+      record can match; $in [null, ""] also matches an absent field, so the
+      earlier case is kept; the array exclusion only decides whether the
+      record whose _id was asked for is reached. The BF-117 guard holds: a
+      record with its own identifier is not deleted through its _id (404 on
+      aa1111b2 and ff93fa94). Consistent with #8775's soft-deleted.js (a
+      refused delete was the only reason such a record kept counting) and
+      independent of #8776's validate.js rule. Full suite on ff93fa94
+      (which carries #8778 and #8780): 3396/0/3, Node 22.23.2, MongoDB
+      7.0.43, fresh database. Two things left, measured on ff93fa94, not
+      filed: a record stored with identifier 0 or an array (v1 entries and
+      devicestatus accept these) is still listed under its _id by v3 GET
+      and refused by v3 DELETE; and with #8780 a v1 treatment re-sent with
+      identifier "" is stored twice (BF-121's key treats null, not "", as
+      no identity). No corpus client writes identifier null, "", 0 or an
+      array; AndroidAPS omits a null identifier and is the only client that
+      deletes through v3. Branch ref for re-reading: `git -C
+      externals/cgm-remote-monitor-official fetch official
+      pull/8778/head:refs/triage/pr-8778`.
   - id: BFQ-134
     title: "BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open"
     parcel: register-open
@@ -10569,7 +10663,7 @@ items:
     branch: bf/entries-unknown-id
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-entries-unknown-id
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8772]
     ships_to_operators_today: true
     blast_radius: >
@@ -10584,18 +10678,17 @@ items:
     semver_reason: an error status for a read that finds nothing becomes 200 [], the answer every other v1 read gives
     register: [BF-129]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/entries-unknown-id:lib/api/entries/index.js && ! git -C externals/cgm-remote-monitor-official grep -q "No such id" bf/entries-unknown-id -- lib/api/entries/index.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1151832 origin/dev
         kind: static
         describe: >
-          The branch's route no longer builds the "No such id" error that
-          the formatter answers with 500 (origin/dev still does and fails
-          this). Decided 200 []: tests/api.entries.unknown-id.test.js on the
-          branch shows an unknown id answers 200 [] and a storage error 500.
-          A presence check only. Point it at origin/dev once merged.
+          #8772's merge f1151832 (2026-09-26) is contained in origin/dev. It
+          carries bf/entries-unknown-id f79dc732.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-09-26 - MERGED into dev as f1151832 (#8772, head b18c4a1e =
+      f79dc732 merged with dev). Not released; goes into 15.0.9.
       2026-09-26 - OPENED upstream as #8772 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
       Open, found 2026-09-25 by the #8758 freeze review and queued at the
       maintainer's request. Live on 15.0.8 for a lower-case id; #8758

@@ -137,7 +137,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`
+`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`
 
 ## Evidence
 
@@ -147,10 +147,28 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770)
-and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master
-is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead.
-Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d:
+Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780)
+and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and
+81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged
+2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832),
+#8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135,
+1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139,
+d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and
+#8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27
+checks green and 3 skipped, reviewDecision APPROVED (the two approvals were
+given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree,
+tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node
+22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the
+integration record). On the same tree the round-2 probes give their expected
+exit codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1
+with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier-
+delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision).
+The browser-check gate's --with list and the release notes are not updated
+here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of
+#8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN).
+master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges
+ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d:
 mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two
 approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR
 decided for 15.0.9 except #8730, which is held out (decided 2026-09-25,
@@ -201,4 +219,4 @@ runs. Merging to dev publishes a Docker Hub image, which is not a release.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-25, against cgm-remote-monitor-official `e3adc91d`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-26, against cgm-remote-monitor-official `ff93fa94`.*
