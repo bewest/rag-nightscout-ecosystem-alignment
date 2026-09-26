@@ -39,7 +39,7 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
-| `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or  | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or  | `in-flight-upstream` | Maintainer | #8783 |
 
 <!-- END GENERATED: release-waits -->
 

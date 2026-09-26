@@ -11271,8 +11271,8 @@ items:
     branch: bf/api3-delete-nonstring-identifier
     base: official/dev@ce7d754a
     worktree: externals/work/crm-r3-fix-142
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8783]
     ships_to_operators_today: true
     blast_radius: >
       One commit at 1c3aeb8c. lib/api3/storage/mongoCollection/utils.js
@@ -11322,6 +11322,7 @@ items:
       - tools/lab/triage-2026-09/api3-empty-identifier-delete.js
       - reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md
     notes: >
+      2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean.
       Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past
       15.0.9 by the maintainer; the maintainer reversed that the same day
       (fix in 15.0.9). Present on dev since #8758's cb7d4110 (BF-117).

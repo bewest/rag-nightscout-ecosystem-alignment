@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-142
+# Review packet — BFQ-142 (PR #8783)
 
 **BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0
 or an array, which v3 GET returns under its _id**
@@ -21,7 +21,7 @@ or an array, which v3 GET returns under its _id**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/api3-delete-nonstring-identifier` |
 | base | `official/dev@ce7d754a` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-142` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-142` is the measurement |
 | semver | `patch` |
 | register entries | `BF-142` |
 | operator exposure | **reaches an operator on today's release** |
@@ -86,20 +86,21 @@ presence check only; tests/api3.delete-every-form.test.js decides (18 of its
 
 ## Notes carried on the item
 
-Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past 15.0.9 by
-the maintainer; the maintainer reversed that the same day (fix in 15.0.9).
-Present on dev since #8758's cb7d4110 (BF-117). 2026-09-26 - FIXED on
-bf/api3-delete-nonstring-identifier 1c3aeb8c (local, not pushed), one commit
-on official/dev ce7d754a (#8781's merge). The rule: the delete's _id fallback
-takes exactly the stored identifiers normalizeDoc shows as the _id. 18 of 30
-new tests fail on ce7d754a (GET 200, then DELETE 404); break-its per clause
-all red. Full suite 3458/0/3 on a fresh database (ce7d754a: 3428/0/3). Arrays
-still answer 404, unlike 15.0.8: v3 GET shows them as stored, so they are the
-record's own identifier (BF-117, #8778); for the maintainer to confirm. Not
-changed: v3 PATCH and PUT by the _id of a record with a present but falsy
-identifier (identifyingFilter needs it absent): PATCH 404, PUT inserts a
-second record, the same on 15.0.8. PR body draft: reports/phase0-pr-
-bodies/api3-delete-nonstring-identifier.md.
+2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14
+pass, 2 skipped, no CodeQL alerts; mergeable clean. Filed 2026-09-26 from the
+review of #8778 (BF-140) and deferred past 15.0.9 by the maintainer; the
+maintainer reversed that the same day (fix in 15.0.9). Present on dev since
+#8758's cb7d4110 (BF-117). 2026-09-26 - FIXED on bf/api3-delete-nonstring-
+identifier 1c3aeb8c (local, not pushed), one commit on official/dev ce7d754a
+(#8781's merge). The rule: the delete's _id fallback takes exactly the stored
+identifiers normalizeDoc shows as the _id. 18 of 30 new tests fail on ce7d754a
+(GET 200, then DELETE 404); break-its per clause all red. Full suite 3458/0/3
+on a fresh database (ce7d754a: 3428/0/3). Arrays still answer 404, unlike
+15.0.8: v3 GET shows them as stored, so they are the record's own identifier
+(BF-117, #8778); for the maintainer to confirm. Not changed: v3 PATCH and PUT
+by the _id of a record with a present but falsy identifier (identifyingFilter
+needs it absent): PATCH 404, PUT inserts a second record, the same on 15.0.8.
+PR body draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
 
 ---
 
