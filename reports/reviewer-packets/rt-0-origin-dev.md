@@ -102,9 +102,9 @@ lib/api2/loop-notification-errors.js appears.
 ## Who should review this, and why
 
 maintainer, and at least one human reviewer who is not the author. Release PR
-#8598 (dev -> master) on 2026-09-24: open, mergeable, 27 checks green and 3
-skipped, reviewDecision REVIEW_REQUIRED and zero reviews. Integration PR #8605
-carries the modernization cuts (RT-3), not this release.
+#8598 is authored by AndyLow91 and approved twice by the maintainer
+(2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the
+modernization cuts (RT-3), not this release.
 
 ## What was measured
 
@@ -147,59 +147,50 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-25 - dev e3adc91d holds every PR decided for 15.0.9 except #8730,
-which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin sync
-reverts dev's corrected translations). #8770 (BF-134) merged as e3adc91d. The
-final release-candidate run and the soak are on dev e3adc91d itself. Waiting
-on four things and the maintainer's tag. dev is 4f705217 (2026-09-24, merge of
-#8754) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN).
-master is 92d08342 = tag 15.0.8. The release PR is #8598 (dev -> master), head
-4f705217: zero reviews, review required (measured 2026-09-25); CI on 4f705217
-passed all nine test jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Still before
-the tag: - #8758 (BFQ-102), head 6d120fa2, and a combined run of dev 4f705217
-+ #8758. - Four outside PRs, decided 2026-09-25 (maintainer) to carry into
-15.0.9: #8568 (BFQ-114, BF-114), #8419 (RT-PR-8419, tests), #8530 (RT-PR-8530,
-a 48-hour chart option) and #8730 (RT-PR-8730, Crowdin translations). The
-combined run must include them. #8530 merged 2026-09-25 (c3d42d4e). - Two
-backfix fixes, decided 2026-09-25 (maintainer) to go into 15.0.9: BF-118
-(BFQ-118, #8766, merged 2026-09-25 as e812a68c) and BF-119 (BFQ-119, #8767,
-merged 2026-09-25 as ecb63223). - The browser checks for the Loop remote-
-command path: client-unchanged-since-hand-check.js fails because #8764 (in
-#8754) changed lib/api2/index.js and lib/api2/notifications-v2.js after the
-hand-checked 8d797ba4. A remote override, carbs and bolus from Nightscout's
-careportal and from LoopCaregiver still need a 200 and a delivered push, by
-hand. - The release notes (releases/cgm-remote-monitor-15.0.9/release-
-notes.md), re-anchored on dev 153e5658 (2026-09-24); the #8754 PENDING markers
-were removed when it merged (2026-09-25), and the sections marked PENDING for
-#8758 are finalised when it merges. - A human review of #8598, and the
-maintainer tagging. Evidence: the latest combined run,
-docs/30-design/remedial/rc-15.0.9-integration-record.md: dev f1591069 + the
-exact 0.1.0 pin 1e6e5008 + #8754 ef3404fd + #8758 6d120fa2, tree 4114f45a,
-3046/0/3 on Node 20.20.0/22.23.2/24.20.0 x MongoDB 4.4/7; dev 153e5658 + #8754
-280eccbe + #8758 6d120fa2 gives the same tree. dev 4f705217 on its own
-(without #8758): 2577/0/3 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB
-7.0.43 (2026-09-25), and in the nine CI jobs. No combined run yet covers dev
-4f705217 + #8758. The browser checks were done by hand on ec70aab0 (RT-D3,
-alarms under AUTH_DEFAULT_ROLES=denied and with AUTHENTICATION_PROMPT_ON_LOAD;
-docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md), and the drag
-again on #8760's head 8d797ba4; client-unchanged-since-hand-check.js says when
-they need repeating. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries
-beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md):
-?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT);
-MongoDB 4.4 is declared deprecated in the release notes and dropped in a later
-release; the legacy-ingestion notice goes in the release notes and RT-4's
-separate release is dropped; nightscout-connect 0.1.0 is pinned only after
-longer prerelease testing (done, #8762); RT-D3 is answered by a manual check
-plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and
-the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23
-(maintainer, relayed via -59): run the combined suite before the PRs merge and
-once more after the pin to exact 0.1.0, before the tag (both done; run 010 is
-the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate
-oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for
-15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev
-(the items in state merged-upstream) reaches operators only through this
-release; until it ships they are in code nobody runs. Merging to dev publishes
-a Docker Hub image, which is not a release.
+Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770)
+and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master
+is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead.
+Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d:
+mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two
+approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR
+decided for 15.0.9 except #8730, which is held out (decided 2026-09-25,
+maintainer; BF-132: its Crowdin sync reverts dev's corrected translations).
+Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head
+f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126),
+#8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except
+RT-VERSION, whose red gate is on the cut branches, which are renumbered when
+rebased (decided 2026-09-23). Still before the tag: - The browser checks.
+client-unchanged-since-hand-check.js on e3adc91d names 12 files that changed
+after the hand-checked 8d797ba4: lib/api2/index.js and notifications-v2.js
+(the Loop remote-command path, #8764), lib/client/clock-client.js (#8768),
+lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js
+(#8767), lib/profile/profileeditor.js, lib/settings.js (#8766),
+views/index.html, .gitignore and .nycrc.json. The last two are not browser
+code; the rest need the checks repeated by hand. - The release-candidate soak
+(RT-SOAK) and the npm audit triage, both open on the integration record's run
+017. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md)
+for everything merged on 2026-09-25. - The maintainer tagging. Evidence: run
+017 in docs/30-design/remedial/rc-15.0.9-integration-record.md, dev e3adc91d
+itself (tree d7383aae): 3170/0/3 in all six cells (Node 20/22/24 x MongoDB
+4.4/7). The earlier hand checks were on ec70aab0
+(docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md) and the drag
+again on #8760's head 8d797ba4. Decisions: - 2026-09-23 (maintainer): what
+15.0.9 carries beyond dev as it then stood (releases/cgm-remote-
+monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later
+amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release
+notes and dropped in a later release; the legacy-ingestion notice goes in the
+release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0
+is pinned only after longer prerelease testing (done, #8762); RT-D3 is
+answered by a manual check plus an automated browser test (answered
+2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also
+ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined
+suite before the PRs merge and once more after the pin to exact 0.1.0, before
+the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-
+COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays
+a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train.
+Every merged backfix in dev (the items in state merged-upstream) reaches
+operators only through this release; until it ships they are in code nobody
+runs. Merging to dev publishes a Docker Hub image, which is not a release.
 
 ---
 
@@ -210,4 +201,4 @@ a Docker Hub image, which is not a release.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-24, against cgm-remote-monitor-official `153e5658`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-25, against cgm-remote-monitor-official `e3adc91d`.*

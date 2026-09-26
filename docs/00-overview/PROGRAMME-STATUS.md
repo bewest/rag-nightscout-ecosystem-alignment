@@ -182,7 +182,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  | 1 | 1 |  | 16 |  | 1 |  |  |  | **22** |
+| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 | 1 | 5 |  | 5 | 9 | 1 |  |  |  | 1 | **27** |
 | `register-open` | 33 | 1 | 5 |  | 4 | 31 | 4 |  | 2 | 1 |  | **81** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
@@ -300,6 +300,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-24**, against cgm-remote-monitor-official `153e5658` and this repository at `b362302b`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-25**, against cgm-remote-monitor-official `e3adc91d` and this repository at `366a8206`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

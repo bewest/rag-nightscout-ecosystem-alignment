@@ -178,6 +178,6 @@ they read. The standard these documents are held to is
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-24**, against cgm-remote-monitor-official `153e5658` and this repository at `b362302b`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-25**, against cgm-remote-monitor-official `e3adc91d` and this repository at `366a8206`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->
