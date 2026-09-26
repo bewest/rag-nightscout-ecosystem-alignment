@@ -1,11 +1,11 @@
-<!-- Body for bf/pebble-delta-units at b06eb014 (three commits on origin/dev e3adc91d: aa224c69 BF-128, df149642 BF-139, b06eb014 BF-138), 2026-09-26. This comment is hidden on GitHub. -->
+<!-- Body for bf/pebble-delta-units at b3db0f36 (three commits on origin/dev e3adc91d: aa224c69 BF-128, b58b937c BF-139, b3db0f36 BF-138), 2026-09-26. This comment is hidden on GitHub. -->
 > **Reproduction detail withheld.** One of these defects (BF-139) is present in the released `v15.0.8`, so this description explains how it happens and what it could do, but leaves out how to reproduce it. Reproduction detail will be added once a fixed release is out.
 
 Three fixes to `/pebble`, the older address that watch faces use to get the latest reading, all about units:
 
 - **BF-128** (issue #6220): the delta (`bgdelta`) comes back in the same units as the reading (`sgv`) when a client asks an mmol/L site for mg/dL. `aa224c69`.
-- **BF-139**: a `/pebble?units=mmol` request on an mg/dL site no longer changes the readings the server's own alarm checks and `/api/v2/properties` use. `df149642`.
-- **BF-138**: the bolus wizard preview (`bwp`) is computed in the site's units whatever units are asked for, and its expected outcome (`bwpo`) comes back in the requested units. `b06eb014`.
+- **BF-139**: a `/pebble?units=mmol` request on an mg/dL site no longer changes the readings the server's own alarm checks and `/api/v2/properties` use. `b58b937c`.
+- **BF-138**: the bolus wizard preview (`bwp`) is computed in the site's units whatever units are asked for, and its expected outcome (`bwpo`) comes back in the requested units. `b3db0f36`.
 
 Three commits on `dev` `e3adc91d`, one per defect.
 
@@ -73,7 +73,7 @@ All three defects are identical on `v15.0.8` `92d08342` and `dev` `e3adc91d`. Th
 
 **The fix:** `addDelta` takes `delta.mgdl` when mg/dL is asked for, and `delta.scaled` (mmol, from the mmol sandbox) when mmol is asked for. `delta.mgdl` has the same value that `delta.scaled` has in an mg/dL sandbox, so an mg/dL site's output is unchanged. The sandbox units are deliberately left alone. Switching the sandbox to mg/dL on an mmol site would move `bwp`, which BF-138 handles separately.
 
-### BF-139: shared scaled readings (`df149642`)
+### BF-139: shared scaled readings (`b58b937c`)
 
 **The defect:**
 
@@ -90,11 +90,11 @@ Taken together, these give two effects:
   - `ctx.sbx`, which `/api/v2/properties`, Alexa and Google Home read, keeps the mmol value until the next load.
 - **Read side:** once `data-loaded` has stored the mg/dL value, `/pebble?units=mmol` reads 90 as if it were mmol/L. Its `bwp` then depends on which ran first.
 
-Both sides were reproduced on a booted server (MongoDB 7.0.43, `DISPLAY_UNITS=mg/dl`): on `aa224c69` the server's own evaluation raised false low alarms and `/api/v2/properties` kept the mmol value; on `b06eb014` the same runs raised none and `/api/v2/properties` kept the mg/dL value. The conditions and request pattern are left out of this description while `v15.0.8` is the current release.
+Both sides were reproduced on a booted server (MongoDB 7.0.43, `DISPLAY_UNITS=mg/dl`): on `aa224c69` the server's own evaluation raised false low alarms and `/api/v2/properties` kept the mmol value; on `b3db0f36` the same runs raised none and `/api/v2/properties` kept the mg/dL value. The conditions and request pattern are left out of this description while `v15.0.8` is the current release.
 
 **The fix:** `prepareSandbox` replaces the sandbox's `sgvs` with shallow copies of each reading and removes any `scaled` value stored by another sandbox. No other server sandbox has units that differ from the site's: `bootevent` is the only other `serverInit` caller, and Alexa, Google Home, `/api/v2/properties` and `/api/v2/summary` read its `ctx.sbx` and never scale.
 
-### BF-138: the bolus wizard preview (`b06eb014`)
+### BF-138: the bolus wizard preview (`b3db0f36`)
 
 **The defect:** `bwp.calc` computes `outcome = lastScaledSGV() - iob × sensitivity` and compares it with the profile's targets. `lib/profilefunctions.js` returns sensitivity and targets as stored, with no unit conversion, so they are in the site's units. `/pebble` ran this in its display sandbox:
 
@@ -144,9 +144,9 @@ Both have 1 U given 30 min before and a 90 mg/dL reading. Rising, falling and fl
 Red on the parent of each fix, with the original symptoms:
 
 - BF-139 tests on `aa224c69`: 4 of 4 fail (`expected '5.0' to not exist`, `expected 5 to be 90`, `bwp "-0.96"/bwpo 23.2` vs `"-2.17"/-61.8`).
-- BF-138 tests on `df149642`: 7 fail. Three are `expected '-2.17' to be '-0.96'`, three are `expected 1.3 to be 23`, and the last is the `-2.17` test. The other 12 combinations pass.
+- BF-138 tests on `b58b937c`: 7 fail. Three are `expected '-2.17' to be '-0.96'`, three are `expected 1.3 to be 23`, and the last is the `-2.17` test. The other 12 combinations pass.
 
-Full suite on `b06eb014`: **3216 passing, 0 failing, 3 pending** (`npm test`, Node 22.23.2, MongoDB 7.0.43 read from the server). `aa224c69` was 3191/0/3; the difference is the 25 new tests (4 BF-139, 21 BF-138).
+Full suite on `b3db0f36`: **3216 passing, 0 failing, 3 pending** (`npm test`, Node 22.23.2, MongoDB 7.0.43 read from the server). `aa224c69` was 3191/0/3; the difference is the 25 new tests (4 BF-139, 21 BF-138).
 
 ### Break-its
 

@@ -30,7 +30,7 @@ other requests share**
 
 ## What this changes
 
-Three commits at b06eb014: aa224c69 (BF-128), df149642 (BF-139), b06eb014
+Three commits at b3db0f36: aa224c69 (BF-128), b58b937c (BF-139), b3db0f36
 (BF-138). lib/server/pebble.js only: the delta follows the requested units;
 the /pebble sandbox works on its own copies of the readings; iob, cob and bwp
 are computed in a sandbox in the site's units and bwpo is converted to the
@@ -104,7 +104,7 @@ it at origin/dev once merged.
   of dev with the one-line fix. The fix is done when the probe exits 0 on
   the candidate. 2026-09-25: exit 1 on e3adc91d, 0 on the branch aa224c69.
 - BF-138 and BF-139 are decided by the branch's tests, which boot against
-  MongoDB, so they are not queue gates: suite on b06eb014 3216/0/3 (25 new:
+  MongoDB, so they are not queue gates: suite on b3db0f36 3216/0/3 (25 new:
   4 BF-139, 21 BF-138). Of 18 combinations of site units and request, only
   bwp/bwpo change, in the two mismatched ones (plus BF-128's delta).
 
@@ -139,9 +139,9 @@ pending (= 3170 + 122 new tests), Node 22.23.2, MongoDB 7.0.43. All five
 probes gave their expected exit codes: bf106 gate 0, maker-language 0,
 profile-switch-percentage 0, pebble-units 0, v1-writes-v3-history 1 on the v1
 DELETE arm only (kept by decision, BFQ-122). The run carried 718efddc, not the
-later test commit d45987f7. 2026-09-26 - FIXED BF-139 on df149642 (the /pebble
+later test commit d45987f7. 2026-09-26 - FIXED BF-139 on b58b937c (the /pebble
 sandbox gets its own copies of the readings without a stored scaled value) and
-BF-138 on b06eb014 (iob, cob and bwp computed in a site-units sandbox; bwpo
+BF-138 on b3db0f36 (iob, cob and bwp computed in a site-units sandbox; bwpo
 converted to the requested units; bwp not converted), both on aa224c69, local,
 not pushed. Correction to BF-138's figures: on a booted server the usual wrong
 output on an mg/dL site asked for mmol is bwp -0.96 (right by coincidence)
@@ -149,7 +149,7 @@ with bwpo 23.2, an mg/dL number in an mmol response, because of BF-139;
 -2.17/-61.8 appears only in-process on fresh data or between a load and its
 evaluation. On an mmol site asked for mg/dL, bwpo stayed in mmol (1.3) next to
 an mg/dL sgv. One BF-128 test expectation changed by design (bwpo now moves
-with ?units=mgdl). Suite on b06eb014 3216/0/3 (Node 22.23.2, MongoDB 7.0.43,
+with ?units=mgdl). Suite on b3db0f36 3216/0/3 (Node 22.23.2, MongoDB 7.0.43,
 fresh database). BF-139 reaches the server's own alarm evaluation (reproduced
 on a booted server 2026-09-26); severity raised to safety (alarm integrity):
 the server's own alarm evaluation could judge a reading in the wrong units and
