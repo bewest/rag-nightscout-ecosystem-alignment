@@ -49,10 +49,11 @@ release, so such an entry is still present on 15.0.8, which pins connector `v0.0
 **What a status means for an operator.** Every §1 entry marked `fixed`, `partly merged` or
 `merged` is **still present for every operator running today's release, 15.0.8, until it is
 released.** Merging to `dev` is not releasing: a push to `dev` publishes a Docker Hub image, but
-`origin/master` and its tags are what operators install. On 2026-09-25 `origin/master` is **384
-commits behind `origin/dev` (`4f705217`) and 0 ahead**
+`origin/master` and its tags are what operators install. On 2026-09-26 `origin/master` is **461
+commits behind `origin/dev` (`e3adc91d`) and 0 ahead**
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`),
-and the release PR #8598 (`dev` → `master`) is open at `4f705217`, with no review.
+and the release PR #8598 (`dev` → `master`) is open at `e3adc91d`, approved by the maintainer
+(2026-09-26) and mergeable.
 
 | question | answer, 2026-09-25 (`origin/dev` `e3adc91d`) | reproduce with |
 |---|---|---|
