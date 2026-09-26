@@ -52,6 +52,16 @@
    "why": "/api/v2/properties cob.treatmentCOB (Nightscout's own estimate, an object on 15.0.8) is a number on 15.0.9 and absent when zero (commit 34e9b2da)",
    "section": "Other changes > Numbers that may look different on the same data: COB",
    "release_notes_gap": true
+  },
+  {
+   "match": "^(loopfollow\\.treatments6h|follower\\.treatments\\.count50|uploader\\.treatments\\.count50|glupredkit\\.count0\\.treatments) \\| (header Deprecation \"\"->\"true\", )?(\\.length, )?\\[\\]\\.absolute, \\[\\]\\.app \\(only A\\), \\[\\]\\.created_at, \\[\\]\\.date \\(only A\\)(, .*)?$",
+   "why": "BF-135 (#8775): v1 treatment reads no longer return records AndroidAPS deleted (isValid false). 15.0.8 still lists the soft-deleted AndroidAPS Temp Basal (it carries app, date and device), so from its position on the arrays differ; a count-limited read fills the limit with an older record on B. Positional signature: checked against dumped replies (run 018) that A's reply minus its isValid:false records equals B's",
+   "section": "Corrections > Records deleted by AndroidAPS, and two server time fields"
+  },
+  {
+   "match": "^nightguard\\.properties \\| keys only A: \\.cob\\.treatmentCOB[^,]*, keys only B: \\.(cob\\.lastCarbs|iob\\.lastBolus|pump)\\.srv(Created|Modified)( \\.(cob\\.lastCarbs|iob\\.lastBolus|pump)\\.srv(Created|Modified))*$",
+   "why": "BF-122 (#8775): records written through v1 now carry srvModified and srvCreated, so the last carbs, last bolus and pump status in /api/v2/properties carry them on B; the treatmentCOB part is the 34e9b2da change above",
+   "section": "Corrections > Records deleted by AndroidAPS, and two server time fields"
   }
  ],
  "known_a_behaviour": [
