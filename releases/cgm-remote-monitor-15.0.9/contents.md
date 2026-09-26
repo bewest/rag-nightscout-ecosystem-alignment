@@ -251,8 +251,8 @@ The facts the classification rests on, for the record:
 | BF-122's delete half — a v1 or websocket delete (careportal, Loop, Trio, xDrip+) removes the record and never appears in v3 history, so AndroidAPS keeps counting its copy | kept by decision (hard delete, 2026-09-26) | carried as a known issue; the notes tell people to delete in AndroidAPS too |
 | BF-121's remaining cases — AAPS v3 bolus and carbs in the same millisecond, both `Meal Bolus`, stored as one; two careportal entries in one minute with the same amount stored as one | left by decision (option 3, 2026-09-26) | carried as a known issue |
 | BF-121 × BF-136 — after an AAPS v3 write takes over a v1 record at the same `created_at` and `eventType`, a later re-send of the v1 entry is stored again (a duplicate when the amounts are equal) | accepted as a known issue (2026-09-26) | carried as a known issue |
-| BF-124 — a treatment tooltip's BG in the wrong units when the profile's and display units differ; display only | open; a known issue by decision (2026-09-26) | carried as a known issue |
-| BF-127 — a clock view opened from the menu is blank for a token viewer on a denied site; `/clock/<face>?token=…` opened directly works | open; a known issue by decision (2026-09-26) | carried as a known issue |
+| BF-124 — a treatment tooltip's BG in the wrong units when the profile's and display units differ; display only | open; not selected for 15.0.9 (2026-09-25) | carried as a known issue |
+| BF-127 — a clock view opened from the menu is blank for a token viewer on a denied site; `/clock/<face>?token=…` opened directly works | open; not selected for 15.0.9 (2026-09-25) | carried as a known issue |
 | BF-125's resend half — a failed IFTTT Maker send is retried at every check | kept by design (2026-09-26) | unchanged from 15.0.8 |
 | BF-123 on CircadianPercentageProfile switches (AAPS 2.x) — the timeshift is not applied | left by decision (2026-09-26) | unchanged from 15.0.8 |
 | BF-137 — with several IFTTT Maker keys an alarm's calls run out of order and a failed key is not retried | after 15.0.9 (`BFQ-137`) | unchanged from 15.0.8 |
