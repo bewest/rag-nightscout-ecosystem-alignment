@@ -1,5 +1,5 @@
-<!-- Draft body for branch bf/v1-writes-v3-history at d45987f7 (718efddc, the fix, plus one test commit, on dev e3adc91d), 2026-09-26. Not opened. This comment is hidden on GitHub. -->
-Records written through API v1, the websocket or inside the server now appear in API v3 history (BF-122, issue #8244). A record deleted with `isValid: false` stops counting on the site (JL-1). Two commits on `dev` `e3adc91d`: the fix and one test commit. v1 DELETE is left unchanged by the maintainer's decision: it stays a hard delete (see "Decision: v1 DELETE stays a hard delete").
+<!-- Draft body for branch bf/v1-writes-v3-history at dbc4c5fc (718efddc, the fix, plus two test commits, on dev e3adc91d), 2026-09-26. Not opened. This comment is hidden on GitHub. -->
+Records written through API v1, the websocket or inside the server now appear in API v3 history (BF-122, issue #8244). A record deleted with `isValid: false` stops counting on the site (JL-1). Three commits on `dev` `e3adc91d`: the fix and two test commits. v1 DELETE is left unchanged by the maintainer's decision: it stays a hard delete (see "Decision: v1 DELETE stays a hard delete").
 
 ## What changes for you
 
@@ -72,7 +72,7 @@ Which numbers and displays change (measured in the tests and the lab below): COB
 
 The options considered, kept as the record:
 
-v1 `DELETE /api/v1/<col>/<id>`, `DELETE /api/v1/<col>?find…` and websocket `dbRemove` still remove documents, so v3 history has no tombstone to report. AAPS then keeps its copy of the record. It is still counted on the phone after the careportal deletes it (read: `SyncNsCarbsTransaction.kt:20-26` invalidates only on `isValid: false`; a record missing from history changes nothing). The test "a v1 DELETE still removes the record…" pins this behaviour. Its name and comment on `d45987f7` still say "decision pending" and are to be reworded to name the decision.
+v1 `DELETE /api/v1/<col>/<id>`, `DELETE /api/v1/<col>?find…` and websocket `dbRemove` still remove documents, so v3 history has no tombstone to report. AAPS then keeps its copy of the record. It is still counted on the phone after the careportal deletes it (read: `SyncNsCarbsTransaction.kt:20-26` invalidates only on `isValid: false`; a record missing from history changes nothing). The test "a v1 DELETE still removes the record…" pins this behaviour. Its name and comment record the decision (hard delete kept, 2026-09-26).
 
 With JL-1 in place, a soft delete is possible without changing what the site shows. Soft deletes were not made the default because some things in the corpus would get worse:
 
@@ -171,7 +171,7 @@ After the delete, the soft-deleted site answers exactly as the hard-deleted cont
 
 ### Full suite
 
-`npm test` on `d45987f7`, Node 22.23.2, MongoDB 7.0.43 (read from the server): **3200 passing, 0 failing, 3 pending** (3170 on `e3adc91d` plus the 30 new tests), exit 0. On `718efddc` alone it was 3196/0/3.
+`npm test` on `d45987f7` (`dbc4c5fc` after it renames one test), Node 22.23.2, MongoDB 7.0.43 (read from the server): **3200 passing, 0 failing, 3 pending** (3170 on `e3adc91d` plus the 30 new tests), exit 0. On `718efddc` alone it was 3196/0/3.
 
 Combined with the other five fix branches for 15.0.9 (local `lab/round1-combined` `bda225e4`, carrying `718efddc`), the full suite gave 3292 passing, 0 failing, 3 pending on 2026-09-26 (3170 plus 122 new tests), and this probe exited 1 on the v1 DELETE arm only.
 

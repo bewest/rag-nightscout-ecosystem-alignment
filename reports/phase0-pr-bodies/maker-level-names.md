@@ -94,9 +94,10 @@ only a successful Pushover send (`:100`) or Maker send (`:141`) extends it to 15
 comments from the original implementation (`f805633f`, `ea745065`, 2015) say this is intended:
 "add the key to the cache before sending, but with a short TTL" and "after successfully sent,
 increase the TTL". A failed send is retried; that is the safety property for an alarm path.
-This PR keeps it and pins it with two tests. Options for a later change, each a trade-off:
+This PR keeps it and pins it with two tests; the maintainer decided on 2026-09-26 to keep it.
+The options that were considered, each a trade-off:
 
-1. Keep as is (this PR): failed delivery retried every check; nuisance repeats of any trigger
+1. Keep as is (chosen): failed delivery retried every check; nuisance repeats of any trigger
    that did succeed before the failing one.
 2. Extend the key on failure too (to 15 min or the snooze period): stops repeats, but a failed
    alarm is silently not retried for that long.

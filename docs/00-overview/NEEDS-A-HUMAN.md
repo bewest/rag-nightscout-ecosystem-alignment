@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 17 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,10 +39,14 @@ that it was reviewed.
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-106` | `ready-to-push` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | &mdash; |
+| `BFQ-121` | `ready-to-push` | BF-121 - two carb entries at the same time are stored as one, and the carbs of o | &mdash; |
 | `BFQ-122` | `ready-to-push` | BF-122 - records written, changed or deleted through API v1 never appear in API  | &mdash; |
 | `BFQ-123` | `ready-to-push` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF an | &mdash; |
 | `BFQ-125` | `ready-to-push` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-s | &mdash; |
+| `BFQ-128` | `ready-to-push` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked f | &mdash; |
 | `BFQ-129` | `ready-to-push` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | &mdash; |
+| `BFQ-136` | `ready-to-push` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written throu | &mdash; |
+| `BFQ-80` | `ready-to-push` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |

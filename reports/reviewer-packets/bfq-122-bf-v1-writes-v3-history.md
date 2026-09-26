@@ -29,13 +29,13 @@ counting**
 
 ## What this changes
 
-Two commits at d45987f7 (718efddc the fix, then one test commit).
-lib/server/srv-dates.js (new) and the v1 storage writes in treatments.js,
-entries.js, devicestatus.js, profile.js and food.js (create, upsert, save);
-lib/server/websocket.js dbAdd, dbUpdate and dbUpdateUnset; the v3 handlers
-take srvModified from the same clock. v1 DELETE and websocket dbRemove are
-unchanged (hard delete, decided 2026-09-26). Existing records are not
-backfilled. Every v1 uploader's records gain srvModified and srvCreated
+Three commits at dbc4c5fc (718efddc the fix, then two test commits, d45987f7
+and dbc4c5fc). lib/server/srv-dates.js (new) and the v1 storage writes in
+treatments.js, entries.js, devicestatus.js, profile.js and food.js (create,
+upsert, save); lib/server/websocket.js dbAdd, dbUpdate and dbUpdateUnset; the
+v3 handlers take srvModified from the same clock. v1 DELETE and websocket
+dbRemove are unchanged (hard delete, decided 2026-09-26). Existing records are
+not backfilled. Every v1 uploader's records gain srvModified and srvCreated
 fields. For BF-135, lib/server/soft-deleted.js (new), used by the v1 storage
 reads, the cache and the websocket dbAdd dedup, so records with isValid false
 stop counting outside API v3.
@@ -100,9 +100,8 @@ delete and after an AAPS v1 socket dbUpdate isValid false).
 The maintainer's v1 DELETE decision (2026-09-26, keep hard delete) is pinned
 by a test on the branch: "a v1 DELETE still removes the record, and history
 does not report it". origin/dev has no such test file and fails this. A
-presence check; the test itself decides. The test's name and comment on
-d45987f7 still say "decision pending" and should be reworded before the PR
-opens.
+presence check; the test itself decides. Since dbc4c5fc the test's name and
+comment record the decision (hard delete kept).
 
 ## What these gates do NOT prove
 
@@ -166,15 +165,18 @@ full suite 3292 passing / 0 failing / 3 pending (= 3170 + 122 new tests), Node
 22.23.2, MongoDB 7.0.43. All five probes gave their expected exit codes: bf106
 gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0,
 v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision, BFQ-122).
-The run carried 718efddc, not the later test commit d45987f7. Decisions: -
-2026-09-25 (maintainer): BF-135 into 15.0.9 with BF-122, on this branch. -
-2026-09-26 (maintainer): v1 DELETE, option (a), keep hard delete. Reason
-given: people are likely to use AndroidAPS as the controller, not the
-careportal; AAPS deletes are soft (isValid false), and with BF-135 they stop
-counting on the site and reach other AAPS instances through v3 history.
-Deletes made in the careportal, Loop, Trio or xDrip+ still do not reach
-AndroidAPS. "Make sure documentation is accurate." AAPS applies carbs and
-insulin from Nightscout, and their deletions, only when NSClient "accept
+The run carried 718efddc, not the later test commit d45987f7. 2026-09-26 -
+Branch head dbc4c5fc: renames the pinned v1 DELETE test and its comment to
+record the decision; no other change, so the 3200/0/3 on d45987f7 stands.
+BFQ-121's branch conflicts textually with this one and waits for it to merge
+first. Decisions: - 2026-09-25 (maintainer): BF-135 into 15.0.9 with BF-122,
+on this branch. - 2026-09-26 (maintainer): v1 DELETE, option (a), keep hard
+delete. Reason given: people are likely to use AndroidAPS as the controller,
+not the careportal; AAPS deletes are soft (isValid false), and with BF-135
+they stop counting on the site and reach other AAPS instances through v3
+history. Deletes made in the careportal, Loop, Trio or xDrip+ still do not
+reach AndroidAPS. "Make sure documentation is accurate." AAPS applies carbs
+and insulin from Nightscout, and their deletions, only when NSClient "accept
 carbs" / "accept insulin" (ns_receive_carbs, ns_receive_insulin) are on; both
 default off (AndroidAPS 7e1d537d49 core/keys BooleanKey.kt:224-225); the
 AAPSClient build always accepts them and hides the settings

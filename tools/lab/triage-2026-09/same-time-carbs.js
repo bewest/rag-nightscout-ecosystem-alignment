@@ -4,7 +4,7 @@
  * into one stored treatment?
  *
  * Usage:
- *   node same-time-carbs.js <cgm-remote-monitor tree with node_modules> <port> <mongodb uri>
+ *   node same-time-carbs.js <cgm-remote-monitor tree with node_modules> <port> <mongodb uri> [--strict]
  *   e.g. node same-time-carbs.js ~/crm 17671 mongodb://127.0.0.1:27671/p8185_m
  *
  * Boots the tree's lib/server/server.js against the given MongoDB database
@@ -37,7 +37,8 @@
  * choice, not a refused write.
  *
  * Exit status: 0 when every arm stores 2 (no collapse), 1 when any arm stores
- * fewer than 2, 2 when a control does not store 2 or liveness fails,
+ * fewer than 2 (v3-noid and ws-dbAdd are reported as known issues and not
+ * counted, as the chosen BF-121 fix leaves them; `--strict` counts them), 2 when a control does not store 2 or liveness fails,
  * 3 on a harness error. No data leaves the machine.
  */
 const path = require('path');
@@ -129,6 +130,12 @@ async function stored (col, t0, t1) {
 }
 
 const iso = (ms) => new Date(ms).toISOString();
+// The BF-121 fix the maintainer chose (option 3, 2026-09-26) changes API v1 and
+// the socket's identity and similar matching, and adds amounts to the key for
+// API v1 only. These two arms stay collapsed by design: they are reported, not
+// hidden, and do not decide the exit status unless --strict is given.
+const KNOWN = 'known issue (option 3 leaves AAPS paths unchanged)';
+const strict = process.argv.includes('--strict');
 let ok2xx = true;
 const check = (r) => { if (!(r.status >= 200 && r.status < 300)) { ok2xx = false; console.log('  write answered', r.status, JSON.stringify(r.json)); } return r; };
 
@@ -154,7 +161,7 @@ async function main () {
       check(await http('POST', '/api/v1/treatments', { eventType: 'Meal Bolus', created_at: iso(ms), carbs, enteredBy: 'careportal' }));
     }
   } };
-  arms['v3-noid'] = { control: false, run: async (ms) => {
+  arms['v3-noid'] = { control: false, known: KNOWN, run: async (ms) => {
     for (const carbs of [20, 15]) {
       check(await http('POST', '/api/v3/treatments', { eventType: 'Carb Correction', date: ms, utcOffset: 0, app: 'probe', device: 'probe', carbs }, v3));
     }
@@ -164,7 +171,7 @@ async function main () {
       identifier: crypto.randomUUID(), carbs: 20 }, v3));
     check(await http('POST', '/api/v1/treatments', { eventType: 'Carb Correction', created_at: iso(ms), carbs: 15, enteredBy: 'careportal' }));
   } };
-  arms['ws-dbAdd'] = { control: false, run: async (ms) => {
+  arms['ws-dbAdd'] = { control: false, known: KNOWN, run: async (ms) => {
     await socketAdd([{ eventType: 'Carb Correction', created_at: iso(ms), carbs: 20 }, { eventType: 'Carb Correction', created_at: iso(ms), carbs: 15 }]);
   } };
   arms['ws-similar'] = { control: false, run: async (ms) => {
@@ -189,7 +196,7 @@ async function main () {
     await socketAdd([{ eventType: 'Carb Correction', created_at: iso(ms), carbs: 20 }, { eventType: 'Carb Correction', created_at: iso(ms + 1000), carbs: 15 }]);
   } };
 
-  let defect = false, badControl = false, i = 0;
+  let defect = false, badControl = false, knownOpen = 0, i = 0;
   for (const [name, arm] of Object.entries(arms)) {
     const ms = slot(i++);
     await arm.run(ms);
@@ -198,10 +205,19 @@ async function main () {
     const n = docs.length;
     const carbs = docs.map((d) => d.carbs).join('+');
     const ids = docs.map((d) => (d.identifier ? 'identifier' : '-') + '/' + (d.srvModified ? 'srvModified' : '-')).join(' ');
-    console.log(`${arm.control ? 'control' : 'arm    '} ${name.padEnd(14)} stored ${n} (carbs ${carbs || '-'}; ${ids})`);
+    let verdict;
+    if (arm.control) verdict = n === 2 ? 'ok' : 'CONTROL FAILED';
+    else if (n >= 2) verdict = 'fixed';
+    else if (arm.known && !strict) verdict = arm.known;
+    else verdict = 'COLLAPSED';
+    console.log(`${arm.control ? 'control' : 'arm    '} ${name.padEnd(14)} stored ${n} (carbs ${carbs || '-'}; ${ids}) -> ${verdict}`);
     if (arm.control && n !== 2) badControl = true;
-    if (!arm.control && n < 2) defect = true;
+    if (!arm.control && n < 2) {
+      if (arm.known && !strict) knownOpen++;
+      else defect = true;
+    }
   }
+  if (knownOpen) console.log(`known issues still collapsed: ${knownOpen} (not counted; --strict counts them)`);
   const live = await http('GET', '/api/v1/status.json');
   console.log('liveness after arms:', live.status, 'writes all 2xx:', ok2xx);
   if (live.status !== 200 || !ok2xx) badControl = true;

@@ -3377,6 +3377,10 @@ items:
       the author built an explicit selected/fallback mechanism.
       tools/queue/gates/bf09-corpus-divergence.js undercounts and needs
       fixing before its figure is trusted.
+      2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121)
+      makes the socket similar match always key on eventType, which fixes
+      X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict
+      with BF-121's on the similar-match lines.
 
   - id: BFQ-10
     title: BF-10 - mongod fatal-asserts at Docker's default nofile=1024
@@ -7419,9 +7423,10 @@ items:
       anonymous viewer on a readable site should be fine, and doing nothing
       was also acceptable, since a misbehaving device will likely be
       noticed and fixed. Signed-in viewers keep the delay (unchanged). The
-      other two options were not chosen. Fix in progress for 15.0.9 on
-      bf/alarm-anonymous-no-delay (worktree externals/work/crm-r2-fix-80),
-      no commit recorded yet.
+      other two options were not chosen. Fixed 2026-09-26 on
+      bf/alarm-anonymous-no-delay 8e295769 (worktree
+      externals/work/crm-r2-fix-80); its own item is BFQ-80, which carries
+      the measurement and the gates.
 
   - id: ADV-XSS-META
     title: "GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)"
@@ -9263,14 +9268,19 @@ items:
     branch: bf/same-time-treatments
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-121
-    state: in-progress
+    state: ready-to-push
+    pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/treatments.js upsertQueryFor (v1 POST, PUT and the array
-      bulkWrite); lib/api3/shared/operationTools.js calculateIdentifier;
-      lib/server/websocket.js processSingleDbAdd; tests for each. Changes
-      which v1 writes update and which insert, so every uploader that
-      resends records is in scope.
+      One commit at fc821024. lib/server/treatment-fallback-key.js (new),
+      used by lib/server/treatments.js upsertQueryFor (v1 POST, PUT and the
+      array bulkWrite) and lib/server/websocket.js processSingleDbAdd and
+      its similar match; tests/api.same-time-treatments.test.js (new), with
+      changed expectations in tests/storage.selector-hardening.test.js and
+      tests/websocket.input-validation.test.js. API v3 is unchanged. Changes
+      which v1 and socket writes update and which insert, so every uploader
+      that resends records is in scope. Conflicts textually with
+      bf/v1-writes-v3-history (BFQ-122), which merges first.
     review: maintainer (API semantics), plus someone who runs Loop
     operator_visible: >
       If two carb entries of the same kind are recorded for exactly the
@@ -9281,8 +9291,8 @@ items:
       careportal or bolus wizard, and it can happen with Loop remote carbs.
       The app you entered them in still has both. If the totals in
       Nightscout look lower than what you entered, check the app you
-      entered them in, and give each entry a different time. A fix is being
-      prepared for 15.0.9 and is not in any release yet. Even with the fix,
+      entered them in, and give each entry a different time. A fix is ready
+      for review for 15.0.9 and is not in any release yet. Even with the fix,
       two entries for the same minute with the same amount are still kept
       as one, because nothing tells them apart from the same entry sent
       twice; and in AndroidAPS, a bolus and carbs saved at the same instant
@@ -9292,33 +9302,44 @@ items:
     semver_reason: changes which v1 treatment writes update and which insert
     register: [BF-121]
     gates:
-      - run: 'sh -c "git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -q ''syncIdentifier: literal'' || ! git -C externals/cgm-remote-monitor-official show origin/dev:lib/server/treatments.js | grep -Pzq ''created_at: literal\(results\.created_at\)\s*,\s*eventType: literal\(obj\.eventType\)\s*\}''"'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e bf/same-time-treatments:lib/server/treatment-fallback-key.js && git -C externals/cgm-remote-monitor-official grep -q treatment-fallback-key bf/same-time-treatments -- lib/server/treatments.js lib/server/websocket.js'
         kind: static
         describe: >
-          FAILS today: origin/dev's v1 upsert fallback key is created_at +
-          eventType alone, and nothing matches on syncIdentifier. Goes green
-          when either changes (checked 2026-09-25 against two edited
-          copies: a syncIdentifier branch, and carbs added to the key). A
-          shape check only; the probe says whether it works.
+          The branch's v1 upsert and socket dbAdd take their key from
+          lib/server/treatment-fallback-key.js (origin/dev has no such file
+          and fails this). A presence check only; the probe and
+          tests/api.same-time-treatments.test.js decide. Point it at
+          origin/dev once merged. (The origin/dev shape check this replaces
+          was dropped on 2026-09-26, when the item became ready-to-push: it
+          could only go green by merging.)
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/same-time-carbs.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
           2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758
-          ab7b22d6 (7 same-time arms store 1, 4 controls store 2). Done when
-          it exits 0 on the candidate. The ws-similar arm is BF-09's
-          behaviour and needs that entry's decision too.
+          ab7b22d6 (7 same-time arms store 1, 4 controls store 2). Since
+          2026-09-26 it prints a verdict per arm; the arms the decided fix
+          leaves (v3-noid, ws-dbAdd) are reported as known issues and do not
+          decide the exit status unless --strict is given. 2026-09-26: exit 1
+          on e3adc91d, exit 0 on fc821024.
+      - no-gate: >
+          Re-send regressions are measured by
+          tools/lab/triage-2026-09/same-time-resend-shapes.js (new
+          2026-09-26), which boots each tree against MongoDB, so it is not a
+          queue gate: all 22 measured re-send shapes store the same on
+          fc821024 as on e3adc91d.
       - no-gate: >
           The design is measured by a lab prototype, lab/6a-fix-121 a8ca1798
           (worktree externals/work/crm-6a-fix-same-time-treatments, one commit
           on dev e3adc91d, local and not for pushing), which switches the
           fallback key three ways. It is a measurement, not a fix branch. The
-          fix (option 3, decided 2026-09-26) is in progress on
-          bf/same-time-treatments, which on 2026-09-26 has no commit beyond
-          e3adc91d; its gates are defined when the commit is recorded.
-    blocks_on: []
+          fix (option 3, decided 2026-09-26) is bf/same-time-treatments
+          fc821024.
+    blocks_on: [BFQ-122]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/same-time-carbs.js
+      - tools/lab/triage-2026-09/same-time-resend-shapes.js
+      - reports/phase0-pr-bodies/same-time-treatments.md
     notes: >
       Filed 2026-09-25 from the GitHub triage (issue #8185, opened
       2023-11-28). A maintainer comment on the issue says an identical
@@ -9331,6 +9352,33 @@ items:
       re-send regression across 19 client shapes. Adding amounts fixes the
       remaining arms but makes an AAPS edit after a lost id a duplicate on
       v3 and the socket.
+      2026-09-26 - FIXED on bf/same-time-treatments fc821024 (local, not
+      pushed), one commit on dev e3adc91d, option 3: client identity
+      (syncIdentifier, id, uuid, NSCLIENT_ID) must match, and a write
+      without one matches only a record without one (v1 and socket dbAdd);
+      carbs and insulin join the key for v1 writes without identity; the
+      socket similar match always keys on eventType. Fixes v1-single,
+      v1-array, v1-careportal, v3-then-v1, ws-similar and the tconnectsync
+      bolus+extended, careportal-then-Loop and careportal 20 g/15 g cases;
+      all 22 measured re-send shapes unchanged. Left by design: v3 without
+      identifier, socket dbAdd without identity (an edit after a lost ack
+      stays stale), AAPS v3 bolus+carbs in the same ms; careportal
+      same-minute same-amount entries cannot be distinguished. 18 new tests
+      (10 fail on e3adc91d); suite 3189/0/3 (Node 22.23.2, MongoDB 7.0.43,
+      fresh database). Conflicts textually with bf/v1-writes-v3-history
+      (the websocket.js requires, one input-validation expectation);
+      resolved in a trial merge, 3215/0/3. Ready to push once BFQ-122 has
+      merged and this branch is merged up onto it (blocks_on). Interacts
+      with BF-09 (BFQ-09): X1/X2 fixed by this change; Z2, Z5, P2, B2, C2
+      remain; a BF-09 branch will conflict on the similar-match lines.
+      Open question for the maintainer: with BF-136's fix and this one both
+      present, an AAPS v3 POST at the same created_at and eventType as a v1
+      record takes that record over (it gains an identifier); a later
+      identical v1 re-send of the original then no longer matches, so it is
+      stored as a duplicate when the amounts are equal (with different
+      amounts both are kept). It needs all three conditions; no corpus
+      client was found that does all three. PR body draft:
+      reports/phase0-pr-bodies/same-time-treatments.md.
 
       Decisions:
 
@@ -9357,7 +9405,8 @@ items:
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      Two commits at d45987f7 (718efddc the fix, then one test commit).
+      Three commits at dbc4c5fc (718efddc the fix, then two test commits,
+      d45987f7 and dbc4c5fc).
       lib/server/srv-dates.js (new) and the v1 storage writes in
       treatments.js, entries.js, devicestatus.js, profile.js and food.js
       (create, upsert, save); lib/server/websocket.js dbAdd, dbUpdate and
@@ -9424,8 +9473,8 @@ items:
           is pinned by a test on the branch: "a v1 DELETE still removes the
           record, and history does not report it". origin/dev has no such
           test file and fails this. A presence check; the test itself
-          decides. The test's name and comment on d45987f7 still say
-          "decision pending" and should be reworded before the PR opens.
+          decides. Since dbc4c5fc the test's name and comment record the
+          decision (hard delete kept).
       - no-gate: >
           The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js,
           which boots a server and needs MongoDB, so it is not a queue gate.
@@ -9493,6 +9542,10 @@ items:
       pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
       decision, BFQ-122). The run carried 718efddc, not the later test commit
       d45987f7.
+      2026-09-26 - Branch head dbc4c5fc: renames the pinned v1 DELETE test
+      and its comment to record the decision; no other change, so the
+      3200/0/3 on d45987f7 stands. BFQ-121's branch conflicts textually
+      with this one and waits for it to merge first.
 
       Decisions:
 
@@ -9863,17 +9916,21 @@ items:
     branch: bf/pebble-delta-units
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-pebble-delta-units
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/pebble.js addExtraData (the delta follows the requested
-      units; the sandbox units are unchanged) and tests/pebble-units.test.js
-      (new). Changes the bgdelta /pebble returns only for mmol/L sites asked
-      for mg/dL. BF-138 and BF-139 (decided 2026-09-26 to ship in the same
-      PR) will add the Bolus Wizard Preview fields and the data the /pebble
-      sandbox scales; not yet committed.
-    review: maintainer
+      Three commits at b06eb014: aa224c69 (BF-128), df149642 (BF-139),
+      b06eb014 (BF-138). lib/server/pebble.js only: the delta follows the
+      requested units; the /pebble sandbox works on its own copies of the
+      readings; iob, cob and bwp are computed in a sandbox in the site's
+      units and bwpo is converted to the requested units.
+      tests/pebble-units.test.js and tests/pebble-shared-state.test.js
+      (new). Changes bgdelta, bwp and bwpo only when a request asks for the
+      units the site does not use.
+    review: >
+      maintainer. Awaiting the maintainer's BF-139 disclosure decision
+      (public PR or private advisory) before the branch is pushed.
     operator_visible: >
       If your Nightscout shows glucose in mmol/L and you use a watch face
       or other display that asks Nightscout's /pebble address for mg/dL,
@@ -9888,8 +9945,8 @@ items:
       sign; for example -2.17 instead of -0.96. Do not use a watch face's
       bolus preview to decide a dose; use your looping or pump app. Such a
       request can also leave glucose values in the wrong units for other
-      displays until the next reading arrives. Fixes are being prepared for
-      15.0.9 and are not in any release yet. This is not medical advice.
+      displays until the next reading arrives. Fixes are ready for review
+      for 15.0.9 and are not in any release yet. This is not medical advice.
     semver: patch
     semver_reason: the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged
     register: [BF-128, BF-138, BF-139]
@@ -9912,13 +9969,28 @@ items:
           0 on a scratch copy of dev with the one-line fix. The fix is done
           when the probe exits 0 on the candidate. 2026-09-25: exit 1 on
           e3adc91d, 0 on the branch aa224c69.
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "unscaledCopy" bf/pebble-delta-units -- lib/server/pebble.js
+        kind: static
+        describe: >
+          BF-139: the branch's prepareSandbox gives the /pebble sandbox its
+          own copies of the readings (origin/dev has no unscaledCopy and
+          fails this). A presence check only;
+          tests/pebble-shared-state.test.js decides. Point it at origin/dev
+          once merged.
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "outcomeInRequestedUnits" bf/pebble-delta-units -- lib/server/pebble.js
+        kind: static
+        describe: >
+          BF-138: the branch converts bwpo to the requested units and
+          computes bwp in a sandbox in the site's units (origin/dev has no
+          outcomeInRequestedUnits and fails this). A presence check only;
+          tests/pebble-units.test.js decides. Point it at origin/dev once
+          merged.
       - no-gate: >
-          BF-138 and BF-139 have no gate yet: their fix is in progress on this
-          branch (2026-09-26) with no commit recorded. BF-138's figures (bwp
-          -2.17 and bwpo -61.8 against the site's -0.96 and 23) were measured
-          in-process on 15.0.8 and dev; BF-139's reach to other readers and to
-          the alarm evaluation is being measured. Gates are defined when the
-          commits are recorded; until then the item is in-progress.
+          BF-138 and BF-139 are decided by the branch's tests, which boot
+          against MongoDB, so they are not queue gates: suite on b06eb014
+          3216/0/3 (25 new: 4 BF-139, 21 BF-138). Of 18 combinations of site
+          units and request, only bwp/bwpo change, in the two mismatched ones
+          (plus BF-128's delta).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -9950,6 +10022,25 @@ items:
       pebble-units 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by
       decision, BFQ-122). The run carried 718efddc, not the later test commit
       d45987f7.
+      2026-09-26 - FIXED BF-139 on df149642 (the /pebble sandbox gets its
+      own copies of the readings without a stored scaled value) and BF-138
+      on b06eb014 (iob, cob and bwp computed in a site-units sandbox; bwpo
+      converted to the requested units; bwp not converted), both on
+      aa224c69, local, not pushed. Correction to BF-138's figures: on a
+      booted server the usual wrong output on an mg/dL site asked for mmol
+      is bwp -0.96 (right by coincidence) with bwpo 23.2, an mg/dL number in
+      an mmol response, because of BF-139; -2.17/-61.8 appears only
+      in-process on fresh data or between a load and its evaluation. On an
+      mmol site asked for mg/dL, bwpo stayed in mmol (1.3) next to an mg/dL
+      sgv. One BF-128 test expectation changed by design (bwpo now moves
+      with ?units=mgdl). Suite on b06eb014 3216/0/3 (Node 22.23.2, MongoDB
+      7.0.43, fresh database). BF-139 reaches the server's own alarm
+      evaluation (reproduced on a booted server 2026-09-26); severity raised
+      to safety (alarm integrity); detail withheld pending the maintainer's
+      disclosure decision. Ready to push, but awaiting the maintainer's
+      BF-139 disclosure decision (public PR or private advisory) before
+      anything is pushed; the PR body's update for BF-138/BF-139 is held
+      back from this repository until then.
 
       Decisions:
 
@@ -9957,7 +10048,7 @@ items:
       15.0.9 on this branch with BF-128, one PR. The item goes back from
       ready-to-push to in-progress, because the branch will gain their
       commits (fix in progress). BF-139 is described by mechanism only (live
-      on 15.0.8, needs only api:pebble read).
+      on 15.0.8).
   - id: BFQ-136
     title: "BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it"
     parcel: register-open
@@ -9965,15 +10056,17 @@ items:
     branch: bf/api3-app-field-v1-records
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-136
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/api3/generic/update/validate.js (the immutable-field check for app
-      and device when the stored record has none) and the v3 create dedup
-      path that calls it (lib/api3/generic/create/operation.js); tests for a
-      v3 POST that deduplicates onto a v1-born record and for a v3 PUT of
-      one. Changes which v3 writes to v1-born records are accepted.
+      One commit at df6c04bc. lib/api3/generic/update/validate.js only
+      (isSameAsStored, used by the v3 POST dedup, PUT and PATCH) and
+      tests/api3.v1-record-immutable-fields.test.js (new). Changes which v3
+      writes to v1-born records are accepted: a field the stored record
+      lacks is accepted when it contradicts nothing. With the fix, a v3
+      POST that deduplicates onto a same-millisecond v1 record replaces it
+      (pinned by a test).
     review: maintainer, plus someone who runs AndroidAPS with NSClientV3
     operator_visible: >
       If a treatment such as carbs or insulin was saved in Nightscout by the
@@ -9985,16 +10078,33 @@ items:
       AndroidAPS phone still has it and doses from its own records. If
       something you entered in AndroidAPS is missing from Nightscout, check
       whether the same entry was also made in the careportal at the same
-      time. A fix is being prepared for 15.0.9 and is not in any release
-      yet. This is not medical advice.
+      time. Changes made in AndroidAPS to an entry that was first saved
+      through the older interface, for example a temporary target set in
+      the careportal, are also refused and never reach Nightscout; deleting
+      such an entry works. A fix is ready for review for 15.0.9 and is not
+      in any release yet. With the fix, if the careportal and AndroidAPS
+      save an entry for exactly the same moment, the AndroidAPS entry
+      replaces the careportal one, including its notes. This is not
+      medical advice.
     semver: patch
     semver_reason: a v3 write that was refused with 400 is accepted; nothing that was accepted changes
     register: [BF-136]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "isSameAsStored" bf/api3-app-field-v1-records -- lib/api3/generic/update/validate.js
+        kind: static
+        describe: >
+          The branch's update validator compares a field the stored record
+          lacks through isSameAsStored (origin/dev has none and fails this).
+          A presence check only; the probe and
+          tests/api3.v1-record-immutable-fields.test.js decide. Point it at
+          origin/dev once merged.
       - no-gate: >
-          Fix in progress on bf/api3-app-field-v1-records, which on 2026-09-26
-          has no commit beyond e3adc91d; its gates are defined when the commit
-          is recorded. Reproduced 2026-09-25 on v15.0.8 92d08342 and dev
+          The behaviour is measured by tools/lab/triage-2026-09/api3-app-field.js,
+          which boots a server and needs MongoDB, so it is not a queue gate.
+          2026-09-26: exit 1 on v15.0.8 92d08342 and dev e3adc91d (3 of 13
+          arms refused), exit 0 on df6c04bc (13 of 13); 15 controls pass.
+      - no-gate: >
+          Reproduced 2026-09-25 on v15.0.8 92d08342 and dev
           e3adc91d: a v1 Meal Bolus with 20 g carbs at T, then a v3 Meal
           Bolus at T from app AAPS with no identifier, answered 400 "Field
           app cannot be modified by the client"; a v3 PUT to a v1-born record
@@ -10008,18 +10118,123 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/triage-2026-09/api3-app-field.js
+      - reports/phase0-pr-bodies/api3-app-field-v1-records.md
     notes: >
       Filed 2026-09-26 from the 2026-09-25 measurement (the v3 PUT refusal
       was first noted under OID-V3-EDIT-MERGE). Severity: data loss of
       AAPS-uploaded treatments in Nightscout in that collision
       (dosing-relevant data in Nightscout; the phone's own dosing is
       unaffected).
+      2026-09-26 - FIXED on bf/api3-app-field-v1-records df6c04bc (local,
+      not pushed), one commit on dev e3adc91d. Correction to the filed
+      facts: a careportal-shaped v1 record is refused on date (careportal
+      records have no date), on app only when the v1 record carries a date;
+      a v3 PUT is refused on date whether or not app is sent; a v3 PATCH
+      with isValid true (what AndroidAPS sends on every update) is refused
+      with "Field isValid", so every AndroidAPS edit of a v1-born record was
+      silently dropped (for example a careportal temp target that AAPS
+      changes); deletes are unaffected. AAPS treats the 400 as final and
+      advances its cursor (NSClientV3Plugin.kt:1019, DataSyncSelectorV3.kt:256,
+      read). Fix rule (isSameAsStored in lib/api3/generic/update/validate.js;
+      POST dedup, PUT, PATCH): a field the stored record lacks is accepted
+      when it contradicts nothing - app/device first value; isValid true
+      (false stays refused); date only if equal to the stored created_at
+      instant; identifier, utcOffset, eventType and server fields stay
+      strict. 16 new tests (9 fail on dev); suite 3186/0/3, and with BF-122
+      718efddc 3212/0/3 (Node 22.23.2, MongoDB 7.0.43, fresh database).
+      Trade-off, pinned by a test: v3 fallback dedup (created_at +
+      eventType, amounts not compared) now replaces a same-millisecond v1
+      record, e.g. careportal 20 g becomes AAPS 30 g and the careportal
+      notes/enteredBy are lost; before, the AAPS entry was lost instead.
+      Rare: careportal times are whole minutes. With BF-121's fix as well,
+      the takeover raises an open question for the maintainer (BFQ-121).
 
       Decisions:
 
-      - 2026-09-26 (maintainer): fix in 15.0.9. Fix in progress on
-      bf/api3-app-field-v1-records (worktree externals/work/crm-r2-fix-136),
-      no commit recorded yet.
+      - 2026-09-26 (maintainer): fix in 15.0.9, on
+      bf/api3-app-field-v1-records (worktree externals/work/crm-r2-fix-136).
+  - id: BFQ-80
+    title: "BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/alarm-anonymous-no-delay
+    base: origin/dev@e3adc91d
+    worktree: externals/work/crm-r2-fix-80
+    state: ready-to-push
+    pr: []
+    blast_radius: >
+      One commit at 8e295769. lib/authorization/index.js (new
+      resolveAnonymous; resolve() and every HTTP path unchanged),
+      lib/api3/alarmSocket.js (a subscribe with no credential uses it),
+      tests/api3.alarm-socket.anonymous-delay.test.js (new) and an
+      authFailDelay option in tests/fixtures/api3/instance.js (default 0 as
+      before). It narrows a brute-force control for the no-credential case,
+      so it goes in its own PR with its own review.
+    review: maintainer (security; it narrows the failed-login delay)
+    operator_visible: >
+      On the next release as it stands (15.0.9), if a device in your home
+      keeps failing to sign in to Nightscout (for example an uploader or
+      follower app with an old API secret), a Nightscout page open in a
+      browser on the same home network can receive an alarm late, by about
+      a minute or more, with nothing on the page saying so. 15.0.8 does not
+      have this delay. With this fix, a page where nobody is signed in is
+      no longer held back. A page or app that is signed in still is, so fix
+      the device that keeps failing to sign in. A fix is ready for review
+      for 15.0.9 and is not in any release yet. Nightscout is not a medical
+      device and this is not medical advice; keep a second way of being
+      alerted and talk to your care team if you rely on these alarms.
+    semver: patch
+    semver_reason: an anonymous /alarm subscribe is answered without the failed-login delay; every credentialed path is unchanged
+    register: [BF-80]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "resolveAnonymous" bf/alarm-anonymous-no-delay -- lib/authorization/index.js lib/api3/alarmSocket.js
+        kind: static
+        describe: >
+          The branch answers a no-credential /alarm subscribe through
+          authorization.resolveAnonymous (origin/dev has no such function
+          and fails this). A presence check only;
+          tests/api3.alarm-socket.anonymous-delay.test.js decides. Point it
+          at origin/dev once merged.
+      - no-gate: >
+          The alarm timing needs a booted server and MongoDB, so it is not a
+          queue gate. Measured 2026-09-26 on a booted server with the
+          default delay after 3 failed logins from the viewer's address:
+          anonymous on a readable site, ack 9999 ms and no alarm within 20 s
+          on e3adc91d, ack 1 ms and alarm at 13 ms on 8e295769; anonymous on a
+          denied site answered in 1 ms with read false and still no alarm
+          (BF-75 holds); every credentialed subscribe, valid or not,
+          unchanged (ack about 10 s, alarm at the next repeat, 37.7 s
+          readable, 49.5 s denied). The probe script is held outside version
+          control (mechanism, not recipe).
+      - no-gate: >
+          Not covered by the fix, by the decision: a signed-in viewer on an
+          address in the delay, a socket that connects without subscribing,
+          and main-namespace chart data still wait. Making connect-time
+          admission skip the delay for a no-credential socket too is a
+          one-hunk option awaiting the maintainer.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Split out of ADV-ALARM (which keeps BF-75 and BF-76 and names BF-80)
+      so that the branch has one item, as every fix branch does. BF-80 is
+      only on dev (it is the cost of BF-75's fix), so it does not reach an
+      operator on 15.0.8.
+      2026-09-26 - FIXED on bf/alarm-anonymous-no-delay 8e295769 (local,
+      not pushed), one commit on dev e3adc91d: a /alarm subscribe carrying
+      no credential (secret, jwtToken, token and accessToken all absent,
+      null or empty) is answered with AUTH_DEFAULT_ROLES without the
+      failed-login delay; #8754's anonymous-waits test still passes. Suite
+      3180/0/3, 10 new tests (4 fail on e3adc91d) (Node 22.23.2, MongoDB
+      7.0.43, fresh database).
+
+      Decisions:
+
+      - 2026-09-26 (maintainer): option 1 in the register's numbering (the
+      decision round called it option 2) - a viewer presenting no
+      credential is not held by the failed-login delay; signed-in viewers
+      keep it. Recorded in ADV-ALARM as well.
   - id: BFQ-137
     title: "BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried"
     parcel: register-open

@@ -25,11 +25,15 @@ repository.
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-106`](bfq-106-bf-activity-date-coercion.md) | &mdash; | `ready-to-push` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev |
+| [`BFQ-121`](bfq-121-bf-same-time-treatments.md) | &mdash; | `ready-to-push` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) |
 | [`BFQ-122`](bfq-122-bf-v1-writes-v3-history.md) | &mdash; | `ready-to-push` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting |
 | [`BFQ-123`](bfq-123-bf-profile-switch-percentage.md) | &mdash; | `ready-to-push` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) |
 | [`BFQ-125`](bfq-125-bf-maker-level-names.md) | &mdash; | `ready-to-push` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) |
+| [`BFQ-128`](bfq-128-bf-pebble-delta-units.md) | &mdash; | `ready-to-push` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share |
 | [`BFQ-129`](bfq-129-bf-entries-unknown-id.md) | &mdash; | `ready-to-push` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
+| [`BFQ-136`](bfq-136-bf-api3-app-field-v1-records.md) | &mdash; | `ready-to-push` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| [`BFQ-80`](bfq-80-bf-alarm-anonymous-no-delay.md) | &mdash; | `ready-to-push` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
