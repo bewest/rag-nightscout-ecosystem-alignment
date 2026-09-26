@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
-Prose revised 2026-09-25 against cgm-remote-monitor `origin/dev` `e3adc91d` and
+Prose revised 2026-09-26 against cgm-remote-monitor `origin/dev` `ce7d754a` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -28,17 +28,21 @@ current and the prose is stale.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. Every cgm-remote-monitor PR decided
-for 15.0.9 is merged into `dev` (`e3adc91d`, 2026-09-25), except Crowdin #8730, which the maintainer
-held out (BF-132). That includes #8758 (records keep their own `_id`) and the fixes decided on
-2026-09-25: #8766 (BF-118), #8767 (BF-119), #8768 (BF-120), #8769 (BF-126) and #8770 (BF-134).
-None is released. The PR-by-PR list is in
+**Remedial** — finding and fixing defects that already ship. `dev` is at `ce7d754a` (2026-09-26).
+Every cgm-remote-monitor PR decided for 15.0.9 is merged into it, except Crowdin #8730, which the
+maintainer held out (BF-132), and the BF-142 fix (`bf/api3-delete-nonstring-identifier` `1c3aeb8c`,
+ready to push, no PR yet). That includes #8758 (records keep their own `_id`), the fixes decided on
+2026-09-25 (#8766 BF-118, #8767 BF-119, #8768 BF-120, #8769 BF-126, #8770 BF-134), the ten merged on
+2026-09-26 (#8771–#8780: BF-80, BF-106, BF-121, BF-122 with BF-135, BF-123, BF-125, BF-128 with
+BF-138 and BF-139, BF-129, BF-136, and Andy Low's #8778, BF-140) and Andy Low's #8781 (BF-141,
+BF-143, BF-144). None is released. The PR-by-PR list is in
 [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Every programme
 connector fix is in `nightscout-connect` `0.1.0`, released to npm `latest` on 2026-09-24 (`P0-TAG`,
-tag `v0.1.0` on connector `main` `4dde1ec`), and `dev` pins it exactly (#8762). `dev` `e3adc91d`
-itself is the 15.0.9 candidate: 3170/0/3 on Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43
-([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md), run 017), and
-release PR #8598 is approved. The
+tag `v0.1.0` on connector `main` `4dde1ec`), and `dev` pins it exactly (#8762). The last full run is
+on `ff93fa94`, one merge (#8781) before today's `dev`: 3396/0/3 on Node 20, 22 and 24 against MongoDB
+4.4.24 and 7.0.43, and the A/B soak against 15.0.8 passes except its 72-hour arm
+([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md), run 018). Run
+019 is owed on the final candidate, after BF-142 merges. Release PR #8598 is approved. The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
 
@@ -49,15 +53,15 @@ then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed w
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
 been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-09-25 against `official/dev` `e3adc91d`:
+the train has shipped. Measured 2026-09-26 against `official/dev` `ce7d754a`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 286 | 11 |
-| 2 | `chore/build-runtime-separation` | 286 | 17 |
-| 3 | `chore/compose-mongodb6` | 286 | 19 |
-| 4 | `chore/mime-exposure-review` | 286 | 35 |
-| 5 | `chore/nightscout-modernization` | 162 | 25 |
+| 1 | `chore/retire-jsdom` | 323 | 11 |
+| 2 | `chore/build-runtime-separation` | 323 | 17 |
+| 3 | `chore/compose-mongodb6` | 323 | 20 |
+| 4 | `chore/mime-exposure-review` | 323 | 35 |
+| 5 | `chore/nightscout-modernization` | 199 | 26 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 origin/chore/<branch>..origin/dev` and `git merge-tree --write-tree --name-only
@@ -80,11 +84,11 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `origin/master` is 461 commits behind `dev`
+run, and no programme fix is released: `origin/master` is 498 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count origin/master..origin/dev`,
-2026-09-25) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
+2026-09-26) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this.
-Release PR #8598 is at `e3adc91d`, green on every CI check, and approved; what it still
+Release PR #8598 is at `ce7d754a`, 27 checks passing and 3 skipped, and approved (at `e3adc91d`); what it still
 waits on is on [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
 
 For somebody running Nightscout today:
@@ -95,14 +99,15 @@ For somebody running Nightscout today:
 > displayed numbers and you are unsure what it means for you, raise it with your care
 > team.
 
-The size of that, as computed on 2026-09-21 by the coverage gate's parser from the
-register's §1 (the section whose defects reach existing operators): 56 rows, one of
-which (BF-12) does not reproduce, so **55 defects are present for every self-hoster on
-15.0.8** — 23 `open`, 27 `merged`, 1 `partly merged` (BF-07), 4 `fixed`. Re-derive from
-the register's §1 before quoting it; it moves when entries are filed or merged.
+The size of that, from the register's §1 (the section whose defects reach existing operators) on
+2026-09-26 at `ce7d754a`: **100 defects** (BF-12, invalid, and BF-41, closed, excluded) — 26 `open`,
+71 `merged`, 1 `partly merged` (BF-07), 2 `fixed` (BF-52, BF-142). **97** of them are present for
+every self-hoster on 15.0.8; BF-80, BF-106 and BF-142 exist only on `dev`. Re-derive with
+`node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
+filed or merged.
 
 The register's `open` count is therefore not "the number of defects still shipping":
-it omits the 32 repaired-but-unreleased ones. The status column tracks work done, not
+it omits the 71 repaired-but-unreleased ones present on 15.0.8. The status column tracks work done, not
 operator exposure, which is why the queue carries `ships_to_operators_today` as a
 separate field.
 
@@ -255,7 +260,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `e3adc91d`, approved). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: the browser re-checks, the soak, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `ce7d754a`, approved at `e3adc91d`). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: the BF-142 fix, run 019 on the final candidate, the browser re-checks, the 72-hour soak, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 

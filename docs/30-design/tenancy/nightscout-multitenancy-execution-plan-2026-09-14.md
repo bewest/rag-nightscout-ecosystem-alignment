@@ -23,19 +23,20 @@ their date and commit.
 
 ## Where things stand
 
-Measured 2026-09-25 against `cgm-remote-monitor` `official/dev` `e3adc91d` and
+Measured 2026-09-26 against `cgm-remote-monitor` `official/dev` `ce7d754a` and
 `nightscout-connect` `official/main` `4dde1ec`.
 
 - **Shipping release:** `cgm-remote-monitor` tag `15.0.8` (`official/master` `92d08342`).
-  `official/dev` is `e3adc91d` (the merge of #8770) and declares `15.0.9`: 461 commits and 71
+  `official/dev` is `ce7d754a` (the merge of #8781) and declares `15.0.9`: 498 commits and 82
   first-parent merges ahead of master
   (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
   and the same with `--first-parent`). Nothing past 15.0.8 is released. The release is queue
-  `RT-0`; release PR #8598 is approved at `e3adc91d`.
+  `RT-0`; release PR #8598 is at `ce7d754a`, approved (at `e3adc91d`). The last full test run is run 018 on
+  `ff93fa94`, one merge earlier; run 019 is owed on the final candidate, after the BF-142 fix merges.
 - **Phase 0 and the 15.0.9 additions, `cgm-remote-monitor` half: merged, not released.** T0.1
   (#8733), T0.2/T0.3 (`bf/cache`, #8740), T0.5 (`bf/coercion`, #8737), T2.4's allowlist (#8743),
-  `bf/auth` (BF-17) and `bf/throttle` (BF-30) inside #8754, and #8758 (records keep their own
-  `_id`) are in `dev`, with the other PRs listed in queue `RT-0` and the
+  `bf/auth` (BF-17) and `bf/throttle` (BF-30) inside #8754, #8758 (records keep their own
+  `_id`) and the 2026-09-26 fixes #8771–#8781 are in `dev`, with the other PRs listed in queue `RT-0` and the
   [release contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md). **Every §1 register
   defect, including those merged, is still present for every operator on 15.0.8** until 15.0.9
   ships. `dev` pins `nightscout-connect` exactly `0.1.0` from npm (#8762, queue `P0-PIN`);
@@ -697,14 +698,14 @@ The seam carries **two mature backends permanently**, not one plus a migration p
 Node 22/24 floor; rebasing that many commits underneath this work later would be worse than
 starting on top of it.
 
-**Measured 2026-09-25:** `official/chore/nightscout-modernization` is `b1bdaca0`, 162 behind / 498
-ahead of `official/dev` `e3adc91d` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`);
+**Measured 2026-09-26:** `official/chore/nightscout-modernization` is `b1bdaca0`, 199 behind / 498
+ahead of `official/dev` `ce7d754a` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`);
 its last merge of `dev` is `e3b22034` (2026-09-21). The seam chain has not been refreshed onto it
 (`SEAM-REFRESH`): `seam/t1-2-storage-interface` `81a1f6ce` is 68 behind / 50 ahead of `b1bdaca0`
 with 19 conflicting paths (`git merge-tree --write-tree --name-only official/chore/nightscout-modernization seam/t1-2-storage-interface`)
 — three of them add/add supersessions from BF-04's upstream allowlist, which wins; sixteen content
 conflicts across the v1 API and server storage modules, cost unmeasured. Against `official/dev`
-`e3adc91d` the seam is 227 behind / 545 ahead with 49 conflicting paths (the same two commands with
+`ce7d754a` the seam is 264 behind / 545 ahead with 49 conflicting paths (the same two commands with
 `official/dev`). **Open, recorded in `SEAM-REFRESH`:** whether the seam should refresh onto the
 modernization branch or onto `dev`, now that `dev` carries the allowlist the seam duplicates. D9
 stands until the maintainer decides otherwise.

@@ -27,8 +27,8 @@ first-parent merges
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
 and the same with `--first-parent`). Sections that quote gate transcripts (§3.8, §6.3) were
 measured 2026-09-15 against the then `origin/dev` `a8888f0d` and the `bf/*` branch tips of that
-date, and are labelled so. §8 is re-anchored on `official/dev` `e3adc91d` (2026-09-25): master..dev
-is 461 commits and 71 first-parent merges.
+date, and are labelled so. §8 is re-anchored on `official/dev` `ce7d754a` (2026-09-26): master..dev
+is 498 commits and 82 first-parent merges.
 
 Related: the classification draft this policy builds on,
 [`gt4-semver-classification-2026-09-15.md`](../../60-research/modernization/gt4-semver-classification-2026-09-15.md)
@@ -851,7 +851,7 @@ separate releases — **the identifier is the point; the numbers move with §8**
 | `chore/compose-mongodb6` (cut 3) | `15.0.9` | `17.0.0-alpha.1` |
 | `chore/nightscout-modernization` (cut 5) | `15.0.9` | `17.0.0-alpha.2` |
 | `chore/mime-exposure-review` (cut 4) | `15.0.9` | not proposed until BF-64 is resolved (§8.3): cut 5 contains it |
-| open 15.0.9 PRs (#8754, #8758) | `15.0.9` | inherit dev's number |
+| 15.0.9 fixes not yet merged (the BF-142 fix, `bf/api3-delete-nonstring-identifier`) | `15.0.9` | inherit dev's number |
 
 If the cuts ship as one combined release (§8.3, open), every cut branch carries that release's
 identifier, `16.0.0-alpha.<n>`.
@@ -1267,14 +1267,15 @@ BF-42/BF-43, queue `BFQ-CONNECTOR`, `RT-CONNECT-PIN-CUTS`).
 Where the maintainer has decided, this section records the decision. Where a choice is still open,
 the options are laid out and the choice is the maintainer's.
 
-### 8.1 15.0.9 (`official/dev` `e3adc91d`)
+### 8.1 15.0.9 (`official/dev` `ce7d754a`)
 
 The table below classifies master..dev as measured 2026-09-24 at `153e5658`: 350 commits, 61
 first-parent merges, 212 files, +16002/−1300 (`git -C externals/cgm-remote-monitor-official rev-list --count
 official/master..official/dev`, the same with `--first-parent`, and `git diff --shortstat
 official/master official/dev`). The programme PRs in it are listed in queue `RT-0`. The PRs merged after
 `153e5658` are classified in §8.2. On 2026-09-25 master..dev at `e3adc91d` is 461 commits, 71
-first-parent merges, 268 files, +23931/−1630. None is released. Classified under this policy,
+first-parent merges, 268 files, +23931/−1630; on 2026-09-26 at `ce7d754a` it is 498 commits, 82
+first-parent merges, 294 files, +27818/−1700. None is released. Classified under this policy,
 from the queue's `semver` fields where one exists:
 
 | Change | PR | Class under this policy |
@@ -1322,8 +1323,11 @@ report from "15.0.9" made before the release is from that channel.
 
 What stands between dev and the tag is queue `RT-0`'s notes, generated on
 [ROADMAP §1](../../00-overview/ROADMAP.md#1-the-next-release-1509). Release PR #8598 (dev → master)
-is at `e3adc91d`, mergeable, with 27 checks green and 3 skipped, and `APPROVED` by the maintainer
-(2026-09-26 00:39Z).
+is at `ce7d754a`, mergeable, with 27 checks green and 3 skipped, and `APPROVED` by the maintainer
+(2026-09-26 00:39Z, at `e3adc91d`). The last full test run is run 018 on `ff93fa94`, one merge
+before `ce7d754a` (3396/0/3 in all six cells;
+[integration record](../remedial/rc-15.0.9-integration-record.md)); run 019 is owed on the final
+candidate, after the BF-142 fix merges.
 
 ### 8.2 The 15.0.9 PRs merged after `153e5658`
 
@@ -1341,6 +1345,18 @@ Classes are the queue's `semver` fields.
 | #8769 | `BFQ-126` | patch | a malformed admin write is refused with 400 instead of stored |
 | #8770 | `BFQ-134` | patch | a resource leak; no API or setting changes |
 | #8419 | `RT-PR-8419` | n/a | tests only |
+| #8771 `bf/activity-date-coercion` | `BFQ-106` | patch | restores a 15.0.8 read behaviour (numeric `date`/`sgv` filters on `activity`) that the coercion change removed |
+| #8772 `bf/entries-unknown-id` | `BFQ-129` | **question for the maintainer** (queue: patch) | `GET /api/v1/entries/<id>` for an id that names no entry answers 200 `[]` instead of 500, and the swagger text says so. Is changing the status a documented read returns a patch (a defect correction, as every other v1 read that finds nothing answers 200 `[]`), or a minor row under this policy? |
+| #8773 `bf/maker-level-names` | `BFQ-125` | patch | restores the documented IFTTT event names on non-English sites; the release notes tell a site that renamed its applets to the translated names |
+| #8774 `bf/profile-switch-percentage` | `BFQ-123` | patch | how an existing record is read; nothing stored changes |
+| #8775 `bf/v1-writes-v3-history` | `BFQ-122` | **question for the maintainer** (queue: minor) | v1, websocket and in-process writes gain `srvModified`/`srvCreated`, so v3 history returns records it never returned; and records marked `isValid: false` (BF-135) stop counting in v1 reads, COB and IOB. Is either half a patch (defect corrections for AAPS sync and deletes), or does the new v3 history content make the row minor? |
+| #8776 `bf/api3-app-field-v1-records` | `BFQ-136` | patch | a v3 write that was refused with 400 is accepted; nothing that was accepted changes |
+| #8777 `bf/pebble-delta-units` | `BFQ-128` | patch | `/pebble`'s delta and Bolus Wizard Preview come back in the units asked for (BF-128, BF-138), and a `/pebble` request no longer changes other requests' values (BF-139) |
+| #8778 (Andy Low) | `RT-PR-8778` | patch | a v3 delete that answered 404 for a record the API lists now deletes it (BF-140) |
+| #8779 `bf/alarm-anonymous-no-delay` | `BFQ-80` | patch | an `/alarm` subscribe without a credential is answered without the failed-login delay; every credentialed path is unchanged |
+| #8780 `bf/same-time-treatments` | `BFQ-121` | minor | changes which v1 treatment writes update an existing record and which insert a new one |
+| #8781 (Andy Low) | `RT-PR-8781` | patch | repairs three regressions that exist only on `dev` (BF-141, BF-143, BF-144); no setting or migration. BF-141's own fix (#8782) was closed as superseded by it |
+| BF-142 fix, PR to be opened (`bf/api3-delete-nonstring-identifier` `1c3aeb8c`) | `BFQ-142` | patch | a v3 delete reaches a record whose `_id` v3 reads show as its identifier, as on 15.0.8 |
 
 ### 8.3 The release train
 
@@ -1404,10 +1420,10 @@ merge of `rh/cut4` into the lifted cut 1 conflicts only in legacy files and mani
 against a real account (a human step; nothing in this repository may use real credentials). The
 removal's BF-61 behaviour is settled on the rehearsal (§3.5).
 
-**Rebase state** is measured by queue `RT-REBASE`'s gates. On 2026-09-25 against `official/dev`
-`e3adc91d` (`git rev-list --left-right --count official/dev...<cut>` and `git merge-tree
---write-tree --name-only official/dev <cut>`): published cuts 1–4 are 286 commits behind dev with
-11 / 17 / 19 / 35 conflicting paths; cut 5 (`b1bdaca0`, PR #8605) is 162 behind / 498 ahead with 25.
+**Rebase state** is measured by queue `RT-REBASE`'s gates. On 2026-09-26 against `official/dev`
+`ce7d754a` (`git rev-list --left-right --count official/dev...<cut>` and `git merge-tree
+--write-tree --name-only official/dev <cut>`): published cuts 1–4 are 323 commits behind dev with
+11 / 17 / 20 / 35 conflicting paths; cut 5 (`b1bdaca0`, PR #8605) is 199 behind / 498 ahead with 26.
 The local rehearsals `rt/*` and `rh/*` are unpushed, and the real propagation is done on dev after
 15.0.9 is tagged (`RT-REBASE`).
 
