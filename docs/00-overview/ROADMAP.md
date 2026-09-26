@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Maintained by the Nightscout Foundation. Contributor-facing. Living document: prose dated
-2026-09-25 against cgm-remote-monitor `origin/dev` `4f705217` and `origin/master` `92d08342`
+2026-09-25 against cgm-remote-monitor `origin/dev` `e3adc91d` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -85,7 +85,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | &mdash; |
+| 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 | `in-progress` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |

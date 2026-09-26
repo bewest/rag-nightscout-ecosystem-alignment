@@ -1,8 +1,8 @@
 # Reviewer onboarding — read this first
 
 *Contributor-facing. Written for somebody who has never seen this repository and
-is considering reviewing work in it. Prose revised 2026-09-24 against
-cgm-remote-monitor `origin/dev` `153e5658` and `origin/master` `92d08342` (tag
+is considering reviewing work in it. Prose revised 2026-09-25 against
+cgm-remote-monitor `origin/dev` `e3adc91d` and `origin/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -102,17 +102,17 @@ Four entry points, easiest first:
 
 1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
-   each item awaiting review. One 15.0.9 pull request is open: #8758 (records keep
-   their own `_id` across API v1, v3 and the websocket; a large change to core data
-   paths, where careful review is most useful). Twenty-seven others are merged into
-   `dev`, including #8754 (login security fixes and `TRUST_PROXY`), none released. The connector's fixes are released as
+   each item awaiting review. Every 15.0.9 pull request is merged into `dev` and none is
+   released; the largest is #8758 (records keep their own `_id` across API v1, v3 and the
+   websocket, a change to core data paths), and a review of its evidence is still useful
+   after the fact. The connector's fixes are released as
    `nightscout-connect` `0.1.0` (2026-09-24), which `dev` pins exactly (#8762).
 2. **A security or safety item.** #8754 (login security fixes and `TRUST_PROXY`) is
    merged into `dev` but not released; a second pair of eyes on its evidence is still
-   welcome before 15.0.9 is tagged. Among safety items, `BFQ-92` (a page with no
+   welcome. Among safety items, `BFQ-92` (a page with no
    glucose reading presents no server alarm, including device alarms) has no fix yet.
-3. **The release.** `RT-0` (release PR #8598, 15.0.9) is open, green on CI, and has no
-   approving review. It is 62 first-parent merges (`dev` `4f705217`, 2026-09-25); its
+3. **The release.** `RT-0` (release PR #8598, 15.0.9) is green on CI and approved. It is
+   71 first-parent merges (`dev` `e3adc91d`, 2026-09-25); its
    remaining blockers are generated in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509), its
    contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
    candidate was tested is in the

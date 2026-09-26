@@ -1,7 +1,7 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-09-25, as of `dev` `ecb63223`. Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-09-25, as of `dev` `e3adc91d`. Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
@@ -13,10 +13,11 @@ BF-72 appears by mechanism only: it is live on the shipping release and this rep
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
-| **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 open |
+| **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |
-| **Four outside contributors' PRs are carried into 15.0.9**: #8568 (BF-114), #8419 (tests), #8530 (a 48-hour chart option) and #8730 (Crowdin translations) (2026-09-25) | `BFQ-114`, `RT-PR-8419`, `RT-PR-8530`, `RT-PR-8730` | #8530 merged (`c3d42d4e`); #8568, #8419 and #8730 open |
-| **BF-118 and BF-119 are in 15.0.9**: mmol/L alarm thresholds converted only when `BG_HIGH` is set, and `PUMP_WARN_ON_SUSPEND` never warning (2026-09-25) | `BFQ-118`, `BFQ-119` | #8766, #8767 merged |
+| **Outside contributors' PRs carried into 15.0.9**: #8568 (BF-114), #8419 (tests) and #8530 (a 48-hour chart option) (2026-09-25) | `BFQ-114`, `RT-PR-8419`, `RT-PR-8530` | all merged |
+| **Crowdin #8730 is held out of 15.0.9**, because its sync reverts translations `dev` corrected (BF-132); a reconciled translations branch is an option (2026-09-25, reversing the same day's decision to carry it) | `RT-PR-8730` | open, not in 15.0.9 |
+| **Five more fixes are in 15.0.9**: BF-118 (mmol/L alarm thresholds converted only when `BG_HIGH` is set), BF-119 (`PUMP_WARN_ON_SUSPEND` never warning), BF-120 (the clock view shows an old reading as current when its fetch fails), BF-126 (a subject without a name stops the server at boot) and BF-134 (each Loop remote command left an APNs connection open) (2026-09-25) | `BFQ-118`, `BFQ-119`, `BFQ-120`, `BFQ-126`, `BFQ-134` | #8766, #8767, #8768, #8769, #8770 merged |
 | **nightscout-connect 0.1.0 is pinned in 15.0.9**, after the prerelease had a lab soak with a seeded source Nightscout syncing into a second one, and the maintainer's judgement (2026-09-22, amended 2026-09-23) | `P0-TAG`, `P0-PIN` | released 2026-09-24; #8762 merged |
 | **No separate deprecation release.** The legacy-ingestion notice goes in 15.0.9's release notes (2026-09-23) | `RT-4` | release notes |
 | **MongoDB 4.4 is deprecated in 15.0.9**, and dropped in a later release (2026-09-23) | `RT-MONGO-FLOOR` | #8750 merged |

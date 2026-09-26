@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-24 against cgm-remote-monitor `origin/dev` `153e5658` and nightscout-connect
+2026-09-25 against cgm-remote-monitor `origin/dev` `e3adc91d` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -76,21 +76,14 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Twenty-seven cgm-remote-monitor pull requests from this work are merged into `dev` and none is
-released:
-- the thirteen backfix PRs (twelve from this programme, plus #8741 from an external contributor);
-- eleven of the thirteen 15.0.9 additions (#8748, #8749, #8750, #8751, #8752, #8753, #8755, #8756,
-  #8757, #8759, #8760);
-- #8761 (the count shapes oref0 and GluPredKit send);
-- #8762 (the pin to exactly `nightscout-connect` `0.1.0`);
-- #8754 (login security fixes and `TRUST_PROXY`, with #8763 and #8765 folded in; merged as
-  `4f705217`).
-
-One is open: #8758 fixes records keeping their own `_id`. On 2026-09-25 the freeze candidate,
-`dev` `4f705217` + #8758 `ab7b22d6` (tree `25ab7afc`), passed 3066/0/3 on Node 20, 22 and 24 against
-MongoDB 4.4.24 and 7.0.43 ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
-`dev` `4f705217` on its own passes 2577/0/3. The Loop remote-command browser checks must be repeated,
-because #8764 changed `lib/api2` after they were done (RT-0).
+Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`e3adc91d`, 2026-09-25), and
+none is released. The one exception is Crowdin #8730, which the maintainer held out because its sync
+reverts translations `dev` corrected (BF-132). The PR-by-PR list is in
+[the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). `dev` `e3adc91d` itself
+is the candidate: 3170/0/3 on Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43
+([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md), run 017). The
+browser checks must be repeated, because files the hand checks covered have changed since
+(`client-unchanged-since-hand-check.js` names them; RT-0).
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
@@ -114,14 +107,14 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 59 first-parent merges
-(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-23); `master` is 345 commits
+The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 71 first-parent merges
+(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-25); `master` is 461 commits
 behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
 include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is open. Its head is `dev` `4f705217`, and it has
-no approving review. What 15.0.9 still waits on is generated from the queue in
+still exposed to all of them. Release PR #8598 is at `dev` `e3adc91d` and approved (two
+approvals by the maintainer; the PR's author is Andy). What 15.0.9 still waits on is generated from the queue in
 [ROADMAP §1](ROADMAP.md#1-the-next-release-1509); what it contains and leaves broken is in
 [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and the test evidence is in the
 [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
