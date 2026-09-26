@@ -1,19 +1,18 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `ecb63223`
-(merge of #8767) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-25 against `official/dev` `e3adc91d`
+(merge of #8770) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `ecb63223`, plus the open PRs the maintainer has decided ship in
-it** ([decisions](decisions.md)): #8758, and three outside contributors' PRs carried by decision on
-2026-09-25, #8568 (BF-114), #8419 (tests) and #8730 (Crowdin translations). A fourth carried PR,
-#8530 (a 48-hour chart option), merged on 2026-09-25. Every PR merged to `dev` is `merged`; none is
-`released`. The carried PRs still to merge are `open`.
+15.0.9 is **everything on `dev` at `e3adc91d`**. Every PR the maintainer decided ships in it
+([decisions](decisions.md)) is merged, except Crowdin #8730, which the maintainer held out on
+2026-09-25 because its sync reverts translations `dev` corrected (BF-132). Every PR merged to `dev`
+is `merged`; none is `released`.
 
 ## Identity
 
@@ -21,44 +20,23 @@ it** ([decisions](decisions.md)): #8758, and three outside contributors' PRs car
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `ecb63223` (merge of #8767, 2026-09-25) |
-| Commits on `dev` | 393 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **65** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 232 files, +18363/−1417 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `e3adc91d` (merge of #8770, 2026-09-25) |
+| Commits on `dev` | 461 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **71** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 268 files, +23931/−1630 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Open additions | #8758 (PR head `25f5ea21`, which is `ab7b22d6` with `dev` `ecb63223` merged in, 21:02Z; `e9dbb1fb`, six fix commits on `ab7b22d6`, prepared locally, to be merged with `25f5ea21` and pushed); #8568 (head `ae4dc2f7`), #8419 (head `b1c23e74`), #8730 (head `f99c0e54`) — `gh pr view <n> --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `ecb63223`): open, `REVIEW_REQUIRED`, zero reviews — `gh pr view 8598 --json state,reviewDecision,reviews` |
+| Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
+| Release PR | #8598 (`dev` → `master`, head `e3adc91d`, author AndyLow91): open, mergeable, 27 checks green and 3 skipped, `APPROVED` (two approvals by the maintainer, 2026-09-26 00:39Z) — `gh pr view 8598 --json state,reviewDecision,reviews` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
 
-### Open additions (not merged)
+### Held out
 
-Sizes are against `dev` `ecb63223`: `git rev-list --count official/dev..<head>` and
-`git diff --shortstat official/dev...<head>`; behind is `git rev-list --count <head>..official/dev`.
-#8758's merge base with `dev` is `4f705217` (#8754); `dev` has moved on by #8530, #8766 and #8767,
-so `e9dbb1fb` is 9 commits behind `ecb63223` and merges into it without conflict
-(`git merge-tree --write-tree official/dev e9dbb1fb`) (2026-09-25).
-
-| PR | branch | head | commits not on `dev` | diff | register | what |
-|---|---|---|---|---|---|---|
-| #8758 | `bf/object-id-crud` | `e9dbb1fb` (local; the PR shows `25f5ea21` until pushed) | 25 | 38 files, +4194/−107 | BFQ-102, BFQ-115, BFQ-116, BFQ-117, BFQ-130, BFQ-131 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; a CRUD-by-`_id` matrix test |
-
-The three outside contributors' PRs carried by the 2026-09-25 decision
-(`git fetch official pull/<n>/head`):
-
-| PR | branch | head | commits not on `dev` | behind `dev` | diff | register | what |
-|---|---|---|---|---|---|---|---|
-| #8568 | `lejcey:fix-loop-status-timeline` | `ae4dc2f7` | 3 | 6 (merge base `c3d42d4e`, #8530) | 3 files, +358/−8 | BF-114 | `lib/data/ddata.js` infers the end of an AAPS open-ended loop disable from the next running-mode record, so the offline marker no longer keeps the "not looping" and pump alerts off after the loop is re-enabled; `tests/ddata.test.js`; drops an unused `convertToRanges` wrapper in `lib/profile/profileeditor.js`. Clears the released-AAPS record shape only; the AAPS-dev shape and the day-to-day report are not covered (register BF-114), and the fix may be extended to the second shape before it merges |
-| #8419 | `je-l:extend-api-tests` | `b1c23e74` | 15 | 161 (merge base `57d1cac9`, #7338) | 9 files, +322/−89 | — | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), test fixtures, `.nycrc.json`. Nothing user-facing |
-| #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 35 | 94 (merge base `59430336`, #8732) | 32 files, +518/−454 | — | Crowdin translation updates (`translations/*.json`) |
-
-Each merges into `ecb63223` without conflict (`git merge-tree --write-tree official/dev <head>`
-exits 0 for all three). None has been built or tested on `ecb63223` here.
-
-**#8758 and the connector.** Connector 0.1.0's profile update-on-change (`de3cee1`) replaces a
-changed profile only on a sink that has #8758.
+| PR | branch | head | diff | register | why |
+|---|---|---|---|---|---|
+| #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 32 files, +518/−454 | BF-132 | Crowdin translation updates. Decided 2026-09-25 (maintainer) to carry, then held out the same day: the sync puts back translations `dev` corrected (for example Traditional Chinese "ml" shown as grams). A reconciled translations branch is an option |
 
 ### Merged to `dev`
 
@@ -67,7 +45,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (24), plus #8741
+#### Programme backfix PRs (28), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -95,6 +73,10 @@ which is the home of every defect fact; these tables do not restate them.
 | #8754 | `4f705217` | 2026-09-24 | BF-17, BF-30, BF-47, BF-88 | login security fixes and the new `TRUST_PROXY` setting, with #8763 and #8765 folded in (below). Withheld-style PR body |
 | #8766 | `e812a68c` | 2026-09-25 | BF-118 | fixes #7729. On a `DISPLAY_UNITS=mmol` site each of `BG_HIGH`, `BG_TARGET_TOP`, `BG_TARGET_BOTTOM`, `BG_LOW` is judged on its own in `lib/settings.js`: below 30 = mmol/L, converted (`Math.round(v * MMOL_TO_MGDL)`); 30 or more = mg/dL, kept; one `console.info` line per converted threshold. Replaces the all-or-nothing conversion gated on `bgHigh < 50`, under which a site setting only the two targets in mmol/L stored them as mg/dL, `verifyThresholds` rewrote `bgLow` to 2.9, no low alarm could fire and every reading raised "Warning HIGH". README bullet under Alarms. `verifyThresholds` (BF-67) and mg/dL sites (BF-86) unchanged |
 | #8767 | `ecb63223` | 2026-09-25 | BF-119 | fixes #5622. `PUMP_WARN_ON_SUSPEND` (with `PUMP_ENABLE_ALERTS`) raises a WARN "Pump Suspended" notification while the latest devicestatus reports `pump.status.suspended` and the pump is not bolusing (`lib/plugins/pump.js` `updateStatus`); it never did before. With `PUMP_WARN_ON_SUSPEND` on, the pill class follows WARN while suspended. A devicestatus reporting only `status.status: 'suspended'` shows "suspended" on the pill without the warning. Public text says only that the setting now works |
+| #8758 | `4d9ecc3b` | 2026-09-25 | BF-99–BF-102, BF-109, BF-111–BF-113, BF-115–BF-117, BF-130, BF-131 | a record keeps its own `_id` across API v1, v3 and the websocket: one helper for the rule that a 24-hex `_id` is stored as an ObjectId and matched in either form; find, edit and delete by `_id` for profiles, devicestatus, food, activity, treatments and entries; an entries POST that matches a stored reading answers with the stored `_id`; a CRUD-by-`_id` matrix test. Head `f1e8398b`; 38 files, +4194/−107 |
+| #8768 | `e2bbeb66` | 2026-09-25 | BF-120 | fixes #7036. The clock views' 20 s timer redraws from the last data before fetching, so a reading's age and stale state keep moving while fetches fail (`lib/client/clock-client.js`) |
+| #8769 | `fbaa4a2a` | 2026-09-25 | BF-126 | fixes #7110. Subject and role create and save refuse a missing or unusable name (400); a stored one without a name is skipped at load with a log line, so a site already in that state boots |
+| #8770 | `e3adc91d` | 2026-09-25 | BF-134 | each Loop remote command builds its APNs provider just before the send and shuts it down when the push settles; 15.0.8 left one provider, its session and a 60 s heartbeat open per command (`lib/server/loop.js`) |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -170,6 +152,8 @@ no multi-hour soak and no source outage.
 | #8589 | `2af0aed9` | 2026-09-04 | report page built once per page load |
 | #8590 | `101f51a0` | 2026-09-04 | treatments table filter by event type |
 | #8530 | `c3d42d4e` | 2026-09-25 | a `48` choice in the main (focus) chart's hour selector, between `24` and `...` (one line in `views/index.html`); no default changes. Carried by the 2026-09-25 decision |
+| #8568 | `99689bf9` | 2026-09-25 | BF-114: `lib/data/ddata.js` ends an AAPS open-ended loop disable at the next running-mode record from the same source, so the offline marker no longer keeps the "not looping" and pump alerts off after re-enable; covers the released-AAPS shape and, with the follow-up `1fd09446`, the AAPS development-build shape (`originalDuration` 0, a 10-year duration). Carried by the 2026-09-25 decision |
+| #8419 | `96a2c948` | 2026-09-25 | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), fixtures, `.nycrc.json`; head `8cffc05e` includes the maintainer's hook cleanup. Carried by the 2026-09-25 decision |
 
 #### Dependency updates
 
@@ -211,10 +195,9 @@ All merged 2026-09-05. #8749 (qs) is in the backfix table above.
 The outside contributors whose PRs the 2026-09-25 decision carries into 15.0.9, by GitHub login
 (`gh pr view <n> --json author`):
 
-- **lejcey** — #8568, the AAPS loop-status timeline fix (open)
-- **je-l** — #8419, the iOS Loop push-notification and websocket tests (open)
-- **alanshurafa** — #8530, the 48-hour chart choice (merged)
-- **the Crowdin translators** — #8730, translation updates (open; opened by the Crowdin sync)
+- **lejcey** — #8568, the AAPS loop-status timeline fix
+- **je-l** — #8419, the iOS Loop push-notification and websocket tests
+- **alanshurafa** — #8530, the 48-hour chart choice
 
 ## Version number: 15.0.9
 
@@ -253,6 +236,8 @@ The facts the classification rests on, for the record:
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
 | BF-44 / BF-45 — MiniMed ingestion divergences | open, graded low: legacy mmconnect does not work, so only one path ingests in practice | the legacy bridges are removed on cut 1 |
+| BF-133 — the COB pill's "last carbs" detail can name an older carb entry after an edit; the COB total is unaffected | open; the same on 15.0.8 | carried as a known issue |
+| Crowdin #8730 — translation updates after early September | held out (BF-132) | translations are those of #8599 and #8603 |
 | `TRUST_PROXY` planned flip | none planned ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 
 Other `open` register entries that reach 15.0.9 are listed in the register's §1, and the queue
@@ -263,27 +248,27 @@ alarms should always have a second way to see readings.
 
 ## Open items a releaser must settle
 
-The queue-tracked items are listed, generated and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509) (queue `RT-0`'s open
-blockers: #8758, the carried outside PRs still open — #8568, #8419, #8730 — and `RT-VERSION`).
-Beside them:
+What the queue tracks is generated, and current, in
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). On 2026-09-25 every
+blocker of queue `RT-0` is merged except `RT-VERSION`, whose red gate is on the cut branches, which
+are renumbered when they are rebased. Beside that:
 
-1. **The Loop remote-command browser checks.** #8764 changed `lib/api2/index.js` and
-   `lib/api2/notifications-v2.js` after the hand-checked `8d797ba4`, so a remote override, carbs
-   and bolus from careportal and from LoopCaregiver each need a 200 and a delivered push, by hand
-   (`client-unchanged-since-hand-check.js` is red until then).
-2. **Release notes** (`release-notes.md`): the passages marked `PENDING: #8758 merge`,
-   `PENDING: #8568 merge` and `PENDING: #8730 merge` are finalised when each merges. The #8568
-   passage describes the released-AAPS record shape only; rewrite it if the fix is extended to the
-   AAPS-dev shape before it merges (register BF-114).
-3. **#8568's scope.** Whether it is extended to the second AAPS record shape (`originalDuration` 0,
-   10-year duration) before it merges.
-4. **#8598 review.** The release PR has zero reviews and review is required.
-5. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
-   `git show official/dev:CHANGELOG.md`; 12 commits, `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
+1. **The browser checks.** `client-unchanged-since-hand-check.js` on `e3adc91d` names 12 files
+   changed since the hand-checked `8d797ba4`. Seven run in the browser and need the checks repeated
+   by hand: the Loop remote-command path (`lib/api2/index.js`, `lib/api2/notifications-v2.js`, a
+   remote override, carbs and bolus from careportal and LoopCaregiver each needing a 200 and a
+   delivered push), the clock views (`lib/client/clock-client.js`), the page data load
+   (`lib/data/ddata.js`, `lib/data/calcdelta.js`, a first load and live updates, including a
+   treatment deleted while the page is open), the pump pill (`lib/plugins/pump.js`), the profile
+   editor, `lib/settings.js` and `views/index.html`. The integration record's run 017 lists them.
+2. **The release-candidate soak and the `npm audit` triage**, open on run 017.
+3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
+   `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
    [`../README.md`](../README.md#open-item-changelog-on-dev).
-6. **The tag**, by the maintainer.
+4. **The tag**, by the maintainer.
+
+#8598 is approved. The release notes and tag body are drafted for `e3adc91d`.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
@@ -352,7 +337,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-24-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-28-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
@@ -395,28 +380,37 @@ the user-facing form. Facts the notes must not lose:
   colour while suspended, independent of `PUMP_ENABLE_ALERTS`. Sites without the setting see no
   change. Public text: the setting now works, nothing about the old failure.
 - **48-hour chart (#8530).** A `48` choice in the main chart's hour selector; defaults unchanged.
-- **AAPS loop re-enable (#8568, BF-114; open).** After an AAPS open-ended "disable loop" and a later
-  re-enable, the "not looping" and pump alerts return, for the released-AAPS record shape. The notes
-  carry it inside `PENDING: #8568 merge` markers.
+- **AAPS loop re-enable (#8568, BF-114).** After an AAPS open-ended "disable loop" and a later
+  re-enable, the "not looping" and pump alerts return, for the released-AAPS record shape and the
+  AAPS development-build shape (`1fd09446`). The Day to day report reads treatments another way and
+  is not changed by it.
+- **Records keep their own `_id` (#8758).** Records stored with a string `_id` are found, edited and
+  deleted by it through v1, v3 and the websocket; an edit of a record stored twice leaves both
+  copies unless it is made in the profile editor or the Reports treatment list, and a delete removes
+  both. An entries POST that matches a stored reading now answers with the stored `_id` (15.0.8
+  answered with the sent `_id` or none). Connector 0.1.0's profile update-on-change works against a
+  15.0.9 sink.
+- **`/api/v2/properties` COB (#8587, `34e9b2da`).** `cob.treatmentCOB` was a nested object on the
+  Care Portal path in 15.0.8. In 15.0.9 it is a number, present only beside a current uploader COB
+  and only when the treatment-derived COB is not zero. The notes carry it under "Corrections".
+- **Clock views (#8768, BF-120).** A clock page whose fetch is failing keeps ageing the last reading
+  and turns stale, as when readings stop.
+- **Subjects without a name (#8769, BF-126).** Refused with 400; one already stored no longer stops
+  the server at boot.
+- **Loop remote commands (#8770, BF-134).** Each command's APNs provider is shut down when the push
+  settles; the soak saw 575 of 575 left open on 15.0.8 (fds 30 → 604) and 0 on `e3adc91d`.
 
 ## Evidence
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- `dev` `4f705217` itself (the merge of #8754, 2026-09-25): 2577 passing, 0 failing, 3 pending on
-  Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24
-  × MongoDB 4.4/5.0/6.0). Without #8758.
-- Freeze candidate, 2026-09-25
-  ([15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)):
-  `dev` `4f705217` + #8758 with its freeze-review fixes, `e9dbb1fb` (local, tree `ea4c4852`, run
-  015). CI's `test-ci` gives 3106 passing, 0 failing, 3 pending, and `test:core` gives 286, on Node
-  20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server. Not
-  the release candidate: that is `rc/15.0.9-full` (dev `ecb63223` + #8758 `25f5ea21` + `e9dbb1fb` + #8568, #8419 and #8730), being built and run in session -6d. Browser checks
-  are owed for `lib/api2` (#8764) and for the data load in `lib/data/ddata.js` (BF-115).
-- #8530, #8766 and #8767 merged after `4f705217`, so neither run above includes them. #8766's and
-  #8767's own branches, each on `4f705217`, gave 2585 and 2580 passing, 0 failing, 3 pending on Node
-  22.23.2 against MongoDB 7.0.43, with each PR's new tests failing on `dev`'s code (PR bodies). No
-  full-suite run of `dev` `ecb63223` is recorded here.
+- **The candidate, `dev` `e3adc91d` itself** (tree `d7383aae`, run 017,
+  [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)):
+  3170 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and
+  7.0.43, each version read from the server. A compressed A/B soak against 15.0.8 passes; the long
+  soak, the browser re-checks and the `npm audit` triage are open.
+- CI on #8598 at `e3adc91d`: 27 checks green, 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0,
+  CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 

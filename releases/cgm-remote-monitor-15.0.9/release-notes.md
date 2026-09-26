@@ -207,12 +207,6 @@ Things to know:
 This is not medical advice. If you are unsure how you should be alerted to a suspended pump, talk
 to your care team.
 
-<!-- PENDING: #8568 merge. #8568 (outside contributor, open) clears the offline marker for the
-     record shape released AndroidAPS versions send. The fix may be extended to a second record
-     shape (AAPS development builds: originalDuration 0, a 10-year duration) before it merges; if
-     it is, delete the sentence about development builds. #8568 does not change the Day to day
-     report, which reads treatments another way; check what that report shows before release.
-     If #8568 does not ship, delete this item and add it to Known issues. -->
 ### AndroidAPS: loop and pump alerts return when you turn the loop back on
 
 In **AndroidAPS** (AAPS), you can turn the loop off ("disable loop") with no end time. While the
@@ -224,13 +218,11 @@ the loop as switched off**, so those alerts stayed silent, with nothing on scree
 as long as the "disable" record stayed among the recent records Nightscout looks at. In this
 release, Nightscout sees that the loop was turned back on, and those alerts work again.
 
-- This covers the way **released versions of AAPS** record turning the loop off and on.
-  **Development (unreleased) builds of AAPS** record it differently, and on those the alerts can
-  still stay off after the loop is turned back on.
+- This covers the way **released versions of AAPS** record turning the loop off and on, and the
+  different way **current development builds** of AAPS record it.
 - Loop and Trio are not affected.
 - Keep the alerts in AAPS and on your pump switched on. This is not medical advice; talk to your
   care team about how you are alerted.
-<!-- PENDING: #8568 merge -->
 
 ---
 
@@ -404,6 +396,21 @@ error or a silently empty answer. A survey of 14 Nightscout apps found none that
 condition. One condition that used to work is now refused: `$expr` on the profiles address. An
 undocumented `pipeline` option on the counting addresses is also refused.
 
+### Saving a glucose reading that is already stored
+
+When an app sends a glucose reading (API version 1, `POST /api/v1/entries`) that matches one
+already stored, the reply now carries the stored reading's ID. 15.0.8 answered with the ID the app
+sent, or with none. The reading itself is stored as before.
+
+### Carbs on board in `/api/v2/properties`
+
+The `cob` property's `treatmentCOB` field changed shape. On 15.0.8, when carbs on board came from
+treatments entered in Nightscout, `treatmentCOB` held a nested copy of that result. In this
+release, carbs on board comes from the uploading system when its value is recent (see
+[Numbers that may look different](#numbers-that-may-look-different-on-the-same-data)), and
+`treatmentCOB` is a number, present only then and only when the treatment-based figure is not
+zero. A tool that reads `treatmentCOB` should expect it to be missing.
+
 ### Fields stored on users and roles
 
 When a user or role is created or saved, Nightscout now stores only these fields:
@@ -474,10 +481,6 @@ Dexcom `BRIDGE_` settings, which the connector handles — compared with 15.0.8:
   reused as it is and still cannot read: on that site's admin page, give that user the
   `readable` role, or delete it so the connector creates it again. The connector now says this
   once in its log when it finds such a user.
-<!-- PENDING: #8758 merge. The connector copies a changed profile only when the receiving site can
-     replace it in place by its _id, which #8758 provides (connector de3cee1 checks for it). If #8758
-     does not ship, do not delete this item: keep the sentence about downloading only new or changed
-     profiles, and say that only new profiles are copied, as in 15.0.8. -->
 - **When copying from another Nightscout site, profile changes are copied too.** A profile (basal
   rates, insulin sensitivity, carb ratios) saved on the site you copy **from** reaches this site
   at the next poll. 15.0.8 copied only new profiles. **Make profile changes on the site you copy
@@ -488,7 +491,6 @@ Dexcom `BRIDGE_` settings, which the connector handles — compared with 15.0.8:
   instead of every profile every five minutes. If a profile on the receiving site does not match
   the source, check it on both sites before relying on the receiving site's reports, and talk to
   your care team about any settings you are unsure of.
-<!-- PENDING: #8758 merge -->
 - **It shuts down cleanly when Nightscout stops.**
 - For developers: the connector's standalone `capture` command no longer fails for the
   Nightscout and Dexcom Share sources.
@@ -595,7 +597,6 @@ If you rely on a Nightscout page for device alarms such as pump, loop or site-ch
 (pump, phone app, CGM receiver) switched on.** This is not medical advice. Talk to your care team
 about how you get alerted.
 
-<!-- PENDING: #8758 merge -->
 ### Edited records no longer leave an old copy behind
 
 Some records were saved with their ID (the label Nightscout uses to find a record again) in a
@@ -630,7 +631,6 @@ The same change fixes deleting an access entry (a "subject" on the admin page) t
 from a backup or created by a tool that set its own ID. Before, the page reported success and the
 entry stayed, **still able to access your site**. It is now removed. If you have deleted such an
 entry before, check the list on the admin page to make sure it is gone.
-<!-- PENDING: #8758 merge -->
 
 ### Moving a treatment on the chart now moves its insulin and carbs too
 
@@ -734,6 +734,25 @@ To check it worked, look at the database's start-up log: the warning `Soft rlimi
 file descriptors too low` should be gone. If you run MongoDB another way (MongoDB Atlas, a
 hosting provider, or installed directly on a server), this does not affect you.
 
+### Clock pages show when their reading is old, even when they lose their connection
+
+The clock pages (the Clock, Color and Simple views, and custom clock faces) check your site for a
+new reading every 20 seconds. On 15.0.8 and earlier, once those checks started failing, for
+example because the network dropped or your site was down, the page kept showing the last
+reading as if it were current: it never turned grey and never said how old it was. Only the time
+of day kept changing. In this release the page keeps working out the reading's age while the
+checks fail, and turns grey once the reading is old, as it does when readings simply stop.
+
+A clock page is a display, not an alarm. Keep the alarms on your phone, CGM app or receiver
+switched on. This is not medical advice.
+
+### A user without a name no longer stops your site
+
+If a tool created a user or role on the admin page without a name, Nightscout stopped, and
+stopped again at every restart, until that record was removed from the database by hand. Only
+someone with administrator rights could cause this. A user or role without a name is now refused,
+and a site that already holds one starts normally and notes it in the server log.
+
 ### Numbers that may look different on the same data
 
 - **COB (carbs on board)** now shows the value reported by your looping app (Loop, AndroidAPS,
@@ -750,11 +769,10 @@ hosting provider, or installed directly on a server), this does not affect you.
 The "Hours:" choices on the main page, which set how much time the main chart shows, now include
 **48**, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.
 
-<!-- PENDING: #8730 merge -->
 ### Translations
 
-Updated translations from Nightscout's volunteer translators on Crowdin.
-<!-- PENDING: #8730 merge -->
+Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
+2026. Later Crowdin updates are not in this release.
 
 ### Other fixes
 
@@ -772,7 +790,9 @@ no current version produces; deployment with npm 12 no longer fails; the library
 addresses and form posts is updated to a version that clears three published security notices
 against it; a filter listing more than 20 values (for example, "these 30 records") now works,
 where 15.0.8 refused it with an error, so a tool that deletes records by such a list now deletes
-them; updated translations and many
+them; each Loop remote command (override, carbs or bolus) now closes its connection to Apple's push
+service when the push is done, where 15.0.8 kept every one open until the server restarted, so a
+busy site accumulated connections and memory; updated translations and many
 software library updates.
 
 ---
@@ -866,6 +886,9 @@ software library updates.
   are the numbers you meant, keep
   your device's own alarms on, and talk through your alarm settings with your care team. This
   is not medical advice.
+- **The carbs-on-board detail can name an older carb entry as "last carbs".** After an older
+  carb entry is edited, the pill's "last carbs" line can show that entry instead of the newest
+  one. The carbs-on-board total is not affected. The same happens on 15.0.8.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
 

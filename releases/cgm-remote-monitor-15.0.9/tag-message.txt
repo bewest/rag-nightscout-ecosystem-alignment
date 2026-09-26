@@ -1,15 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. Still pending: #8758 (head: e9dbb1fb merged with 25f5ea21, once pushed), #8568 (ae4dc2f7),
-#8419 (b1c23e74), #8730 (f99c0e54). Replace each head below with its
-merge SHA into dev, and re-measure the counts
+cut. If dev moves past e3adc91d before the tag, re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at ecb63223: 65 first-parent PR merges, 393 commits,
-232 files, +18363/-1417. #8758, #8568, #8419 and #8730 are not yet
-included.
+15.0.8..dev at e3adc91d: 71 first-parent PR merges, 461 commits,
+268 files, +23931/-1630. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -27,8 +24,11 @@ Query and API correctness
   #8743 1a36f023  v1 query-operator allowlist; URL pipeline refused;
                   400 naming the operator (BF-04 BF-70)
   #8697 0ab266a3  failed treatments queries no longer crash the server
-  #8758 e9dbb1fb  (pending) a record's own _id finds, edits and deletes
-                  it through API v1, v3 and the websocket (BFQ-102)
+  #8758 4d9ecc3b  a record's own _id finds, edits and deletes it
+                  through API v1, v3 and the websocket; an entries POST
+                  matching a stored reading answers with its _id
+                  (BF-99..102 BF-109 BF-111..113 BF-115..117 BF-130
+                  BF-131)
 
 Security
   #8744 a9acd313  loadRetro gated on read authorization (BF-79)
@@ -50,6 +50,8 @@ Security
                   remote-command sender address follows TRUST_PROXY
                   and is stored on remote overrides (#8764 #8765)
   #8583 4f6151d7  Loop remote-command errors without diagnostics
+  #8769 fbaa4a2a  a subject or role without a name is refused, and one
+                  already stored no longer stops the server (BF-126)
 
 Alarms and client
   #8766 e812a68c  mmol sites: each BG_ threshold read on its own
@@ -58,8 +60,13 @@ Alarms and client
                   mmol/L; one log line per converted threshold (BF-118)
   #8767 ecb63223  PUMP_WARN_ON_SUSPEND raises "Pump Suspended"; pill
                   takes the warning colour while suspended (BF-119)
-  #8568 ae4dc2f7  (pending) AAPS open-ended loop disable no longer keeps
-                  loop and pump alerts off after re-enable (BF-114)
+  #8568 99689bf9  AAPS open-ended loop disable, released and
+                  development-build shapes, no longer keeps loop and
+                  pump alerts off after re-enable (BF-114)
+  #8768 e2bbeb66  clock views turn an old reading stale while their
+                  data fetch is failing (BF-120)
+  #8770 e3adc91d  each Loop remote command shuts down its APNs
+                  provider when the push settles (BF-134)
   #8739 7a5561f4  insulinage URGENT reachable; ENABLE suggestion;
                   voice locale no longer process-global
                   (BF-28 BF-29 BF-31)
@@ -120,12 +127,11 @@ Dependencies
   DOMPurify, js-yaml, Mocha, PostCSS, brace-expansion)
 
 Tests
-  #8419 b1c23e74  (pending) iOS Loop push-notification and websocket
+  #8419 96a2c948  iOS Loop push-notification and websocket
                   integration tests
 
 Translations, docs, version
   #8599 #8603  Crowdin
-  #8730 f99c0e54  (pending) Crowdin
   #8516 85fed44b  README: MongoDB 4.4 not supported
   #8750 1f9a9d10  README: MongoDB 4.4 deprecated, still tested
   #7338 57d1cac9  docs
@@ -144,14 +150,17 @@ commands record the sender's address as TRUST_PROXY resolves it, stored
 with each remote override; on mmol sites each BG_ threshold is
 read on its own, so a site mixing mmol/L and mg/dL thresholds can
 store different values (check thresholds after upgrading);
-PUMP_WARN_ON_SUSPEND now raises a warning; MongoDB 4.4
+PUMP_WARN_ON_SUSPEND now raises a warning; clock views turn stale
+when their fetch fails; an entries POST matching a stored reading
+answers with the stored _id; /api/v2/properties cob.treatmentCOB is
+a number present only beside a current uploader COB; MongoDB 4.4
 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 
 Not in this release: BF-86/BF-67 threshold units on mg/dL sites and
 the silent threshold rewrite; BF-76 silenceTime
 bound; server alarms on a page with no reading; a planned TRUST_PROXY
-default flip.
+default flip; BF-133 (COB last-carbs in array order); Crowdin #8730.
 
 BF- ids refer to the backfix register in the nightscout ecosystem
 alignment repository; each PR body carries its evidence.
