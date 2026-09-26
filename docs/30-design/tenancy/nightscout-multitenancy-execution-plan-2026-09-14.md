@@ -23,22 +23,23 @@ their date and commit.
 
 ## Where things stand
 
-Measured 2026-09-24 against `cgm-remote-monitor` `official/dev` `153e5658` and
+Measured 2026-09-25 against `cgm-remote-monitor` `official/dev` `e3adc91d` and
 `nightscout-connect` `official/main` `4dde1ec`.
 
 - **Shipping release:** `cgm-remote-monitor` tag `15.0.8` (`official/master` `92d08342`).
-  `official/dev` is `153e5658` (the merge of #8762) and declares `15.0.9`: 350 commits and 61
+  `official/dev` is `e3adc91d` (the merge of #8770) and declares `15.0.9`: 461 commits and 71
   first-parent merges ahead of master
   (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
-  and the same with `--first-parent`). Nothing past 15.0.8 is released; the release is queue
-  `RT-0` (release PR #8598, no approving review).
-- **Phase 0, `cgm-remote-monitor` half: merged, not released.** T0.1 (#8733), T0.2/T0.3
-  (`bf/cache`, #8740), T0.5 (`bf/coercion`, #8737) and T2.4's allowlist (#8743) are in `dev`,
-  with the other Phase 0, advisory and 15.0.9 PRs listed in queue `RT-0`. **Every §1 register
+  and the same with `--first-parent`). Nothing past 15.0.8 is released. The release is queue
+  `RT-0`; release PR #8598 is approved at `e3adc91d`.
+- **Phase 0 and the 15.0.9 additions, `cgm-remote-monitor` half: merged, not released.** T0.1
+  (#8733), T0.2/T0.3 (`bf/cache`, #8740), T0.5 (`bf/coercion`, #8737), T2.4's allowlist (#8743),
+  `bf/auth` (BF-17) and `bf/throttle` (BF-30) inside #8754, and #8758 (records keep their own
+  `_id`) are in `dev`, with the other PRs listed in queue `RT-0` and the
+  [release contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md). **Every §1 register
   defect, including those merged, is still present for every operator on 15.0.8** until 15.0.9
-  ships. `bf/auth` (BF-17) and `bf/throttle` (BF-30) ship inside #8754 (`bf2/auth-hardening`,
-  queue `BF2-AUTH`), which is open. `dev` pins `nightscout-connect` exactly `0.1.0` from npm
-  (#8762, queue `P0-PIN`); `master` pins the `v0.0.13` tag tarball.
+  ships. `dev` pins `nightscout-connect` exactly `0.1.0` from npm (#8762, queue `P0-PIN`);
+  `master` pins the `v0.0.13` tag tarball.
 - **Connector half: released.** Connector PR #68 (T0.4) is in `nightscout-connect` `0.1.0`,
   released 2026-09-24 (tag `v0.1.0` on connector `main` `4dde1ec`, npm `latest`; queue `P0-TAG`).
   It reaches Nightscout operators with 15.0.9.
@@ -696,14 +697,14 @@ The seam carries **two mature backends permanently**, not one plus a migration p
 Node 22/24 floor; rebasing that many commits underneath this work later would be worse than
 starting on top of it.
 
-**Measured 2026-09-24:** `official/chore/nightscout-modernization` is `b1bdaca0`, 51 behind / 498
-ahead of `official/dev` `153e5658` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`);
+**Measured 2026-09-25:** `official/chore/nightscout-modernization` is `b1bdaca0`, 162 behind / 498
+ahead of `official/dev` `e3adc91d` (`git rev-list --left-right --count official/dev...official/chore/nightscout-modernization`);
 its last merge of `dev` is `e3b22034` (2026-09-21). The seam chain has not been refreshed onto it
 (`SEAM-REFRESH`): `seam/t1-2-storage-interface` `81a1f6ce` is 68 behind / 50 ahead of `b1bdaca0`
 with 19 conflicting paths (`git merge-tree --write-tree --name-only official/chore/nightscout-modernization seam/t1-2-storage-interface`)
 — three of them add/add supersessions from BF-04's upstream allowlist, which wins; sixteen content
 conflicts across the v1 API and server storage modules, cost unmeasured. Against `official/dev`
-`153e5658` the seam is 116 behind / 545 ahead with 36 conflicting paths (the same two commands with
+`e3adc91d` the seam is 227 behind / 545 ahead with 49 conflicting paths (the same two commands with
 `official/dev`). **Open, recorded in `SEAM-REFRESH`:** whether the seam should refresh onto the
 modernization branch or onto `dev`, now that `dev` carries the allowlist the seam duplicates. D9
 stands until the maintainer decides otherwise.

@@ -27,7 +27,8 @@ first-parent merges
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
 and the same with `--first-parent`). Sections that quote gate transcripts (§3.8, §6.3) were
 measured 2026-09-15 against the then `origin/dev` `a8888f0d` and the `bf/*` branch tips of that
-date, and are labelled so.
+date, and are labelled so. §8 is re-anchored on `official/dev` `e3adc91d` (2026-09-25): master..dev
+is 461 commits and 71 first-parent merges.
 
 Related: the classification draft this policy builds on,
 [`gt4-semver-classification-2026-09-15.md`](../../60-research/modernization/gt4-semver-classification-2026-09-15.md)
@@ -1265,13 +1266,14 @@ BF-42/BF-43, queue `BFQ-CONNECTOR`, `RT-CONNECT-PIN-CUTS`).
 Where the maintainer has decided, this section records the decision. Where a choice is still open,
 the options are laid out and the choice is the maintainer's.
 
-### 8.1 15.0.9 (`official/dev` `153e5658`)
+### 8.1 15.0.9 (`official/dev` `e3adc91d`)
 
-15.0.9 is master..dev, measured 2026-09-24: 350 commits, 61 first-parent merges, 212 files,
-+16002/−1300 (`git -C externals/cgm-remote-monitor-official rev-list --count
+The table below classifies master..dev as measured 2026-09-24 at `153e5658`: 350 commits, 61
+first-parent merges, 212 files, +16002/−1300 (`git -C externals/cgm-remote-monitor-official rev-list --count
 official/master..official/dev`, the same with `--first-parent`, and `git diff --shortstat
-official/master official/dev`). The programme PRs in it are listed in queue `RT-0`; two open PRs,
-#8754 and #8758, are planned to join it (§8.2). None is released. Classified under this policy,
+official/master official/dev`). The programme PRs in it are listed in queue `RT-0`. The PRs merged after
+`153e5658` are classified in §8.2. On 2026-09-25 master..dev at `e3adc91d` is 461 commits, 71
+first-parent merges, 268 files, +23931/−1630. None is released. Classified under this policy,
 from the queue's `semver` fields where one exists:
 
 | Change | PR | Class under this policy |
@@ -1317,16 +1319,27 @@ report from "15.0.9" made before the release is from that channel.
 **The cut branches still claim `15.0.9`** (§5.1, D-b); each is renumbered when it is rebased
 (maintainer, 2026-09-23, `RT-VERSION`).
 
-What stands between dev and the tag is queue `RT-0`'s notes. Release PR #8598 (dev → master) is
-open and mergeable, with 27 checks green and 3 skipped, `REVIEW_REQUIRED` and no reviews (queue
-`RT-0`, 2026-09-24).
+What stands between dev and the tag is queue `RT-0`'s notes, generated on
+[ROADMAP §1](../../00-overview/ROADMAP.md#1-the-next-release-1509). Release PR #8598 (dev → master)
+is at `e3adc91d`, mergeable, with 27 checks green and 3 skipped, and `APPROVED` by the maintainer
+(2026-09-26 00:39Z).
 
-### 8.2 The 15.0.9 PRs still open
+### 8.2 The 15.0.9 PRs merged after `153e5658`
+
+Classes are the queue's `semver` fields.
 
 | PR | Queue | Class | Why |
 |---|---|---|---|
 | #8754 `bf2/auth-hardening`: `bf/auth` (BF-17), `bf/throttle` (BF-30), the `TRUST_PROXY` setting, the BF-47 subject-edit fix | `BF2-AUTH` | **major** under S4, per the queue | the allow-list drops fields outside the declared schema on the next edit (S4); `TRUST_PROXY` is a new setting (minor). The maintainer decided the allow-list is intended (§8.1) |
-| #8758 `bf/object-id-crud` | `BFQ-102` | patch (queue classification) | records keep their own `_id` across API v1, v3 and the websocket; no API or setting moves |
+| #8758 `bf/object-id-crud` | `BFQ-102` | patch | records keep their own `_id` across API v1, v3 and the websocket; no API or setting moves |
+| #8530 | `RT-PR-8530` | minor, carried under the patch number by decision | a new user-visible option (the 48-hour chart choice) |
+| #8766 | `BFQ-118` | patch | how documented thresholds are read on mmol/L sites; a site that set all four sees no change |
+| #8767 | `BFQ-119` | patch | a documented setting starts doing what it says |
+| #8568 | `BFQ-114` | patch | how existing records are read; nothing stored changes |
+| #8768 | `BFQ-120` | patch | how the clock page draws data it already has |
+| #8769 | `BFQ-126` | patch | a malformed admin write is refused with 400 instead of stored |
+| #8770 | `BFQ-134` | patch | a resource leak; no API or setting changes |
+| #8419 | `RT-PR-8419` | n/a | tests only |
 
 ### 8.3 The release train
 
@@ -1390,10 +1403,10 @@ merge of `rh/cut4` into the lifted cut 1 conflicts only in legacy files and mani
 against a real account (a human step; nothing in this repository may use real credentials). The
 removal's BF-61 behaviour is settled on the rehearsal (§3.5).
 
-**Rebase state** is measured by queue `RT-REBASE`'s gates. On 2026-09-24 against `official/dev`
-`153e5658` (`git rev-list --left-right --count official/dev...<cut>` and `git merge-tree
---write-tree --name-only official/dev <cut>`): published cuts 1–4 are 175 commits behind dev with
-9 / 15 / 17 / 22 conflicting paths; cut 5 (`b1bdaca0`, PR #8605) is 51 behind / 498 ahead with 9.
+**Rebase state** is measured by queue `RT-REBASE`'s gates. On 2026-09-25 against `official/dev`
+`e3adc91d` (`git rev-list --left-right --count official/dev...<cut>` and `git merge-tree
+--write-tree --name-only official/dev <cut>`): published cuts 1–4 are 286 commits behind dev with
+11 / 17 / 19 / 35 conflicting paths; cut 5 (`b1bdaca0`, PR #8605) is 162 behind / 498 ahead with 25.
 The local rehearsals `rt/*` and `rh/*` are unpushed, and the real propagation is done on dev after
 15.0.9 is tagged (`RT-REBASE`).
 
