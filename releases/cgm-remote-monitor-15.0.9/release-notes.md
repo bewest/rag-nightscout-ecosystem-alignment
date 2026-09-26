@@ -1105,6 +1105,14 @@ software library updates.
   (`AUTH_DEFAULT_ROLES=denied`) when you opened Nightscout with an access token in the address.
   Opening the clock's own address with the token (`/clock/<face>?token=…`) works. A clock view is
   a display, not an alarm.
+- **A record whose identity was saved as a list cannot be deleted through API v3**, which
+  AndroidAPS uses. 15.0.8 deleted it. Nightscout shows such a record's list as its identity, and
+  this release deletes a record only by the identity Nightscout shows for it. No commonly used app
+  is known to save an identity as a list. If a record you deleted in AndroidAPS still shows on
+  your site, delete it in the careportal as well.
+- **A record saved with an empty identity cannot be edited through API v3 by the id Nightscout
+  shows for it**: the edit is refused, or a second copy is saved. No commonly used app is known to
+  save records this way. The same on 15.0.8.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
 

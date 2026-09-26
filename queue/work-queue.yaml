@@ -10366,6 +10366,43 @@ items:
       Decisions:
 
       - 2026-09-26 (maintainer): after 15.0.9.
+  - id: BFQ-145
+    title: "BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, \"\" or 0"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@699eb5fa
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/storage/mongoCollection/utils.js identifyingFilter (used by
+      modify.js for PATCH and PUT): the same falsy-identifier _id fallback
+      as filterForEveryForm, keeping BF-117's guard; tests beside
+      tests/api3.delete-every-form.test.js.
+    review: maintainer
+    operator_visible: >
+      Rarely, a record saved by an app with an empty identity cannot be
+      edited through API v3 by the id Nightscout shows for it: the edit is
+      refused, or a second copy is saved. No commonly used app is known to
+      save records this way. The same on 15.0.8. A fix is planned for after
+      15.0.9. This is not medical advice.
+    semver: patch
+    semver_reason: a v3 lookup that matched nothing finds the record GET already shows
+    register: [BF-145]
+    gates:
+      - no-gate: >
+          Measured on a booted server (PATCH/PUT arm of
+          tools/lab/triage-2026-09/api3-empty-identifier-delete.js) on
+          v15.0.8 92d08342, dev ce7d754a and 1c3aeb8c: PATCH 404, PUT 201
+          with two records, for identifier null, "" and 0. Needs a tree with
+          node_modules and MongoDB, so not a queue gate.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the
+      maintainer's decision (2026-09-26). Not a regression from 15.0.8.
   - id: RT-PR-8730
     title: "#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)"
     parcel: release-train

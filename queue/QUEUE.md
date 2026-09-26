@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 167 |
+| items | 168 |
 | runnable gates | 238 |
-| explicit `no-gate:` markers | 220 |
+| explicit `no-gate:` markers | 221 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 220 of the 458 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 221 of the 459 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
@@ -109,6 +109,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-128** BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share
 - **BFQ-136** BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it
 - **BFQ-137** BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried
+- **BFQ-145** BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
@@ -2006,7 +2007,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 86 items
+`parcel: register-open` &mdash; 87 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2085,6 +2086,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-136` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it | `merged-upstream` | `bf/api3-app-field-v1-records` | patch | 1 run + 3 no-gate |
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `merged-upstream` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
 | `BFQ-137` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -4455,6 +4457,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-09-26. Found with BF-125. Live on 15.0.8: lib/plugins/maker.js and lib/server/pushnotify.js are identical on v15.0.8 92d08342 and dev e3adc91d (async ^0.9.2 on both). Decisions: - 2026-09-26 (maintainer): after 15.0.9.
+
+### `BFQ-145` &mdash; BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@699eb5fa` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-145` |
+
+**Blast radius.** lib/api3/storage/mongoCollection/utils.js identifyingFilter (used by modify.js for PATCH and PUT): the same falsy-identifier _id fallback as filterForEveryForm, keeping BF-117's guard; tests beside tests/api3.delete- every-form.test.js.
+
+**What an operator sees.** Rarely, a record saved by an app with an empty identity cannot be edited through API v3 by the id Nightscout shows for it: the edit is refused, or a second copy is saved. No commonly used app is known to save records this way. The same on 15.0.8. A fix is planned for after 15.0.9. This is not medical advice.
+
+**Why `patch`.** a v3 lookup that matched nothing finds the record GET already shows
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured on a booted server (PATCH/PUT arm of tools/lab/triage-2026-09/api3-empty-identifier-delete.js) on v15.0.8 92d08342, dev ce7d754a and 1c3aeb8c: PATCH 404, PUT 201 with two records, for identifier null, "" and 0. Needs a tree with node_modules and MongoDB, so not a queue gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
