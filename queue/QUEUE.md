@@ -261,7 +261,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Blast radius.** Content: 2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js, lib/authorization/storage.js, tests/authsubjects.test.js. Tip 404e714c is a merge of origin/dev 59430336 into ce82f0cd (2026-09-21). The BF-30 throttle work is on bf/throttle (P0-J), not here.
 
-**What an operator sees.** Two security fixes, not yet merged or released. Editing a subject (an access entry on the admin page) writes that subject's API access token into the database in readable form, which turns read access to your database into API access; with this fix it no longer does. IMPORTANT: tokens already written that way stay in your database - fixing the code does not remove them (see P0-C-REMEDIATE for what to do). Brute-force slowdown on failed logins is keyed on a value the caller can choose, so it never engages; the fix makes it engage. Existing access tokens keep working - they are re-derived on every load and are not invalidated by this change.
+**What an operator sees.** Two security fixes, merged into the development version with #8754 and arriving with 15.0.9; 15.0.8 still has both. Editing a subject (an access entry on the admin page) writes that subject's API access token into the database in readable form, which turns read access to your database into API access; with this fix it no longer does. IMPORTANT: tokens already written that way stay in your database - fixing the code does not remove them (see P0-C-REMEDIATE for what to do). Brute-force slowdown on failed logins is keyed on a value the caller can choose, so it never engages; the fix makes it engage. Existing access tokens keep working - they are re-derived on every load and are not invalidated by this change.
 
 **Why `major`.** GT4: beyond the two fixes, the branch narrows lib/authorization/storage.js to write only an allow-list of fields (name, roles, notes, created_at), so any field a third-party admin tool has stored is dropped on the next edit with NO error. It also adds `notes` to the GET /api/v1/subjects response. The throttle change alone would be minor - the sleep moved to the failure path, so no request that authenticates is delayed by another client's failures behind a shared proxy.
 
@@ -300,7 +300,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Blast radius.** Content: 1 commit at 435419ce, 3 files, +388/-45. lib/authorization/delaylist.js, lib/authorization/index.js, tests/authdelay.test.js. Tip a0823c4f is a merge of origin/dev 59430336 into 435419ce (2026-09-21).
 
-**What an operator sees.** This branch does not ship on its own. The failed-login fixes it started are carried in PR #8754 (the BF2-AUTH item), which describes what changes for you; they are not yet merged or released. Nothing here changes anything you configured. None of this is medical advice.
+**What an operator sees.** This branch does not ship on its own. The failed-login fixes it started are carried in PR #8754 (the BF2-AUTH item), which describes what changes for you; they are merged into the development version and arrive with 15.0.9. Nothing here changes anything you configured. None of this is medical advice.
 
 **Why `patch`.** no declared surface moves and no default changes. For any given request the delay only ever SHRINKS - a successful authentication is no longer delayed at all - so nothing that worked stops working. An added log line is not a surface. The secure default is a later and deliberate bump.
 
@@ -1031,7 +1031,7 @@ that costs.
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `merged-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `merged-upstream` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `merged-upstream` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
-| `RT-PR-8730` | #8730 - Crowdin translation updates, carried into 15.0.9 | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then retire the extra lookup forms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `in-progress` | `main` | n/a | 1 run + 2 no-gate |
@@ -1737,7 +1737,7 @@ that costs.
 
 **Notes.** Merged 2026-09-25 as c3d42d4e; not released. Outside contributor (alanshurafa); the maintainer merged dev into it on 2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
 
-### `RT-PR-8730` &mdash; #8730 - Crowdin translation updates, carried into 15.0.9
+### `RT-PR-8730` &mdash; #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)
 
 | | |
 |---|---|
@@ -3874,7 +3874,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Blast radius.** PR #8568 (outside contributor, head de8efff0, 0 behind dev): lib/data/ddata.js normalizeAapsRunningModes, called from processTreatments; tests/ddata.test.js; and removal of an unused convertToRanges wrapper in lib/profile/profileeditor.js (dev fails eslint no-unused-vars on it; #8605 makes the same deletion).
 
-**What an operator sees.** If you use AndroidAPS and have turned the loop off without an end time, then turned it back on, Nightscout may still treat the loop as deliberately off. While it does, it does not warn you that the loop has stopped running and does not raise pump alerts, and nothing on the page says so. Keep the alerts on your phone and pump switched on. The fix is not in 15.0.9 yet.
+**What an operator sees.** If you use AndroidAPS and have turned the loop off without an end time, then turned it back on, Nightscout may still treat the loop as deliberately off. While it does, it does not warn you that the loop has stopped running and does not raise pump alerts, and nothing on the page says so. Keep the alerts on your phone and pump switched on. This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it.
 
 **Why `patch`.** a bug fix in how existing records are read; nothing stored changes
 
@@ -3942,7 +3942,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Blast radius.** lib/plugins/pump.js updateStatus and its caller prepareData (a few lines), plus tests/pump.test.js. Changes alarm behaviour only for sites that set PUMP_ENABLE_ALERTS=true and PUMP_WARN_ON_SUSPEND=true.
 
-**What an operator sees.** If you turned on the Nightscout setting that is supposed to warn you when your pump is suspended (PUMP_WARN_ON_SUSPEND), it has never worked: Nightscout does not raise that warning, even though the pump status on the page says "suspended". Do not rely on Nightscout to tell you the pump is suspended. Keep the alerts on your pump and your phone switched on. The fix is not in any release yet. This is not medical advice; talk to your care team about how you are alerted to a suspended pump.
+**What an operator sees.** If you turned on the Nightscout setting that is supposed to warn you when your pump is suspended (PUMP_WARN_ON_SUSPEND), it has never worked: Nightscout does not raise that warning, even though the pump status on the page says "suspended". Do not rely on Nightscout to tell you the pump is suspended. Keep the alerts on your pump and your phone switched on. This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it. This is not medical advice; talk to your care team about how you are alerted to a suspended pump.
 
 **Why `patch`.** a documented setting starts doing what it says; no stored data or API changes
 
@@ -4175,7 +4175,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Blast radius.** lib/authorization/storage.js create/save validation and reload(), plus a test in tests/authsubjects.test.js. A subject or role without a string name is refused instead of stored; an existing malformed row is skipped with a log line instead of ending the process.
 
-**What an operator sees.** If an administrator's tool creates a Nightscout access subject without a name, Nightscout stops, and keeps stopping every time it restarts, until that record is removed from the database by hand. Only someone with administrator rights can cause this. While Nightscout is down, nobody following you sees new readings and Nightscout raises no alarms, so keep your phone's and devices' own alarms on. The fix is not in any release yet.
+**What an operator sees.** If an administrator's tool creates a Nightscout access subject without a name, Nightscout stops, and keeps stopping every time it restarts, until that record is removed from the database by hand. Only someone with administrator rights can cause this. While Nightscout is down, nobody following you sees new readings and Nightscout raises no alarms, so keep your phone's and devices' own alarms on. This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it.
 
 **Why `patch`.** a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
 

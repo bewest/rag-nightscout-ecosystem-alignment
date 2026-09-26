@@ -387,7 +387,7 @@ items:
     review: SECURITY - a human security reviewer first, before any other Phase 0
       branch. This is the one the sequencing document singles out.
     operator_visible: >
-      Two security fixes, not yet merged or released. Editing a subject (an
+      Two security fixes, merged into the development version with #8754 and arriving with 15.0.9; 15.0.8 still has both. Editing a subject (an
       access entry on the admin page) writes that subject's API access token into
       the database in readable form, which turns read access to your database
       into API access; with this fix it no longer does. IMPORTANT: tokens already
@@ -531,8 +531,7 @@ items:
     operator_visible: >
       This branch does not ship on its own. The failed-login fixes it
       started are carried in PR #8754 (the BF2-AUTH item), which
-      describes what changes for you; they are not yet merged or
-      released. Nothing here changes anything you configured. None of
+      describes what changes for you; they are merged into the development version and arrive with 15.0.9. Nothing here changes anything you configured. None of
       this is medical advice.
     semver: patch
     semver_reason: >
@@ -8884,7 +8883,7 @@ items:
       deliberately off. While it does, it does not warn you that the loop
       has stopped running and does not raise pump alerts, and nothing on
       the page says so. Keep the alerts on your phone and pump switched on.
-      The fix is not in 15.0.9 yet.
+      This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it.
     semver: patch
     semver_reason: a bug fix in how existing records are read; nothing stored changes
     register: [BF-114]
@@ -9097,7 +9096,7 @@ items:
       worked: Nightscout does not raise that warning, even though the pump
       status on the page says "suspended". Do not rely on Nightscout to
       tell you the pump is suspended. Keep the alerts on your pump and your
-      phone switched on. The fix is not in any release yet. This is not
+      phone switched on. This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it. This is not
       medical advice; talk to your care team about how you are alerted to a
       suspended pump.
     semver: patch
@@ -9501,7 +9500,7 @@ items:
       Only someone with administrator rights can cause this. While
       Nightscout is down, nobody following you sees new readings and
       Nightscout raises no alarms, so keep your phone's and devices' own
-      alarms on. The fix is not in any release yet.
+      alarms on. This is fixed in the development version and arrives with 15.0.9; 15.0.8 still has it.
     semver: patch
     semver_reason: a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
     register: [BF-126]
@@ -9638,7 +9637,7 @@ items:
       instead; that is the maintainer's decision. No client in the
       externals corpora calls it.
   - id: RT-PR-8730
-    title: "#8730 - Crowdin translation updates, carried into 15.0.9"
+    title: "#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: crowdin_incoming
