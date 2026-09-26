@@ -46,8 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 1 | BFQ-142 |
-| `merged-upstream` | 70 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131 |
+| `merged-upstream` | 71 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-142 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -2100,7 +2099,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
 | `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-141` | BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice (closed, superseded by #8781) | `closed` | `bf/fallback-key-empty-identifier` | patch | 1 run + 1 no-gate |
-| `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id | `in-flight-upstream` | `bf/api3-delete-nonstring-identifier` | patch | 1 run + 1 no-gate |
+| `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id | `merged-upstream` | `bf/api3-delete-nonstring-identifier` | patch | 1 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -4889,7 +4888,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/api3-delete-nonstring-identifier` |
 | base | `official/dev@ce7d754a` |
@@ -4907,8 +4906,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -q "null, .., 0, false, NaN" bf/api3-delete-nonstring-identifier -- lib/api3/storage/mongoCollection/utils.js'`
-  - The branch's delete fallback lists the falsy identifiers normalizeDoc shows as the _id (official/dev ce7d754a lists null and "" only and fails this). A presence check only; tests/api3.delete-every-form.test.js decides (18 of its 30 new tests fail on ce7d754a). Point it at official/dev once merged.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa origin/dev`
+  - #8783's merge 699eb5fa (2026-09-26) is contained in origin/dev.
 - **NO GATE** &mdash; The behaviour is measured by a booted-server probe that needs MongoDB, so it is not a queue gate. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: tools/lab/triage-2026-09/api3-empty-identifier-delete.js direct-insert and v1 entries/devicestatus arms, identifier 0 and false: soft and permanent DELETE 200 on v15.0.8 92d08342 and 1c3aeb8c, 404 on ce7d754a; arrays 200 on v15.0.8, 404 on ce7d754a and 1c3aeb8c (kept out on purpose, as #8778 pins); bystanders untouched.
 
 **Evidence.**
@@ -4917,7 +4916,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/triage-2026-09/api3-empty-identifier-delete.js`
 - `reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md`
 
-**Notes.** 2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean. Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past 15.0.9 by the maintainer; the maintainer reversed that the same day (fix in 15.0.9). Present on dev since #8758's cb7d4110 (BF-117). 2026-09-26 - FIXED on bf/api3-delete-nonstring- identifier 1c3aeb8c (local, not pushed), one commit on official/dev ce7d754a (#8781's merge). The rule: the delete's _id fallback takes exactly the stored identifiers normalizeDoc shows as the _id. 18 of 30 new tests fail on ce7d754a (GET 200, then DELETE 404); break-its per clause all red. Full suite 3458/0/3 on a fresh database (ce7d754a: 3428/0/3). Arrays still answer 404, unlike 15.0.8: v3 GET shows them as stored, so they are the record's own identifier (BF-117, #8778); for the maintainer to confirm. Not changed: v3 PATCH and PUT by the _id of a record with a present but falsy identifier (identifyingFilter needs it absent): PATCH 404, PUT inserts a second record, the same on 15.0.8. PR body draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
+**Notes.** 2026-09-26 - MERGED into dev as 699eb5fa (#8783). Not released; goes into 15.0.9. Run 019 on 699eb5fa is the final-candidate run. 2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean. Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past 15.0.9 by the maintainer; the maintainer reversed that the same day (fix in 15.0.9). Present on dev since #8758's cb7d4110 (BF-117). 2026-09-26 - FIXED on bf/api3-delete-nonstring-identifier 1c3aeb8c (local, not pushed), one commit on official/dev ce7d754a (#8781's merge). The rule: the delete's _id fallback takes exactly the stored identifiers normalizeDoc shows as the _id. 18 of 30 new tests fail on ce7d754a (GET 200, then DELETE 404); break-its per clause all red. Full suite 3458/0/3 on a fresh database (ce7d754a: 3428/0/3). Arrays still answer 404, unlike 15.0.8: v3 GET shows them as stored, so they are the record's own identifier (BF-117, #8778); for the maintainer to confirm. Not changed: v3 PATCH and PUT by the _id of a record with a present but falsy identifier (identifyingFilter needs it absent): PATCH 404, PUT inserts a second record, the same on 15.0.8. PR body draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
 
 ---
 

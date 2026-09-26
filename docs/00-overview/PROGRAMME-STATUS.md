@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 118 | 37 | 8 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 118 | 37 | 7 |
 | **Modernization** | `release-train` | 29 | 5 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **167** | **51** | **12** |
+| | **total** | **167** | **51** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -152,7 +152,7 @@ cover more than one `BF-`:
 | `BFQ-134` | `merged-upstream` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
 | `BFQ-136` | `merged-upstream` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
 | `BFQ-137` | `not-started` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a |
-| `BFQ-142` | `in-flight-upstream` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,  |
+| `BFQ-142` | `merged-upstream` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,  |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -185,14 +185,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 5 |  | 5 |  | 11 | 1 |  |  |  | 1 | **29** |
-| `register-open` | 27 | 1 | 5 |  | 4 | 1 | 40 | 4 |  | 2 | 2 |  | **86** |
-| `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  |  | **18** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 | 1 | 5 |  | 5 | 11 | 1 |  |  |  | 1 | **29** |
+| `register-open` | 27 | 1 | 5 |  | 4 | 41 | 4 |  | 2 | 2 |  | **86** |
+| `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 |  |  | **18** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

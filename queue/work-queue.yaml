@@ -11271,7 +11271,7 @@ items:
     branch: bf/api3-delete-nonstring-identifier
     base: official/dev@ce7d754a
     worktree: externals/work/crm-r3-fix-142
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8783]
     ships_to_operators_today: true
     blast_radius: >
@@ -11299,14 +11299,10 @@ items:
     semver_reason: a v3 delete reaches a record whose _id v3 reads show as its identifier, as on 15.0.8
     register: [BF-142]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "null, .., 0, false, NaN" bf/api3-delete-nonstring-identifier -- lib/api3/storage/mongoCollection/utils.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa origin/dev
         kind: static
         describe: >
-          The branch's delete fallback lists the falsy identifiers
-          normalizeDoc shows as the _id (official/dev ce7d754a lists null
-          and "" only and fails this). A presence check only;
-          tests/api3.delete-every-form.test.js decides (18 of its 30 new
-          tests fail on ce7d754a). Point it at official/dev once merged.
+          #8783's merge 699eb5fa (2026-09-26) is contained in origin/dev.
       - no-gate: >
           The behaviour is measured by a booted-server probe that needs
           MongoDB, so it is not a queue gate. 2026-09-26, Node 22.23.2,
@@ -11322,6 +11318,7 @@ items:
       - tools/lab/triage-2026-09/api3-empty-identifier-delete.js
       - reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md
     notes: >
+      2026-09-26 - MERGED into dev as 699eb5fa (#8783). Not released; goes into 15.0.9. Run 019 on 699eb5fa is the final-candidate run.
       2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean.
       Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past
       15.0.9 by the maintainer; the maintainer reversed that the same day
