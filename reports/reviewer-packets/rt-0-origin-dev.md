@@ -137,7 +137,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`
+`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `BFQ-141`
 
 ## Evidence
 
@@ -147,9 +147,13 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780)
-and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and
-81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged
+2026-09-26 (maintainer): BF-141, a regression from #8780 found in the review
+of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier
+aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one
+item in blocks_on that is not merged-upstream, besides RT-VERSION. Measured
+2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780) and
+declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and 81
+first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged
 2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832),
 #8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135,
 1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139,

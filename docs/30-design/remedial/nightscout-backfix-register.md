@@ -58,12 +58,13 @@ skipped.
 
 | question | answer, 2026-09-26 (`origin/dev` `ff93fa94`) | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **99** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 71 merged, 1 partly merged (BF-07), 1 fixed on an unmerged local branch** (BF-52). The twelve that were fixed on local branches (BF-80, BF-106, BF-121, BF-122, BF-123, BF-125, BF-128, BF-129, BF-135, BF-136, BF-138 and BF-139) merged on 2026-09-26 through PRs #8771 to #8777, #8779 and #8780. **97** reach an operator on 15.0.8 — BF-80 and BF-106 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
-| How much work is outstanding? | **52 ids not repaired**. The halves left on BF-122 (v1 deletes stay hard deletes), BF-125 (a failed call is retried) and BF-121 (the cases no key can separate) were decided as intended on 2026-09-26 | `make queue-coverage` (counts `partly merged` as not fixed and `partly fixed` as fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **100** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **27 open, 71 merged, 1 partly merged (BF-07), 1 fixed on an unmerged local branch** (BF-52). The twelve that were fixed on local branches (BF-80, BF-106, BF-121, BF-122, BF-123, BF-125, BF-128, BF-129, BF-135, BF-136, BF-138 and BF-139) merged on 2026-09-26 through PRs #8771 to #8777, #8779 and #8780. **97** reach an operator on 15.0.8 — BF-80, BF-106 and BF-142 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
+| How much work is outstanding? | **53 ids not repaired**. The halves left on BF-122 (v1 deletes stay hard deletes), BF-125 (a failed call is retried) and BF-121 (the cases no key can separate) were decided as intended on 2026-09-26 | `make queue-coverage` (counts `partly merged` as not fixed and `partly fixed` as fixed) |
 
-Two §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix and BF-106 a
-cost of BF-03's, so each is present where its fix is (`dev`) and not on 15.0.8. They are filed in
-§1 because they will ship to every operator with the next release.
+Three §1 entries are an overstatement to know about: BF-80 is a cost of BF-75's fix, BF-106 a
+cost of BF-03's and BF-142 a cost of BF-117's, so each is present where its fix is (`dev`) and not
+on 15.0.8. They are filed in §1 because they will ship to every operator with the next release
+(BF-142 was deferred past 15.0.9 by the maintainer on 2026-09-26).
 
 **Provenance.** Every status cell carries one marker, and the detail section says what was run
 against which ref.
@@ -84,7 +85,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-26 the highest is BF-140 (filed that day from PR #8778; BF-136 to BF-139 were filed the same day from the maintainer's decisions), so the next free id is BF-141. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-26 the highest is BF-142 (BF-141 and BF-142 filed that day from the review of PR #8778; BF-140 from the PR itself; BF-136 to BF-139 from the maintainer's decisions), so the next free id is BF-143. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -215,6 +216,7 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-137** | **With more than one IFTTT Maker key, an alarm's Maker calls run out of order, and a key whose call fails is not retried.** `MAKER_KEY` may hold several keys separated by spaces. `makeKeyRequests` calls the step callback once per key, but `makeRequests` runs its three steps (`ns-event`, `ns-<level>`, `ns-<level>-<plugin>`) with `async.series` (async 0.9.2), which expects one callback per step. With 2 keys an alarm made 6 requests in interleaved order and the final callback ran 4 times. When one key's call succeeds and another's fails, the success extends the alarm's dedup key to 15 minutes, so the failed key gets no retry (BF-125's 30-second retry assumes one key) | `lib/plugins/maker.js` `makeRequests` `:82-97`, `makeKeyRequests` `:98-104` (a callback per key, `:101-103`); keys split on spaces `:10-14`; `lib/server/pushnotify.js` success TTL `:141`; `async` `^0.9.2`; identical on `v15.0.8` `92d08342` and `dev` `e3adc91d` (read) | **low** — an IFTTT alarm to one of several keys can be missed for up to 15 minutes when that key's call fails; the event order is scrambled. Bounded to sites with more than one Maker key | yes | **open** — **Decision 2026-09-26 (maintainer):** after 15.0.9. **Reproduced** in-process 2026-09-25 with two keys (6 requests, interleaved, 4 final callbacks); the reproduction script was not retained. The missed retry follows from the 15-minute key (read). The code is identical on `v15.0.8` and `dev` (read) |
 | **BF-138** | **`/pebble` asked for the units the site does not use computes the Bolus Wizard Preview against settings in the other units.** On an mg/dL site asked for `?units=mmol`, `prepareSandbox` switches the sandbox to mmol/L while the profile's sensitivity and targets stay in mg/dL, so `bwp` and `bwpo` compare an mmol/L reading with mg/dL settings. On a booted server the usual wrong output on an mg/dL site asked for mmol is `bwp` −0.96 (right by coincidence) with `bwpo` 23.2, an mg/dL number in an mmol response, because of BF-139; `bwp` −2.17 and `bwpo` −61.8 (site values −0.96 and 23; sensitivity 70, targets 90-126, 1 U given 30 min before) appear only in-process on fresh data, or between a data load and its evaluation. On an mmol/L site asked for mg/dL, `bwpo` stays in mmol/L (1.3) next to an mg/dL reading, unlabelled | `lib/server/pebble.js` `prepareSandbox` `:143-154` (mmol switch `:146-148`), BWP fields `:95-99`; `lib/plugins/boluswizardpreview.js`; the same on `v15.0.8` `92d08342` and `dev` `e3adc91d` | **safety** (dosing-relevant display on a watch face): the bolus wizard preview a watch face shows is wrong in size and sign, with nothing marking it. Bounded to clients that ask `/pebble` for the units the site does not use | yes | **merged 2026-09-26** (PR #8777, merge `d613c35f`, head `4864d679`); not released, goes into 15.0.9. Fixed 2026-09-26 on branch `bf/pebble-delta-units` `b3db0f36` (after `b58b937c`, BF-139, on `aa224c69`, BF-128; one PR): `iob`, `cob` and `bwp` are computed in a sandbox in the site's units; `bwpo` is converted to the requested units; `bwp` is not converted. Of 18 combinations of site units and request, only `bwp`/`bwpo` change, in the two mismatched ones (plus BF-128's delta). Suite on `b3db0f36` 3216/0/3 (25 new: 4 BF-139, 21 BF-138). Found 2026-09-25 while fixing BF-128. **Decision 2026-09-26 (maintainer):** fixed in 15.0.9 with BF-128, on `bf/pebble-delta-units`, one PR. **Reproduced** in-process 2026-09-25 on `v15.0.8` and `dev`, and on a booted server 2026-09-26 (corrected figures in this row) |
 | **BF-139** | **A `/pebble` request can change the units of glucose values other requests read.** The sandbox a `/pebble` request builds shares the server's reading objects: `ddata.clone()` is a shallow copy, and `sbx.scaleEntry` (called by `bgnow` for each reading) writes `entry.scaled` onto the reading when it is not already set. A request in units other than the site's can therefore leave readings scaled in its units, and until the next data load other readers of the same objects can see values in the wrong units. It reaches the server's own alarm evaluation (reproduced on a booted server 2026-09-26): that evaluation could judge a reading in the wrong units and raise a false low alarm, and values shown by `/api/v2/properties`, Alexa and Google Home could be wrong until the next data load. Described by mechanism only; **decision 2026-09-26 (maintainer):** public PR with the mechanism and no reproduction recipe, as for BF-70 / #8743 | `lib/data/ddata.js` `clone` `:109-111` (shallow); `lib/sandbox.js` `scaleEntry` `:258-268`; `lib/plugins/bgnow.js:85`; `lib/server/pebble.js` `prepareSandbox` `:143-154`; the same on `v15.0.8` `92d08342` and `dev` `e3adc91d` (read) | **safety** (alarm integrity), raised 2026-09-26 from correctness: glucose values in the wrong units on other readers until the next data load, and it reaches the server's own alarm evaluation, which could raise a false low alarm | yes | **merged 2026-09-26** (PR #8777, merge `d613c35f`, head `4864d679`); not released, goes into 15.0.9. Fixed 2026-09-26 on branch `bf/pebble-delta-units` `b58b937c` (on `aa224c69`, BF-128): the `/pebble` sandbox gets its own copies of the readings without a stored scaled value. Noticed 2026-09-25 while fixing BF-128. **Decision 2026-09-26 (maintainer):** fixed in 15.0.9 with BF-128, on `bf/pebble-delta-units`, one PR. **Reproduced** on a booted server 2026-09-26: it reaches the server's own alarm evaluation. Disclosure decided 2026-09-26: public PR, mechanism only |
+| **BF-142** | On `dev` since #8758, **API v3 DELETE answers 404 for a record whose stored `identifier` is `0` or an array** (`[null]`, `[""]`, `["", "other"]`), while v3 GET returns the same record under its `_id`. API v1 entries and devicestatus store any `identifier` value; v1 treatments refuse a non-string one. `normalizeDoc` shows a falsy identifier (`0` included) as the `_id`, and GET finds the record through `filterForOne`, which matches by `_id` whatever the identifier is; the delete (`filterForEveryForm`) reaches a record through its `_id` only when `identifier` is absent, `null` or `""` (#8778), and excludes arrays by design, so soft and permanent DELETE find nothing and the record stays valid | `lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm` (the `_id` fallback narrowed by #8758's `cb7d4110` for BF-117, widened to `null`/`""` by #8778's `15f01f33`) against `normalizeDoc` and `filterForOne`; on `origin/dev` `ff93fa94`; not on `v15.0.8` | **low** — a v3 delete the client sees refused while the record keeps counting; no known client writes these identifier shapes (AndroidAPS, the only corpus client that deletes through v3, omits a null identifier and sends strings) | yes (once 15.0.9 ships) | **open** — deferred past 15.0.9 (maintainer, 2026-09-26). **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js), direct-insert and v1 entries/devicestatus arms, Node 22.23.2, MongoDB 7.0.43): on `v15.0.8` `92d08342` GET 200 and soft DELETE 200 (isValid false) for all six shapes; on `ff93fa94` GET 200 and soft DELETE 404 for all six |
 
 ## 1b. Pre-release findings
 
@@ -268,6 +270,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-131** | On #8758, **a record deleted by its `_id` through API v1 stays in the server's in-memory cache**: `DELETE /api/v1/{entries,treatments,devicestatus}/<id>` answers 200 and removes the document from MongoDB, but unfiltered reads (`entries.json?count=…`, `treatments.json?count=…`, `devicestatus.json?count=…`) and a newly opened web page keep being given it until the server restarts or the record leaves the cache window. `remove()` reports `opts.find._id` to the cache as the id removed, and #8758's `query_for` rewrites that value in place into an either-form filter, which no cached record equals. Websocket `dbRemove` of both copies of an id stored twice left one copy cached as well | #8758 `ab7b22d6` `lib/server/{entries,treatments,devicestatus}.js` `remove`, `lib/server/object-id-forms.js` `matchEitherForm` (in-place rewrite), `lib/server/websocket.js` `dbRemove`, `lib/server/cache.js` `removeFromArray` (first match only) | **high** — pre-release; a treatment deleted because it was a mistake (a bolus or carbs entry) keeps being shown on newly opened pages and to unfiltered API readers, and insulin and carbs on board computed from the cache can include it. 15.0.8 and `dev` `4f705217` remove it | **merged 2026-09-25** (PR #8758, merge `4d9ecc3b`, head `f1e8398b`; fix `e9dbb1fb`); found 2026-09-25 by the 15.0.9 A/B soak (queue BFQ-131). **Reproduced**: `tools/lab/rc-soak/probe-deleted-entry.js` exits 1 on `ab7b22d6` and 0 on `92d08342` and `4f705217`; an ablation of `entries.remove` alone (`f76e6fd5`) exits 0; `tests/cache.remove-by-id.test.js` (6 cache cases) and one websocket case fail on `6c3ccce6` with the record still cached, and pass on `e9dbb1fb` |
 | **BF-132** | On #8730 (the Crowdin translation sync opened 2026-09-21), **translations that dev corrected are put back**: Traditional Chinese **"ml" becomes 克 (grams) instead of 毫升 (millilitres)**, so a volume is shown as a weight, and "Carbs" loses its full form; Swedish "Days with food" reverts to English; a Russian status line loses its values' wording. Crowdin still holds the older strings, so the sync undoes dev's `9f249815` ("preserve existing Chinese and Swedish translations") | #8730 `f99c0e54` `translations/zh_TW.json`, `sv_SE.json`, `ru_RU.json`; dev `ecb63223` is correct | **safety-visible** — a wrong unit label in a diabetes UI for Traditional Chinese users; bounded to that language's display, no stored value changes | **open, found 2026-09-25** in the release-candidate pre-flight (tree `dd51bb8a`, 4 language tests fail in all six cells; dev passes them). **Reproduced**: `tests/language.test.js` on the merge, and read from the two JSON files. Not on dev or 15.0.8 |
 | **BF-140** | On `dev` after #8758, **API v3 DELETE answers 404 for a record that API v3 GET returns**, when the record was stored through API v1 with an `identifier` of `null` or `""`. v3 reads show such a record with its `_id` as its identifier (`normalizeDoc` fills any falsy identifier), and GET finds it by `_id`; but the delete filter (`filterForEveryForm`) allows the `_id` fallback only when `identifier` is absent. So soft and permanent DELETE find nothing, the record stays valid, and after #8775 it keeps counting on the site (COB 30 g before and after an AndroidAPS-style v3 delete). Treatments and entries alike | `lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm` (the absent-only fallback came with #8758's `cb7d4110`, for BF-117) against `normalizeDoc`; `lib/api3/generic/delete/operation.js` | **medium** — pre-release; a delete the client sees refused while the record keeps counting in COB/IOB; narrow reach: v1 treatments accept only a string or `null` identifier, and no client in the corpus sends `null` or `""` (AndroidAPS omits a null identifier; Nocturne write-back could send one only for a record without an id) | **merged 2026-09-26** (PR #8778 by AndyLow91, an outside contributor, merge `aa1111b2`, head `18141136`, fix `15f01f33`); not released, goes into 15.0.9; not a programme branch. Present on `dev` from #8758's merge `4d9ecc3b` (2026-09-25) to `aa1111b2`; not on `v15.0.8`, whose delete used `filterForOne`. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js), Node 22.23.2, MongoDB 7.0.43): exit 1 on `750801a9` (null and `""`: GET 200, soft and permanent DELETE 404, v1 still lists it, COB 30 → 30), exit 0 on `92d08342`, `aa1111b2` and `ff93fa94`; #8778's tests fail 14 of 31 on `750801a9` |
+| **BF-141** | On `dev` after #8780 (BF-121), **the same API v1 treatment POSTed twice with `identifier: ""` is stored twice**. The fallback key treats `""` as no identity on the incoming write but matched a stored record without identity only where `syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID` and `identifier` were `null` or absent, so a record stored with any of them as `""` was never matched by its re-send. The websocket `dbAdd` exact match uses the same helper and had the same gap (hidden by its similar match when the amounts are equal) | `lib/server/treatment-fallback-key.js` `fallbackQuery` (the no-identity clause), used by `lib/server/treatments.js` `upsertQueryFor` and `lib/server/websocket.js` `processSingleDbAdd` | **low** — pre-release; a duplicate treatment (double-counted carbs or insulin) from a client that sends an empty identity; no corpus client is known to send `""` | **fixed 2026-09-26** on `bf/fallback-key-empty-identifier` `aaf67785` (one commit on `origin/dev` `ff93fa94`; local, not pushed); goes into 15.0.9 (maintainer, 2026-09-26). Present on `dev` from #8780's merge `ff93fa94`; not on `v15.0.8`. **Reproduced** 2026-09-26 ([probe](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js) re-send arm, Node 22.23.2, MongoDB 7.0.43): `""` stored 2 on `ff93fa94`, 1 on `92d08342` and on `aaf67785`; 29 new tests fail on `ff93fa94` |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -4819,6 +4822,7 @@ It is small, and `tests/clock-client.test.js` is the pattern for the test.
 ### BF-121 · two carb entries at the same time are stored as one
 
 **Merged 2026-09-26** via PR #8780 (merge `ff93fa94`, head `f3eb68de`); not released, goes into 15.0.9.
+Its no-identity rule did not treat a stored `""` as no identity: BF-141, fixed for 15.0.9.
 
 **Mechanism.** `POST /api/v1/treatments` does not insert. It calls `replaceOne(filter, doc, {upsert: true})`,
 with a filter from `upsertQueryFor` in `lib/server/treatments.js`: `identifier` if the record has
@@ -5893,7 +5897,7 @@ and `ff93fa94`; `v15.0.8` deleted it). It is consistent with #8775's `lib/server
 (the refused delete was the only reason such a record kept counting) and does not touch #8776's
 `validate.js` rule, which keeps `identifier` immutable on update.
 
-**Left, measured on `ff93fa94` (not filed).** (1) A record whose stored identifier is `0` or an array
+**Left, measured on `ff93fa94`; filed 2026-09-26 as BF-142 and BF-141.** (1) A record whose stored identifier is `0` or an array
 (`[null]`, `[""]`, `["", "other"]`), which v1 entries and devicestatus accept, is still returned by
 v3 GET under its `_id` and refused by v3 DELETE with 404: `normalizeDoc` treats `0` as empty and the
 fallback does not, and an array is excluded by design. No client is known to write these. (2) With
@@ -5902,7 +5906,94 @@ fallback does not, and an array is excluded by design. No client is known to wri
 keys a write without identity on `identifier: null`, which matches an absent or `null` field but not
 `""`, while `upsertQueryFor` treats `""` as no identifier. `null` and absent re-sends are unchanged.
 Whether `""` should count as no identity everywhere, as #8778 now does for deletes, is for the
-maintainer.
+maintainer. Decided 2026-09-26: (2) is BF-141, fixed for 15.0.9; (1) is BF-142, after 15.0.9.
+
+### BF-141 · on `dev` after #8780, a treatment re-sent with an empty identity is stored twice
+
+**Fixed 2026-09-26** on `bf/fallback-key-empty-identifier` `aaf67785`, one commit on `origin/dev`
+`ff93fa94` (local, not pushed); for 15.0.9 (maintainer, 2026-09-26). Found in the review of #8778
+(BF-140). Never released: present on `dev` from #8780's merge `ff93fa94` only.
+
+**Mechanism.** BF-121 made the API v1 and websocket fallback key (`created_at` + `eventType`)
+identity-aware in `lib/server/treatment-fallback-key.js`. A write that carries none of
+`syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID` — where `present()` counts absent, `null` and `""`
+alike as none — matches only a record without identity, and `upsertQueryFor` sends a write whose
+`identifier` is `""` to that fallback (`if (obj.identifier)`). But the stored side of the rule was
+`{field: {$eq: null}}` for those four fields and `identifier`, which matches `null` or absent and
+not `""`. v1 stores `identifier: ""` as sent, so the second POST of the same record did not match
+the first and was inserted. The same holds for a record stored with any of the four client fields
+as `""`. The websocket `dbAdd` exact match builds its query with the same helper; its similar match
+(same amounts within 2 s) hid the gap for an identical re-send, but not for a re-send with another
+amount, which the no-identity exact match answers with the stored record.
+
+**Fix.** The no-identity clause now matches each of the five fields with `{$in: [null, ""]}`
+(a fresh object per query; the list is the server's own, not client input). A write without
+identity therefore matches a stored record whose field is absent, `null` or `""`, as a `null` write
+already matched `null` or absent. A write with a non-empty identity is unchanged: that value must be
+equal, so a real identity and `""` are still two records. API v3 is not changed.
+
+**Measured 2026-09-26** (Node 22.23.2, MongoDB 7.0.43 in a dedicated container):
+
+- `tests/api.same-time-treatments.test.js`, new describe "an empty identity is no identity
+  (BF-141)", 71 tests: every stored form (absent, `null`, `""`) by every re-sent form for the five
+  fields through v1; a record inserted with `""` before the change; the socket exact match for four
+  fields by three stored forms; controls (a real identity kept apart from `""` both ways, an API v3
+  record not replaced, different carbs with `""` kept as two, a socket write with a real `id` not
+  answered by a record with `id: ""`). 29 fail on `ff93fa94` (2 records where 1 was expected; 3
+  where 2), all pass on `aaf67785`. Reverting only the query line turns the same 29 red.
+- Two literal-selector expectations change, marked in the tests
+  (`tests/storage.selector-hardening.test.js`, `tests/websocket.input-validation.test.js`).
+- Full suite on `aaf67785`, fresh database: 3467 passing / 0 failing / 3 pending (`ff93fa94`:
+  3396/0/3; +71).
+- [`same-time-resend-shapes.js`](../../../tools/lab/triage-2026-09/same-time-resend-shapes.js)
+  `ff93fa94` against `aaf67785`: every row the same (I8185, D01, D04 and D05 kept 2; R01 to R21
+  unchanged; R18, D02 and D03 as before); exit 0.
+  [`same-time-carbs.js`](../../../tools/lab/triage-2026-09/same-time-carbs.js): the same output on
+  both, exit 0.
+- [`api3-empty-identifier-delete.js`](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js):
+  the only difference between `ff93fa94` and `aaf67785` is the `""` re-send line (stored 2 → 1);
+  `v15.0.8` `92d08342` stores 1 for every shape.
+
+**Reach (read).** No client in the corpus is known to send an empty `identifier` or client id;
+`null` and absent re-sends were not affected.
+
+### BF-142 · on `dev` since #8758, API v3 cannot delete a record whose identifier is 0 or an array
+
+**Open**, deferred past 15.0.9 (maintainer, 2026-09-26). Found in the review of #8778 (BF-140);
+point (1) of that section's "Left" paragraph.
+
+**Mechanism.** API v1 entries and devicestatus store any `identifier` value they are sent, including
+`0` and arrays; v1 treatments refuse a non-string one. API v3 reads pass every record through
+`normalizeDoc`, which shows a falsy identifier (`0` included) as the `_id`; GET and the pre-delete
+check use `filterForOne`, which matches the `_id` whatever the stored identifier is. The delete
+itself uses `filterForEveryForm`, which reaches a record through its `_id` only where `identifier`
+is absent (#8758's `cb7d4110`, for BF-117, so that a record with an identifier of its own is not
+deleted through its `_id`), and since #8778 also `null` or `""`, excluding arrays by design. A stored
+`0` or array is neither, so soft and permanent DELETE match nothing and answer 404; the record stays
+valid.
+
+**15.0.8.** Its v3 delete used `filterForOne` for the existence check and the delete, so any record
+addressed by its hex `_id` was reached whatever its identifier (the same rule that let it delete a
+record with an identifier of its own, which BF-117 removed). Read at `92d08342`
+(`lib/api3/storage/mongoCollection/utils.js` `filterForOne`, `modify.js` `deleteOne`/`updateOne`)
+and run.
+
+**Reproduced 2026-09-26** with
+[`api3-empty-identifier-delete.js`](../../../tools/lab/triage-2026-09/api3-empty-identifier-delete.js)
+(its printed-only arms; Node 22.23.2, MongoDB 7.0.43):
+
+| tree | treatments inserted directly: `[null]`, `["","other"]`, `0` | v1 entries and devicestatus: `0`, `[null]`, `[""]` |
+|---|---|---|
+| `v15.0.8` `92d08342` | GET 200, soft DELETE 200, isValid false | GET 200, soft DELETE 200, isValid false |
+| `dev` `ff93fa94` (and `aaf67785`) | GET 200, **soft DELETE 404**, record kept | GET 200, **soft DELETE 404**, record kept |
+
+**Reach (read).** No client in the corpus is known to write these identifier shapes; AndroidAPS,
+the only corpus client that deletes through v3, sends string identifiers and omits a null one.
+
+**Direction, not decided.** Either make the delete fallback agree with `normalizeDoc` for `0`
+(any falsy identifier), or make v3 reads show such a record under the stored value, so that GET
+and DELETE address it the same way. Arrays need a decision of their own: #8778 pins that an array
+identifier keeps its record out of the `_id` fallback.
 
 ## 3. How to use this register
 
