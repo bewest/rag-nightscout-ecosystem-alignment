@@ -2,7 +2,8 @@
 
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
-cgm-remote-monitor `official/dev` `295f1177`. Where it touches employment, contracting, tax or
+cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
+and `official/dev` `7000eb18` (the merge of #8786) the same day. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
 
@@ -37,7 +38,7 @@ actually behaves. A change there reaches every one of them.
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `295f1177`, not tagged | — |
+| 15.0.9 | candidate `7000eb18`, not tagged | — |
 
 **Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in #7344,
 opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged 2026-03-16, released
@@ -46,9 +47,10 @@ in 15.0.7 on 2026-04-29 (`mongodb` `^3.6.0` → `^5.9.2`). #7344 was closed as s
 database driver is not optional maintenance.
 
 **2026 shows what steady attention produces.** Five releases so far this year. For 15.0.9 alone
-([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md)): 85 pull requests
+([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md), measured on `295f1177`): 85 pull requests
 merged in 23 days, 146 defects filed and 87 of the 122 in scope closed, and the full test suite grown
-from 1,533 passing tests on 15.0.8 to 3,473 on the candidate. Before any release is tagged, 19
+from 1,533 passing tests on 15.0.8 to 3,473 on `295f1177`. The candidate `7000eb18` adds one more
+(#8786, BF-147); its CI passed 3,478 tests in all nine cells. Before any release is tagged, 19
 integration runs, a comparison soak against 15.0.8, browser checks against a simulated household and
 a census of client behaviour were all completed.
 
@@ -60,7 +62,7 @@ person are the ones this proposal would fund:
 
 | work that needs a person | measured 2026-09-27 |
 |---|---|
-| review | 143 of the 171 items in the work queue route review to the maintainer; 75 of them are not yet merged or closed (`queue/work-queue.yaml`, `review` field) |
+| review | 144 of the 172 items in the work queue route review to the maintainer; 75 of them are not yet merged or closed (`queue/work-queue.yaml`, `review` field) |
 | specialist review | 21 items ask for a security or safety reviewer; 14 are open, most of them in the multitenancy and alarm work. The queue names the kind of reviewer, not a person |
 | decisions | 7 items wait on a decision (`needs-decision`), plus the release decisions themselves ([needs a human](NEEDS-A-HUMAN.md)) |
 | hand checks | the 15.0.9 browser walk was done by the maintainer; six checks are still owed before the tag ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)) |

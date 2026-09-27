@@ -617,7 +617,8 @@ the user-facing form. Facts the notes must not lose:
   from `7000eb18` is byte-identical (all 7 files under `node_modules/.cache/_ns_cache/public`; Node
   24.15.0, webpack 5.106.2, `browserslist` 4.28.2 and 4.29.1). Run 020 did not run on the new
   dependencies. The suite runs that did: #8786's CI on `64a9cc13`, whose tree `7000eb18` has, green
-  in all nine cells (Node 20/22/24 × MongoDB 4.4/5/6) plus the npm 12 install-and-build check; and
+  in all nine cells (Node 20/22/24 × MongoDB 4.4/5/6, 3478 passing, 0 failing, 3 pending in each) plus
+  the npm 12 install-and-build check; and
   one local cell, 3473 passing, 0 failing, 3 pending (Node 24.15.0, MongoDB 7.0.43), before the test
   file was added. `tests/dependency-overrides.test.js` passes 5 of 5 on the branch and fails 5 of 5
   on `295f1177`'s installed tree.
