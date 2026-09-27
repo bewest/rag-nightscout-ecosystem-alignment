@@ -127,6 +127,8 @@ Nightscout is no longer the only server that speaks its API. Nocturne
 ([adoption roadmap](../30-design/nightscout-adoption-roadmap-2026-09-11.md)). Its typed event model
 has been used as a reference in this repository's own data-model work
 ([primitive coverage](../30-design/platform/nightscout-primitive-coverage-2026-09-11.md)).
+Its web interface is its own design, with its own visual language, not a copy of Nightscout's
+real-time display, so for operators it is an alternative, and choosing it is each operator's decision.
 
 A second server makes this proposal more necessary, not less:
 
