@@ -1107,6 +1107,23 @@ software library updates.
 - **A treatment's pop-up on the chart can show its glucose in the wrong units** when your profile
   and your site use different units (one mg/dL, the other mmol/L). This affects only that pop-up;
   what is stored and calculated is not changed.
+- **The careportal can fill in "Entered By" with the word `undefined`.** If you save a careportal
+  entry with Entered By left empty, the next time you open the careportal that field shows
+  `undefined`, and entries are saved as entered by "undefined" unless you clear or change it.
+  Nothing else about the entry is affected. The same happens on 15.0.8 and earlier.
+- **After you edit or delete a treatment in Reports → Treatments, the table can still show the old
+  entry.** The change is saved, and the main chart shows it. Press **Show** again to refresh the
+  table. The same happens on 15.0.8.
+- **During an AndroidAPS percentage Profile Switch, the basal pill's pop-up can show ISF and carb
+  ratio with many decimal places**, for example `1.866666666667`. The number is correct; it is
+  only not rounded for display.
+- **Reports → Profiles can leave out profiles saved on the last day of the report.** When more
+  than one profile was saved on that day, only the earliest is listed, and other report pages may
+  draw that day's basal and targets from it. The same happens on 15.0.8.
+- **For about a minute after a new phone, or a reinstalled Loop, uploads its settings, a remote
+  command from the careportal or LoopCaregiver can still go to the old phone**, and Nightscout
+  answers as if it was sent. After changing phones, check on the phone in use that a remote
+  command arrived before relying on it. This is not medical advice. The same happens on 15.0.8.
 - **A clock view opened from the menu can be blank** on a site that requires sign-in
   (`AUTH_DEFAULT_ROLES=denied`) when you opened Nightscout with an access token in the address.
   Opening the clock's own address with the token (`/clock/<face>?token=…`) works. A clock view is

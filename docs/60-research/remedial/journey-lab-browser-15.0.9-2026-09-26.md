@@ -91,7 +91,8 @@ the release notes say.
 | not evidenced either way | BF-139: the reads checked showed site units on both trees | both | scenario 11 |
 | lab defect, fixed | the emulated AAPS embedded `profileJson` as tuples (breaks a percentage switch on both trees); sent temp targets in mmol/L labelled mg/dL | lab only | scenario 6 |
 
-None of JL-2 to JL-6 is filed in the backfix register; filing is the maintainer's call. JL-2 is
+None of JL-2 to JL-6 is filed in the backfix register. The maintainer decided on 2026-09-26 to list
+all five as known issues in the 15.0.9 release notes. JL-2 is
 recorded as an ecosystem gap (GAP-REMOTE-010), a classification made while the mechanism was
 unknown: with the mechanism found it is a Nightscout race with a local fix (signal the reload
 after the write completes), which the maintainer may want to reclassify.
