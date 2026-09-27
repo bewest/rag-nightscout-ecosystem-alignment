@@ -688,6 +688,62 @@ The seam carries **two mature backends permanently**, not one plus a migration p
    MongoDB adapter, schemas generated from `specs/` ({M} §7.6). It is for write-path validation, not
    query coercion (§3.4).
 
+### 4.1 The write contract belongs behind the seam
+
+Measured 2026-09-27 against `official/dev` `ce30a94d`. Queue: `WRITE-CONTRACT`.
+
+§3 puts the *read* rules (operators, coercion) in one place above the seam. The *write* rules have no
+such place. 15.0.9 added four modules that decide what a stored record looks like, and each write
+path calls them itself:
+
+| module | lines | added by | decides | files that call it |
+|---|---:|---|---|---:|
+| `lib/server/object-id-forms.js` | 169 | #8758 | which `_id` forms name a record; the twin left by a string `_id` | 12 |
+| `lib/server/srv-dates.js` | 222 | #8775 | `srvCreated` / `srvModified`, which API v3 history reads | 11 |
+| `lib/server/soft-deleted.js` | 53 | #8775 | that `isValid: false` is a delete | 7 |
+| `lib/server/treatment-fallback-key.js` | 67 | #8780 | the identity of a treatment re-sent without one | 2 |
+
+Eighteen files under `lib/` call at least one of them
+(`git grep -l "srv-dates')\|soft-deleted')\|object-id-forms')\|treatment-fallback-key')" official/dev -- lib`).
+Beside them, the fields the server derives for memory (`mills`, `endmills`;
+`ddata.processRawDataForRuntime`) are derived at 18 call sites in six files, seven of them in
+`lib/server/websocket.js`.
+
+**Three write paths call these rules separately:** the v1 server modules
+(`lib/server/{entries,treatments,devicestatus,profile,food,activity}.js`, which in-process callers
+also use), the API v3 generic operations over `lib/api3/storage`, and the socket path
+(`lib/server/websocket.js`, {S} §5). {S} §4.4 records that the three already deduplicate
+differently, per collection. Defects from a rule that one path applied and another did not, all in
+the register: BF-122 and BF-144 (`srvModified` and v3 history), BF-141 and BF-143 (treatment
+re-sends), BF-146 (`mills` on v3 writes held in memory), BF-135 (an `isValid: false` delete still
+counted), and BF-109, 110, 116, 117, 130, 136, 140, 142, 145 (`_id` forms and twins per path).
+
+**What the seam owes.** One write step at the storage interface, applied to every write from every
+path, for both backends:
+
+1. the stored `_id` form and the handling of twins (`object-id-forms`; `OID-STORAGE-HELPER` is this
+   rule alone);
+2. `srvCreated` / `srvModified` (`srv-dates`);
+3. soft delete (`soft-deleted`);
+4. the identity used to recognise a re-send (`treatment-fallback-key`, and {S} §4.4's table for the
+   other collections);
+5. one change event per write. Under `single` it carries the runtime-derived copy, so the in-memory
+   cache, v3 history and the socket consume one emission instead of each path emitting its own.
+   Under `multi` the change feed (D6) is that event, and `ns-evaluator` derives on its own slice
+   (§7b).
+
+**What stays where it is.** Runtime-derived fields are not stored (the BF-146 fix derives on a copy).
+Query coercion stays above the seam (§3.4). Mongoose validation stays inside the MongoDB adapter
+(item 3 above). The in-memory cache stays for `single` (D4); the hosted evaluator holds none (§7b).
+
+**This is a behaviour change, not a refactor.** Item 4 unifies re-send handling that differs by
+collection and by path today, so a client that relies on one path's behaviour will see another's.
+It needs a semver decision (at least minor), a consumer-replay arm and the existing regression nets:
+#8758's CRUD-by-id matrix, `tools/qc/write-arm.js` and `tools/lab/rc-soak`.
+
+**The Postgres loader (`BFQ-CAP02`) runs imported documents through the same step,** with
+`OID-MIGRATION`'s rules for twins, so that an imported record and a written one cannot differ.
+
 ---
 
 ## 5. D9 — base branch
@@ -706,9 +762,8 @@ with 19 conflicting paths (`git merge-tree --write-tree --name-only official/cho
 — three of them add/add supersessions from BF-04's upstream allowlist, which wins; sixteen content
 conflicts across the v1 API and server storage modules, cost unmeasured. Against `official/dev`
 `ce7d754a` the seam is 264 behind / 545 ahead with 49 conflicting paths (the same two commands with
-`official/dev`). **Open, recorded in `SEAM-REFRESH`:** whether the seam should refresh onto the
-modernization branch or onto `dev`, now that `dev` carries the allowlist the seam duplicates. D9
-stands until the maintainer decides otherwise.
+`official/dev`). Whether the seam refreshes onto the modernization branch or onto `dev` depends on
+how the release train reaches `dev`, which is open (§5.1, queue `RT-PROPAGATION`). D9 stands.
 
 **Caveat:** #8605 (the modernization integration PR) has zero human reviews across its production
 lines, all by one author. That blocks *shipping* the stack, not *developing* against it. This plan
@@ -732,6 +787,58 @@ thing to an irreversible operation in this programme.
   fix.
 - The conflict count in `SEAM-REFRESH` is measured against the tip only. A per-branch rebase may
   meet conflicts the tip does not show.
+
+### 5.1 When to refresh, and the open question that decides onto what
+
+Measured 2026-09-27 against `official/dev` `ce30a94d` and `official/chore/nightscout-modernization`
+`b1bdaca0`.
+
+**The conflicts are the write contract.** Of the seam's 19 conflicting paths, nine are files that
+now call a 15.0.9 write rule (§4.1): `lib/api/entries/index.js`, `lib/authorization/storage.js`
+and `lib/server/{activity,devicestatus,entries,food,profile,query,treatments}.js`. None of the four
+rule modules is on the modernization branch yet: its last merge of `dev` is `e3b22034`
+(2026-09-21, `dev` at `59430336`), and all four were added after it. Resolving one of these
+conflicts means re-expressing a 15.0.9 rule through the storage interface, which is §4.1's work.
+
+**The next conflict round is larger.** Since `59430336`, `dev` has taken 204 commits (39
+first-parent merges), 77 of them in `lib/server`, `lib/api` or `lib/api3`. Thirty files the seam
+changes have also changed on `dev` in that time. That is the conflict surface once the
+modernization branch next takes `dev`.
+
+**So the seam refreshes once, not now.** Nothing builds on the seam (it is unpublished), so its
+staleness costs no one until tenancy work resumes. The refresh waits for the 15.0.9 freeze (`RT-0`)
+and for the release train's next propagation, and is done as the first step of `WRITE-CONTRACT`.
+Modernization work proceeds in parallel meanwhile. It converges with `dev`, not with the seam.
+
+**Open: how the release train reaches `dev`** (queue `RT-PROPAGATION`, maintainer). So far every
+propagation has been a merge: `e3b22034` on the modernization branch, and both local rehearsals
+(`rt/cut1` `ed21961f` and `rh/cut1` `c77797e0` each contain every commit of
+`chore/retire-jsdom`: `git rev-list --count official/chore/retire-jsdom ^rt/cut1` is 0). Queue
+`RT-REBASE` is named for a rebase, and a rebase has not been ruled out. The two give the seam
+different paths:
+
+| propagation | what happens to the seam's base | the seam's path |
+|---|---|---|
+| **merge** `dev` into the cuts and the modernization branch | its commits are kept | merge the moved base into the seam once, keeping the 16 branches' history, then `WRITE-CONTRACT` |
+| **rebase** the cuts onto `dev` | its commits are rewritten | re-parent onto `dev`: the Phase 1 prefix after `RT-3`, the rest after `RT-5` |
+
+Constraints either way:
+
+- The seam is built on MongoDB driver `^7.6.0` and Node `^22.23.2 || ^24.20.0`. `dev` has `^5.9.2`
+  and `>=20.x`. The driver major arrives with cut 3 (`RT-3`). Whether the seam's own code needs
+  driver 7 is unmeasured.
+- `9e869662` (alarm state per service, one of D9's reasons) is in cut 4 (`chore/mime-exposure-review`
+  `b80aa147`) and in neither cut 1 nor cut 2. Phases 3–4 need it; Phase 1 does not.
+- **The chain splits.** Its first 16 commits (`seam/t1-2-e`: T1.2, T1.3; 38 files, +1,962 / −242)
+  carry no tenancy behaviour, and their done criterion is an unchanged suite. They trial-merge onto
+  `b1bdaca0` with 8 conflicting paths, against 19 for the whole chain. Under either propagation,
+  that prefix can reach `dev` and ship to single-tenant operators as a refactor release, ahead of the
+  Postgres and tenancy commits.
+
+**The resulting order:** 15.0.9 → release train (`RT-1` … `RT-5`) → seam refresh → `WRITE-CONTRACT`
+→ filter AST and v1 bound (§3) → Postgres behind the seam (Phase 2) and `BFQ-CAP02` → tenancy
+(Phases 3–4). A self-hosted operator gets the Phase 1 prefix and `WRITE-CONTRACT` as releases of
+their own. Nothing from Phase 2 onward changes a self-hosted operator's behaviour.
 
 ---
 
@@ -865,7 +972,8 @@ beside it).
   of a seam that already exists** — `MongoCollection` is a real interface with a decorator over it.
 - **A third write path:** `lib/server/websocket.js` implements CRUD over Socket.IO
   (`dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove`) with **its own dedup logic**, parallel to v1's and
-  v3's. Convert it last; dedup unification is a separate behaviour change.
+  v3's. Convert it last; dedup unification is a separate behaviour change (§4.1, queue
+  `WRITE-CONTRACT`).
 - **Classification:** 39 `fits`, 27 `needs-escape-hatch`, 19 `must-change` — four root causes, 9
   sites being "`query_for` returns a Mongo filter document".
 - **Do the filter AST first.** With v3's nine operators as the seam's filter language, T0.5's table
@@ -1326,6 +1434,7 @@ row is the record).
 | **Vendor rate limits** (EXP-MT-051) | — | Needs real credentials; the 9,700-account figure is a ceiling. `CONNECT_START_JITTER_MS` exists (T0.4), but the window to set it is exactly this unmeasured number |
 | **Reconnect storms, `UNLISTEN` churn** | T4.3 | The interesting realtime case |
 | **Per-tenant plugin-registry memory** | `T33-REM` | Decides between the two fixes for the `language` half of the `ctx` hazard (§7a) |
+| **Whether single-tenant alarm evaluation can use §7b's slice** instead of the in-memory cache | — (unscheduled) | Would make the self-hosted alarm path read the database rather than depend on the cache staying coherent (§4.1). Needs the IOB/COB treatment lookback measured against the slice's depth, `cob.setProperties`' growth in treatments (§7b), and a single-tenant non-regression arm |
 | **No standing gate that the two backends agree on `bulkUpsert` mode** | `BFQ-21` | Today they agree only because `entries`, the one collection with a PostgreSQL schema, asks for the mode PostgreSQL hard-codes (register BF-21). The gate needed: parse every `bulkUpsert` call through its closing parenthesis (a line `grep` misses options on the continuation line). Fail if a collection with a PostgreSQL schema asks for a mode the adapter does not implement, or if any call passes no options. Break-it: flip `entries.js:168` to `replace` and see it fail |
 | **Whether per-tenant alarm thresholds are tenant-overridable or hoster-pinned** | `T30-RESEARCH`, maintainer | `T44` cannot build a per-tenant evaluation loop without the answer. A hoster pinning thresholds limits what a tenant can be alerted about, so this is a safety policy question, not an engineering one |
 

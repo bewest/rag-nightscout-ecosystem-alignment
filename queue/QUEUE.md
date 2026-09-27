@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 169 |
+| items | 171 |
 | runnable gates | 240 |
-| explicit `no-gate:` markers | 223 |
+| explicit `no-gate:` markers | 225 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 223 of the 463 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 225 of the 465 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,11 +43,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
-| `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
+| `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
-| `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
+| `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 73 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 7 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
 | `done` | 3 | P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 2 | BFQ-41, BFQ-141 |
@@ -1006,7 +1006,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 29 items
+`parcel: release-train` &mdash; 30 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1024,6 +1024,7 @@ that costs.
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `merged-upstream` | `rt/trust-one-source` | patch | 3 run + 1 no-gate |
 | `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `merged-upstream` | `rt/trust-one-source` | patch | 2 run + 2 no-gate |
 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
+| `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `chore/build-runtime-separation` | minor | 1 run + 1 no-gate |
@@ -1341,6 +1342,34 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
 **Notes.** The published cuts are unrebased and far behind dev; the real propagation is done on dev after 15.0.9 is tagged. Measured 2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind and 498 ahead with 25 (`git rev-list --left-right --count official/dev...<cut>`; `git merge-tree --write-tree --name-only official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist, neither pushed, and every count in them must be re-measured when the real propagation is done: - rt/cut1..rt/cut4 in externals/work/crm- cuts (2026-09-21, on dev 59430336; tips ed21961f, b5bf7d77, c313f5b1, 95bb6295, which also carry the Node-floor change, RT-NODE-FLOOR-TESTED). - rh/cut1..rh/cut4 and rh/cut35 in externals/work/crm-rh-cuts (2026-09-23, on the 15.0.9 candidate rc/15.0.9-additions-c b9c9828b = dev 74fc6619 + eight additions), recorded in docs/30-design/modernization/cut-rehearsal- on-15.0.9-rc-2026-09-23.md. Each trial-merges clean into its base. rh/cut35 contains cut 4, because cut 5 descends from cut 4. Method, as rehearsed: dev is propagated up the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. On rt/*, propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of those conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01, BF-07, BF-16 and BF-35, BF-36, plus the BF-04 allowlist and BF-70 pipeline refusal; all were verified present on cut 4 after the merges. Tests on rt/* (Node 24.20.0, mongod 7.0.43): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures (later cuts remove suites). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing. Still owed at the real propagation: - The coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements (12 and 6 it() cases unaccounted for). Only clock-client's was audited, because it had a named production fix behind it (see the no-gate). - The cut 5 tip carries only two thirds of BF-07: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData (origin/dev has 7 occurrences under lib/, b1bdaca0 has 6). The rehearsals do not copy that. Worth raising against e3b22034 upstream. - The connector pin moves to the exact npm 0.1.0 pin dev has (P0-PIN, RT-CONNECT- PIN-CUTS). rt/cut4 resolved the old pin fork (dev's 234d47c8 vs cut 4's c962a13f) to connector b77e5bb7, whose commits are all in 0.1.0. - Each cut is renumbered when it is rebased (RT-VERSION), and cut 5's client-ip.js takes 15.0.9's TRUST_PROXY behaviour (RT-3). Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09; "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
+
+### `RT-PROPAGATION` &mdash; How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@ce30a94d` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** A decision, no code. It decides whether the commits of cuts 1-5 (and of chore/nightscout-modernization, the seam's base) are kept or rewritten when they take dev, and so which path the seam refresh takes (execution plan section 5.1).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** branch mechanics, not a release
+
+**Gates.**
+
+- **NO GATE** &mdash; A decision. What is measured (2026-09-27): every propagation so far has been a merge. e3b22034 merged dev into the modernization branch (2026-09-21), and both local rehearsals keep every cut 1 commit - `git -C externals/cgm-remote-monitor-official rev-list --count official/chore/retire-jsdom ^rt/cut1` is 0, and the same for rh/cut1. RT-REBASE is named for a rebase, and no one has ruled one out.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27.
 
 ### `RT-0` &mdash; Release 15.0.9
 
@@ -1909,7 +1938,7 @@ that costs.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION.
+**Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION. It is the _id slice of WRITE-CONTRACT (execution plan section 4.1): if it lands on dev first, WRITE-CONTRACT moves its helper behind the storage interface; if not, WRITE-CONTRACT absorbs it.
 
 ### `RT-SOAK` &mdash; tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak
 
@@ -4999,7 +5028,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 18 items
+`parcel: tenancy` &mdash; 19 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -5021,7 +5050,8 @@ alarm-readiness items, and the seam branch refresh.
 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | `-` | n/a | 0 run + 1 no-gate |
 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `-` | n/a | 0 run + 2 no-gate |
-| `SEAM-REFRESH` | Refresh the seam chain onto a moved modernization branch | `gate-not-met` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
+| `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
+| `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
 
@@ -5484,17 +5514,18 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 
-### `SEAM-REFRESH` &mdash; Refresh the seam chain onto a moved modernization branch
+### `SEAM-REFRESH` &mdash; Refresh the seam chain once after 15.0.9, onto the base the release train leaves
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `seam/t1-2-storage-interface` |
 | base | `origin/chore/nightscout-modernization@b1bdaca0` |
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | maintainer |
+| blocks on | `RT-0`, `RT-PROPAGATION` |
 
 **Blast radius.** 16 seam branches. GT1 measured the chain as LINEAR - all 15 others are ancestors of seam/t1-2-storage-interface (81a1f6ce), and that still holds. The base moved on 2026-09-21: dev was merged into chore/nightscout-modernization as e3b22034 ("Merge dev into modernization and reconcile regression coverage"), 0a4109f6..b1bdaca0, 68 commits. Measured 2026-09-22 against origin/chore/nightscout-modernization b1bdaca0: the seam is 68 behind its base and 50 ahead (`git rev-list --left-right --count origin/chore/nightscout- modernization...seam/t1-2-storage-interface`), and the trial-merge has 19 conflicting paths. Three are add/add supersessions rather than real conflicts: lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and tests/api-v1-operator-allowlist.test.js exist on BOTH sides because BF-04 was extracted out of the seam onto bf/operators and merged to dev via #8743, while the seam kept its own copy. Upstream's version wins on all three; BF-04's register detail prices that as the seam owing a $type node to its AST. The other sixteen are content conflicts across the v1 API and server storage modules - lib/api/{activity,entries,profile}/index.js, lib/server/{activity,ag gregate,devicestatus,entries,food,profile,query,treatments}.js, lib/authorization/storage.js, both swagger files, and two test files - and those are the actual cost.
 
@@ -5508,13 +5539,44 @@ alarm-readiness items, and the seam branch refresh.
   - the seam tip has not fallen behind its base. Red since 2026-09-21, when dev was merged into the modernization branch directly (e3b22034), outside any release-train step.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization seam/t1-2-storage-interface >/dev/null`
   - the seam trial-merges into its base cleanly. Red since 2026-09-21 - 19 conflicting paths, enumerated in blast_radius.
-- **NO GATE** &mdash; What the 19 conflicts cost to resolve is unmeasured: the conflict COUNT is measured, the resolution is not, and RT-REBASE shows that conflict counts grow quickly while nobody re-runs them. Three of the nineteen are known supersessions (upstream's BF-04 extraction wins); the remaining sixteen touch the v1 API and storage modules the seam exists to replace, so some may be "delete ours, take theirs" and some may be genuine re-work. None has been opened. Also ungated: whether the seam should rebase onto the modernization branch at all, rather than onto dev. The seam was cut against modernization because that was where the work was; dev has since taken the thirteen backfix PRs, including the allowlist the seam duplicates, and cut 5 is 9 behind dev and 498 ahead (measured 2026-09-22, `git rev-list --left-right --count origin/dev...origin/chore/nightscout-modernization`). That is a re-basing decision, not a merge-conflict question.
+- **NO GATE** &mdash; What the 19 conflicts cost to resolve is unmeasured: the conflict COUNT is measured, the resolution is not, and RT-REBASE shows that conflict counts grow quickly while nobody re-runs them. Three of the nineteen are known supersessions (upstream's BF-04 extraction wins); the remaining sixteen touch the v1 API and storage modules the seam exists to replace, so some may be "delete ours, take theirs" and some may be genuine re-work. None has been opened. Also ungated: whether the seam should rebase onto the modernization branch at all, rather than onto dev. The seam was cut against modernization because that was where the work was; dev has since taken the thirteen backfix PRs, including the allowlist the seam duplicates, and cut 5 is 9 behind dev and 498 ahead (measured 2026-09-22, `git rev-list --left-right --count origin/dev...origin/chore/nightscout-modernization`). That is a re-basing decision, not a merge-conflict question. Now RT-PROPAGATION (2026-09-27).
 
 **Evidence.**
 
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
 
-**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched.
+**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27: since dev 59430336 (the dev side of e3b22034) dev has taken 204 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain.
+
+### `WRITE-CONTRACT` &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `seam/t1-2-storage-interface@81a1f6ce` |
+| worktree | `externals/work/crm-seam` |
+| semver | `minor` |
+| review | maintainer, plus a second human - it changes re-send behaviour clients see |
+| blocks on | `SEAM-REFRESH` |
+
+**Blast radius.** The storage interface (lib/storage) gains one write step that every write from every path passes through. It takes over the calls to the four 15.0.9 rule modules - lib/server/object-id-forms.js (#8758), srv-dates.js and soft- deleted.js (#8775), treatment-fallback-key.js (#8780) - from the 18 files under lib/ that call them today, and the derivation of mills and endmills (ddata.processRawDataForRuntime, 18 call sites in six files, seven in lib/server/websocket.js) for the change event. Three write paths: the v1 server modules, the API v3 generic operations over lib/api3/storage, and lib/server/websocket.js.
+
+**What an operator sees.** Not written yet. Nightscout would handle a record the same way however it arrives - from an app, a phone uploader, or the web page - so a re-sent treatment or a deleted record behaves the same whichever app sent it.
+
+**Why `minor`.** Re-send and duplicate handling differs by collection and by write path today (storage seam interface section 4.4; OID-STORAGE-HELPER), and unifying it changes what some clients see. At least minor; the semver policy decides.
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started, and it cannot start before SEAM-REFRESH. The drift it removes is measured by the register entries it would have prevented: BF-122, BF-144 (srvModified and v3 history), BF-141, BF-143 (treatment re-sends), BF-146 (mills on v3 writes held in memory), BF-135 (an isValid false delete still counted), and BF-109, 110, 116, 117, 130, 136, 140, 142, 145 (_id forms and twins per path). Its gates would be #8758's CRUD-by-id matrix run through all three paths, tools/qc/write-arm.js against both backends, a consumer-replay arm and tools/lab/rc-soak, each with a control that removes the step from one path and goes red.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work.
 
 ### `BFQ-66` &mdash; BF-66 - the deployment's own tokens fail its own tenant check
 
@@ -5561,7 +5623,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer |
 | ships to operators today | no (pre-release) |
 | register | `CAP-02` |
-| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
+| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 
 **Blast radius.** One loader, plus whatever decides the BSON to jsonb transform. The outbound half already exists - exportTenant is a streaming server-side cursor in one repeatable-read transaction that declares its covered-table list before any row.
 
@@ -5579,7 +5641,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/40-migration/mongodb-to-postgres-hosted-2026-09-15.md`
 
-**Notes.** §1c, so it is neither §1 nor §1b. ships_to_operators_today is false because an operator on today's release sees nothing - the capability is needed by hosted- tenant onboarding, which does not exist yet. The execution plan lists per- tenant EXPORT under "Endpoints (proposed, to be argued)" although it is implemented, and says nothing about import, so the asymmetry is invisible to a reader of either document. Prior art for the rehearsal shape, and not the missing piece - tools/rehearse-database-upgrade.py:76.
+**Notes.** §1c, so it is neither §1 nor §1b. ships_to_operators_today is false because an operator on today's release sees nothing - the capability is needed by hosted- tenant onboarding, which does not exist yet. The execution plan lists per- tenant EXPORT under "Endpoints (proposed, to be argued)" although it is implemented, and says nothing about import, so the asymmetry is invisible to a reader of either document. Prior art for the rehearsal shape, and not the missing piece - tools/rehearse-database-upgrade.py:76. Waits on WRITE-CONTRACT (2026-09-27): the loader runs every imported document through the same write step as a live write, with OID-MIGRATION's rules for twins, so an imported record and a written one cannot differ (execution plan section 4.1).
 
 ---
 
