@@ -4,8 +4,9 @@
 controller-description proposal.** A proposal to the named projects, not adopted by any of them.
 Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
 **D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
-Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). **One page of
-proposal, then a worked example, then the evidence.**
+Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
+2026-09-27, checked against Nocturne `42275c81`. **One page of proposal, then a worked example, then
+the evidence.**
 
 > **This is not Kubernetes.** There is no control plane, no admission
 > controller, no operator, no CRDs, and nothing a controller must call before
@@ -137,6 +138,63 @@ operator-declared, then structurally inferred.
 **What this is still not:** a required endpoint. A hub that does not serve it
 behaves exactly as it does today, and a client that cannot fetch it falls back
 to what it does today. It is discovery, not dependency.
+
+### 2.2 Two halves: who a controller is, and what its data means
+
+A server needs two things from a controller. It needs to know who the controller is and what it may
+touch. It also needs to know what the controller's documents mean. Today each server has at most one
+of the two, and never the same one.
+
+| half | what it answers | Nocturne (`42275c81`) | cgm-remote-monitor (`dev` `295f1177`) |
+|---|---|---|---|
+| **registration** | who is writing, and with what permission | RFC 7591 dynamic client registration keyed on a reverse-DNS `software_id`, with OAuth scopes; a bundled directory of 13 known apps (`src/Core/Nocturne.Core.Models/Authorization/KnownOAuthClients.cs`), for example `org.loopkit.loop`, `org.nightscout.trio` and `info.nightscout.androidaps`, each with typical scopes such as `GlucoseReadWrite` and `TreatmentsReadWrite` | none. An operator creates a subject with roles in the admin UI and gives its token to the app (`lib/authorization/storage.js`) |
+| **description** | what the documents mean: how to recognise them, which paths they carry, which dosing inputs they publish | none a controller can supply. Each algorithm's handling is compiled into the server: `IAidDetectionStrategy` implementations (`ApsSnapshotStrategy`, `TbrBasedStrategy`, `NoAidStrategy`) and the V4 decomposers | none served. This proposal's descriptions exist in this repository only (`specs/sync/registrations/{loop,trio,androidaps}.yaml`) |
+
+**The proposal: join the halves on one identifier.** Add the `software_id` Nocturne already uses to
+each description:
+
+```yaml
+metadata:
+  vendor: LoopKit
+  product: Loop
+  softwareId: org.loopkit.loop   # proposed; the same reverse-DNS id as the known-app directory
+```
+
+Then one identifier connects both:
+
+| step | registration half | description half |
+|---|---|---|
+| a known controller | the known-app directory has its `software_id` and scopes | the served catalogue (§2.1) has its description under the same id |
+| a new controller | registers itself with its `software_id` and the scopes it asks for | optionally publishes its description under that id (§3, "one POST, once per release") |
+| a reader | learns who wrote a document | learns what the document means, from the id the write carried |
+
+**What this keeps from §4.** Registration stays wherever a server already requires it, and nowhere
+else. On cgm-remote-monitor, a controller still writes with a token and never has to call anything.
+The description stays advisory: fetched, not called; describing, not gating. A controller with no
+description is treated as it is today.
+
+**Why this matters for agents.** This is design reasoning, not a measurement. Take a software agent
+that takes part in the system, for example one acting for a person or caregiver. It needs both halves:
+
+- **Registration** says what it may read and write, as narrowly as scopes allow.
+- **Description** says what its writes mean and which data it depends on that does not arrive
+  through the server (out-of-band data, such as a phone's own sensor readings or a prediction it
+  computed). A reader can then tell a delegated agent's records from a controller's, and can see
+  what the agent relied on.
+
+The [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
+covers the authority questions this raises. No lab has yet run a synthetic controller or agent
+through both halves. That would be the first measurement.
+
+**What it would ask of each project** (none has been asked):
+
+- **Nocturne:** let a known-app entry, or a registration, point to a description by `software_id`,
+  and read the description where its detection strategies and decomposers now hard-code the shape.
+- **cgm-remote-monitor:** serve the catalogue (§2.1) keyed by the same id. If it ever adds app
+  registration, use the same `software_id`.
+- **Both:** agree on the identifier scheme, including how a build-specific id maps to the stable
+  one. Nocturne already does this for Trio, whose iOS bundle id carries the developer team; its
+  directory uses the stable `org.nightscout.trio`.
 
 ## 3. What changes, for whom
 
