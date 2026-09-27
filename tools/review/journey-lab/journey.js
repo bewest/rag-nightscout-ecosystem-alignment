@@ -247,6 +247,12 @@ const COMMON = {
   tick: ['one 5-minute cycle of the app now: a reading, device status, maybe a temp basal', async () => {
     const { descs } = householdDescs(0.09); for (const b of batchV1(descs)) await send(b);
   }],
+  'cgm-tick': ['<hours=0>  readings only, from a separate CGM uploader (no device status, so COB and IOB stay the site\'s own treatment-based values); with hours, the last N hours at 5-minute steps', async (a) => {
+    const t0 = Math.floor(now() / (5 * MIN)) * 5 * MIN; const n = Math.round(num(a[0], 0) * 12);
+    const rows = [];
+    for (let i = n; i >= 0; i--) { const t = t0 - i * 5 * MIN; rows.push({ type: 'sgv', sgv: Math.round(115 + 30 * Math.sin(t / (90 * MIN))), direction: 'Flat', date: t, dateString: new Date(t).toISOString(), device: 'lab-cgm' }); }
+    await send({ label: `lab CGM uploader: ${rows.length} reading(s)`, method: 'POST', path: '/api/v1/entries.json', body: rows, auth: 'secret', source: ['lab: a stand-alone CGM uploader (entries only)'] });
+  }],
   share: ['create the sharing tokens: follower (readable), caregiver (readable + careportal), careportal-only, status-only', async () => {
     const mk = async (name, roles) => {
       await send({ label: `subject ${name} [${roles}]`, method: 'POST', path: '/api/v2/authorization/subjects', body: { name, roles }, auth: 'secret', source: ['lib/authorization/endpoints.js (admin page Subjects)'] });
@@ -326,6 +332,9 @@ const LOOP = {
   'settings-change': ['the person edits basal and adds a preset in Loop: a NEW profile record (Loop never updates in place)', async () => {
     const th = JSON.parse(JSON.stringify(TH)); th.basal[1][1] = 1.05;
     await send(C.loop.profileUpload({ now: now(), units: MMOL ? 'mmol/L' : 'mg/dL', schedules: th, presets: [...LOOP_PRESETS, { name: 'Movie night', symbol: '🍿', durationMin: 180, targetRange: [120, 130], scale: 0.9 }], deviceToken: deviceToken(), bundleIdentifier: 'org.lab.Loop', isAPNSProduction: false, timezoneOffsetHours: tzOffsetHours() }));
+  }],
+  'new-phone': ['J1.D / JL-2: Loop on a new phone uploads its profile with a NEW device token (and a "Movie night" preset); remote commands should now go to the new token', async () => {
+    await send(C.loop.profileUpload({ now: now(), units: MMOL ? 'mmol/L' : 'mg/dL', schedules: TH, presets: [...LOOP_PRESETS, { name: 'Movie night', symbol: '🍿', durationMin: 180, targetRange: [120, 130], scale: 0.9 }], deviceToken: crypto.createHash('sha256').update('lab-apns-new-phone:' + NAME).digest('hex'), bundleIdentifier: 'org.lab.Loop', isAPNSProduction: false, timezoneOffsetHours: tzOffsetHours() }));
   }],
   'override-start': ['<preset=Running|Sick day|custom> <minutes|indef>  enable an override on the phone', async a => {
     const name = a[0] || 'Running'; const p = LOOP_PRESETS.find(x => x.name === name) || { name: 'Custom Override', symbol: '', durationMin: 60, targetRange: [130, 140], scale: 0.8 };
@@ -460,7 +469,7 @@ const AAPS = {
     const days = num(a[0], 7);
     say('volume', `${days} days here; a real phone with 186 days sends roughly ${Math.round(186 * 288 * 2 / 1000)}k requests`);
     await backfill(days * 24);
-    await send(C.aaps.profileSwitch({ variant: VARIANT, now: now() - days * 24 * 60 * MIN, profileName: 'LabDay', percentage: 100, timeshiftH: 0, durationMin: 0, profileJson: aapsProfiles().LabDay }));
+    await send(C.aaps.profileSwitch({ variant: VARIANT, now: now() - days * 24 * 60 * MIN, profileName: 'LabDay', percentage: 100, timeshiftH: 0, durationMin: 0, profileJson: aapsProfiles().LabDay, units: MMOL ? 'mmol' : 'mg/dl' }));
     await STEPS.onboard[1]([]);
   }],
   connect: ['AAPS → NSClient: v3 asks for an admin token; v1 uses the API secret over the socket', async () => {
@@ -486,11 +495,13 @@ const AAPS = {
     const name = a[2] || 'LabDay'; const pct = num(a[0], 120);
     const o = { identifier: C.uuid(nextId('ps')), startedAt: now(), profileName: name, percentage: pct, timeshiftH: 0, durationMin: num(a[1], 0) };
     st.open.ps = o; save();
-    await send(C.aaps.profileSwitch(Object.assign({ variant: VARIANT, now: o.startedAt, profileJson: aapsProfiles()[name] }, o)));
-    await send(C.aaps.effectiveProfileSwitch({ variant: VARIANT, now: o.startedAt + 1000, identifier: C.uuid(nextId('eps')), profileName: name, profileJson: aapsProfiles()[name], percentage: pct }));
+    await send(C.aaps.profileSwitch(Object.assign({ variant: VARIANT, now: o.startedAt, profileJson: aapsProfiles()[name], units: MMOL ? 'mmol' : 'mg/dl' }, o)));
+    await send(C.aaps.effectiveProfileSwitch({ variant: VARIANT, now: o.startedAt + 1000, identifier: C.uuid(nextId('eps')), profileName: name, profileJson: aapsProfiles()[name], units: MMOL ? 'mmol' : 'mg/dl', percentage: pct }));
   }],
   'tt-start': ['<target=140 or 7.8> <minutes=60>  temp target in AAPS', async a => {
-    const tgt = num(a[0], MMOL ? 7.8 : 140); const o = { startedAt: now(), low: tgt, high: tgt, durationMin: num(a[1], 60), reason: 'Activity' };
+    // AAPS uploads temp targets in mg/dL whatever the display units (units: 'mg/dl'), so a mmol/L argument is converted
+    const arg = num(a[0], MMOL ? 7.8 : 140); const tgt = arg < 30 ? Math.round(arg * 18) : arg;
+    const o = { startedAt: now(), low: tgt, high: tgt, durationMin: num(a[1], 60), reason: 'Activity' };
     const r = await send(C.aaps.tempTargetStart(Object.assign({ variant: VARIANT, now: o.startedAt }, o)));
     Object.assign(o, createdId(r)); st.open.tt = o; save(); say('stored as', JSON.stringify(createdId(r)));
   }],

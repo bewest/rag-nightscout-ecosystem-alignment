@@ -12,6 +12,8 @@
 #   lab.sh share [n]               the last n requests the connector made to the fake Dexcom Share server (cgm-* sites)
 #   lab.sh live <name>|stop <name> keep that site's phone uploading every 5 minutes (a reading, device
 #                                  status, doses), so pages don't go stale and alarm; `live stop <name>` ends it
+#   lab.sh live <name> cgm         readings only (a separate CGM uploader, no device status), so COB and IOB stay
+#                                  the site's own treatment-based values
 #   lab.sh down                    stop everything and remove the database container
 #
 # Env: LAB_RC      worktree under test (required; the 15.0.9 candidate)
@@ -141,10 +143,11 @@ urls() {
 
 live() {
   if [ "$1" = stop ]; then local p; p=$(cat "$W2_STATE/pid-live-$2" 2>/dev/null || true); [ -n "$p" ] && { pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null; }; rm -f "$W2_STATE/pid-live-$2"; echo "live $2 stopped"; return; fi
-  local n=$1; parse "$n"
+  local n=$1 step=tick what="a phone cycle"; parse "$n"
+  [ "${2:-}" = cgm ] && { step=cgm-tick; what="a reading (CGM uploader only, no device status)"; }
   [ -f "$W2_STATE/pid-live-$n" ] && kill -0 "$(cat "$W2_STATE/pid-live-$n")" 2>/dev/null && { echo "live $n already running"; return; }
-  ( trap 'exit 0' TERM; while true; do jenv "$n" tick >>"$W2_STATE/live-$n.log" 2>&1; sleep 300; done ) </dev/null >/dev/null 2>&1 &
-  echo $! > "$W2_STATE/pid-live-$n"; disown; echo "live $n: a phone cycle every 5 min (log $W2_STATE/live-$n.log)"
+  ( trap 'exit 0' TERM; while true; do jenv "$n" $step >>"$W2_STATE/live-$n.log" 2>&1; sleep 300; done ) </dev/null >/dev/null 2>&1 &
+  echo $! > "$W2_STATE/pid-live-$n"; disown; echo "live $n: $what every 5 min (log $W2_STATE/live-$n.log)"
 }
 
 share() { [ -f "$W2_STATE/share.jsonl" ] && tail -n "${1:-20}" "$W2_STATE/share.jsonl" || echo "no Share requests yet"; }

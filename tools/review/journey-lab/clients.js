@@ -967,6 +967,8 @@ function aapsProfileEntry (variant, p, units) {
   e.timezone = p.timezone || 'Etc/UTC';
   return e;
 }
+// AAPS toPureNsJson: the embedded profileJson uses Nightscout schedule items, not the lab's [time, value] tuples
+const pureNsJson = (p, units) => (p && Array.isArray(p.basal) && Array.isArray(p.basal[0])) ? aapsProfileEntry('v3-34', p, units || 'mg/dl') : (p || {});
 const TT_REASON = { custom: 'Custom', hypo: 'Hypo', activity: 'Activity', eatingsoon: 'Eating Soon', automation: 'Automation', wear: 'Wear' };
 const ttReason = (r) => TT_REASON[String(r || 'custom').toLowerCase().replace(/[\s_]/g, '')] || r;
 
@@ -990,13 +992,13 @@ const aaps = {
     });
   },
 
-  profileSwitch ({ variant, now, identifier, profileName, percentage = 100, timeshiftH = 0, durationMin = 0, profileJson, utcOffsetMin = 0 }) {
+  profileSwitch ({ variant, now, identifier, profileName, percentage = 100, timeshiftH = 0, durationMin = 0, profileJson, units, utcOffsetMin = 0 }) {
     variant = variantOf(variant);
     const timeshift = timeshiftH * 3600000; // PS.timeshift is milliseconds (core/data PS.kt:22)
     const durMs = durationMin * 60000;
     let custom = profileName;
     if (timeshift !== 0 || percentage !== 100) custom += ' (' + percentage + '%' + (timeshift !== 0 ? ',' + timeshiftH + 'h' : '') + ')';
-    const pj = JSON.stringify(profileJson || {});
+    const pj = JSON.stringify(pureNsJson(profileJson, units));
     if (variant === 'v1-34') {
       const data = { timeshift, percentage, duration: durationMin, profile: custom, originalProfileName: profileName, originalDuration: durMs, created_at: isoMs(now), enteredBy: 'openaps://AndroidAPS', isValid: true, eventType: 'Profile Switch', profileJson: pj };
       return v1Emit('AAPS v1 profile switch (dbAdd)', 'dbAdd', 'treatments', data, [A34_V1X + 'ProfileSwitchExtension.kt:16-38', A34 + 'core/objects/src/main/kotlin/app/aaps/core/objects/extensions/ProfileSwitchExtension.kt:15-26'], 'timeshift and originalDuration are milliseconds; duration is minutes. identifier ' + (identifier || '-') + ' not sent.');
@@ -1007,11 +1009,11 @@ const aaps = {
       'Wire key is lowercase "timeshift" (ms). profileJson is a STRING of the de-customized profile (timeshift 0, percentage 100). originalDuration stays ms, duration is minutes. No originalPercentage on a PS.' + (variant === 'v3-40' ? ' 4.0-dev also sends iCfg (insulin config); omitted here.' : ''));
   },
 
-  effectiveProfileSwitch ({ variant, now, identifier, profileName, profileJson, percentage = 100, timeshiftH = 0, durationMin = 0, utcOffsetMin = 0 }) {
+  effectiveProfileSwitch ({ variant, now, identifier, profileName, profileJson, units, percentage = 100, timeshiftH = 0, durationMin = 0, utcOffsetMin = 0 }) {
     variant = variantOf(variant);
     let custom = profileName;
     if (timeshiftH !== 0 || percentage !== 100) custom += ' (' + percentage + '%' + (timeshiftH ? ',' + timeshiftH + 'h' : '') + ')';
-    const common = { profileJson: JSON.stringify(profileJson || {}), originalProfileName: profileName, originalCustomizedName: custom, originalTimeshift: timeshiftH * 3600000, originalPercentage: percentage, originalDuration: durationMin * 60000, originalEnd: now + durationMin * 60000, notes: custom };
+    const common = { profileJson: JSON.stringify(pureNsJson(profileJson, units)), originalProfileName: profileName, originalCustomizedName: custom, originalTimeshift: timeshiftH * 3600000, originalPercentage: percentage, originalDuration: durationMin * 60000, originalEnd: now + durationMin * 60000, notes: custom };
     if (variant === 'v1-34') {
       return v1Emit('AAPS v1 effective profile switch (Note, dbAdd)', 'dbAdd', 'treatments', Object.assign({ created_at: isoMs(now), enteredBy: 'openaps://AndroidAPS', isValid: true, eventType: 'Note' }, common), [A34_V1X + 'EffectiveProfileSwitchExtension.kt:12-31'], 'identifier ' + (identifier || '-') + ' not sent.');
     }
