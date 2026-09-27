@@ -132,7 +132,7 @@ care team.
 ## Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT
 
 These fixes change which alarms Nightscout raises. None of them changes anything on your pump,
-CGM or looping app. **Nightscout is not a medical device: keep the alarms on your CGM, pump and
+CGM or looping app. **Nightscout is a secondary display: keep the alarms on your CGM, pump and
 phone app switched on, and do not rely on Nightscout alone to warn you.** This is not medical
 advice; if you are unsure what your alarm levels should be, talk to your care team.
 

@@ -3971,8 +3971,6 @@ mapping (connector PR #64, 2026-09-22). It is released in nightscout-connect `0.
 2026-09-24), which Nightscout `dev` pins exactly (PR #8762, merge `153e5658`); it has been in
 Nightscout `dev` through the connector prerelease pins since PR #8752 (2026-09-23). It reaches
 Nightscout operators with 15.0.9. The fix is read-derived too: it has not been run against CareLink.
-Nightscout is not a medical device; an operator relying on alarms should keep the device's own
-alarms on.
 
 
 ### BF-86 · an mmol/L low threshold on a mg/dL site is kept as-is, so the low alarm never fires

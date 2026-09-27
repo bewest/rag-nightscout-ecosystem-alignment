@@ -267,8 +267,7 @@ The facts the classification rests on, for the record:
 Other `open` register entries that reach 15.0.9 are listed in the register's §1, and the queue
 items for everything present on 15.0.8 are in the operator-exposure table on
 [PROGRAMME-STATUS](../../docs/00-overview/PROGRAMME-STATUS.md#status-words-merged-is-not-released);
-this file does not copy them. Nightscout is not a medical device: an operator who relies on its
-alarms should always have a second way to see readings.
+this file does not copy them.
 
 ## Open items a releaser must settle
 
