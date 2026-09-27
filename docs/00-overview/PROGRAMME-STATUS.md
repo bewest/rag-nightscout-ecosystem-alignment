@@ -307,6 +307,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-26**, against cgm-remote-monitor-official `ff93fa94` and this repository at `a2d1e803`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-27**, against cgm-remote-monitor-official `295f1177` and this repository at `924b8afd`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

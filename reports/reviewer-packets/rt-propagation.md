@@ -75,4 +75,4 @@ which brings MongoDB driver 7, and the rest after RT-5, which carries
 - [ ] `make queue-status ID=RT-PROPAGATION` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-26, against cgm-remote-monitor-official `ff93fa94`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-27, against cgm-remote-monitor-official `295f1177`.*

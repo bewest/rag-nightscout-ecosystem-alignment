@@ -1,12 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. If dev moves past ce30a94d before the tag, re-measure the counts
+cut. If dev moves past 295f1177 before the tag, re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at ce30a94d: 84 first-parent PR merges, 503 commits,
-295 files, +28274/-1701. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at 295f1177: 85 first-parent PR merges, 505 commits,
+296 files, +28279/-1703. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -170,6 +170,8 @@ Dependencies
 Tests
   #8419 96a2c948  iOS Loop push-notification and websocket
                   integration tests
+  #8785 295f1177  boluswizardpreview tests read one clock (a CI
+                  timing flake)
 
 Translations, docs, version
   #8599 #8603  Crowdin
