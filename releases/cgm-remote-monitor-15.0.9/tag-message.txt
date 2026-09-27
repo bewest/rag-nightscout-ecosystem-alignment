@@ -1,12 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. If dev moves past 295f1177 before the tag, re-measure the counts
+cut. If dev moves past 7000eb18 before the tag, re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at 295f1177: 85 first-parent PR merges, 505 commits,
-296 files, +28279/-1703. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at 7000eb18: 86 first-parent PR merges, 507 commits,
+297 files, +28363/-1722. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -161,6 +161,9 @@ Connector
 
 Dependencies
   #8749 9fd4600e  qs 6.15.1 -> 6.16.0, both overrides (BF-87)
+  #8786 7000eb18  ajv 6.12.6 -> 6.14.0 and request's form-data
+                  2.5.5 -> 2.5.6 overrides; build-tool lockfile
+                  refresh (BF-147)
   #8573 e7c0cd6f  D3 5.16 -> 7.9.0
   #8529 #8544 #8550 #8565 #8566 #8571 #8575 #8576 #8577 #8578
   #8579 #8581 #8582 #8586  (UUID, jsdom/ws, Babel, Axios, Socket.IO,

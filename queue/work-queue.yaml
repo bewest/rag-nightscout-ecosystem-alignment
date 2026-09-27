@@ -24,12 +24,12 @@ meta:
   repo_root: /home/bewest/src/rag-nightscout-ecosystem-alignment
   measured_at: "2026-09-27"
   measured_against:
-    cgm-remote-monitor-official: "295f1177"        # official/dev, 2026-09-27, after #8785; make queue-status run then (PASS 84, FAIL 34, UNMEASURED 53)
+    cgm-remote-monitor-official: "7000eb18"        # official/dev, 2026-09-27, after #8786; make queue-status run then (PASS 84, FAIL 34, UNMEASURED 54)
     nightscout-connect: "04102f9"                  # official/dev, unchanged since 2026-09-25 (0.1.1 line; v0.1.0 is main 4dde1ec)
     # The alignment repo's own HEAD when this manifest was measured. It can never
     # be the CURRENT head - recording it is itself a commit - so it names the tree
     # the measurements were taken against, one commit back.
-    main_repo_head: 924b8afd
+    main_repo_head: 18cdcce0
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
   gate_kinds:
@@ -2775,22 +2775,24 @@ items:
     state: needs-decision
     blast_radius: >
       15.0.9 is everything in origin/master..origin/dev: master 92d08342
-      (tag 15.0.8) to dev 295f1177 (merge of #8785), measured 2026-09-27:
-      505 commits, 85 first-parent merges (all PR merges), 296 files,
-      +28279/-1703. Among them the programme's backfix PRs (#8733-#8740 and
+      (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27:
+      507 commits, 86 first-parent merges (all PR merges), 297 files,
+      +28363/-1722. Among them the programme's backfix PRs (#8733-#8740 and
       #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757
       and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765
       folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25;
       #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26; the
-      test-only #8785 on 2026-09-27), #8741,
+      test-only #8785 and #8786 (BF-147) on 2026-09-27), #8741,
       #8778 and #8781 from outside contributors on the same work, #8568,
       #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 ->
       7.9 chart migration (RT-D3), the opt-in debug logging change
       (#8726), the connector pin to exactly 0.1.0 (#8762), profile,
       treatment-query and clock fixes, report and chart fixes, dependency
       updates and translations. Crowdin #8730 is held out. The candidate
-      is dev 295f1177: RC run 020 ran on ce30a94d, and #8785 changes
-      only tests/boluswizardpreview.test.js. Reproduce with `git -C
+      is dev 7000eb18: RC run 020 ran on ce30a94d; #8785 changes only
+      tests/boluswizardpreview.test.js, and #8786 changes two dependency
+      overrides and nine locked versions (its own nine-cell CI; the
+      production bundle is byte-identical). Reproduce with `git -C
       externals/cgm-remote-monitor-official log --first-parent --oneline
       origin/master..origin/dev` and `git diff --shortstat origin/master
       origin/dev`.
@@ -2904,10 +2906,21 @@ items:
       paths, package files unchanged. dev is 295f1177: 505 commits and 85
       first-parent merges ahead of master, 296 files, +28279/-1703. Release
       PR #8598 is at 295f1177: mergeable, 27 checks passed and 3 skipped,
-      reviewDecision APPROVED (both approvals given at e3adc91d). Still owed
-      by the maintainer: browser hand checks, the 24-72 h real-time soak,
-      re-approval of #8598 at the final head, the semver decision, the npm
-      audit triage.
+      reviewDecision APPROVED (both approvals given at e3adc91d).
+      2026-09-27 - npm audit triage done (contents.md); BF-147 filed and
+      merged as #8786 into dev as 7000eb18 (head 64a9cc13, same tree;
+      20:40Z): the ajv 6 and request form-data overrides move to their
+      patch releases and three build tools are refreshed, 9 locked
+      versions, npm audit 17 -> 7 with no highs. Run 020 was not repeated:
+      #8786's CI passed in all nine cells plus the npm 12 install-and-build
+      check, one local cell gave 3473/0/3 (Node 24.15.0, MongoDB 7.0.43),
+      and the production bundle from 295f1177 and 7000eb18 is
+      byte-identical. dev is 7000eb18: 507 commits and 86 first-parent
+      merges ahead of master, 297 files, +28363/-1722. Release PR #8598 is
+      at 7000eb18: 27 checks passed and 3 skipped, reviewDecision APPROVED.
+      Still owed by the maintainer: browser hand checks, the 24-72 h
+      real-time soak, re-approval of #8598 at the final head, the semver
+      decision.
       2026-09-26 - #8784 (BF-146 with BF-133) merged into dev as ce30a94d
       (head d235bdf6; GitHub merge time 2026-09-27 05:32Z); BFQ-146 and
       BFQ-133 are merged-upstream. dev is ce30a94d: 503 commits and 84

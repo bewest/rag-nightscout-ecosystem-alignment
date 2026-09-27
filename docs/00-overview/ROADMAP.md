@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Maintained by the Nightscout Foundation. Contributor-facing. Living document: prose dated
-2026-09-27 against cgm-remote-monitor `origin/dev` `295f1177` and `origin/master` `92d08342`
+2026-09-27 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -46,11 +46,13 @@ Also before the tag, and not queue items of their own (they are in `RT-0`'s note
 the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
 by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
 [the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the 24 to 72 h
-real-time soak (`RT-SOAK`), the semver decision, the `npm audit` triage, the release notes,
-re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `295f1177`), a
-review of #8598 by someone other than the author, and the maintainer's tag. The last full test run,
-run 020 on `ce30a94d`, stands for `295f1177`
-([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
+real-time soak (`RT-SOAK`), the semver decision, the release notes,
+re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `7000eb18`), a
+review of #8598 by someone other than the author, and the maintainer's tag. The last full test run
+is run 020 on `ce30a94d`; it stands for `295f1177` (test-only #8785), and #8786's dependency change
+on `7000eb18` is covered by its own nine-cell CI and a byte-identical bundle, not by run 020
+([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The `npm audit`
+triage is done ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)).
 
 | for | read |
 |---|---|
@@ -206,6 +208,6 @@ for reviewers is in [REVIEWER-ONBOARDING](REVIEWER-ONBOARDING.md).
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-27**, against cgm-remote-monitor-official `295f1177` and this repository at `924b8afd`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-27**, against cgm-remote-monitor-official `7000eb18` and this repository at `18cdcce0`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

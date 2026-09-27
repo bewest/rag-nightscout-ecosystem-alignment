@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-27 against `official/dev` `295f1177`
-(merge of #8785) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-27 against `official/dev` `7000eb18`
+(merge of #8786) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `295f1177`**. Every PR the maintainer decided ships in it
+15.0.9 is **everything on `dev` at `7000eb18`**. Every PR the maintainer decided ships in it
 ([decisions](decisions.md)) is merged, except Crowdin #8730, which the maintainer held out on
 2026-09-25 because its sync reverts translations `dev` corrected (BF-132). Every PR merged to `dev`
 is `merged`; none is `released`.
@@ -20,14 +20,14 @@ is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `295f1177` (merge of #8785, 2026-09-27 18:39Z), tree `27e7bf38`, the same tree as #8785's head `a9b77d1e` |
-| Commits on `dev` | 505 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **85** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 296 files, +28279/−1703 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `7000eb18` (merge of #8786, 2026-09-27 20:40Z), tree `3b22520e`, the same tree as #8786's head `64a9cc13` |
+| Commits on `dev` | 507 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **86** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 297 files, +28363/−1722 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `295f1177`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `295f1177`: 27 checks passed, 3 skipped (read 2026-09-27) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `7000eb18`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-27) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -45,7 +45,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (39), plus #8741
+#### Programme backfix PRs (40), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -89,6 +89,7 @@ which is the home of every defect fact; these tables do not restate them.
 | #8783 | `699eb5fa` | 2026-09-26 | BF-142 | a `dev`-only regression from #8758 (`cb7d4110`, BF-117). `lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm`: the v3 DELETE's `_id` fallback, soft and permanent, takes exactly the stored identifiers `normalizeDoc` shows as the `_id` (`null`, `""`, `0`, `false`, `NaN`), so a record whose identifier is `0` or `false` is deleted again; a list identifier is still refused, because v3 GET shows the list as the record's identifier (15.0.8 deleted it; known issue). Head `1c3aeb8c` |
 | #8784 | `ce30a94d` | 2026-09-26 | BF-146, BF-133 | `lib/api3/storage/mongoCachedCollection/index.js` `updateInCache`: treatments and device status written through API v3 pass through `ddata.processRawDataForRuntime`, the helper the v1 emitters use, before they enter the in-memory cache, so they carry `mills` (and `endmills` where the helper adds it); nothing stored changes, entries are passed on as before. A late or edited v3 treatment counts in the treatment-based IOB and COB on the server and in the page data; the dataloader's sort puts treatments in time order, so the COB total and `cob.lastCarbs` follow time (BF-133); a late v3 device status is placed by time in the in-memory `GET /api/v1/devicestatus`. The same code is on 15.0.8. Heads `db99bba4` (treatments), `d235bdf6` (device status) |
 | #8785 | `295f1177` | 2026-09-27 | — | test only. `tests/boluswizardpreview.test.js`: the sandbox reads the same `now` the test data is stamped with (`sbx.time = now` after `serverInit`; `clientInit(ctx, now, data)`), so two IOB tests no longer fail (49.95 against 50) when the test files before this one take more than about a minute. Nothing that runs on a site changes. Head `a9b77d1e` |
+| #8786 | `7000eb18` | 2026-09-27 | BF-147 | `package.json` overrides: `ajv@^6` 6.12.6 → 6.14.0 and `request > form-data` 2.5.5 → 2.5.6; lockfile refresh of `browserslist`, `baseline-browser-mapping` and `postcss-selector-parser` within their ranges (9 versions, patch or minor); new `tests/dependency-overrides.test.js`. `npm audit` 17 → 7, no highs. The production bundle is byte-identical. Head `64a9cc13` |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -189,7 +190,7 @@ no multi-hour soak and no source outage.
 | #8582 | `1156aafd` | PostCSS 8.5.28 |
 | #8586 | `d6e90d00` | brace-expansion (all compatible majors) |
 
-All merged 2026-09-05. #8749 (qs) is in the backfix table above.
+All merged 2026-09-05. #8749 (qs) and #8786 (BF-147, the `ajv` and `form-data` overrides) are in the backfix table above.
 
 #### Translations
 
@@ -276,9 +277,9 @@ What the queue tracks is generated, and current, in
 2026-09-26 it lists one open blocker of queue `RT-0`, `RT-VERSION`, whose red gate is on the cut
 branches, which are renumbered when they are rebased. Beside that:
 
-1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base 295f1177 --with ''`
+1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base 7000eb18 --with ''`
    names 14 files changed since the hand-checked `8d797ba4` (12 on `e3adc91d`; #8773 adds
-   `lib/levels.js` and #8774 adds `lib/profilefunctions.js`; #8781, #8783, #8784 and #8785 add none). The browser-side ones need the checks
+   `lib/levels.js` and #8774 adds `lib/profilefunctions.js`; #8781, #8783, #8784 and #8785 add none). #8786 adds no file; the gate also lists the 11 package entries it changes (the two overrides and nine locked versions), and the production bundle built from `295f1177` and from `7000eb18` is byte-identical, so they need no hand check. The browser-side ones need the checks
    repeated by hand: the Loop remote-command path (`lib/api2/index.js`,
    `lib/api2/notifications-v2.js`, a remote override, carbs and bolus from careportal and
    LoopCaregiver each needing a 200 and a delivered push), the clock views
@@ -296,11 +297,11 @@ branches, which are renumbered when they are rebased. Beside that:
    open; the Profile Editor; during a 150% AAPS Profile Switch, the basal pill, ISF and carb ratio.
    No regression was found. **Still owed:** a remote bolus; LoopCaregiver from its own app (only
    scripted); the clock views; the pump pill; the alarm level labels (`lib/levels.js`); the Bolus
-   Wizard Preview pill and the reports during a percentage switch. #8781, #8783, #8784 and #8785 (after
-   `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
+   Wizard Preview pill and the reports during a percentage switch. #8781, #8783, #8784, #8785 and #8786
+   (after `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
    edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
    that was not checked in a browser.
-2. **The 24 to 72 h real-time soak** on `295f1177`. Run 020's compressed A/B soak against 15.0.8 is
+2. **The 24 to 72 h real-time soak** on `7000eb18`. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
    **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
    the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
@@ -315,21 +316,16 @@ branches, which are renumbered when they are rebased. Beside that:
    approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
    see [decisions](decisions.md)).
 5. **The tag**, by the maintainer.
-6. **Re-anchor on `7000eb18`.** #8786 merged after this file was measured, so `dev` (and #8598's
-   head) is `7000eb18`: 507 commits, 86 first-parent merges, 297 files, +28363/−1722. The rest of
-   this file, the release notes and the tag body are still anchored on `295f1177`, and RC run 020
-   predates #8786's lockfile change; #8786's own CI (13 checks green, 2 skipped) and the one cell
-   recorded in BF-147 are the suite runs on the new dependencies.
 
-#8598's two approvals were given on `e3adc91d`; its head is now `295f1177`. The release notes and
-tag body are drafted for `295f1177`.
+#8598's two approvals were given on `e3adc91d`; its head is now `7000eb18`. The release notes and
+tag body are drafted for `7000eb18`.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
 
 ## `npm audit` and Dependabot triage
 
-Measured 2026-09-27 on `official/dev` `295f1177` with `npm audit --package-lock-only` (npm 11.12.1,
+Measured 2026-09-27 on `official/dev` `295f1177` and `7000eb18` with `npm audit --package-lock-only` (npm 11.12.1,
 advisory data as of that day). Build tooling (webpack, its loaders, `browserslist`) is in
 `dependencies`, not `devDependencies`, because the bundle is built at install time (`postinstall`),
 so `--omit=dev` does not separate build-time from run-time packages.
@@ -388,8 +384,7 @@ What BF-147's fix changes, and what was run on it, is in the
 [register](../../docs/30-design/remedial/nightscout-backfix-register.md#bf-147--two-overrides-hold-ajv-and-requests-form-data-inside-advisory-ranges).
 In short: two override values and a refresh of three build-tool packages, 9 lockfile versions
 (patch or minor), `npm audit` 17 → 7, bundle builds, suite 3473/0/3 on one cell (Node 24.15.0,
-MongoDB 7.0.43). It merged to `dev` as #8786 (`7000eb18`, 2026-09-27), after the rest of this file
-was measured on `295f1177` (open item 6).
+MongoDB 7.0.43). It merged to `dev` as #8786 (`7000eb18`, 2026-09-27).
 
 ### Dependabot
 
@@ -397,13 +392,13 @@ Dependabot's 80 open alerts on `nightscout/cgm-remote-monitor` (2026-09-27) are 
 the default branch, `master` (`v15.0.8` `92d08342`). Each alert's vulnerable range was checked
 against every version of that package in both lockfiles:
 
-- **68 are fixed on `dev` `295f1177`**: axios 22, dompurify 10, js-yaml 7, fast-uri 6,
-  brace-expansion 5, ip-address 3, qs 3, ws 3, nanoid 2, postcss 2, and one each for
-  socket.io-parser, d3-color, body-parser, @babel/core and form-data (the 4.x copy). They close
-  when #8598 merges to `master`.
-- **12 remain on `dev`**, all packages in the table above: sanitize-html 2, csv-parse 2 (the
-  manifest and the lockfile), browserslist 2, and one each for baseline-browser-mapping,
-  postcss-selector-parser, form-data (the 2.x copy under `request`), uuid, ajv and request.
+- **74 are fixed on `dev` `7000eb18`**: axios 22, dompurify 10, js-yaml 7, fast-uri 6,
+  brace-expansion 5, ip-address 3, qs 3, ws 3, browserslist 2, form-data 2, nanoid 2, postcss 2,
+  and one each for socket.io-parser, d3-color, body-parser, @babel/core, ajv,
+  baseline-browser-mapping and postcss-selector-parser. They close when #8598 merges to `master`.
+  On `295f1177` the figure was 68; #8786 fixed the other 6.
+- **6 remain on `dev`**, all packages in the table above that 15.0.9 does not change:
+  sanitize-html 2, csv-parse 2 (the manifest and the lockfile), uuid and request.
 - Every alert matches a version on `master`; none is stale.
 
 No Dependabot pull request is open (2026-09-27).
@@ -412,10 +407,10 @@ No Dependabot pull request is open (2026-09-27).
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 73 of the 219 `tests/*.test.js` files on `dev` `295f1177` match neither
+- **Test-script coverage.** 74 of the 220 `tests/*.test.js` files on `dev` `7000eb18` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`; 66 of 190 on `4f705217`, 69 of 205 on `e3adc91d`, 72 of 216
-  on `ff93fa94`). Among
+  on `ff93fa94`, 73 of 219 on `295f1177`; #8786 adds `dependency-overrides`). Among
   them: `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
   `client.alarm-no-reading`, `treatmenttime`, `debug-logging`, `dependency-d3`, #8754's `authdelay`,
   `authsubjects` and `client-ip`, and 2026-09-26's `maker-level-names` (#8773),
@@ -593,7 +588,18 @@ the user-facing form. Facts the notes must not lose:
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `295f1177`**: `ce30a94d` plus #8785, which changes only
+- **The candidate, `dev` `7000eb18`**: `295f1177` plus #8786 (BF-147), which changes
+  `package.json` (two override values), `package-lock.json` (9 versions, patch or minor: `ajv` 6,
+  `request`'s `form-data`, and build tooling) and adds `tests/dependency-overrides.test.js`. No file
+  under `lib/`, `views/` or `static/` changed, and the production bundle built from `295f1177` and
+  from `7000eb18` is byte-identical (all 7 files under `node_modules/.cache/_ns_cache/public`; Node
+  24.15.0, webpack 5.106.2, `browserslist` 4.28.2 and 4.29.1). Run 020 did not run on the new
+  dependencies. The suite runs that did: #8786's CI on `64a9cc13`, whose tree `7000eb18` has, green
+  in all nine cells (Node 20/22/24 × MongoDB 4.4/5/6) plus the npm 12 install-and-build check; and
+  one local cell, 3473 passing, 0 failing, 3 pending (Node 24.15.0, MongoDB 7.0.43), before the test
+  file was added. `tests/dependency-overrides.test.js` passes 5 of 5 on the branch and fails 5 of 5
+  on `295f1177`'s installed tree.
+- **`dev` `295f1177`**: `ce30a94d` plus #8785, which changes only
   `tests/boluswizardpreview.test.js` (the test's data and its sandbox now read one clock; the
   test failed when the files before it took more than about 60 s, as on #8784's CI). No file that
   runs on a site changed, so run 020 stands for it. #8785's CI passed in all nine cells on
@@ -609,7 +615,7 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `295f1177`: 27 checks passed, 3 skipped (read 2026-09-27). At `e3adc91d` it was
+- CI on #8598 at `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-27); at `295f1177` the same. At `e3adc91d` it was
   27 green and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).

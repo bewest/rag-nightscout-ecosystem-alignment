@@ -3,7 +3,7 @@
 *Contributor-facing. Living document, maintained alongside the
 [multitenancy execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 Entries name the refs they were measured on. Status and the counts below are as of 2026-09-26 (with the maintainer's decisions of that day),
-cgm-remote-monitor `origin/dev` `295f1177` and `origin/master` `92d08342` (= tag `15.0.8`, the
+cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342` (= tag `15.0.8`, the
 shipping release), nightscout-connect `0.1.0`. Nothing here is medical advice.*
 
 **What belongs here.** An entry in §1 is a defect that
@@ -49,14 +49,14 @@ release, so such an entry is still present on 15.0.8, which pins connector `v0.0
 **What a status means for an operator.** Every §1 entry marked `fixed`, `partly merged` or
 `merged` is **still present for every operator running today's release, 15.0.8, until it is
 released.** Merging to `dev` is not releasing: a push to `dev` publishes a Docker Hub image, but
-`origin/master` and its tags are what operators install. On 2026-09-27 `origin/master` is **505
-commits (85 first-parent merges) behind `origin/dev` (`295f1177`) and 0 ahead**
+`origin/master` and its tags are what operators install. On 2026-09-27 `origin/master` is **507
+commits (86 first-parent merges) behind `origin/dev` (`7000eb18`) and 0 ahead**
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`),
-and the release PR #8598 (`dev` → `master`) is open at `295f1177`, approved by the maintainer
+and the release PR #8598 (`dev` → `master`) is open at `7000eb18`, approved by the maintainer
 (2026-09-26 00:39Z, at `e3adc91d`; reviewDecision APPROVED), mergeable, with 27 checks green and 3
 skipped.
 
-| question | answer, 2026-09-27 (`origin/dev` `295f1177`) | reproduce with |
+| question | answer, 2026-09-27 (`origin/dev` `7000eb18`) | reproduce with |
 |---|---|---|
 | How many §1 defects are there, and how many reach an operator on 15.0.8? | **103** §1 defects (every §1 entry except BF-12, invalid, and BF-41, closed): **26 open, 75 merged, 1 partly merged (BF-07), 1 fixed on an unmerged local branch** (BF-52). BF-147 was filed on 2026-09-27 from the 15.0.9 `npm audit` triage and merged the same day through #8786 (merge `7000eb18`). BF-142 merged on 2026-09-26 through #8783, and BF-146 with BF-133 through #8784 (merge `ce30a94d`). The twelve that were fixed on local branches (BF-80, BF-106, BF-121, BF-122, BF-123, BF-125, BF-128, BF-129, BF-135, BF-136, BF-138 and BF-139) merged on 2026-09-26 through PRs #8771 to #8777, #8779 and #8780. **100** reach an operator on 15.0.8 — BF-80, BF-106 and BF-142 exist only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (it counts BF-07 under open) |
 | How much work is outstanding? | **51 ids not repaired**. The halves left on BF-122 (v1 deletes stay hard deletes), BF-125 (a failed call is retried) and BF-121 (the cases no key can separate) were decided as intended on 2026-09-26 | `make queue-coverage` (counts `partly merged` as not fixed and `partly fixed` as fixed) |
