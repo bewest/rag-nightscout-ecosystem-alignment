@@ -365,6 +365,31 @@ again, or an updated version of it, still updates the one record. Entries lost b
 are not brought back. Some cases are still stored as one; see
 [Known issues](#known-issues--not-fixed-in-this-release).
 
+### Late or edited AndroidAPS entries now count in insulin and carbs on board
+
+Nightscout works out its own **insulin on board** (IOB: insulin from earlier doses that is still
+expected to act) and **carbs on board** (COB: carbs not yet expected to be absorbed) from the
+treatments it holds in memory. When AndroidAPS, or another app using API version 3, sent a bolus or
+carb entry **late** (dated more than about 15 minutes before it reached Nightscout, for example
+after the phone had been offline), or **changed an older entry**, Nightscout could leave that entry
+out of its own IOB and COB, on the server and in the browser, until the server restarted. The same
+cause could put treatments out of time order. That could make Nightscout's COB **too high**,
+because carbs that should already have been absorbed were counted again, and could make the "last
+carbs" line under the COB pill name an older entry instead of the newest one.
+
+These entries now count as soon as they arrive, and treatments stay in time order. Nothing stored
+changes. A **device status** (the status report a looping app uploads) that such an app sends late
+is now also listed in its place by time when another app asks your site for the latest device
+statuses; before, it could be left out. The same problem is in 15.0.8.
+
+- Where your looping app reports its own IOB and COB (AndroidAPS does when it uploads its status),
+  the IOB and COB pills show the app's values, so you may not have noticed this. Nightscout's own
+  figures are still worked out and can be read by other apps.
+- AndroidAPS's own dosing was not affected: it works out IOB and COB on the phone.
+- After the update, Nightscout's own IOB and COB can differ from what you saw before on the same
+  treatments. If they differ from your looping app's, go by the app that doses and talk to your care
+  team before relying on the Nightscout numbers. This is not medical advice.
+
 ### AndroidAPS percentage Profile Switches: the numbers on your site change
 
 In AndroidAPS a **Profile Switch** can run your profile at a percentage (for example 150% during
@@ -951,7 +976,9 @@ and a site that already holds one starts normally and notes it in the server log
 - **Basal, ISF and carb ratio during an AndroidAPS percentage Profile Switch**, and the IOB, COB,
   Bolus Wizard Preview and reports worked out from them, now match the phone. **Carbs and insulin
   that AndroidAPS deleted** no longer count in COB, IOB and reports. **Two treatments at the same
-  time** are now both counted in daily totals. See
+  time** are now both counted in daily totals. **AndroidAPS entries that arrived late or were
+  edited** now count in Nightscout's own IOB and COB, and a COB that was too high because treatments
+  were out of time order can drop. See
   [AndroidAPS, the careportal and caregivers](#androidaps-the-careportal-and-caregivers).
 
 ### A 48-hour view on the main chart
@@ -1091,9 +1118,6 @@ software library updates.
   are the numbers you meant, keep
   your device's own alarms on, and talk through your alarm settings with your care team. This
   is not medical advice.
-- **The carbs-on-board detail can name an older carb entry as "last carbs".** After an older
-  carb entry is edited, the pill's "last carbs" line can show that entry instead of the newest
-  one. The carbs-on-board total is not affected. The same happens on 15.0.8.
 - **Deleting a treatment anywhere except AndroidAPS does not reach AndroidAPS.** A treatment
   deleted in the careportal, Loop, Trio or xDrip+ is removed from your site but keeps counting on
   an AndroidAPS phone. Delete it in AndroidAPS as well.

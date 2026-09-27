@@ -2738,18 +2738,20 @@ items:
     state: needs-decision
     blast_radius: >
       15.0.9 is everything in origin/master..origin/dev: master 92d08342
-      (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62
-      first-parent merges, 226 files, +18167/-1403. Among them the
-      programme's backfix PRs (#8733-#8740 and #8743-#8746 from
-      2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on
-      2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in)
-      on 2026-09-24; and #8741 from an external
-      contributor on the same work), the D3 5.16 -> 7.9 chart migration
-      (RT-D3), the opt-in debug logging change (#8726), the connector
-      pin to exactly 0.1.0 (#8762), profile, treatment-query and clock
-      fixes, report and chart fixes, dependency updates and
-      translations. One open PR is planned to join it: #8758. Reproduce
-      with `git -C
+      (tag 15.0.8) to dev ce30a94d (merge of #8784), measured 2026-09-27:
+      503 commits, 84 first-parent merges (all PR merges), 295 files,
+      +28274/-1701. Among them the programme's backfix PRs (#8733-#8740 and
+      #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757
+      and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765
+      folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25;
+      #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26), #8741,
+      #8778 and #8781 from outside contributors on the same work, #8568,
+      #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 ->
+      7.9 chart migration (RT-D3), the opt-in debug logging change
+      (#8726), the connector pin to exactly 0.1.0 (#8762), profile,
+      treatment-query and clock fixes, report and chart fixes, dependency
+      updates and translations. Crowdin #8730 is held out. The candidate
+      is dev ce30a94d itself (RC run 020). Reproduce with `git -C
       externals/cgm-remote-monitor-official log --first-parent --oneline
       origin/master..origin/dev` and `git diff --shortstat origin/master
       origin/dev`.
@@ -2853,7 +2855,21 @@ items:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-09-26 - #8784 (BF-146 with BF-133) merged into dev as ce30a94d
+      (head d235bdf6; GitHub merge time 2026-09-27 05:32Z); BFQ-146 and
+      BFQ-133 are merged-upstream. dev is ce30a94d: 503 commits and 84
+      first-parent merges ahead of master, 295 files, +28274/-1701. Release
+      PR #8598 is at ce30a94d: mergeable, 27 checks passed and 3 skipped,
+      reviewDecision APPROVED (both approvals given at e3adc91d). RC run 020
+      on ce30a94d (2026-09-27, integration record): 3473/0/3 in six cells;
+      run 019's probes unchanged; BF-146 probe exit 0 (1 on 699eb5fa and
+      15.0.8); compressed A/B soak recorded in
+      tools/lab/rc-soak/results/proof-2026-09-27-run020.md. Still owed by the
+      maintainer: browser hand checks, the 24-72 h real-time soak,
+      re-approval of #8598 at the final head, the semver decision, the npm
+      audit triage.
       2026-09-26 (maintainer: "fix as appropriate"): BF-146, found by RC run
       019's trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields
       db99bba4, extended to device status by d235bdf6 (maintainer, same day,
@@ -11212,14 +11228,14 @@ items:
       not BF-134. Recorded in the integration record, run 017. Left: the
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
   - id: BFQ-133
-    title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's branch)"
+    title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/api3-cache-derived-fields
     base: official/dev@699eb5fa
     worktree: externals/work/crm-r4-fix-146
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8784]
     ships_to_operators_today: true
     blast_radius: >
       No change of its own. Fixed by BFQ-146's commit db99bba4
@@ -11239,24 +11255,25 @@ items:
     semver_reason: a display detail names the newest carb entry
     register: [BF-133, BF-146]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce30a94d origin/dev
         kind: static
         describe: >
-          BFQ-146's gate: the branch's v3 cache wrapper derives the v1 fields
-          (official/dev 699eb5fa and v15.0.8 fail this). A presence check
-          only; the "last carbs" test in tests/api3.cache-derived-fields.test.js
-          decides (red on 699eb5fa and 92d08342, green on db99bba4).
-          Point it at official/dev once merged.
+          #8784's merge ce30a94d (2026-09-26), which carries the fix
+          db99bba4, is contained in origin/dev.
       - no-gate: >
           The test needs MongoDB, so it is not a queue gate. 2026-09-26, Node
           22.23.2, MongoDB 7.0.43: a v3 write, then an edit of an older carb
           entry; "last carbs" names the older entry on v15.0.8 92d08342 and
-          699eb5fa, the newest on db99bba4.
+          699eb5fa, the newest on db99bba4. RC run 020 (2026-09-27): the test
+          passes on ce30a94d in all six cells (Node 20.20.0, 22.23.2, 24.20.0
+          x MongoDB 4.4.24, 7.0.43), and fails on 699eb5fa with the older
+          entry named when #8784's lib change is reverted.
     blocks_on: [BFQ-146]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/rc-soak/results/proof-2026-09-25.md
       - tools/lab/rc-soak/results/proof-2026-09-27.md
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be
       15.0.8 behaviour, not a 15.0.9 regression.
@@ -11266,6 +11283,8 @@ items:
       2026-09-26 - FIXED by BF-146's branch bf/api3-cache-derived-fields
       db99bba4 (local, not pushed; branch head d235bdf6 after the device
       status commit). Ships with BFQ-146; no separate PR.
+      2026-09-26 - MERGED into dev as ce30a94d with BF-146 (#8784, head
+      d235bdf6). Not released; goes into 15.0.9. RC run 020 on ce30a94d.
   - id: BFQ-141
     title: "BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier \"\") is stored twice (closed, superseded by #8781)"
     parcel: register-open
@@ -11408,14 +11427,14 @@ items:
       PATCH 404, PUT inserts a second record, the same on 15.0.8. PR body
       draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
   - id: BFQ-146
-    title: "BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order"
+    title: "BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order (merged for 15.0.9, #8784)"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/api3-cache-derived-fields
     base: official/dev@699eb5fa
     worktree: externals/work/crm-r4-fix-146
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8784]
     ships_to_operators_today: true
     blast_radius: >
       Two commits, head d235bdf6 (db99bba4 treatments, d235bdf6 device
@@ -11450,14 +11469,14 @@ items:
     semver_reason: treatments and device status written through API v3 are held with the same derived time fields as v1 writes
     register: [BF-146, BF-133]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" origin/dev -- lib/api3/storage/mongoCachedCollection/index.js'
         kind: static
         describe: >
-          The branch's v3 cache wrapper derives the v1 fields (official/dev
-          699eb5fa and v15.0.8 92d08342 do not mention the helper there and fail
-          this). A presence check only; tests/api3.cache-derived-fields.test.js
-          decides (10 of 15 red on 699eb5fa and 92d08342). Point it at
-          official/dev once merged.
+          origin/dev's v3 cache wrapper derives the v1 fields (#8784, merge
+          ce30a94d; 699eb5fa and v15.0.8 92d08342 do not mention the helper
+          there and fail this). A presence check only; the 15 tests in
+          tests/api3.cache-derived-fields.test.js and
+          tools/lab/rc-soak/probe-v3-late-mills.js decide.
       - no-gate: >
           The behaviour is measured by booted-server tests that need MongoDB,
           so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB
@@ -11473,11 +11492,25 @@ items:
           status dated now, the page's device status) pass on all three.
           Suite 3473/0/3 (699eb5fa 3458/0/3, db99bba4 3467/0/3). Treatment
           probes unchanged on 699eb5fa, db99bba4 and d235bdf6.
+      - no-gate: >
+          RC run 020 (2026-09-27) on origin/dev ce30a94d: 3473/0/3 in six
+          cells, the 15 new titles the only difference from 699eb5fa.
+          tools/lab/rc-soak/probe-v3-late-mills.js (booted server, MongoDB
+          7.0.43) exits 0 on ce30a94d and 1 on 699eb5fa and 92d08342: a late
+          v3 bolus leaves IOB at 0, late v3 carbs leave COB at 0, a late v3
+          status is missing from the default v1 device status read; all
+          present after a restart; its v1 and v3-now controls pass on all
+          three. Break-its on ce30a94d: the device status hunk reverted
+          (db99bba4's file) gives the 3 device status tests and the probe's
+          ds-v3-late arm red; the whole lib change reverted gives 10 of 15
+          red and all three probe arms red.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/rc-soak/results/proof-2026-09-27.md
       - reports/phase0-pr-bodies/api3-cache-derived-fields.md
+      - tools/lab/rc-soak/probe-v3-late-mills.js
+      - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
       Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the
       IOB/COB omission was found while tracing it. Maintainer decision
@@ -11499,6 +11532,9 @@ items:
       (they already derived mills). Entries measured and left as they are.
       6 new tests (3 red on 699eb5fa, 92d08342 and db99bba4); break-its red;
       suite 3473/0/3; the four probes unchanged against db99bba4.
+      2026-09-26 - MERGED into dev as ce30a94d (#8784, head d235bdf6;
+      GitHub merge time 2026-09-27 05:32Z). Not released; goes into 15.0.9.
+      RC run 020 is the run on ce30a94d.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

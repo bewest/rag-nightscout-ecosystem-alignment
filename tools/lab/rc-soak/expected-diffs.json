@@ -62,6 +62,26 @@
    "match": "^nightguard\\.properties \\| keys only A: \\.cob\\.treatmentCOB[^,]*, keys only B: \\.(cob\\.lastCarbs|iob\\.lastBolus|pump)\\.srv(Created|Modified)( \\.(cob\\.lastCarbs|iob\\.lastBolus|pump)\\.srv(Created|Modified))*$",
    "why": "BF-122 (#8775): records written through v1 now carry srvModified and srvCreated, so the last carbs, last bolus and pump status in /api/v2/properties carry them on B; the treatmentCOB part is the 34e9b2da change above",
    "section": "Corrections > Records deleted by AndroidAPS, and two server time fields"
+  },
+  {
+   "match": "^uploader\\.treatments\\.count50 \\| \\[\\]\\.(mills|endmills) \\(only B\\)(, \\[\\]\\.(mills|endmills) \\(only B\\))?$",
+   "why": "BF-146 (#8784): treatments written through API v3 enter the in-memory cache with mills (and endmills), so GET /api/v1/treatments served from memory carries them on the AndroidAPS records too, as it already did on v1 records. Checked against dumped replies (run 020, R33): every record with mills only on B is a v3 record whose mills equals its created_at",
+   "section": "AndroidAPS, the careportal and caregivers > Late or edited AndroidAPS entries now count in insulin and carbs on board"
+  },
+  {
+   "match": "^uploader\\.devicestatus\\.count10 \\| \\[\\]\\.created_at, \\[\\]\\.device, (.*, )?\\[\\]\\.mills(, .*)?$",
+   "why": "BF-146 (#8784): a device status written through API v3 enters the in-memory cache with mills, so GET /api/v1/devicestatus served from memory places the AndroidAPS status by time; 15.0.8 sorts it after every status with mills and leaves it out of count=10. Positional signature: checked against dumped replies (run 020, R33) that B's reply is A's with the AndroidAPS statuses inserted by time",
+   "section": "AndroidAPS, the careportal and caregivers > Late or edited AndroidAPS entries now count in insulin and carbs on board"
+  },
+  {
+   "match": "^nightguard\\.properties \\| keys only A: (\\.cob\\.lastCarbs\\.notes )?\\.cob\\.treatmentCOB[^,]*, keys only B: (\\.cob\\.lastCarbs\\.insulin )?\\.cob\\.lastCarbs\\.srvCreated \\.cob\\.lastCarbs\\.srvModified( \\.(iob\\.lastBolus|pump)\\.[A-Za-z]+)*$",
+   "why": "BF-133 via BF-146 (#8784): with every held treatment carrying mills the treatments are in time order, so cob.lastCarbs names the newest carb entry on B, where 15.0.8 names an older, edited one (its notes, and the absence of insulin, are the key differences); an AndroidAPS bolus written through v3 can now be iob.lastBolus on B (its app, date, device, identifier and isValid appear); the srv* and treatmentCOB parts are the BF-122 and 34e9b2da changes. Checked against the analyser's captured values (run 020, R33 and R34): in every captured difference B's lastCarbs is the newest carb entry written by that tick and A's is older",
+   "section": "AndroidAPS, the careportal and caregivers > Late or edited AndroidAPS entries now count in insulin and carbs on board"
+  },
+  {
+   "match": "^nightguard\\.properties \\| keys only A: \\.cob\\.treatmentCOB[^,]*, keys only B: \\.basal\\.current\\.treatment\\.[^,]*$",
+   "why": "BF-146 (#8784): the current temp basal is found by mills and endmills (lib/profilefunctions.js); on 15.0.8 an AndroidAPS temp basal written through v3 has neither in memory and is never current. Seen once at the end of R33, when record times reach wall time",
+   "section": "AndroidAPS, the careportal and caregivers > Late or edited AndroidAPS entries now count in insulin and carbs on board"
   }
  ],
  "known_a_behaviour": [

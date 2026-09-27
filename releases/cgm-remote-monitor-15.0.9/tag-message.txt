@@ -1,12 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. If dev moves past ff93fa94 before the tag, re-measure the counts
+cut. If dev moves past ce30a94d before the tag, re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at ff93fa94: 81 first-parent PR merges, 496 commits,
-291 files, +27503/-1699. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at ce30a94d: 84 first-parent PR merges, 503 commits,
+295 files, +28274/-1701. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -46,6 +46,19 @@ Query and API correctness
   #8780 ff93fa94  two treatments at the same time are kept apart by
                   client identity or, for v1 writes without one, by
                   carbs and insulin (BF-121)
+  #8781 ce7d754a  a v1 treatment re-sent with an empty identity is
+                  stored once; re-sends keep srvCreated; the v3
+                  history clock is restored from the stored
+                  srvModified at boot (BF-141 BF-143 BF-144, dev-only
+                  regressions; AndyLow91)
+  #8783 699eb5fa  API v3 DELETE reaches a record whose identifier is
+                  0 or false; lists still refused (BF-142, dev-only)
+  #8784 ce30a94d  API v3 treatments and device status enter the
+                  in-memory cache with mills: a late or edited v3
+                  treatment counts in IOB and COB, treatments stay in
+                  time order (COB total, last carbs), a late v3 device
+                  status is placed by time in the v1 read (BF-146
+                  BF-133)
 
 Security
   #8744 a9acd313  loadRetro gated on read authorization (BF-79)
@@ -186,19 +199,23 @@ caregiver treatments reach AndroidAPS through API v3 history (applied
 per its accept carbs/insulin settings); records AndroidAPS deletes
 stop counting; v1 records carry srvModified and srvCreated; IFTTT
 applets renamed to translated names must be renamed back; AAPS
-percentage switches show scaled values; MongoDB 4.4
+percentage switches show scaled values; late or edited AndroidAPS
+treatments count in Nightscout's own IOB and COB, and a COB total
+that was too high can drop; MongoDB 4.4
 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 
 Not in this release: BF-86/BF-67 threshold units on mg/dL sites and
 the silent threshold rewrite; BF-76 silenceTime
 bound; server alarms on a page with no reading; a planned TRUST_PROXY
-default flip; BF-133 (COB last-carbs in array order); Crowdin #8730;
+default flip; Crowdin #8730;
 non-AAPS deletes reaching AndroidAPS (hard delete kept); BF-121's
 same-ms AAPS Meal Bolus and same-minute same-amount careportal cases;
 the BF-121 x BF-136 re-send duplicate; BF-124 tooltip BG units;
 BF-127 clock from the menu for a token viewer on a denied site;
-BF-137 several Maker keys.
+BF-137 several Maker keys; BF-145 v3 PATCH/PUT of a record with an
+empty identity; BF-142's list identifiers stay undeletable through
+v3.
 
 BF- ids refer to the backfix register in the nightscout ecosystem
 alignment repository; each PR body carries its evidence.

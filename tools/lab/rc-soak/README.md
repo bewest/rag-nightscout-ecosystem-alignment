@@ -19,6 +19,7 @@ release candidate.
 | `fake-apns.js` | a local stand-in for Apple's push service, one per arm, counting the HTTP/2 sessions each server leaves open |
 | `analyze.js` | turns a run directory into a verdict: PASS, FAIL (findings) or INVALID |
 | `probe-deleted-entry.js` | a one-shot check against one server: is a reading deleted by `_id` still returned by `GET /api/v1/entries.json?count=10`? |
+| `probe-v3-late-mills.js` | BF-146: boots a tree's server on its own test database; do a bolus, carbs and a device status written through API v3 with a time in the past count in IOB and COB and take their place in `GET /api/v1/devicestatus.json`, as v1 writes do? |
 | `expected-diffs.json` | the differences 15.0.9 makes on purpose, each tied to a release-notes section; thresholds |
 
 `traffic.js`, `sampler.js`, `proxy.js` and `analyze.js` adapt the connector soak lab
@@ -213,6 +214,13 @@ A one-shot check of a single server, useful as a regression probe:
 ```sh
 node tools/lab/rc-soak/probe-deleted-entry.js http://127.0.0.1:17532 <run>/secrets/api_secret
 # exit 0: a reading deleted by _id is gone from entries.json; 1: still returned; 2: could not run
+```
+
+A self-booting probe for BF-146 (the database name must contain `test`; it is dropped first):
+
+```sh
+node tools/lab/rc-soak/probe-v3-late-mills.js externals/work/crm-rc-018-soak 17950 mongodb://127.0.0.1:27958/p146_test
+# exit 0: late v3 records count and are placed by time; 1: an arm fails; 2: a control fails; 3: could not run
 ```
 
 The APNs check (arm B leaving push connections open) is proven by swapping the arms, so the

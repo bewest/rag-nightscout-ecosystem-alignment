@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-26 against `official/dev` `ff93fa94`
-(merge of #8780) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-27 against `official/dev` `ce30a94d`
+(merge of #8784) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `ff93fa94`**. Every PR the maintainer decided ships in it
+15.0.9 is **everything on `dev` at `ce30a94d`**. Every PR the maintainer decided ships in it
 ([decisions](decisions.md)) is merged, except Crowdin #8730, which the maintainer held out on
 2026-09-25 because its sync reverts translations `dev` corrected (BF-132). Every PR merged to `dev`
 is `merged`; none is `released`.
@@ -20,14 +20,14 @@ is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `ff93fa94` (merge of #8780, 2026-09-26), tree `c342bce0` |
-| Commits on `dev` | 496 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **81** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 291 files, +27503/−1699 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `ce30a94d` (merge of #8784, 2026-09-27 05:32Z; git date 2026-09-26), tree `d300bee9` |
+| Commits on `dev` | 503 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **84** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 295 files, +28274/−1701 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `ff93fa94`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `ff93fa94` was running when measured (6 checks passed, 17 pending) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `ce30a94d`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `ce30a94d`: 27 checks passed, 3 skipped (read 2026-09-27) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -45,7 +45,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (37), plus #8741
+#### Programme backfix PRs (39), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -86,6 +86,8 @@ which is the home of every defect fact; these tables do not restate them.
 | #8777 | `d613c35f` | 2026-09-26 | BF-128, BF-139, BF-138 | fixes #6220. `lib/server/pebble.js`: `bgdelta` in the requested units (`aa224c69`); the `/pebble` sandbox scales its own copies of the readings, so a request in the other units no longer changes the values the server's alarm checks, `/api/v2/properties`, Alexa and Google Home read (`b58b937c`; BF-139 is live on 15.0.8 and described by mechanism only); `bwp` computed against the profile in the site's units, `bwpo` returned in the requested units (`b3db0f36`). Head `4864d679` |
 | #8779 | `750801a9` | 2026-09-26 | BF-80 | a `dev`-only regression from BF-75's fix (#8745). New `authorization.resolveAnonymous`: the `/alarm` connect-time admission, and a `subscribe` that presents no credential, get `AUTH_DEFAULT_ROLES` without consulting the failed-login delay list; a credentialed `subscribe` still waits out the delay before its check. On `readable` every `/alarm` socket is admitted at once; on `denied` a socket without a credential gets nothing (BF-75 holds) and a signed-in socket on a delayed address is admitted only after the delay. `resolve()`, HTTP and the main namespace unchanged. Mechanism only in public text. Head `1b243f14` |
 | #8780 | `ff93fa94` | 2026-09-26 | BF-121 | fixes #8185. New `lib/server/treatment-fallback-key.js` (option 3): the v1 and websocket `dbAdd` exact-match fallback requires equal client identity (`syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID`; a write carrying none matches only a record carrying none and no `identifier`); for v1 writes without identity `carbs` and `insulin` join the key; the websocket ±2 s similar match always keys on `eventType`. API v3 and the websocket exact match's no-identity key are unchanged. Head `f3eb68de` (`fc821024` merged with `dev` `13f235e9`) |
+| #8783 | `699eb5fa` | 2026-09-26 | BF-142 | a `dev`-only regression from #8758 (`cb7d4110`, BF-117). `lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm`: the v3 DELETE's `_id` fallback, soft and permanent, takes exactly the stored identifiers `normalizeDoc` shows as the `_id` (`null`, `""`, `0`, `false`, `NaN`), so a record whose identifier is `0` or `false` is deleted again; a list identifier is still refused, because v3 GET shows the list as the record's identifier (15.0.8 deleted it; known issue). Head `1c3aeb8c` |
+| #8784 | `ce30a94d` | 2026-09-26 | BF-146, BF-133 | `lib/api3/storage/mongoCachedCollection/index.js` `updateInCache`: treatments and device status written through API v3 pass through `ddata.processRawDataForRuntime`, the helper the v1 emitters use, before they enter the in-memory cache, so they carry `mills` (and `endmills` where the helper adds it); nothing stored changes, entries are passed on as before. A late or edited v3 treatment counts in the treatment-based IOB and COB on the server and in the page data; the dataloader's sort puts treatments in time order, so the COB total and `cob.lastCarbs` follow time (BF-133); a late v3 device status is placed by time in the in-memory `GET /api/v1/devicestatus`. The same code is on 15.0.8. Heads `db99bba4` (treatments), `d235bdf6` (device status) |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -163,6 +165,7 @@ no multi-hour soak and no source outage.
 | #8530 | `c3d42d4e` | 2026-09-25 | a `48` choice in the main (focus) chart's hour selector, between `24` and `...` (one line in `views/index.html`); no default changes. Carried by the 2026-09-25 decision |
 | #8568 | `99689bf9` | 2026-09-25 | BF-114: `lib/data/ddata.js` ends an AAPS open-ended loop disable at the next running-mode record from the same source, so the offline marker no longer keeps the "not looping" and pump alerts off after re-enable; covers the released-AAPS shape and, with the follow-up `1fd09446`, the AAPS development-build shape (`originalDuration` 0, a 10-year duration). Carried by the 2026-09-25 decision |
 | #8419 | `96a2c948` | 2026-09-25 | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), fixtures, `.nycrc.json`; head `8cffc05e` includes the maintainer's hook cleanup. Carried by the 2026-09-25 decision |
+| #8781 | `ce7d754a` | 2026-09-26 | BF-141, BF-143, BF-144, by AndyLow91; three `dev`-only regressions: a v1 treatment re-sent with `identifier: ""` is matched as a record without identity and stored once (from #8780, `lib/server/treatment-fallback-key.js`); a re-send without identity keeps the stored `srvCreated` (from #8780 on #8775); the v3 history clock is restored from the highest stored `srvModified` at boot, so records written after a restart that follows a large batch appear in `/api/v3/<col>/history` (from #8775, `lib/server/srv-dates.js`, `lib/server/bootevent.js`). Supersedes #8782. Head `a28fcecb` |
 | #8778 | `aa1111b2` | 2026-09-26 | BF-140, by AndyLow91: an API v3 DELETE, soft or permanent, of a record whose `identifier` is `null` or `""` falls back to its `_id`, as for an absent `identifier`; arrays are excluded (`lib/api3/storage/mongoCollection/utils.js` `filterForEveryForm`). A `dev`-only regression: the absent-only condition came with #8758 (`cb7d4110`), and 15.0.8's `filterForOne` has no identifier condition on its `_id` fallback (read). Head `18141136` |
 
 #### Dependency updates
@@ -246,7 +249,6 @@ The facts the classification rests on, for the record:
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
 | BF-44 / BF-45 — MiniMed ingestion divergences | open, graded low: legacy mmconnect does not work, so only one path ingests in practice | the legacy bridges are removed on cut 1 |
-| BF-133 — the COB pill's "last carbs" detail can name an older carb entry after an edit; the COB total is unaffected | open; the same on 15.0.8 | carried as a known issue |
 | Crowdin #8730 — translation updates after early September | held out (BF-132) | translations are those of #8599 and #8603 |
 | BF-122's delete half — a v1 or websocket delete (careportal, Loop, Trio, xDrip+) removes the record and never appears in v3 history, so AndroidAPS keeps counting its copy | kept by decision (hard delete, 2026-09-26) | carried as a known issue; the notes tell people to delete in AndroidAPS too |
 | BF-121's remaining cases — AAPS v3 bolus and carbs in the same millisecond, both `Meal Bolus`, stored as one; two careportal entries in one minute with the same amount stored as one | left by decision (option 3, 2026-09-26) | carried as a known issue |
@@ -256,6 +258,8 @@ The facts the classification rests on, for the record:
 | BF-125's resend half — a failed IFTTT Maker send is retried at every check | kept by design (2026-09-26) | unchanged from 15.0.8 |
 | BF-123 on CircadianPercentageProfile switches (AAPS 2.x) — the timeshift is not applied | left by decision (2026-09-26) | unchanged from 15.0.8 |
 | BF-137 — with several IFTTT Maker keys an alarm's calls run out of order and a failed key is not retried | after 15.0.9 (`BFQ-137`) | unchanged from 15.0.8 |
+| BF-142's list case — a record whose identifier is a list (`[null]`, `[""]`, `["", "other"]`) cannot be deleted through API v3, where 15.0.8 deleted it; v3 GET shows the list as its identifier | kept by decision (2026-09-26, #8783) | carried as a known issue |
+| BF-145 — API v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy) | after 15.0.9 (`BFQ-145`); the same on 15.0.8 | carried as a known issue |
 | `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` — an edit through v3 or the websocket of a record stored twice leaves both copies | after 15.0.9 | as described under #8758 |
 | `TRUST_PROXY` planned flip | none planned ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 
@@ -272,9 +276,9 @@ What the queue tracks is generated, and current, in
 2026-09-26 it lists one open blocker of queue `RT-0`, `RT-VERSION`, whose red gate is on the cut
 branches, which are renumbered when they are rebased. Beside that:
 
-1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base ff93fa94 --with ''`
+1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base ce30a94d --with ''`
    names 14 files changed since the hand-checked `8d797ba4` (12 on `e3adc91d`; #8773 adds
-   `lib/levels.js` and #8774 adds `lib/profilefunctions.js`). The browser-side ones need the checks
+   `lib/levels.js` and #8774 adds `lib/profilefunctions.js`; #8781, #8783 and #8784 add none). The browser-side ones need the checks
    repeated by hand: the Loop remote-command path (`lib/api2/index.js`,
    `lib/api2/notifications-v2.js`, a remote override, carbs and bolus from careportal and
    LoopCaregiver each needing a 200 and a delivered push), the clock views
@@ -292,18 +296,24 @@ branches, which are renumbered when they are rebased. Beside that:
    open; the Profile Editor; during a 150% AAPS Profile Switch, the basal pill, ISF and carb ratio.
    No regression was found. **Still owed:** a remote bolus; LoopCaregiver from its own app (only
    scripted); the clock views; the pump pill; the alarm level labels (`lib/levels.js`); the Bolus
-   Wizard Preview pill and the reports during a percentage switch. #8781 and #8783 (after
-   `ff93fa94`) are server-only and add no browser-side file to this list.
-2. **The release-candidate soak and the `npm audit` triage** on `ff93fa94`: pending run 018 (in
-   progress; the integration record will carry it).
+   Wizard Preview pill and the reports during a percentage switch. #8781, #8783 and #8784 (after
+   `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
+   edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
+   that was not checked in a browser.
+2. **The 24 to 72 h real-time soak and the `npm audit` triage** (17 findings: 1 low, 13 moderate,
+   3 high, the same as on `e3adc91d`) on `ce30a94d`. Run 020's compressed A/B soak against 15.0.8 is
+   in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
 3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
    [`../README.md`](../README.md#open-item-changelog-on-dev).
-4. **The tag**, by the maintainer.
+4. **Re-approval of #8598 at the final head and the semver decision**, by the maintainer (the
+   approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
+   see [decisions](decisions.md)).
+5. **The tag**, by the maintainer.
 
-#8598's two approvals were given on `e3adc91d`; its head is now `ff93fa94`. The release notes and
-tag body are drafted for `ff93fa94`.
+#8598's two approvals were given on `e3adc91d`; its head is now `ce30a94d`. The release notes and
+tag body are drafted for `ce30a94d`.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
@@ -312,13 +322,15 @@ it is moot once #8598 merges.
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 72 of the 216 `tests/*.test.js` files on `dev` `ff93fa94` match neither
+- **Test-script coverage.** 73 of the 219 `tests/*.test.js` files on `dev` `ce30a94d` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
-  `git show official/dev:package.json`; 66 of 190 on `4f705217`, 69 of 205 on `e3adc91d`). Among
+  `git show official/dev:package.json`; 66 of 190 on `4f705217`, 69 of 205 on `e3adc91d`, 72 of 216
+  on `ff93fa94`). Among
   them: `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
   `client.alarm-no-reading`, `treatmenttime`, `debug-logging`, `dependency-d3`, #8754's `authdelay`,
   `authsubjects` and `client-ip`, and 2026-09-26's `maker-level-names` (#8773),
-  `profile-switch-percentage` (#8774) and `soft-deleted.jl1` (#8775). Only `npm test` / `test-ci`
+  `profile-switch-percentage` (#8774), `soft-deleted.jl1` (#8775) and #8781's
+  `bootevent-history-clock`. Only `npm test` / `test-ci`
   (what `main.yml` runs) reaches them. A green
   `test:unit` is not evidence for those fixes.
 - **D3 drag clamps.** `TEST=dependency-d3` passes with both treatment-drag clamps in
@@ -471,28 +483,42 @@ the user-facing form. Facts the notes must not lose:
   describe.
 - **v1 `/activity` and `/devicestatus` numeric filters (#8771, BF-106).** `dev`-only; they answer as
   on 15.0.8.
+- **Late or edited v3 treatments in IOB and COB (#8784, BF-146, BF-133).** A treatment AndroidAPS
+  (or any API v3 client) uploads dated before the dataloader's 15-minute refetch window, or an older
+  one it edits, now counts in the server's and the page's treatment-based IOB and COB at once; on
+  15.0.8 it counted only after a restart. Treatments are held in time order, so a COB total that the
+  out-of-order carb decay chain made too high (34.5 g against 10 g in #8784's test) can drop, and
+  `cob.lastCarbs` names the newest carb entry. `GET /api/v1/treatments` served from memory carries
+  `mills` on v3 records too. A late v3 device status is placed by time in the in-memory
+  `GET /api/v1/devicestatus` (on 15.0.8 it sorted last and could fall outside the count). Where the
+  uploader reports a current IOB or COB in device status, the pills show that value. The notes carry
+  it under "AndroidAPS, the careportal and caregivers" and in "Numbers that may look different".
+- **Empty-identity re-sends, `srvCreated` and the history clock (#8781, BF-141, BF-143, BF-144).**
+  `dev`-only; no change against 15.0.8 to describe.
+- **v3 DELETE with an identifier of `0` or `false` (#8783, BF-142).** `dev`-only for `0` and
+  `false`, which delete as on 15.0.8. A list identifier is refused where 15.0.8 deleted it; the notes
+  carry it as a known issue.
 
 ## Evidence
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `ff93fa94` itself** (tree `c342bce0`): pending run 018 (in progress,
-  [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)).
-- The previous candidate, `dev` `e3adc91d` (tree `d7383aae`, run 017): 3170 passing, 0 failing,
-  3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read
-  from the server; a compressed A/B soak against 15.0.8 passed. It does not include the ten PRs
-  merged on 2026-09-26.
-- The ten PRs merged on 2026-09-26, each on its own branch (PR bodies): each branch's full suite
-  passed with 0 failing on Node 22.23.2 × MongoDB 7.0.43 (#8778: Node 22.21.1 × MongoDB 6.0.27, and
-  CI green at `15f01f33`). The six round-1 branches together (`lab/round1-combined` `bda225e4`,
-  local): 3292 passing, 0 failing, 3 pending. #8780's head merged with `dev` `13f235e9` (which
-  carries #8775 and #8776): 3310 passing, 0 failing, 3 pending. No full-suite run of `ff93fa94`
-  itself is recorded here yet.
-- CI on #8598 at `ff93fa94`: running when measured on 2026-09-26 (6 checks passed, 17 pending).
-  At `e3adc91d` it was 27 green and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
+- **The candidate, `dev` `ce30a94d` itself** (tree `d300bee9`, run 020,
+  [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md)):
+  3473 passing, 0 failing, 3 pending on Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and
+  7.0.43, each version read from the server, cells run one at a time; the 15 tests added since
+  `699eb5fa` are #8784's. The BF-146 probe (`tools/lab/rc-soak/probe-v3-late-mills.js`) exits 0 on
+  it and 1 on `699eb5fa` and 15.0.8; run 019's probes give the same results as on `699eb5fa`. In the
+  compressed A/B soak against 15.0.8, #8784's intended differences have expected-difference entries
+  (checked against dumped replies and captured values); with them the 48 h run passes and the 72 h run with restarts
+  fails only on BF-135's intended page-load change.
+- The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
+  3 pending in the same six cells.
+- CI on #8598 at `ce30a94d`: 27 checks passed, 3 skipped (read 2026-09-27). At `e3adc91d` it was
+  27 green and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-09-26. Requires maintainer review before release. Nothing tagged or published.*
+*Draft, 2026-09-27. Requires maintainer review before release. Nothing tagged or published.*
