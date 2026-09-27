@@ -2733,7 +2733,7 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/dev@ce30a94d
+    base: official/dev@295f1177
     state: needs-decision
     pr: []
     blast_radius: >
@@ -3249,7 +3249,7 @@ items:
       Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
 
   - id: RT-4
-    title: Deprecation release - recommended folded into 15.0.9's release notes
+    title: "Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
@@ -3298,6 +3298,13 @@ items:
       (RT-1). The gate stays red by design: #8757 satisfies its warning
       half, and its other half checks for the migration shim, which
       ships with the removal on cut 1.
+
+      Measured 2026-09-27: that move has not been made on any branch.
+      lib/server/mmconnect-connect-compat.js exists only on cut 4
+      (official/chore/mime-exposure-review b80aa147), and
+      lib/plugins/mmconnect.js is still present on the published cut 1
+      (official/chore/retire-jsdom bce12ecc) and on both local
+      rehearsals, rt/cut1 and rh/cut1.
 
       Decisions:
 
@@ -4701,8 +4708,8 @@ items:
       lib/authorization/storage.js, lib/server/{activity, devicestatus,
       entries, food, profile, query, treatments}.js), so resolving them is
       re-expressing those rules through the storage interface. Measured
-      2026-09-27: since dev 59430336 (the dev side of e3b22034) dev has
-      taken 204 commits, 77 in lib/server, lib/api or lib/api3, and 30
+      2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of
+      e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30
       files the seam changes have also changed on dev. The chain's first
       16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry
       no tenancy behaviour and trial-merge onto b1bdaca0 with 8

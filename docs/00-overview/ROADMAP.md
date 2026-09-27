@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Maintained by the Nightscout Foundation. Contributor-facing. Living document: prose dated
-2026-09-25 against cgm-remote-monitor `origin/dev` `e3adc91d` and `origin/master` `92d08342`
+2026-09-27 against cgm-remote-monitor `origin/dev` `295f1177` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -45,8 +45,12 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
 by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
-[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the release notes, a review of
-#8598 by someone other than the author, and the maintainer's tag.
+[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the 24 to 72 h
+real-time soak (`RT-SOAK`), the semver decision, the `npm audit` triage, the release notes,
+re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `295f1177`), a
+review of #8598 by someone other than the author, and the maintainer's tag. The last full test run,
+run 020 on `ce30a94d`, stands for `295f1177`
+([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 
 | for | read |
 |---|---|

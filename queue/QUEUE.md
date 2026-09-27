@@ -1029,7 +1029,7 @@ that costs.
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `chore/build-runtime-separation` | minor | 1 run + 1 no-gate |
 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `chore/nightscout-modernization` | major | 1 run + 2 no-gate |
-| `RT-4` | Deprecation release - recommended folded into 15.0.9's release notes | `merged-upstream` | `-` | minor | 1 run + 1 no-gate |
+| `RT-4` | Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23) | `merged-upstream` | `-` | minor | 1 run + 1 no-gate |
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `chore/mime-exposure-review` | major | 2 run + 2 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
@@ -1350,7 +1350,7 @@ that costs.
 | state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `official/dev@ce30a94d` |
+| base | `official/dev@295f1177` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
@@ -1509,7 +1509,7 @@ that costs.
 
 **Notes.** Blocked on cut 2 (RT-2). PR #8605 (cut 5, head b1bdaca0) is open; it is 51 behind dev 153e5658 and 498 ahead, with nine conflicting paths (RT-REBASE, 2026-09-24). Decisions: - BF-88, 2026-09-23 (maintainer): with TRUST_PROXY unset the cuts keep 15.0.9's resolution (forwarded-for, 8b975b41), not 395f3207's fixed-precedence normalisation; when cut 5 is rebased its four tests/client-ip.test.js expectations take 15.0.9's values and forwarded-for stays a dependency, as in the cut rehearsal. No flag for the other normalisation. Also to carry at the rebase, separate from BF-88: cut 5's client-ip.js (b1bdaca0) refuses the hop counts and true that #8754 accepts, and #8754's handling of a forwarded address with a port (explicit TRUST_PROXY). §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
 
-### `RT-4` &mdash; Deprecation release - recommended folded into 15.0.9's release notes
+### `RT-4` &mdash; Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23)
 
 | | |
 |---|---|
@@ -1538,7 +1538,7 @@ that costs.
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** Merged into dev by #8757 (d0d6b433, 2026-09-23): the MiniMed warning names every replacement setting (the names match the connector's extendedSettings keys). Not released. The notice itself is in the 15.0.9 release notes; the removal is on cut 1 (RT-1). The gate stays red by design: #8757 satisfies its warning half, and its other half checks for the migration shim, which ships with the removal on cut 1. Decisions: - 2026-09-23 (maintainer): no separate deprecation release. The notice goes in 15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom legacy-flag users: the escape hatch goes when the bridge is removed). - 2026-09-23 (maintainer): the legacy bridge removal moves onto cut 1 (relayed in -1f). The maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch), so no working path is left for a separate release to protect. BF-44/BF-45 are graded low. The MiniMed shim is real code and ships with the removal.
+**Notes.** Merged into dev by #8757 (d0d6b433, 2026-09-23): the MiniMed warning names every replacement setting (the names match the connector's extendedSettings keys). Not released. The notice itself is in the 15.0.9 release notes; the removal is on cut 1 (RT-1). The gate stays red by design: #8757 satisfies its warning half, and its other half checks for the migration shim, which ships with the removal on cut 1. Measured 2026-09-27: that move has not been made on any branch. lib/server/mmconnect-connect-compat.js exists only on cut 4 (official/chore/mime-exposure-review b80aa147), and lib/plugins/mmconnect.js is still present on the published cut 1 (official/chore/retire-jsdom bce12ecc) and on both local rehearsals, rt/cut1 and rh/cut1. Decisions: - 2026-09-23 (maintainer): no separate deprecation release. The notice goes in 15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom legacy-flag users: the escape hatch goes when the bridge is removed). - 2026-09-23 (maintainer): the legacy bridge removal moves onto cut 1 (relayed in -1f). The maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch), so no working path is left for a separate release to protect. BF-44/BF-45 are graded low. The MiniMed shim is real code and ships with the removal.
 
 ### `RT-5` &mdash; Cut 4 - chore/mime-exposure-review, the one to slow down on
 
@@ -5545,7 +5545,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
 
-**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27: since dev 59430336 (the dev side of e3b22034) dev has taken 204 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain.
+**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain.
 
 ### `WRITE-CONTRACT` &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event
 

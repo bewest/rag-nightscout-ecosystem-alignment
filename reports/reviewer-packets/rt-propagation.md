@@ -20,7 +20,7 @@ onto dev**
 |---|---|
 | repository | `cgm-remote-monitor` |
 | branch | `` |
-| base | `official/dev@ce30a94d` |
+| base | `official/dev@295f1177` |
 | claimed state | `needs-decision` — a claim; `make queue-status ID=RT-PROPAGATION` is the measurement |
 | semver | `n/a` |
 
