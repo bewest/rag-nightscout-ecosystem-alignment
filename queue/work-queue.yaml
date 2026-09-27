@@ -10579,8 +10579,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/override-advisory-pins
     base: origin/dev@295f1177
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8786]
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides ("ajv@^6.0.0" 6.12.6 -> 6.14.0, request >
@@ -10608,8 +10608,8 @@ items:
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
       Filed 2026-09-27 from the 15.0.9 npm audit triage. On v15.0.8 too.
-      Whether it goes into 15.0.9 is the maintainer's call; a lockfile
-      change re-anchors the 15.0.9 records. Retired on the modernization
+      Merged 2026-09-27 as #8786 (7000eb18); dev audits at 7, all
+      moderate. The 15.0.9 records re-anchor on 7000eb18. Retired on the modernization
       line (rh/cut4 audits at 0).
   - id: RT-PR-8730
     title: "#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)"

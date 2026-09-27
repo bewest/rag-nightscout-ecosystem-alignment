@@ -303,10 +303,10 @@ branches, which are renumbered when they are rebased. Beside that:
 2. **The 24 to 72 h real-time soak** on `295f1177`. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
    **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
-   the 17 findings (1 low, 13 moderate, 3 high), 10 are cleared by BF-147's fix (two override
-   values and a lockfile refresh, not on `dev`); the other 7 are a deliberate pin, legacy ingestion
-   and dev dependencies, all removed on the modernization line. **Owed:** whether BF-147 goes into
-   15.0.9, by the maintainer.
+   the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
+   override values and a lockfile refresh), merged as #8786 (`7000eb18`); `dev` now audits at 7,
+   all moderate. The other 7 are a deliberate pin, legacy ingestion and dev dependencies, all
+   removed on the modernization line.
 3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
@@ -315,6 +315,11 @@ branches, which are renumbered when they are rebased. Beside that:
    approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
    see [decisions](decisions.md)).
 5. **The tag**, by the maintainer.
+6. **Re-anchor on `7000eb18`.** #8786 merged after this file was measured, so `dev` (and #8598's
+   head) is `7000eb18`: 507 commits, 86 first-parent merges, 297 files, +28363/−1722. The rest of
+   this file, the release notes and the tag body are still anchored on `295f1177`, and RC run 020
+   predates #8786's lockfile change; #8786's own CI (13 checks green, 2 skipped) and the one cell
+   recorded in BF-147 are the suite runs on the new dependencies.
 
 #8598's two approvals were given on `e3adc91d`; its head is now `295f1177`. The release notes and
 tag body are drafted for `295f1177`.
@@ -334,7 +339,8 @@ so `--omit=dev` does not separate build-time from run-time packages.
 | `v15.0.8` `92d08342` | 49 | 19 | 28 | 2 |
 | `dev` `295f1177` | 17 | 3 | 13 | 1 |
 | `dev` `295f1177` `--omit=dev` | 13 | 3 | 9 | 1 |
-| `295f1177` + BF-147's fix (local, uncommitted) | 7 | 0 | 7 | 0 |
+| `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 7 | 0 |
+| `dev` `7000eb18` `--omit=dev` | 5 | 0 | 5 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
 | `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
 
@@ -382,9 +388,8 @@ What BF-147's fix changes, and what was run on it, is in the
 [register](../../docs/30-design/remedial/nightscout-backfix-register.md#bf-147--two-overrides-hold-ajv-and-requests-form-data-inside-advisory-ranges).
 In short: two override values and a refresh of three build-tool packages, 9 lockfile versions
 (patch or minor), `npm audit` 17 → 7, bundle builds, suite 3473/0/3 on one cell (Node 24.15.0,
-MongoDB 7.0.43). It is on local branch `bf/override-advisory-pins` `64a9cc13`, not pushed and not on
-`dev`. Taking it into 15.0.9 changes the lockfile, so the figures
-anchored on `295f1177` would be re-measured.
+MongoDB 7.0.43). It merged to `dev` as #8786 (`7000eb18`, 2026-09-27), after the rest of this file
+was measured on `295f1177` (open item 6).
 
 ### Dependabot
 
