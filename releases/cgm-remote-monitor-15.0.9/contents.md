@@ -325,6 +325,28 @@ it is moot once #8598 merges.
 
 ## `npm audit` and Dependabot triage
 
+**Summary.** 15.0.8 (the release operators run today) has 49 `npm audit` findings (19 high). 15.0.9
+(`dev` `7000eb18`) has 7, all moderate: a deliberate pin whose advisories need elements the sanitizer does not allow
+(tested), the legacy `request` chain, loaded only when a legacy bridge is switched on (read from
+`lib/server/bootevent.js`), and two test-only packages. **After the
+modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there are none:** `npm audit` reports
+0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
+version in cut 5's lockfile. The work that gets there was planned in the open:
+
+| date | what |
+|---|---|
+| 2026-01-18 | [modernization roadmap](https://github.com/nightscout/cgm-remote-monitor/blob/dev/docs/meta/modernization-roadmap.md) on `dev` and `master` (`14f92611`); §3.1.1 is replacing the deprecated `request` library, the source of most findings still in 15.0.9 |
+| 2026-03-16 | #8421, MongoDB driver `^3.6.0` → `^5.9.2`, released in 15.0.7 (2026-04-29) |
+| 2026-05-10 | #8517 (runtime dependency advisories) and #8514 (jsdom) |
+| 2026-06-28 | #8518 (development and test tooling) |
+| 2026-09-05 | 15 Dependabot updates merged together (above); the modernization branch begins (`6a6dd7a5`, with `docs/plans/nightscout-modernization.md`), 498 commits by Andy Low to `b1bdaca0` (2026-09-21) |
+| 2026-09-23 to 27 | #8749 (qs, BF-87) and #8786 (BF-147) |
+
+Since 15.0.7, 38 merges to `dev` changed the lockfile, 20 of them Dependabot's
+(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`). Alerts on the
+default branch fall only when a release merges to `master`; 74 of the 80 open today are already
+fixed on `dev` (below).
+
 Measured 2026-09-27 on `official/dev` `295f1177` and `7000eb18` with `npm audit --package-lock-only` (npm 11.12.1,
 advisory data as of that day). Build tooling (webpack, its loaders, `browserslist`) is in
 `dependencies`, not `devDependencies`, because the bundle is built at install time (`postinstall`),

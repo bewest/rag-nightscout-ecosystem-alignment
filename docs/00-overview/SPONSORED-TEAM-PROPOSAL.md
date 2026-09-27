@@ -65,6 +65,7 @@ person are the ones this proposal would fund:
 | decisions | 7 items wait on a decision (`needs-decision`), plus the release decisions themselves ([needs a human](NEEDS-A-HUMAN.md)) |
 | hand checks | the 15.0.9 browser walk was done by the maintainer; six checks are still owed before the tag ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)) |
 | checks on real systems | no real Loop, Trio, AndroidAPS or xDrip+ setup has yet run against the 15.0.9 candidate |
+| dependency alerts | 80 Dependabot alerts are open against `master`, the last release; 74 of them are already fixed on `dev` and close only when a release ships (measured on `dev` `7000eb18`). 38 merges since 15.0.7 changed the lockfile, 20 of them Dependabot's. Each remaining finding needs a person to establish whether Nightscout reaches it: the 15.0.9 triage took 17 findings to 7, and the modernization line to 0 ([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)) |
 | backlog | 35 open pull requests (18 opened in 2026, the oldest in 2021) and 102 open issues in cgm-remote-monitor (`gh pr list`, `gh issue list`, 2026-09-27) |
 
 Today all of this depends on the unpaid time of a few people. When their time runs short, the work
