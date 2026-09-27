@@ -18,11 +18,10 @@ comment, so::
     title: T0.1 - PR #8733, the two quadratic treatment scans
 
 has always parsed as ``T0.1 - PR``. The worst of the three was RT-0's review
-line, which read "...at least one human reviewer who is not the author —
-release PR #8598 and integration PR #8605 each carry ZERO human reviews" and
-arrived as everything up to "release PR". The governance finding that is the
-entire reason that item demands a non-author reviewer was being deleted from
-the generated queue, every time it was generated.
+line: it asked for at least one human reviewer who is not the author, then
+named the release PRs that needed one, and it arrived as everything up to
+"release PR". The part that said which PRs needed the extra reviewer was
+being deleted from the generated queue, every time it was generated.
 
 ``queue-validate`` passed throughout, before and after, and could not have done
 otherwise: **a truncated string is a perfectly valid string.** The schema check

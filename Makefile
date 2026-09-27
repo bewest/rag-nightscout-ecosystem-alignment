@@ -939,8 +939,8 @@ queue-validate:
 ## A value that lost the end of its line to an unquoted `#` is well-formed --
 ## a truncated string is a perfectly valid string -- so queue-validate passed
 ## over three of them, one since the day it was written, including the sentence
-## in RT-0 recording that two release PRs carry ZERO human reviews. That
-## sentence was being deleted from QUEUE.md on every regeneration.
+## in RT-0 naming the two release PRs that needed a reviewer other than their
+## author. That sentence was being deleted from QUEUE.md on every regeneration.
 queue-fidelity:
 	@$(QUEUE)/fidelity.py
 
