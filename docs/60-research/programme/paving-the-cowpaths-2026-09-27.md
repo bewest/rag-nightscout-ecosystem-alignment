@@ -188,3 +188,19 @@ break one, keeps the old shape behind a named setting with a deprecation signal:
 Material in this repository for that loop: 44 upstream repository checkouts under `externals/`,
 mappings for 23 projects (`mapping/`), 118 files in `specs/`, 521 in `conformance/`, and 42 in
 `traceability/`.
+
+## 9. Earlier in 2026: the MongoDB driver upgrade
+
+15.0.9 is the second release this year prepared this way. The first was the MongoDB driver upgrade
+that shipped in 15.0.7.
+
+| | |
+|---|---|
+| earlier attempt | #7344, "Upgrade MongoDB driver version for compatibility with MongoDB 5", opened 2022-02-16 by an outside contributor; closed unmerged 2026-05-01 as superseded by the work on `dev` |
+| readiness work | [MongoDB update readiness report](../mongodb-update-readiness-report.md) and [impact assessment](../mongodb-modernization-impact-assessment.md) (2026-01-19): a test baseline first, then storage-layer analysis, then the driver change; ecosystem client patterns checked (Loop and Trio UUID `_id`s, re-upload deduplication) |
+| the change | #8421 (`wip/bewest/mongodb-5x`), opened 2026-01-19, merged to `dev` 2026-03-16 (`cdef1e7c`); 147 files, +36,208 / −4,655; [reviewer's guide](../../PR-8421-reviewers-guide.md) |
+| release | 15.0.7, tagged 2026-04-29 (release PR #8444, `7e0e77f8`): `mongodb` `^3.6.0` → `^5.9.2`; 15.0.6..15.0.7 is 237 commits, 180 files, +42,765 / −5,197 |
+| commands | `gh pr view 7344 --json createdAt,closedAt`; `gh pr view 8421 --json createdAt,mergedAt,changedFiles,additions,deletions`; `git show <tag>:package.json \| grep '"mongodb"'`; `git diff --shortstat 15.0.6 15.0.7` |
+
+The two releases share the method: census the clients, fix the baseline tests before the change,
+land the change with the tests that pin the client shapes, and record what was measured.
