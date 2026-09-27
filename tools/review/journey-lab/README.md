@@ -47,6 +47,13 @@ tools/review/journey-lab/lab.sh urls                    # addresses and the shar
 - **Keeping a site fresh:** seeded data ages, and after about 15 minutes the pages show stale
   warnings and sound alarms. `lab.sh live <site>` keeps that site's phone uploading every 5 minutes
   (a reading, device status, doses); `lab.sh live stop <site>` ends it. `down` stops all of them.
+  `lab.sh live <site> cgm` sends readings only, as a separate CGM uploader would: no device status,
+  so COB and IOB stay the site's own treatment-based values (use it when a check is about the
+  site's COB; a device status with COB takes precedence). `fire <site> cgm-tick <hours>` back-fills
+  the last hours of readings the same way.
+- **COB needs `carbs_hr`:** the lab's Loop and AAPS profiles have none, so the site's own COB stays 0
+  with them. `fire <site> editor-save` saves a Profile Editor profile (`carbs_hr` 20) when a check
+  needs COB to move.
 
 ## The sites
 
@@ -161,15 +168,16 @@ decides ("read from the code" / "emulated"). The [real-app track](REAL-APPS.md) 
 | 1 | loop | `fire loop override-start Running` | a bar on the chart named "🏃 Running", 90 min (J3.1) |
 | 2 | loop | `fire loop override-end` | the bar ends now; **one** record, not two (`status`) (J3.2) |
 | 3 | loop | `fire loop override-start "Sick day" indef` | shown as indefinite |
-| 4 | loop | careportal → Temporary Override → a preset | the site says it was sent; `lab.sh apns` shows the push to this site's phone with the preset's name and duration (J3.3) |
+| 4 | loop | careportal → Temporary Override → a preset | the drawer closes with no message (success is silent, on 15.0.8 too); `lab.sh apns` shows the push to this site's phone with the preset's name and duration (J3.3) |
 | 5 | loop | `fire loop caregiver-override Running`, then `caregiver-cancel` | two more pushes (J5.4) |
+| 5a | loop | `live stop loop`, `fire loop new-phone`, then careportal → Temporary Override at once and again after a minute | the new preset "Movie night" is offered without a reload; `lab.sh apns`: a push within about a minute of the upload can go to the **previous** token, later ones to the new token (JL-2, GAP-REMOTE-010) |
 | 6 | loop | Profile Editor → Add new → Save, then careportal → Temporary Override | presets gone, or the send fails with "Could not find loopSettings in profile" (J3.6). Then `fire loop settings-change` and try again: works |
 | 7 | trio | `fire trio override-start Exercise 60`, then `override-end` | a bar labelled Exercise; after the end, one record with the real length |
 | 8 | trio | `fire trio override-start Sick indef` | shown as 43200 min (30 days); the name is in the notes (J3.1) |
 | 9 | trio | `fire trio tt-start 140 60`, then `tt-end` | a temp target band; after the end, one record, the band ends now |
 | 10 | trio | careportal → Temporary Target, then `fire trio downloads` | the lab predicts whether Trio would pick it up (only with "Allow downloads" on in Trio) |
-| 11 | aaps | `fire aaps tt-start`, then `tt-cancel` | a band at 7.8 mmol/L; after cancel it ends now |
-| 12 | aaps | `fire aaps ps-start 120 0` | a Profile Switch on the chart. **Known issue BF-123:** the displayed basal/ISF/CR do not change for the 120% |
+| 11 | aaps | `fire aaps tt-start`, then `tt-cancel` | a thin grey bar at 7.8 mmol/L (AAPS uploads 140 mg/dL; a mmol/L argument is converted); after the cancel it ends now, without a reload |
+| 12 | aaps | turn on Basal in the menu, then `fire aaps ps-start 150 0 LabDay` | a Profile Switch in the basal area; the basal pill ×1.5, its pop-up ISF and carb ratio ÷1.5 (BF-123, fixed in 15.0.9; 15.0.8 shows the 100% values). The ISF shows unrounded (JL-5) |
 | 13 | aaps | careportal → Temporary Target and → Profile Switch, then `fire aaps accept-check` | AAPS 3.4 would ignore both with default settings |
 | 14 | any | `fire <site> settings-change`, then open the Profile Editor | a **new** record at the top; the old one is still listed (J3.5) |
 
@@ -181,9 +189,9 @@ decides ("read from the code" / "emulated"). The [real-app track](REAL-APPS.md) 
 | 2 | loop | `fire loop carb-delete` | gone from the chart |
 | 3 | loop | `fire loop override-delete` | the override is gone |
 | 4 | trio | `fire trio carbs 25`, then `carb-delete` | gone |
-| 5 | aaps | `fire aaps carbs 20`, then `carb-delete` | **JL-1 / BF-135 (found by this lab; fix planned with BF-122):** the entry stays on the site and still counts in COB. Please look at the chart, the COB pill and Reports → Treatments, and note what each shows |
-| 6 | any | pencil (edit mode): drag a treatment; Reports → Treatments: edit one, delete one | changes stay after a reload (J4.1, J4.2) |
-| 7 | aaps | edit a treatment on the site, then think of the phone | **known BF-122:** AAPS v3 won't see site edits in its history |
+| 5 | aaps | `fire aaps carbs 20`, then `carb-delete` (for COB, use `cp-aaps` with `editor-save` and `live cgm`) | gone from the chart, COB and Reports → Treatments, without a reload (JL-1 / BF-135, fixed in 15.0.9; 15.0.8 keeps counting it) |
+| 6 | any | pencil (edit mode): drag a treatment; Reports → Treatments: edit one, delete one | changes stay after a reload (J4.1, J4.2). The Treatments table may still show the old row until **Show** is pressed again (JL-6) |
+| 7 | aaps | edit a treatment on the site, then `status` | the record keeps its `identifier` and its `srvModified` moves, so AAPS's v3 history sees the edit (BF-122, fixed in 15.0.9). A delete on the site removes the record; AAPS never learns of it (as designed) |
 | 8 | any | Profile Editor with two or more records: delete the older one | only that record goes (J4.5) |
 
 ### J5 Sharing
@@ -225,10 +233,14 @@ e.g. `cp-aaps-1508` on 15363. Fire the same steps at it, e.g.
 Staying in 15.0.9: BF-78 (careportal role alone), BF-124 (tooltip unit conversion), BF-127 (clock
 views blank for a token on a denied site), BF-133 (COB "last carbs" names an older entry).
 
-A fix is planned for 15.0.9 but not yet merged, so the candidate `e3adc91d` still shows these:
-BF-121 (same-time carbs stored as one), BF-122 (v1 edits not in v3 history), BF-123 (profile-switch
-percentage not displayed), BF-125, BF-128, and BF-135 (= JL-1, AAPS-deleted entries keep counting,
-found by this lab; fixed with BF-122). When they merge, re-run the matching rows on the new dev head. Details are in the
+Found by this lab, also on 15.0.8, not filed: JL-2 (remote commands keep the previous device for
+up to about a minute after a new profile; GAP-REMOTE-010), JL-3 (Reports → Profiles drops later
+profiles on the last day), JL-4 (careportal Entered By pre-filled with `undefined`), JL-5 (unrounded
+scaled ISF in the basal pill), JL-6 (Treatments table repaints before its save lands).
+
+Merged since the first walk on `e3adc91d` and checked in a browser on `ff93fa94` (2026-09-26):
+BF-121, BF-122, BF-123, BF-128, BF-138 and BF-135 (= JL-1). Details are in the
+[browser record](../../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md), the
 [backfix register](../../../docs/30-design/remedial/nightscout-backfix-register.md) and map §B5.
 
 ## Reporting

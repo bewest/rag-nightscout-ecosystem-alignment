@@ -284,6 +284,16 @@ branches, which are renumbered when they are rebased. Beside that:
    `views/index.html`, the alarm level labels (`lib/levels.js`) and, during an AAPS percentage
    Profile Switch, the basal line, Bolus Wizard Preview pill and reports (`lib/profilefunctions.js`;
    #8774's body records these as not measured in a browser).
+   **Done by hand on `ff93fa94` on 2026-09-26** (the maintainer in Chrome, the journey lab playing
+   the phones, 15.0.8 side by side; [browser record](../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)):
+   careportal Temporary Override, Remote Carbs and Temporary Override Cancel each delivered a push
+   to the right device (the drawer closes silently on success, as on 15.0.8); the page data load,
+   first load and live updates, including an AAPS delete and a Reports delete while the page was
+   open; the Profile Editor; during a 150% AAPS Profile Switch, the basal pill, ISF and carb ratio.
+   No regression was found. **Still owed:** a remote bolus; LoopCaregiver from its own app (only
+   scripted); the clock views; the pump pill; the alarm level labels (`lib/levels.js`); the Bolus
+   Wizard Preview pill and the reports during a percentage switch. #8781 and #8783 (after
+   `ff93fa94`) are server-only and add no browser-side file to this list.
 2. **The release-candidate soak and the `npm audit` triage** on `ff93fa94`: pending run 018 (in
    progress; the integration record will carry it).
 3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of

@@ -506,26 +506,29 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 
 **Scenario**: New phone, reinstall, or switching AID app, while a caregiver sends remote commands
 
-**Description**: Nightscout addresses a Loop remote command (an override, carbs or a bolus sent from the careportal or LoopCaregiver through Nightscout, which forwards it through Apple's push service, APNs) using the `loopSettings` of the newest profile: the device token and bundle id. After a new profile is uploaded, commands keep using the **previous** newest profile's `loopSettings` until the next reading, device status or treatment is written. On a new phone or a reinstall, which uploads a new device token, commands sent in that window go to the old phone. With a looping phone the window is at most one upload cycle, about 5 minutes. When the new profile has no Loop settings (a switch from Loop to Trio), the command is accepted and pushed to Loop's old token until that next write, and only then refused with "the uploaded profile has no Loop settings…".
+**Description**: Nightscout addresses a Loop remote command (an override, carbs or a bolus sent from the careportal or LoopCaregiver through Nightscout, which forwards it through Apple's push service, APNs) using the `loopSettings` of the newest profile in its in-memory data: the device token and bundle id. After a new profile is uploaded, commands keep using the **previous** newest profile's `loopSettings` until the server next reloads its data: the next write of any kind, or the heartbeat reload, every 60 s by default. On a new phone or a reinstall, which uploads a new device token, commands sent in that window go to the old phone. **With no other writes the window is at most about 60 seconds** (measured 2026-09-26); a looping phone's uploads can end it sooner. When the new profile has no Loop settings (a switch from Loop to Trio), the command is accepted and pushed to Loop's old token within that window, and only then refused with "the uploaded profile has no Loop settings…".
 
-This is an ecosystem issue, not a backfix-register defect (maintainer, 2026-09-26): it is not a regression (the same on 15.0.8), no immediate fix is available, and the mechanism is undetermined. Profile writes do emit `data-received` (`lib/server/profile.js:46,86,125,201`), so the obvious explanation, that a profile write does not trigger a data reload, does not hold as read.
+**Mechanism** (found 2026-09-26, the same on 15.0.8): profile `create`, `save` and `remove` emit `data-received` synchronously, before the database write completes (`lib/server/profile.js:90,130,210` on `dev` `ff93fa94` and `699eb5fa`: the `ctx.bus.emit` follows `runWithCallback` without waiting for it). The data reload runs on the leading edge of its debounce (`lib/server/bootevent.js:349`), so `loadProfile` reads the store before the new profile is in it, and `ctx.ddata.profiles[0]` stays the previous profile until the next reload: another write's `data-received`, or the heartbeat `tick` (`heartbeat: 60`, `lib/settings.js:37`; `lib/bus.js:7`). The same window applies to every server-side reader of the newest profile, not only remote commands.
+
+This was recorded as an ecosystem issue, not a backfix-register defect (maintainer, 2026-09-26), while the mechanism was undetermined and no fix was known. With the mechanism found it is a Nightscout race with a local fix (option 1 below); the classification is the maintainer's to revisit.
 
 **Source**:
-- Journey lab, JL-2, reproduced 2026-09-25 on `dev` `e3adc91d` and on 15.0.8: [journey lab §JL-2](../docs/60-research/remedial/journey-lab-15.0.9-2026-09-25.md#jl-2-remote-commands-use-the-previous-profile-until-new-data-arrives); [journey map](../docs/60-research/remedial/journey-map-15.0.9.md) (Path C and §B5). Measured with the lab's `switch-to-trio` step: the careportal override answered 200 and pushed to Loop's token right after Trio's profile upload and again 20 s later, and answered 500 only after the next device status.
-- `lib/server/loop.js:31-37` (reads `loopSettings` from `ctx.ddata.profiles[0]`, the server's in-memory data); `lib/api2/notifications-v2.js:21-38` (the `/api/v2/notifications/loop` route).
+- Journey lab, JL-2, reproduced 2026-09-25 on `dev` `e3adc91d` and on 15.0.8: [journey lab §JL-2](../docs/60-research/remedial/journey-lab-15.0.9-2026-09-25.md#jl-2-remote-commands-use-the-previous-profile-until-new-data-arrives). Measured with the lab's `switch-to-trio` step: the careportal override answered 200 and pushed to Loop's token right after Trio's profile upload and again 20 s later, and answered 500 after the next device status.
+- Browser hand checks and timing, 2026-09-26 on `ff93fa94` and 15.0.8: [journey lab browser record, scenario 5](../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md#5-loop-remote-commands-from-care-portal). Careportal overrides sent 3.5 min after a new-phone profile upload went to the new token on both trees. Scripted, with no other writes: the previous token at 2 s on both trees, at 20 s and 40 s on `ff93fa94` only, the new token from 60 s on both (the difference is where each server was in its heartbeat).
+- `lib/server/loop.js:31-37` (reads `loopSettings` from `ctx.ddata.profiles[0]`); `lib/api2/notifications-v2.js:21-38` (the `/api/v2/notifications/loop` route).
 
 **Impact**:
-- After a new phone, a reinstall or a switch of AID app, a caregiver's override, carbs or bolus can be delivered to the old phone for a few minutes, with a success answer, instead of to the phone in use.
-- Nothing on the site shows which device a command was addressed to.
+- After a new phone, a reinstall or a switch of AID app, a caregiver's override, carbs or bolus sent within about a minute of the new profile upload can be delivered to the old phone, with a success answer, instead of to the phone in use.
+- Nothing on the site shows which device a command was addressed to, and a successful command shows no confirmation (the careportal drawer just closes).
 - Loop applies a command only on the phone that receives it, so the phone in use does not act on it; a caregiver who sees "sent" may assume it was applied. This is not medical advice: after changing phones, confirm on the phone in use that a remote command arrived before relying on it.
 
 **Possible Solutions**:
-1. Determine the mechanism first: which in-memory profile `loop.js` reads when a command arrives, and why a profile write's `data-received` does not refresh it.
+1. Emit `data-received` after the profile write completes (in the `runWithCallback` completion), as the prune path at `lib/server/profile.js:236` already does.
 2. Read the newest profile from storage when a remote command arrives, instead of from memory.
 3. Reject a remote command, with a message, when the newest stored profile's `loopSettings` differ from the ones in memory.
 4. Document the window in the Loop remote-command and caregiver guides until a fix exists.
 
-**Status**: Open. Ecosystem issue, not filed in the backfix register (maintainer 2026-09-26).
+**Status**: Open. Recorded as an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26); mechanism found 2026-09-26, classification open to review.
 
 **Related**:
 - GAP-REMOTE-001, GAP-REMOTE-006

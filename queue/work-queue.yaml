@@ -2918,6 +2918,15 @@ items:
       lib/profile/profileeditor.js, lib/settings.js (#8766),
       views/index.html, .gitignore and .nycrc.json. The last two are not
       browser code; the rest need the checks repeated by hand.
+      Partly done 2026-09-26 on ff93fa94 (the maintainer in Chrome, the
+      journey lab playing the phones, 15.0.8 side by side; no regression;
+      docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md):
+      careportal override, remote carbs and cancel delivered; first load
+      and live updates including deletes while open; the profile editor;
+      the AAPS percentage switch's basal pill, ISF and carb ratio. Still
+      owed: a remote bolus, LoopCaregiver from its app, the clock views,
+      the pump pill, the alarm level labels, and the Bolus Wizard Preview
+      and reports during a percentage switch.
 
       - The release-candidate soak (RT-SOAK) and the npm audit triage, both
       open on the integration record's run 017.

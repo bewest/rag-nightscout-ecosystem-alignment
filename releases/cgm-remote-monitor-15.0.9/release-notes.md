@@ -959,6 +959,12 @@ and a site that already holds one starts normally and notes it in the server log
 The "Hours:" choices on the main page, which set how much time the main chart shows, now include
 **48**, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.
 
+### Filter the treatments report by type
+
+**Reports → Treatments** now has a list of event types above the table (for example "Meal Bolus"
+or "Temp Basal", each with how many entries it has), so a long list can be narrowed to one kind of
+entry. The default, "All event types", shows the same list as before.
+
 ### Translations
 
 Updated translations from Nightscout's volunteer translators on Crowdin, as of early September

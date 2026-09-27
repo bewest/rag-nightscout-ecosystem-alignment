@@ -1,7 +1,9 @@
 # Nightscout user journey map (15.0.9)
 
 *Living document. Checked against the 15.0.9 candidate, cgm-remote-monitor official/dev `e3adc91d`
-(package version 15.0.9; 15.0.8 = `92d08342`), on 2026-09-25. Release PR #8598. Nothing here is
+(package version 15.0.9; 15.0.8 = `92d08342`), on 2026-09-25, and walked by hand in a browser on
+`ff93fa94` on 2026-09-26 ([browser record](journey-lab-browser-15.0.9-2026-09-26.md)); `dev` is now
+`699eb5fa`. Release PR #8598. Nothing here is
 released. Current facts about defects live in the [backfix register](../../30-design/remedial/nightscout-backfix-register.md)
 and [queue/work-queue.yaml](../../../queue/work-queue.yaml); lab results live in dated lab records
 next to this file. The lab that walks these journeys is [tools/review/journey-lab/](../../../tools/review/journey-lab/README.md).*
@@ -175,8 +177,9 @@ Loop and Trio rows are read from the apps' code; a real app confirms them.
 - **Watch for:** the Loop case, where data flows but there is no profile, and a person is pushed
   into the Profile Editor. A profile made there breaks Loop's remote commands (J3.6).
 - **Found by the lab (JL-2, also on 15.0.8):** after any new profile upload, remote commands keep
-  going to the phone in the *previous* profile until the next reading or status arrives. On a new
-  phone that means a few minutes of commands still going to the old phone. Recorded as
+  going to the phone in the *previous* profile until the site next reloads its data: the next
+  reading, status or other upload, or at the latest about a minute later. On a new phone, commands
+  sent in that minute still go to the old phone. Recorded as
   [GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload):
   an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26).
 
@@ -269,7 +272,11 @@ as its CGM**, and uploads its own profile, doses and status.
 - **J2.5** A follower's page updates by itself, without a reload.
 - **Watch for:** a pill stuck on an old time while the app is running; COB or IOB very different
   from the app; duplicates of the same bolus or carbs.
-- **Known issue (BF-121; a fix is planned for 15.0.9 but not yet merged):** two carb entries at exactly the same time can be stored as one.
+- **Fixed in 15.0.9 (BF-121):** two carb entries at exactly the same time were stored as one;
+  they are now kept apart when an app label or a different amount tells them apart. Checked in a
+  browser 2026-09-26: two careportal entries (20 g, 15 g) at the same time were both kept; 15.0.8
+  kept only the second. Two careportal entries in the same minute with the **same** amount are still
+  stored as one (a known issue in the release notes).
 - **Known issue (BF-133):** the COB pill's "last carbs" can name an older entry.
 
 ## J3. Changing things for a while (day 2)
@@ -300,12 +307,20 @@ as its CGM**, and uploads its own profile, doses and status.
   follower app).
 - **Watch for:** the site saying it was sent when it wasn't; a clear message when it can't be sent
   (15.0.9 improved these messages).
+- **Checked in a browser 2026-09-26 (Loop, 15.0.9 and 15.0.8):** Temporary Override, Remote Carbs
+  and Temporary Override Cancel each reached the phone's push address; the override and carbs
+  appeared on the chart, without a reload, once Loop uploaded them. **On success the careportal
+  just closes, with no message**, on both versions; only a failure shows one. A new preset in a
+  newly uploaded Loop profile appears in the careportal's list without a reload.
 
 ### J3.4 Profile switch with a percentage (AAPS)
 
 - **Working:** the chart and profile name pill show the switch.
-- **Known issue (BF-123; a fix is planned for 15.0.9 but not yet merged):** the percentage is **not** applied to the basal, ISF and carb ratio the
-  site displays. The site shows the base profile's values. AAPS itself uses the percentage.
+- **Fixed in 15.0.9 (BF-123):** the site now applies the percentage the way AAPS does: basal
+  multiplied, ISF and carb ratio divided. Checked in a browser 2026-09-26 at 150%: basal 0.950 →
+  1.425, ISF 2.8 → 1.87, carb ratio 12 → 8; 15.0.8 kept showing 0.950 / 2.8 / 12.
+- **Known issue (JL-5, cosmetic):** the basal pill's pop-up shows the scaled ISF unrounded, for
+  example `1.866666666667`.
 
 ### J3.5 Change settings in the app
 
@@ -328,24 +343,35 @@ as its CGM**, and uploads its own profile, doses and status.
 - **J4.2 Delete on the site:** Reports → Treatments → delete, or drag past the left edge.
 - **J4.3 Edit or delete in the app:** the site follows. Loop edits carbs in place and deletes
   overrides. Trio deletes carbs. AAPS marks the entry as invalid instead of removing it.
-  - **Found by this lab (2026-09-25, also on 15.0.8; BF-135, to be fixed in 15.0.9 with BF-122, not yet merged):** an entry AAPS has deleted stays on the site.
-    Nightscout still counts it, e.g. deleted carbs keep counting in the site's own COB. Please note
-    where you see such an entry (chart, COB, reports).
+  - **Fixed in 15.0.9 (BF-135, found by this lab as JL-1):** an entry AAPS deleted stayed on the
+    site and kept counting, e.g. in the site's own COB. Checked in a browser 2026-09-26: after an
+    AAPS delete the carbs left the chart and COB without a reload, for AAPS on API v3 and on the
+    older socket connection; on 15.0.8 they stayed at COB 40.
 - **J4.4 Which way changes travel (not defects):** changes made on the site do **not** go back to
   Loop or Trio. AAPS may pick up treatments, depending on its settings.
-  - **Known issue (BF-122; a fix is planned for 15.0.9 but not yet merged):** edits made on the
-    site through the older API are not seen in the history AAPS syncs from.
+  - **Fixed in 15.0.9 (BF-122):** edits made on the site through the older API were not seen in
+    the history AAPS syncs from. Checked 2026-09-26: an edit in Reports → Treatments now updates
+    the record's server change time (`srvModified`); on 15.0.8 it did not.
+  - **As designed:** a delete on the site removes the record, so AAPS never learns of it; delete in
+    AAPS as well (release notes).
+  - **Known issue (JL-6, also on 15.0.8):** after an edit or delete in Reports → Treatments, the
+    table can still show the old row until **Show** is pressed again. The change itself is saved.
 - **J4.5 Delete a profile record:** Profile Editor → delete (only when there is more than one).
   Deleting one named profile inside a record takes effect on Save.
 - **Known issue (BF-124):** a treatment's tooltip can convert a glucose value that is already in
   display units.
+- **Known issue (JL-4, also on 15.0.8 and earlier):** after one careportal entry with **Entered By**
+  left empty, the field comes back pre-filled with the word `undefined`, and entries are saved with
+  it unless the person clears it.
 
 ## J5. Sharing and handing over control
 
 - **J5.1 A follower who only watches:** admin page → new subject with the **readable** role → share
   its link. The link shows the data. There is no **+** button, and the follower can't change anything.
 - **J5.2 A caregiver who enters carbs:** a subject with **readable** and **careportal**. The +
-  button works.
+  button works. A caregiver can add but not edit or delete: Reports → Treatments still shows
+  the edit and delete icons, and using them fails with 401 (the careportal role only adds; checked
+  2026-09-26, the same on 15.0.8).
   - **Known issue (BF-78):** **careportal** on its own does nothing on a "denied" site. The role
     can add treatments but cannot read, and adding needs reading.
 - **J5.3 Follower apps:**
@@ -457,43 +483,39 @@ with large counts, `find[eventType]=Profile Switch`).
 | J1.F | `client-bootstrap` (AAPSClient), `follow-loopfollow` | — | — |
 | J3.1–J3.2 | Loop `override-start/-end/-delete`; Trio `override-start/-end`, `tt-start/-end`; AAPS `tt-start/-cancel`, `ps-start` | rc-soak (finite Loop override, Trio TT start, AAPS v3 PUT); object-id lab (UUID `_id` + v3 PATCH) | consumer-impact P5 (Loop override delete by UUID: works with the default `UUID_HANDLING`; never deletes with `UUID_HANDLING=false`, same on 15.0.8); OID-V3-EDIT-MERGE (open) |
 | J3.3 | Loop careportal override by hand + `apns`; Trio `downloads`; AAPS `accept-check` | apns-shutdown probe; rc-soak remote commands | BF-134 (merged) |
-| J3.4 | AAPS `ps-start 120` | `tools/lab/triage-2026-09/profile-switch-percentage.js` | **BF-123 (open)** |
+| J3.4 | AAPS `ps-start 150 0 LabDay` | `tools/lab/triage-2026-09/profile-switch-percentage.js`; browser 2026-09-26 | BF-123 (merged); JL-5 |
 | J3.5–J3.6 | `settings-change`; Profile Editor "Add new" by hand, then `caregiver-override` | — | — |
-| J4 | by hand in the browser; app side: Loop `carb-edit/-delete`, `override-delete`; Trio `carb-delete`; AAPS `carb-delete` | rc-soak edits/deletes; object-id lab; manual lab #1–4, #11 (drag) | BF-103 (merged), BF-122, BF-124 (open); **JL-1** (new, below) |
+| J4 | by hand in the browser; app side: Loop `carb-edit/-delete`, `override-delete`; Trio `carb-delete`; AAPS `carb-delete` | rc-soak edits/deletes; object-id lab; manual lab #1–4, #11 (drag); browser 2026-09-26 | BF-103, BF-122, BF-135 (JL-1) (merged); BF-124 (open); JL-4, JL-6 |
 | J5 | `share`, `follow-loopfollow`, `follow-nightguard`, `follow-xdrip`, `follow-reporter`, `caregiver-*` | rc-soak followers; manual lab #5–6 (alarms, tokens) | BF-78, BF-127 (open); BF-17/30/47, BF-126 (merged) |
 | J6 | `rep-loop|rep-trio|rep-aaps` (14 d), `rep-90` (90 d) | — | #8584, #6066 (fixed in dev, confirmation pending) |
 
 ## B5. Findings from walking the journeys
 
-**JL-1 (register id BF-135, reserved): an entry AndroidAPS deletes keeps counting on the site**
-(reproduced 2026-09-25, candidate `e3adc91d` and 15.0.8 `92d08342`). Maintainer decision
-2026-09-25: fixed in 15.0.9 together with BF-122 (branch `bf/v1-writes-v3-history`, not yet
-merged). Records with `isValid:false` will count as deleted in v1 reads, the in-memory data and
-COB/IOB; v3 search and history keep the tombstones. AAPS deletes by soft delete: v3 `DELETE`
-(the server sets `isValid:false`) or v1 `dbUpdate` with `isValid:false`. Outside API v3, the
-server honours `isValid` only for `OpenAPS Offline` (`lib/data/ddata.js:351`). The record is still
-returned by `GET /api/v1/treatments.json`, and it still counts in the treatment-derived COB.
+**JL-1 = BF-135: an entry AndroidAPS deletes kept counting on the site** (reproduced 2026-09-25
+on `e3adc91d` and 15.0.8). **Merged** in #8775 (`1157a8de`, with BF-122); in 15.0.9. Checked on
+`ff93fa94` by script and in a browser: after an AAPS delete (v3 DELETE, or the socket's
+`isValid:false` update) v1 no longer returns the record and COB drops, live; 15.0.8 still counts it.
 
-The lab's steps, on `cp-aaps` (no device status, so COB comes from treatments):
+**JL-2: remote commands use the previous profile for up to about a minute** (reproduced
+2026-09-25 on `e3adc91d` and 15.0.8; mechanism found and window measured 2026-09-26). Recorded as
+[GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload),
+an ecosystem issue (maintainer 2026-09-26, decided while the mechanism was unknown). Profile writes
+emit `data-received` before the database write completes (`lib/server/profile.js:90,130,210`), so
+the reload they trigger reads the previous profile, and the in-memory profile stays stale until
+the next write or the 60 s heartbeat reload. Measured with no other writes: previous token at 2 s,
+new token from 60 s, on both trees.
 
-| step | COB (`/api/v2/properties/cob`) |
+**Found in the browser walk (2026-09-26, all also on 15.0.8, none filed):**
+
+| id | finding |
 |---|---|
-| AAPS carbs 40 g | 40 |
-| AAPS deletes them (v3 DELETE, `isValid:false`) | still 40 |
-| **control:** hard v1 DELETE of the same record | gone |
+| JL-3 | Reports → Profiles drops later profiles on the report's last day: day strings are parsed as UTC midnight (`lib/report/reportclient.js:480,764,796`) |
+| JL-4 | careportal stores and pre-fills Entered By as the text `undefined` after a blank submit (`lib/client/careportal.js:286,408`) |
+| JL-5 | the basal pill shows scaled ISF and carb ratio unrounded (`lib/plugins/basalprofile.js:64-77`); BF-123 makes it common |
+| JL-6 | Reports → Treatments repaints before its own PUT or DELETE lands (`lib/report_plugins/treatments.js:181-182,229-231`) |
 
-15.0.8 gives the same results. The same mechanism would apply to insulin (IOB), the chart and the
-reports; those were read, not run.
-
-**JL-2: remote commands use the previous profile until new data arrives** (reproduced
-2026-09-25 on `e3adc91d` and 15.0.8). Recorded as
-[GAP-REMOTE-010](../../../traceability/treatments-gaps.md#gap-remote-010-loop-remote-commands-keep-the-previous-profiles-device-after-a-new-profile-upload):
-an ecosystem issue, not filed in the backfix register (maintainer 2026-09-26). After a new profile is uploaded, Loop
-remote commands keep using the previous profile's `loopSettings` until the next reading, device
-status or treatment is written. Measured with `loop`'s `switch-to-trio`: the careportal override
-answered 200 and pushed to Loop's old token right after the upload and again 20 s later. It failed
-correctly ("the uploaded profile has no Loop settings…") only after the next phone cycle. Profile
-writes emit `data-received`; the mechanism was not determined. Details are in the lab record.
+Details, 15.0.8 comparisons and usability notes are in the
+[browser record](journey-lab-browser-15.0.9-2026-09-26.md#findings-by-category).
 
 ## B6. Gaps this map exposes
 

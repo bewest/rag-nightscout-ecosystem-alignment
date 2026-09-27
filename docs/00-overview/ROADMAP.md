@@ -43,7 +43,9 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 <!-- END GENERATED: release-waits -->
 
 Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
-the Loop remote-command browser checks that #8764 made necessary, the release notes, a review of
+the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
+by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
+[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the release notes, a review of
 #8598 by someone other than the author, and the maintainer's tag.
 
 | for | read |
