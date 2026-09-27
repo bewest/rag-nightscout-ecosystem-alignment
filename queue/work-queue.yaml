@@ -10577,16 +10577,16 @@ items:
     title: "BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/override-advisory-pins
     base: origin/dev@295f1177
-    state: not-started
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides ("ajv@^6.0.0" 6.12.6 -> 6.14.0, request >
       form-data 2.5.5 -> 2.5.6) and package-lock.json, with a refresh of
       browserslist, baseline-browser-mapping and postcss-selector-parser
-      inside their declared ranges: 10 lockfile versions, all patch or
+      inside their declared ranges: 9 lockfile versions, all patch or
       minor, all build tooling or request internals. No lib/ change.
     review: maintainer
     operator_visible: ""
@@ -10595,10 +10595,12 @@ items:
     register: [BF-147]
     gates:
       - no-gate: >
-          Run 2026-09-27 on a local uncommitted tree from 295f1177
-          (externals/work/crm-audit-exp): npm audit --package-lock-only
+          Run 2026-09-27 on bf/override-advisory-pins (64a9cc13, one
+          commit on 295f1177; worktree externals/work/crm-audit-exp): npm
+          audit --package-lock-only
           17 -> 7 (0 high); npm ci and the bundle build (webpack 5.106.2,
-          3 warnings); suite 3473/0/3 on Node 24.15.0 with MongoDB 7.0.43.
+          3 warnings); suite 3473/0/3 on Node 24.15.0 with MongoDB 7.0.43;
+          tests/dependency-overrides.test.js 5/5, 0/5 on 295f1177's tree.
           Needs node_modules and MongoDB, so not a queue gate.
     blocks_on: []
     evidence:

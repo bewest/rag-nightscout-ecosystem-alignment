@@ -380,9 +380,10 @@ below: which findings reach a running site, and what is done about each.
 
 What BF-147's fix changes, and what was run on it, is in the
 [register](../../docs/30-design/remedial/nightscout-backfix-register.md#bf-147--two-overrides-hold-ajv-and-requests-form-data-inside-advisory-ranges).
-In short: two override values and a refresh of three build-tool packages, 10 lockfile versions
+In short: two override values and a refresh of three build-tool packages, 9 lockfile versions
 (patch or minor), `npm audit` 17 → 7, bundle builds, suite 3473/0/3 on one cell (Node 24.15.0,
-MongoDB 7.0.43). It is not on `dev`. Taking it into 15.0.9 changes the lockfile, so the figures
+MongoDB 7.0.43). It is on local branch `bf/override-advisory-pins` `64a9cc13`, not pushed and not on
+`dev`. Taking it into 15.0.9 changes the lockfile, so the figures
 anchored on `295f1177` would be re-measured.
 
 ### Dependabot
