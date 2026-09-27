@@ -2848,12 +2848,17 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-09-26 (maintainer: "fix as appropriate"): BF-146, found by RC run
+      019's trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields
+      db99bba4 (on official/dev 699eb5fa, ready-to-push, not pushed); BFQ-146
+      is added to blocks_on and is not merged-upstream. The same branch fixes
+      BF-133 (BFQ-133). Same code on 15.0.8, not a regression.
       2026-09-26 (maintainer): BF-141, a regression from #8780 found in the
       review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier
       aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is
@@ -11206,40 +11211,59 @@ items:
       not BF-134. Recorded in the integration record, run 017. Left: the
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
   - id: BFQ-133
-    title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one"
+    title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's branch)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@ecb63223
-    state: not-started
+    branch: bf/api3-cache-derived-fields
+    base: official/dev@699eb5fa
+    worktree: externals/work/crm-r4-fix-146
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/plugins/cob.js fromTreatments (the lastCarbs choice);
-      tests/cob.test.js.
+      No change of its own. Fixed by BFQ-146's commit db99bba4
+      (lib/api3/storage/mongoCachedCollection/index.js): with every held
+      treatment carrying mills, the dataloader's sort puts the treatments
+      in time order and lib/plugins/cob.js fromTreatments, which takes the
+      last carb entry in array order, names the newest one. cob.js is not
+      changed.
     review: maintainer
     operator_visible: >
-      The last-carbs line under the carbs-on-board (COB) pill can show an
-      older carb entry than your newest one, for example after you edit an
-      older entry. The COB number itself is not affected. Check your
-      treatment list for the time of your last carbs.
+      The last-carbs line under the carbs-on-board (COB) pill could show an
+      older carb entry than your newest one, for example after an older entry
+      was edited. The cause also affected the COB number itself; see BF-146.
+      Fixed together with BF-146, not yet released. Check your treatment list
+      for the time of your last carbs. This is not medical advice.
     semver: patch
     semver_reason: a display detail names the newest carb entry
-    register: [BF-133]
+    register: [BF-133, BF-146]
     gates:
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'
+        kind: static
+        describe: >
+          BFQ-146's gate: the branch's v3 cache wrapper derives the v1 fields
+          (official/dev 699eb5fa and v15.0.8 fail this). A presence check
+          only; the "last carbs" test in tests/api3.cache-derived-fields.test.js
+          decides (red on 699eb5fa and 92d08342, green on db99bba4).
+          Point it at official/dev once merged.
       - no-gate: >
-          Not started. Seen 2026-09-25 in the rc-soak (raw /api/v2/properties
-          dumps, ticks 45 to 63) on 15.0.8, dev 4f705217, ab7b22d6 and e9dbb1fb.
-          A unit test on cob.fromTreatments with an out-of-order carb list would
-          be the gate.
-    blocks_on: []
+          The test needs MongoDB, so it is not a queue gate. 2026-09-26, Node
+          22.23.2, MongoDB 7.0.43: a v3 write, then an edit of an older carb
+          entry; "last carbs" names the older entry on v15.0.8 92d08342 and
+          699eb5fa, the newest on db99bba4.
+    blocks_on: [BFQ-146]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/rc-soak/results/proof-2026-09-25.md
+      - tools/lab/rc-soak/results/proof-2026-09-27.md
     notes: >
       Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be
-      15.0.8 behaviour, not a 15.0.9 regression. Not for 15.0.9 unless the
-      maintainer wants it; the fix is small.
+      15.0.8 behaviour, not a 15.0.9 regression.
+      2026-09-26/27 - cause traced by RC run 019 (04a873ce): treatments
+      written or edited through API v3 are held without mills (BF-146), so
+      the sort is not in time order.
+      2026-09-26 - FIXED by BF-146's branch bf/api3-cache-derived-fields
+      db99bba4 (local, not pushed). Ships with BFQ-146; no separate PR.
   - id: BFQ-141
     title: "BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier \"\") is stored twice (closed, superseded by #8781)"
     parcel: register-open
@@ -11381,6 +11405,81 @@ items:
       a present but falsy identifier (identifyingFilter needs it absent):
       PATCH 404, PUT inserts a second record, the same on 15.0.8. PR body
       draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
+  - id: BFQ-146
+    title: "BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/api3-cache-derived-fields
+    base: official/dev@699eb5fa
+    worktree: externals/work/crm-r4-fix-146
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      One commit at db99bba4. lib/api3/storage/mongoCachedCollection/index.js
+      (updateInCache passes treatments through ddata.processRawDataForRuntime,
+      the helper the v1 emitters in lib/server/treatments.js use, before the
+      data-update event; entries and device status are passed on as before);
+      tests/api3.cache-derived-fields.test.js (9 new tests). Nothing stored
+      changes. GET /api/v1/treatments served from memory now carries mills
+      (and endmills or a derived duration where the helper adds them) on v3
+      records too, as it already did on v1 records; order unchanged. v3
+      responses are unchanged.
+    review: maintainer
+    operator_visible: >
+      Not yet released; the same problem is in 15.0.8. When an app that uses
+      API v3 (for example AndroidAPS) uploaded a bolus or carb entry late, or
+      edited an older one, Nightscout could leave it out of the insulin on
+      board (IOB) and carbs on board (COB) it works out from treatments, in
+      the server and in the browser, until the server restarted. The same
+      cause could put treatments out of time order, which could make the COB
+      number too high and make the "last carbs" line name an older entry.
+      Where your app reports its own IOB and COB in device status, the pills
+      show those values instead. This fix makes those records count and keeps
+      the order. This is not medical advice; check numbers against the app
+      that entered them and talk to your care team before relying on them.
+    semver: patch
+    semver_reason: treatments written through API v3 are held with the same derived time fields as v1 writes
+    register: [BF-146, BF-133]
+    gates:
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'
+        kind: static
+        describe: >
+          The branch's v3 cache wrapper derives the v1 fields (official/dev
+          699eb5fa and v15.0.8 92d08342 do not mention the helper there and fail
+          this). A presence check only; tests/api3.cache-derived-fields.test.js
+          decides (7 of 9 red on 699eb5fa and 92d08342). Point it at
+          official/dev once merged.
+      - no-gate: >
+          The behaviour is measured by booted-server tests that need MongoDB,
+          so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB
+          7.0.43, fresh databases: on 92d08342 and 699eb5fa a late v3 bolus
+          gives treatment IOB 0 and late v3 carbs COB 0 (also in the socket
+          page data and after v3 PATCH/PUT), mixed v1/v3 writes load in
+          reverse time order, "last carbs" names the older entry, and COB is
+          34.5 g where time order gives 10 g; all 9 pass on db99bba4. Controls
+          (v1 bolus of the same age, v3 bolus dated now) pass on all three.
+          Suite 3467/0/3 (699eb5fa 3458/0/3). Treatment probes unchanged.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/rc-soak/results/proof-2026-09-27.md
+      - reports/phase0-pr-bodies/api3-cache-derived-fields.md
+    notes: >
+      Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the
+      IOB/COB omission was found while tracing it. Maintainer decision
+      2026-09-26: "fix as appropriate".
+      2026-09-26 - FIXED on bf/api3-cache-derived-fields db99bba4 (local, not
+      pushed), one commit on official/dev 699eb5fa. Break-it: deriving and
+      then dropping mills gives the same 7 red; deriving only on create
+      gives the PATCH/PUT test red. same-time-carbs, same-time-resend-shapes,
+      retry-keeps-srvcreated and v1-writes-v3-history give the same output
+      on 699eb5fa and db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE
+      arm on both). Left for a decision: GET /api/v1/devicestatus served from
+      memory sorts a late v3 device status (no mills) after every other one,
+      so it can be missing from the default read; passing device status
+      through the same helper would change which records that read returns.
+      PR body draft: reports/phase0-pr-bodies/api3-cache-derived-fields.md.
   - id: OID-V3-EDIT-MERGE
     title: "API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does"
     parcel: release-train

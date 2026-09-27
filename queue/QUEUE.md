@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 168 |
-| runnable gates | 238 |
-| explicit `no-gate:` markers | 221 |
+| items | 169 |
+| runnable gates | 240 |
+| explicit `no-gate:` markers | 222 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 221 of the 459 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 222 of the 462 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, BFQ-133, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 12 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-133, BFQ-146 |
 | `blocked` | 14 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 71 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-142 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
@@ -112,8 +112,9 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-145** BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
-- **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
+- **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's branch)
 - **BFQ-142** BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id
+- **BFQ-146** BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order
 
 ---
 
@@ -1352,7 +1353,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 4f705217, measured 2026-09-25: 384 commits, 62 first-parent merges, 226 files, +18167/-1403. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; and #8741 from an external contributor on the same work), the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. One open PR is planned to join it: #8758. Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -1375,7 +1376,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md`
 
-**Notes.** 2026-09-26 (maintainer): BF-141, a regression from #8780 found in the review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later): BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-identifier 1c3aeb8c on official/dev ce7d754a, ready- to-push), and BFQ-142 is added to blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91; BF-141, BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces BFQ-141 (closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498 commits and 82 first-parent merges ahead of master; release PR #8598 at ce7d754a, 27 checks green, 3 skipped, APPROVED. Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (the two approvals were given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree, tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the integration record). On the same tree the round-2 probes give their expected exit codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0, pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1 with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier- delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision). The browser-check gate's --with list and the release notes are not updated here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR decided for 15.0.9 except #8730, which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin sync reverts dev's corrected translations). Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126), #8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except RT-VERSION, whose red gate is on the cut branches, which are renumbered when rebased (decided 2026-09-23). Still before the tag: - The browser checks. client-unchanged-since-hand-check.js on e3adc91d names 12 files that changed after the hand-checked 8d797ba4: lib/api2/index.js and notifications-v2.js (the Loop remote-command path, #8764), lib/client/clock-client.js (#8768), lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js (#8767), lib/profile/profileeditor.js, lib/settings.js (#8766), views/index.html, .gitignore and .nycrc.json. The last two are not browser code; the rest need the checks repeated by hand. Partly done 2026-09-26 on ff93fa94 (the maintainer in Chrome, the journey lab playing the phones, 15.0.8 side by side; no regression; docs/60-research/remedial/journey-lab- browser-15.0.9-2026-09-26.md): careportal override, remote carbs and cancel delivered; first load and live updates including deletes while open; the profile editor; the AAPS percentage switch's basal pill, ISF and carb ratio. Still owed: a remote bolus, LoopCaregiver from its app, the clock views, the pump pill, the alarm level labels, and the Bolus Wizard Preview and reports during a percentage switch. - The release-candidate soak (RT-SOAK) and the npm audit triage, both open on the integration record's run 017. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md) for everything merged on 2026-09-25. - The maintainer tagging. Evidence: run 017 in docs/30-design/remedial/rc-15.0.9-integration-record.md, dev e3adc91d itself (tree d7383aae): 3170/0/3 in all six cells (Node 20/22/24 x MongoDB 4.4/7). The earlier hand checks were on ec70aab0 (docs/60-research/remedial/manual- lab-15.0.9-rc-2026-09-23.md) and the drag again on #8760's head 8d797ba4. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
+**Notes.** 2026-09-26 (maintainer: "fix as appropriate"): BF-146, found by RC run 019's trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields db99bba4 (on official/dev 699eb5fa, ready-to-push, not pushed); BFQ-146 is added to blocks_on and is not merged-upstream. The same branch fixes BF-133 (BFQ-133). Same code on 15.0.8, not a regression. 2026-09-26 (maintainer): BF-141, a regression from #8780 found in the review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later): BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-identifier 1c3aeb8c on official/dev ce7d754a, ready-to-push), and BFQ-142 is added to blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91; BF-141, BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces BFQ-141 (closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498 commits and 82 first-parent merges ahead of master; release PR #8598 at ce7d754a, 27 checks green, 3 skipped, APPROVED. Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (the two approvals were given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree, tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the integration record). On the same tree the round-2 probes give their expected exit codes: bf106 gate 0, maker- language 0, profile-switch-percentage 0, pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1 with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier-delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision). The browser-check gate's --with list and the release notes are not updated here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of #8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d: mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR decided for 15.0.9 except #8730, which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin sync reverts dev's corrected translations). Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126), #8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except RT-VERSION, whose red gate is on the cut branches, which are renumbered when rebased (decided 2026-09-23). Still before the tag: - The browser checks. client-unchanged- since-hand-check.js on e3adc91d names 12 files that changed after the hand- checked 8d797ba4: lib/api2/index.js and notifications-v2.js (the Loop remote- command path, #8764), lib/client/clock-client.js (#8768), lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js (#8767), lib/profile/profileeditor.js, lib/settings.js (#8766), views/index.html, .gitignore and .nycrc.json. The last two are not browser code; the rest need the checks repeated by hand. Partly done 2026-09-26 on ff93fa94 (the maintainer in Chrome, the journey lab playing the phones, 15.0.8 side by side; no regression; docs/60-research/remedial/journey-lab- browser-15.0.9-2026-09-26.md): careportal override, remote carbs and cancel delivered; first load and live updates including deletes while open; the profile editor; the AAPS percentage switch's basal pill, ISF and carb ratio. Still owed: a remote bolus, LoopCaregiver from its app, the clock views, the pump pill, the alarm level labels, and the Bolus Wizard Preview and reports during a percentage switch. - The release-candidate soak (RT-SOAK) and the npm audit triage, both open on the integration record's run 017. - The release notes (releases/cgm-remote-monitor-15.0.9/release-notes.md) for everything merged on 2026-09-25. - The maintainer tagging. Evidence: run 017 in docs/30-design/remedial/rc-15.0.9-integration-record.md, dev e3adc91d itself (tree d7383aae): 3170/0/3 in all six cells (Node 20/22/24 x MongoDB 4.4/7). The earlier hand checks were on ec70aab0 (docs/60-research/remedial/manual- lab-15.0.9-rc-2026-09-23.md) and the drag again on #8760's head 8d797ba4. Decisions: - 2026-09-23 (maintainer): what 15.0.9 carries beyond dev as it then stood (releases/cgm-remote-monitor-15.0.9/decisions.md): ?count=0 answers an empty list (RT-COUNT0, later amended by RT-COUNT-COMPAT); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4's separate release is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (done, #8762); RT-D3 is answered by a manual check plus an automated browser test (answered 2026-09-24). Backfix 2 (bf2/*) and the bf3 fixes the maintainer chose also ship in 15.0.9. - 2026-09-23 (maintainer, relayed via -59): run the combined suite before the PRs merge and once more after the pin to exact 0.1.0, before the tag (both done; run 010 is the latter). - 2026-09-24 (maintainer): RT-COUNT-COMPAT decided (tolerate oref0 and GluPredKit count shapes, 15.0.9 stays a patch); RT-D3 answered for 15.0.9 (session -6a). First on the adopted train. Every merged backfix in dev (the items in state merged-upstream) reaches operators only through this release; until it ships they are in code nobody runs. Merging to dev publishes a Docker Hub image, which is not a release.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 
@@ -2007,7 +2008,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 87 items
+`parcel: register-open` &mdash; 88 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2099,9 +2100,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `OID-NE-OPERATOR` | find[_id][$ne]=<hex> excludes only the ObjectId form, so a DELETE with $ne also removes the string copy of that id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `OID-DEVICESTATUS-MIXED-ERRORS` | A devicestatus batch mixing a duplicate key with another write error answers 500 after storing the rest, so a retry duplicates statuses without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-131` | BF-131 - on #8758, a record deleted by _id stays in the in-memory cache, so pages and unfiltered reads keep showing it | `merged-upstream` | `wip/object-id-crud-fixes-2` | patch | 1 run + 1 no-gate |
-| `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-133` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's branch) | `ready-to-push` | `bf/api3-cache-derived-fields` | patch | 1 run + 1 no-gate |
 | `BFQ-141` | BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice (closed, superseded by #8781) | `closed` | `bf/fallback-key-empty-identifier` | patch | 1 run + 1 no-gate |
 | `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id | `merged-upstream` | `bf/api3-delete-nonstring-identifier` | patch | 1 run + 1 no-gate |
+| `BFQ-146` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order | `ready-to-push` | `bf/api3-cache-derived-fields` | patch | 1 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -4850,36 +4852,40 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK), after runs 011 to 014 of the full suite were green: the suite never read the cache after a delete. Fixed the same day as e9dbb1fb before the push, at the maintainer's request to push once. Safety-visible: a deleted bolus or carbs entry kept being shown on newly opened pages and could count in insulin and carbs on board there. Pushed to #8758 2026-09-25 as f1e8398b (the maintainer merged e9dbb1fb with 25f5ea21); tree cf590474; CI 13 of 13 jobs green on that head. Merged 2026-09-25 with #8758 (merge 4d9ecc3b, head f1e8398b), after the maintainer's review; GitHub records no review on the PR.
 
-### `BFQ-133` &mdash; BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one
+### `BFQ-133` &mdash; BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's branch)
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@ecb63223` |
-| worktree | `-` |
+| branch | `bf/api3-cache-derived-fields` |
+| base | `official/dev@699eb5fa` |
+| worktree | `externals/work/crm-r4-fix-146` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
-| register | `BF-133` |
+| register | `BF-133`, `BF-146` |
+| blocks on | `BFQ-146` |
 
-**Blast radius.** lib/plugins/cob.js fromTreatments (the lastCarbs choice); tests/cob.test.js.
+**Blast radius.** No change of its own. Fixed by BFQ-146's commit db99bba4 (lib/api3/storage/mongoCachedCollection/index.js): with every held treatment carrying mills, the dataloader's sort puts the treatments in time order and lib/plugins/cob.js fromTreatments, which takes the last carb entry in array order, names the newest one. cob.js is not changed.
 
-**What an operator sees.** The last-carbs line under the carbs-on-board (COB) pill can show an older carb entry than your newest one, for example after you edit an older entry. The COB number itself is not affected. Check your treatment list for the time of your last carbs.
+**What an operator sees.** The last-carbs line under the carbs-on-board (COB) pill could show an older carb entry than your newest one, for example after an older entry was edited. The cause also affected the COB number itself; see BF-146. Fixed together with BF-146, not yet released. Check your treatment list for the time of your last carbs. This is not medical advice.
 
 **Why `patch`.** a display detail names the newest carb entry
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. Seen 2026-09-25 in the rc-soak (raw /api/v2/properties dumps, ticks 45 to 63) on 15.0.8, dev 4f705217, ab7b22d6 and e9dbb1fb. A unit test on cob.fromTreatments with an out-of-order carb list would be the gate.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'`
+  - BFQ-146's gate: the branch's v3 cache wrapper derives the v1 fields (official/dev 699eb5fa and v15.0.8 fail this). A presence check only; the "last carbs" test in tests/api3.cache-derived-fields.test.js decides (red on 699eb5fa and 92d08342, green on db99bba4). Point it at official/dev once merged.
+- **NO GATE** &mdash; The test needs MongoDB, so it is not a queue gate. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: a v3 write, then an edit of an older carb entry; "last carbs" names the older entry on v15.0.8 92d08342 and 699eb5fa, the newest on db99bba4.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/rc-soak/results/proof-2026-09-25.md`
+- `tools/lab/rc-soak/results/proof-2026-09-27.md`
 
-**Notes.** Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be 15.0.8 behaviour, not a 15.0.9 regression. Not for 15.0.9 unless the maintainer wants it; the fix is small.
+**Notes.** Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be 15.0.8 behaviour, not a 15.0.9 regression. 2026-09-26/27 - cause traced by RC run 019 (04a873ce): treatments written or edited through API v3 are held without mills (BF-146), so the sort is not in time order. 2026-09-26 - FIXED by BF-146's branch bf/api3-cache-derived-fields db99bba4 (local, not pushed). Ships with BFQ-146; no separate PR.
 
 ### `BFQ-141` &mdash; BF-141 - after #8780, a v1 treatment re-sent with an empty identity (identifier "") is stored twice (closed, superseded by #8781)
 
@@ -4949,6 +4955,40 @@ distinction is the only thing that makes the register mean anything - widening
 - `reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md`
 
 **Notes.** 2026-09-26 - MERGED into dev as 699eb5fa (#8783). Not released; goes into 15.0.9. Run 019 on 699eb5fa is the final-candidate run. 2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean. Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past 15.0.9 by the maintainer; the maintainer reversed that the same day (fix in 15.0.9). Present on dev since #8758's cb7d4110 (BF-117). 2026-09-26 - FIXED on bf/api3-delete-nonstring-identifier 1c3aeb8c (local, not pushed), one commit on official/dev ce7d754a (#8781's merge). The rule: the delete's _id fallback takes exactly the stored identifiers normalizeDoc shows as the _id. 18 of 30 new tests fail on ce7d754a (GET 200, then DELETE 404); break-its per clause all red. Full suite 3458/0/3 on a fresh database (ce7d754a: 3428/0/3). Arrays still answer 404, unlike 15.0.8: v3 GET shows them as stored, so they are the record's own identifier (BF-117, #8778); for the maintainer to confirm. Not changed: v3 PATCH and PUT by the _id of a record with a present but falsy identifier (identifyingFilter needs it absent): PATCH 404, PUT inserts a second record, the same on 15.0.8. PR body draft: reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md.
+
+### `BFQ-146` &mdash; BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/api3-cache-derived-fields` |
+| base | `official/dev@699eb5fa` |
+| worktree | `externals/work/crm-r4-fix-146` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-146`, `BF-133` |
+
+**Blast radius.** One commit at db99bba4. lib/api3/storage/mongoCachedCollection/index.js (updateInCache passes treatments through ddata.processRawDataForRuntime, the helper the v1 emitters in lib/server/treatments.js use, before the data-update event; entries and device status are passed on as before); tests/api3.cache- derived-fields.test.js (9 new tests). Nothing stored changes. GET /api/v1/treatments served from memory now carries mills (and endmills or a derived duration where the helper adds them) on v3 records too, as it already did on v1 records; order unchanged. v3 responses are unchanged.
+
+**What an operator sees.** Not yet released; the same problem is in 15.0.8. When an app that uses API v3 (for example AndroidAPS) uploaded a bolus or carb entry late, or edited an older one, Nightscout could leave it out of the insulin on board (IOB) and carbs on board (COB) it works out from treatments, in the server and in the browser, until the server restarted. The same cause could put treatments out of time order, which could make the COB number too high and make the "last carbs" line name an older entry. Where your app reports its own IOB and COB in device status, the pills show those values instead. This fix makes those records count and keeps the order. This is not medical advice; check numbers against the app that entered them and talk to your care team before relying on them.
+
+**Why `patch`.** treatments written through API v3 are held with the same derived time fields as v1 writes
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" bf/api3-cache-derived-fields -- lib/api3/storage/mongoCachedCollection/index.js'`
+  - The branch's v3 cache wrapper derives the v1 fields (official/dev 699eb5fa and v15.0.8 92d08342 do not mention the helper there and fail this). A presence check only; tests/api3.cache-derived-fields.test.js decides (7 of 9 red on 699eb5fa and 92d08342). Point it at official/dev once merged.
+- **NO GATE** &mdash; The behaviour is measured by booted-server tests that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43, fresh databases: on 92d08342 and 699eb5fa a late v3 bolus gives treatment IOB 0 and late v3 carbs COB 0 (also in the socket page data and after v3 PATCH/PUT), mixed v1/v3 writes load in reverse time order, "last carbs" names the older entry, and COB is 34.5 g where time order gives 10 g; all 9 pass on db99bba4. Controls (v1 bolus of the same age, v3 bolus dated now) pass on all three. Suite 3467/0/3 (699eb5fa 3458/0/3). Treatment probes unchanged.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/rc-soak/results/proof-2026-09-27.md`
+- `reports/phase0-pr-bodies/api3-cache-derived-fields.md`
+
+**Notes.** Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the IOB/COB omission was found while tracing it. Maintainer decision 2026-09-26: "fix as appropriate". 2026-09-26 - FIXED on bf/api3-cache-derived-fields db99bba4 (local, not pushed), one commit on official/dev 699eb5fa. Break-it: deriving and then dropping mills gives the same 7 red; deriving only on create gives the PATCH/PUT test red. same-time-carbs, same-time-resend-shapes, retry-keeps- srvcreated and v1-writes-v3-history give the same output on 699eb5fa and db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE arm on both). Left for a decision: GET /api/v1/devicestatus served from memory sorts a late v3 device status (no mills) after every other one, so it can be missing from the default read; passing device status through the same helper would change which records that read returns. PR body draft: reports/phase0-pr-bodies/api3-cache-derived- fields.md.
 
 ---
 
