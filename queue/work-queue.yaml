@@ -10573,6 +10573,42 @@ items:
     notes: >
       Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the
       maintainer's decision (2026-09-26). Not a regression from 15.0.8.
+  - id: BFQ-147
+    title: "BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@295f1177
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      package.json overrides ("ajv@^6.0.0" 6.12.6 -> 6.14.0, request >
+      form-data 2.5.5 -> 2.5.6) and package-lock.json, with a refresh of
+      browserslist, baseline-browser-mapping and postcss-selector-parser
+      inside their declared ranges: 10 lockfile versions, all patch or
+      minor, all build tooling or request internals. No lib/ change.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: dependency versions within declared ranges; no server or page behaviour change measured
+    register: [BF-147]
+    gates:
+      - no-gate: >
+          Run 2026-09-27 on a local uncommitted tree from 295f1177
+          (externals/work/crm-audit-exp): npm audit --package-lock-only
+          17 -> 7 (0 high); npm ci and the bundle build (webpack 5.106.2,
+          3 warnings); suite 3473/0/3 on Node 24.15.0 with MongoDB 7.0.43.
+          Needs node_modules and MongoDB, so not a queue gate.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Filed 2026-09-27 from the 15.0.9 npm audit triage. On v15.0.8 too.
+      Whether it goes into 15.0.9 is the maintainer's call; a lockfile
+      change re-anchors the 15.0.9 records. Retired on the modernization
+      line (rh/cut4 audits at 0).
   - id: RT-PR-8730
     title: "#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)"
     parcel: release-train

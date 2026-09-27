@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 171 |
+| items | 172 |
 | runnable gates | 240 |
-| explicit `no-gate:` markers | 225 |
+| explicit `no-gate:` markers | 226 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 225 of the 465 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 226 of the 466 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-147, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
@@ -110,6 +110,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-136** BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it
 - **BFQ-137** BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried
 - **BFQ-145** BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0
+- **BFQ-147** BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2038,7 +2039,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 88 items
+`parcel: register-open` &mdash; 89 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2118,6 +2119,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `merged-upstream` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
 | `BFQ-137` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -4519,6 +4521,37 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
+
+### `BFQ-147` &mdash; BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@295f1177` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-147` |
+
+**Blast radius.** package.json overrides ("ajv@^6.0.0" 6.12.6 -> 6.14.0, request > form-data 2.5.5 -> 2.5.6) and package-lock.json, with a refresh of browserslist, baseline-browser-mapping and postcss-selector-parser inside their declared ranges: 10 lockfile versions, all patch or minor, all build tooling or request internals. No lib/ change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** dependency versions within declared ranges; no server or page behaviour change measured
+
+**Gates.**
+
+- **NO GATE** &mdash; Run 2026-09-27 on a local uncommitted tree from 295f1177 (externals/work/crm-audit-exp): npm audit --package-lock-only 17 -> 7 (0 high); npm ci and the bundle build (webpack 5.106.2, 3 warnings); suite 3473/0/3 on Node 24.15.0 with MongoDB 7.0.43. Needs node_modules and MongoDB, so not a queue gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `releases/cgm-remote-monitor-15.0.9/contents.md`
+
+**Notes.** Filed 2026-09-27 from the 15.0.9 npm audit triage. On v15.0.8 too. Whether it goes into 15.0.9 is the maintainer's call; a lockfile change re-anchors the 15.0.9 records. Retired on the modernization line (rh/cut4 audits at 0).
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

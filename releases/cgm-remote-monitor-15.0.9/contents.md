@@ -300,9 +300,13 @@ branches, which are renumbered when they are rebased. Beside that:
    `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
    edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
    that was not checked in a browser.
-2. **The 24 to 72 h real-time soak and the `npm audit` triage** (17 findings: 1 low, 13 moderate,
-   3 high, the same as on `e3adc91d`) on `295f1177`. Run 020's compressed A/B soak against 15.0.8 is
+2. **The 24 to 72 h real-time soak** on `295f1177`. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
+   **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
+   the 17 findings (1 low, 13 moderate, 3 high), 10 are cleared by BF-147's fix (two override
+   values and a lockfile refresh, not on `dev`); the other 7 are a deliberate pin, legacy ingestion
+   and dev dependencies, all removed on the modernization line. **Owed:** whether BF-147 goes into
+   15.0.9, by the maintainer.
 3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
    against the stated rule that the changelog is generated at release time. See
@@ -317,6 +321,86 @@ tag body are drafted for `295f1177`.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
+
+## `npm audit` and Dependabot triage
+
+Measured 2026-09-27 on `official/dev` `295f1177` with `npm audit --package-lock-only` (npm 11.12.1,
+advisory data as of that day). Build tooling (webpack, its loaders, `browserslist`) is in
+`dependencies`, not `devDependencies`, because the bundle is built at install time (`postinstall`),
+so `--omit=dev` does not separate build-time from run-time packages.
+
+| tree | total | high | moderate | low |
+|---|---:|---:|---:|---:|
+| `v15.0.8` `92d08342` | 49 | 19 | 28 | 2 |
+| `dev` `295f1177` | 17 | 3 | 13 | 1 |
+| `dev` `295f1177` `--omit=dev` | 13 | 3 | 9 | 1 |
+| `295f1177` + BF-147's fix (local, uncommitted) | 7 | 0 | 7 | 0 |
+| `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
+| `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
+
+### Reading these counts
+
+A vulnerability count on its own does not say whether Nightscout is exposed. Each count above
+measures something narrower than it looks:
+
+- **One advisory is counted once for every package that depends on it.** `npm audit` reports a
+  finding for the vulnerable package and one for each package above it in the tree. On
+  `295f1177`, one `ajv` advisory accounts for 6 of the 17 findings, and one `request` advisory,
+  with the `form-data` and `uuid` advisories beneath it, accounts for 5.
+- **Build tools are counted as run-time packages.** The bundle is built at install time, so
+  webpack, its loaders and `browserslist` are in `dependencies`. Their findings (6 of the 17: `ajv`, `schema-utils`, `style-loader`, `browserslist`,
+  `baseline-browser-mapping`, `postcss-selector-parser`)
+  concern input those tools read from the repository's own configuration, not anything a
+  Nightscout site receives.
+- **An advisory counts whether or not Nightscout reaches the vulnerable code.** Both
+  `sanitize-html` advisories need an element the sanitizer's configuration does not allow, and
+  the `request` findings apply only when a legacy bridge is switched on.
+- **Dependabot measures the default branch, which is the last release.** Of its 80 open alerts,
+  68 are already fixed on `dev` and stay open until the release merges to `master`.
+- **Advisories arrive after the code ships.** `form-data` 2.5.6 was released on 2026-06-12, after
+  the 2.5.5 pin was written on 2026-05-10, so a count taken on a fixed tree rises without any
+  change to the code.
+
+What a count does show is the backlog to triage. The measured result for 15.0.9 is the table
+below: which findings reach a running site, and what is done about each.
+
+### The 17 findings on `295f1177`
+
+| finding | severity | class | reach in 15.0.9 | disposition |
+|---|---|---|---|---|
+| `ajv` 6.12.6 (GHSA-2g4f-4pwh-qvx6), with `har-validator`, `schema-utils`, `style-loader`, `eslint`, `@eslint/eslintrc` | moderate (6) | held by an override | build and lint time; `har-validator` inside `request` | **BF-147**: override to 6.14.0 |
+| `form-data` 2.5.5 under `request` (GHSA-hmw2-7cc7-3qxx) | high | held by an override | only through `request` (below); neither caller sends multipart | **BF-147**: override to 2.5.6 |
+| `browserslist` 4.28.2 (GHSA-c83g-rgw3-j3cx, GHSA-73wf-gq98-2v4g) | high | stale lockfile | build time; reads the repository's own configuration | lockfile refresh with BF-147 (4.29.1) |
+| `baseline-browser-mapping` 2.10.29 (GHSA-w5vr-8v7q-w6rv) | moderate | stale lockfile | build time | lockfile refresh with BF-147 (2.11.26) |
+| `postcss-selector-parser` 7.1.1 (GHSA-w9m9-85wc-3x92) | low | stale lockfile | build time (`css-loader`); the repository's own CSS | lockfile refresh with BF-147 (7.1.6) |
+| `sanitize-html` 2.17.5 (GHSA-g8qq-57p8-ggw5, GHSA-jxwj-j7wr-gfrw) | moderate | deliberate pin | server-side write sanitizer (`lib/server/purifier.js`) | **Not changed in 15.0.9.** 2.17.7 requires Node ≥22.12 and 15.0.9 supports Node 20 (`lib/server/purifier.js:38`). Both advisories need an element the configuration does not allow (SVG animation elements; `textarea`). Each advisory's published case was run through `purifier.purifyObject` on `295f1177` and came out with no markup left; `tests/security.test.js:359-382` locks the allow-list. Cut 2 takes 2.17.7 |
+| `request` 2.88.2 (GHSA-p8p7-x288-28g6), `uuid` (GHSA-w5hq-g745-h8pq; 3.4.0 under `request`, 8.3.2 under `istanbul-lib-processinfo`), `minimed-connect-to-nightscout`, `share2nightscout-bridge` | high (1), moderate (3) | legacy ingestion | loaded only when mmconnect is enabled or `DEXCOM_BRIDGE_USE_LEGACY=true` (`lib/server/bootevent.js`); both contact fixed vendor endpoints | **Not changed in 15.0.9.** No fixed `request` exists. Removed by retiring the legacy bridges on the modernization line (`rh/cut1-retire-legacy`, cut 4) |
+| `csv-parse` 4.16.3 (GHSA-8cw4-87c7-c6xx) | moderate | dev dependency | `tests/api3.renderer.test.js` parses the renderer's own output | **Not changed in 15.0.9.** The fix is 7.0.2, a major; cut 4 takes `^7.0.2` |
+| `istanbul-lib-processinfo` (through `uuid` 8.3.2) | moderate | dev dependency | coverage tooling (`nyc`) | **Not changed in 15.0.9.** Gone at cut 4 |
+
+What BF-147's fix changes, and what was run on it, is in the
+[register](../../docs/30-design/remedial/nightscout-backfix-register.md#bf-147--two-overrides-hold-ajv-and-requests-form-data-inside-advisory-ranges).
+In short: two override values and a refresh of three build-tool packages, 10 lockfile versions
+(patch or minor), `npm audit` 17 → 7, bundle builds, suite 3473/0/3 on one cell (Node 24.15.0,
+MongoDB 7.0.43). It is not on `dev`. Taking it into 15.0.9 changes the lockfile, so the figures
+anchored on `295f1177` would be re-measured.
+
+### Dependabot
+
+Dependabot's 80 open alerts on `nightscout/cgm-remote-monitor` (2026-09-27) are measured against
+the default branch, `master` (`v15.0.8` `92d08342`). Each alert's vulnerable range was checked
+against every version of that package in both lockfiles:
+
+- **68 are fixed on `dev` `295f1177`**: axios 22, dompurify 10, js-yaml 7, fast-uri 6,
+  brace-expansion 5, ip-address 3, qs 3, ws 3, nanoid 2, postcss 2, and one each for
+  socket.io-parser, d3-color, body-parser, @babel/core and form-data (the 4.x copy). They close
+  when #8598 merges to `master`.
+- **12 remain on `dev`**, all packages in the table above: sanitize-html 2, csv-parse 2 (the
+  manifest and the lockfile), browserslist 2, and one each for baseline-browser-mapping,
+  postcss-selector-parser, form-data (the 2.x copy under `request`), uuid, ajv and request.
+- Every alert matches a version on `master`; none is stale.
+
+No Dependabot pull request is open (2026-09-27).
 
 ## Known test gaps
 
