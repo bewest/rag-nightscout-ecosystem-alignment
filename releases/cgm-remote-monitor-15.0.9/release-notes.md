@@ -372,7 +372,8 @@ expected to act) and **carbs on board** (COB: carbs not yet expected to be absor
 treatments it holds in memory. When AndroidAPS, or another app using API version 3, sent a bolus or
 carb entry **late** (dated more than about 15 minutes before it reached Nightscout, for example
 after the phone had been offline), or **changed an older entry**, Nightscout could leave that entry
-out of its own IOB and COB, on the server and in the browser, until the server restarted. The same
+out of its own IOB and COB, on the server and in the browser, until the server restarted (without
+a restart, the entry was never counted). The same
 cause could put treatments out of time order. That could make Nightscout's COB **too high**,
 because carbs that should already have been absorbed were counted again, and could make the "last
 carbs" line under the COB pill name an older entry instead of the newest one.
