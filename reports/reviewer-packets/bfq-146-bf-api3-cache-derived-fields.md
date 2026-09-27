@@ -29,19 +29,23 @@ out of time order**
 
 ## What this changes
 
-One commit at db99bba4. lib/api3/storage/mongoCachedCollection/index.js
-(updateInCache passes treatments through ddata.processRawDataForRuntime, the
-helper the v1 emitters in lib/server/treatments.js use, before the data-update
-event; entries and device status are passed on as before); tests/api3.cache-
-derived-fields.test.js (9 new tests). Nothing stored changes. GET
-/api/v1/treatments served from memory now carries mills (and endmills or a
-derived duration where the helper adds them) on v3 records too, as it already
-did on v1 records; order unchanged. v3 responses are unchanged.
+Two commits, head d235bdf6 (db99bba4 treatments, d235bdf6 device status).
+lib/api3/storage/mongoCachedCollection/index.js (updateInCache passes
+treatments and device status through ddata.processRawDataForRuntime, the
+helper the v1 emitters in lib/server/treatments.js and
+lib/server/devicestatus.js use, before the data-update event; entries are
+passed on as before); tests/api3.cache-derived-fields.test.js (15 new tests).
+Nothing stored changes. GET /api/v1/treatments served from memory now carries
+mills (and endmills or a derived duration where the helper adds them) on v3
+records too, as it already did on v1 records; order unchanged. GET
+/api/v1/devicestatus served from memory now places a v3 status by time
+(before, one without mills sorted last and could fall outside the count) and
+shows its mills. v3 responses are unchanged.
 
 ## Why that semver
 
-treatments written through API v3 are held with the same derived time fields
-as v1 writes
+treatments and device status written through API v3 are held with the same
+derived time fields as v1 writes
 
 ## What an operator would notice
 
@@ -53,9 +57,11 @@ as v1 writes
 > treatments out of time order, which could make the COB number too high and
 > make the "last carbs" line name an older entry. Where your app reports its
 > own IOB and COB in device status, the pills show those values instead.
-> This fix makes those records count and keeps the order. This is not
-> medical advice; check numbers against the app that entered them and talk
-> to your care team before relying on them.
+> This fix makes those records count and keeps the order. A late device
+> status from such an app is also now listed in its place by time when
+> another app reads the latest device statuses. This is not medical advice;
+> check numbers against the app that entered them and talk to your care team
+> before relying on them.
 
 ## Who should review this, and why
 
@@ -67,7 +73,7 @@ maintainer
 
 The branch's v3 cache wrapper derives the v1 fields (official/dev 699eb5fa and
 v15.0.8 92d08342 do not mention the helper there and fail this). A presence
-check only; tests/api3.cache-derived-fields.test.js decides (7 of 9 red on
+check only; tests/api3.cache-derived-fields.test.js decides (10 of 15 red on
 699eb5fa and 92d08342). Point it at official/dev once merged.
 
 ## What these gates do NOT prove
@@ -79,10 +85,14 @@ check only; tests/api3.cache-derived-fields.test.js decides (7 of 9 red on
   databases: on 92d08342 and 699eb5fa a late v3 bolus gives treatment IOB 0
   and late v3 carbs COB 0 (also in the socket page data and after v3
   PATCH/PUT), mixed v1/v3 writes load in reverse time order, "last carbs"
-  names the older entry, and COB is 34.5 g where time order gives 10 g; all
-  9 pass on db99bba4. Controls (v1 bolus of the same age, v3 bolus dated
-  now) pass on all three. Suite 3467/0/3 (699eb5fa 3458/0/3). Treatment
-  probes unchanged.
+  names the older entry, and COB is 34.5 g where time order gives 10 g; a
+  late v3 device status is missing from the default GET /api/v1/devicestatus
+  served from memory (last instead of first in the whole held set, also with
+  DENORMALIZE_DATES); all 15 pass on d235bdf6. Controls (v1 bolus of the
+  same age, v3 bolus dated now, v1 status of the same age, v3 status dated
+  now, the page's device status) pass on all three. Suite 3473/0/3 (699eb5fa
+  3458/0/3, db99bba4 3467/0/3). Treatment probes unchanged on 699eb5fa,
+  db99bba4 and d235bdf6.
 
 ## Evidence
 
@@ -99,12 +109,16 @@ appropriate". 2026-09-26 - FIXED on bf/api3-cache-derived-fields db99bba4
 and then dropping mills gives the same 7 red; deriving only on create gives
 the PATCH/PUT test red. same-time-carbs, same-time-resend-shapes, retry-keeps-
 srvcreated and v1-writes-v3-history give the same output on 699eb5fa and
-db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE arm on both). Left for
-a decision: GET /api/v1/devicestatus served from memory sorts a late v3 device
-status (no mills) after every other one, so it can be missing from the default
-read; passing device status through the same helper would change which records
-that read returns. PR body draft: reports/phase0-pr-bodies/api3-cache-derived-
-fields.md.
+db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE arm on both). PR body
+draft: reports/phase0-pr-bodies/api3-cache-derived-fields.md. 2026-09-26
+(maintainer): extend the fix to device status for consistency. Second commit
+d235bdf6 on the same branch (not pushed): device status goes through the same
+helper. The only change to the in-memory v1 read is placement: the same
+records for the whole held set, the late v3 status first instead of last, so
+for a smaller count it is now inside the window. Dataloader, pills and page
+data unchanged (they already derived mills). Entries measured and left as they
+are. 6 new tests (3 red on 699eb5fa, 92d08342 and db99bba4); break-its red;
+suite 3473/0/3; the four probes unchanged against db99bba4.
 
 ---
 

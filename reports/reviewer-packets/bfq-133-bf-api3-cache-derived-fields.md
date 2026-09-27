@@ -85,8 +85,8 @@ Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be 15.0.8
 behaviour, not a 15.0.9 regression. 2026-09-26/27 - cause traced by RC run 019
 (04a873ce): treatments written or edited through API v3 are held without mills
 (BF-146), so the sort is not in time order. 2026-09-26 - FIXED by BF-146's
-branch bf/api3-cache-derived-fields db99bba4 (local, not pushed). Ships with
-BFQ-146; no separate PR.
+branch bf/api3-cache-derived-fields db99bba4 (local, not pushed; branch head
+d235bdf6 after the device status commit). Ships with BFQ-146; no separate PR.
 
 ---
 

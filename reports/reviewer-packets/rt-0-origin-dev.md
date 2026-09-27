@@ -148,26 +148,27 @@ dev descends from master with no divergence to reconcile
 ## Notes carried on the item
 
 2026-09-26 (maintainer: "fix as appropriate"): BF-146, found by RC run 019's
-trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields db99bba4
-(on official/dev 699eb5fa, ready-to-push, not pushed); BFQ-146 is added to
-blocks_on and is not merged-upstream. The same branch fixes BF-133 (BFQ-133).
-Same code on 15.0.8, not a regression. 2026-09-26 (maintainer): BF-141, a
-regression from #8780 found in the review of #8778, is fixed for 15.0.9
-(BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push); BF-142 is
-after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is not
-merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later): BF-142 is
-fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-identifier
-1c3aeb8c on official/dev ce7d754a, ready-to-push), and BFQ-142 is added to
-blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91; BF-141,
-BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces BFQ-141
-(closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498 commits
-and 82 first-parent merges ahead of master; release PR #8598 at ce7d754a, 27
-checks green, 3 skipped, APPROVED. Measured 2026-09-26 after fetching
-official: dev is ff93fa94 (merge of #8780) and declares 15.0.9. master is
-92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges ahead, 0
-behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order: #8771
-(BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989), #8774
-(BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136,
+trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields
+db99bba4, extended to device status by d235bdf6 (maintainer, same day, for
+consistency; on official/dev 699eb5fa, ready-to-push, not pushed); BFQ-146 is
+added to blocks_on and is not merged-upstream. The same branch fixes BF-133
+(BFQ-133). Same code on 15.0.8, not a regression. 2026-09-26 (maintainer):
+BF-141, a regression from #8780 found in the review of #8778, is fixed for
+15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push);
+BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is
+not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later):
+BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-
+identifier 1c3aeb8c on official/dev ce7d754a, ready-to-push), and BFQ-142 is
+added to blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91;
+BF-141, BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces
+BFQ-141 (closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498
+commits and 82 first-parent merges ahead of master; release PR #8598 at
+ce7d754a, 27 checks green, 3 skipped, APPROVED. Measured 2026-09-26 after
+fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9.
+master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges
+ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order:
+#8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989),
+#8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136,
 13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80,
 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94).
 Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3
