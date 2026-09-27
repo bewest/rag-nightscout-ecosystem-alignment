@@ -19,10 +19,7 @@ Four states qualify:
 | `unsettled` | not yet established that this is a defect at all |
 
 `merged-upstream` items do not appear here. They need no person individually; what
-they need is a release, and that is one item — `RT-0` — which is listed. This
-project's last 100 child pull requests were merged with zero human reviews, so an
-item leaving `in-flight-upstream` for `merged-upstream` is not by itself evidence
-that it was reviewed.
+they need is a release, and that is one item — `RT-0` — which is listed.
 
 ---
 

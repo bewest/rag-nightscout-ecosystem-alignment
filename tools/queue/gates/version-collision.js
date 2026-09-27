@@ -7,10 +7,9 @@
  * declares engines.node ">=20.x" and every cut declares "^22.23.2 || ^24.20.0".
  *
  * Two artefacts that will not run on the same Node, claiming the same version
- * string. One of them also deletes two CGM ingestion paths. Given that all 100
- * child PRs in this stack were self-merged with zero human reviews, the version
- * number is the only warning an operator gets before installing, and right now
- * it does not distinguish them. "My 15.0.9 won't start" cannot be triaged.
+ * string. One of them also deletes two CGM ingestion paths. The version number
+ * is the first thing an operator checks before installing, and right now it does
+ * not distinguish them. "My 15.0.9 won't start" cannot be triaged.
  *
  * FAILS while any two refs share a version string but disagree on engines.node.
  */

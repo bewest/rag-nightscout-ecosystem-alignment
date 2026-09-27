@@ -5,11 +5,10 @@
 
 WHY A PACKET AND NOT "PLEASE REVIEW"
 
-This project's last 100 child pull requests were merged with zero human reviews.
 Asking somebody to "review Phase 0" asks them to first reconstruct which of ten
 branches are coupled, what the register says about each defect, which evidence
 document backs which claim, and which gates ran. That is hours of work before
-the first line of diff, and it is why the ask has not been taken up.
+the first line of diff.
 
 A packet turns it into a bounded task: one PR, what changed, what was measured,
 and — the part that matters most — **what the measurement does not cover**.

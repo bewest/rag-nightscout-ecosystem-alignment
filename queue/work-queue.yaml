@@ -138,7 +138,7 @@ items:
       with any other Phase 0 branch.
     review: >
       maintainer, plus one reviewer who has never merged their own PR in this
-      stack (the governance finding - 100 self-merged PRs, zero human reviews).
+      stack.
       PR #8739 merged into dev on 2026-09-20; not released. Two behaviour changes
       a reviewer of the release should know: it starts an alarm that has never
       fired in any deployment, with no grace period, and it removes per-request
@@ -2171,8 +2171,7 @@ items:
       - 2026-09-23 (maintainer): each cut is renumbered when it is
       rebased; see releases/cgm-remote-monitor-15.0.9/decisions.md.
 
-      Given the governance gap (100 self-merged PRs, zero human reviews)
-      the version number is the only warning an operator gets, so builds
+      The version number is the first thing an operator checks, so builds
       that differ must not share one.
 
   - id: RT-COUNT0

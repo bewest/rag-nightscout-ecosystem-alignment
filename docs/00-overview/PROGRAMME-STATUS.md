@@ -225,10 +225,8 @@ is a standing rule. Pushing to cgm-remote-monitor's `dev` or `master` fires
 `master` are publication events, not branches**. A release is three separate human
 decisions: merge the code, push the tag, publish the package.
 
-**2. Review capacity is one person.** This is a governance fact rather than a
-technical one: all 495 modernization commits have one author, and all 100 child pull
-requests were self-merged with zero human reviews. Confidence currently rests on
-automated gates and the author's own evidence documents.
+**2. Review routes to the maintainer.** The modernization commits have one author, so
+each cut needs a reviewer other than its author before it reaches `dev`.
 
 Where the queue says each item's review has to come from:
 

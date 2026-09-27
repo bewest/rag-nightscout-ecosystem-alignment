@@ -7,10 +7,10 @@ cgm-remote-monitor `origin/dev` `ce7d754a` and `origin/master` `92d08342` (tag
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
 
-> This project has **495 modernization commits by one author** and **100 child pull
-> requests merged with zero human reviews**. Confidence in all of it currently rests
-> on automated gates and the author's own evidence documents. That is the gap you
-> would be filling, and it is the largest risk the programme carries.
+> The modernization work reached `chore/nightscout-modernization` through 100 child pull
+> requests from one author. Before any of it reaches `dev`, each cut needs a reviewer
+> other than its author. That is the review you would be doing; the gates and evidence
+> documents are there to keep each review bounded.
 
 ## What you are looking at, and what it is not
 
