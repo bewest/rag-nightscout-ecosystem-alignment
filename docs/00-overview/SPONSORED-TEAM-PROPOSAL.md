@@ -119,6 +119,31 @@ What they have in common:
 - The smallest organisations that pay for code (Zig, the PSF residencies) spend almost all of it on
   engineering work and very little on administration.
 
+## 6a. More than one server
+
+Nightscout is no longer the only server that speaks its API. Nocturne
+([`nightscout/nocturne`](https://github.com/nightscout/nocturne)) is a second implementation, in
+.NET with PostgreSQL. xDrip+ ships an uploader for it
+([adoption roadmap](../30-design/nightscout-adoption-roadmap-2026-09-11.md)). Its typed event model
+has been used as a reference in this repository's own data-model work
+([primitive coverage](../30-design/platform/nightscout-primitive-coverage-2026-09-11.md)).
+
+A second server makes this proposal more necessary, not less:
+
+- **Client apps depend on behaviour, not on which server provides it.** On 2026-09-23 Nocturne
+  (`42275c81`, v0.2.x) matched the 15.0.9 candidate on the count and filter fixes, and differed on
+  eight measured behaviours ([consumer impact §6](../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md#6-nocturne-parity)).
+  Its parity suite runs against Nightscout 15.0.3. A shared, current description of the API and a
+  test suite that any server can run keep the apps working on both. This is the WHATWG pattern in §6:
+  several implementations, one living standard, and shared tests.
+- **The existing sites still need maintenance.** Operators run cgm-remote-monitor on MongoDB today,
+  with its own settings, data and hosting. Moving to another server is a migration each operator
+  chooses. Until they choose it, their site needs the releases, security fixes and driver upgrades
+  described in §2.
+- **The roles in §4 serve the whole ecosystem.** The compatibility engineer and the quality and
+  security lead would keep the client census, the conformance tests and the security triage open to
+  every implementation.
+
 ## 7. Options
 
 | option | what it is | first-year cost | trade-off |
