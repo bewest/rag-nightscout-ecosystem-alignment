@@ -3,9 +3,16 @@
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
 cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
-and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 the vendor-change table in §6a, the dated-work paragraph in §2 and the OpenStreetMap and SQLite rows in §6 were added 2026-09-29. Where it touches employment, contracting, tax or
+and `official/dev` `7000eb18` (the merge of #8786) the same day. Added 2026-09-29: the cross-project
+release and contributor figures and the dated-work paragraph in §2, the OpenStreetMap and SQLite rows
+in §6, and the vendor-change table in §6a. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
+
+*Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
+Nightscout commercially, and could be a candidate for paid work under this proposal. The
+[collaboration rules](COLLABORATION-MODEL.md) §5 would apply to that company and to the author like
+anyone else.*
 
 ## 1. The request
 

@@ -6,9 +6,9 @@ Written 2026-09-29 against this repository at `2c19f61d`. Where it touches confl
 partner agreements, trademarks or regulatory status, it needs review by the foundation's counsel
 before any decision rests on it (§8). Nothing here is decided.*
 
-*[To confirm before this is shared: the author's disclosure. The author maintains cgm-remote-monitor
-and founded a company that hosts Nightscout commercially; §5's partner and listing rules would apply
-to that company like any other.]*
+*Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
+Nightscout commercially, and could be a candidate for paid work under the sponsored-team proposal.
+The rules in §5 would apply to that company and to the author like anyone else.*
 
 ## 1. The request
 
@@ -140,7 +140,11 @@ What transfers, and what does not:
    project's maintainers keep the merge decision.
 3. **Providers are listed neutrally.** Where the foundation or a project lists hosting providers or
    services, it lists every provider that meets published criteria, in alphabetical or random
-   order, and endorses none (CNCF, OpenStreetMap).
+   order, and endorses none (CNCF, OpenStreetMap). The Nightscout documentation already lists eight
+   hosted providers, each linking to its own site for pricing, with no purchase on the documentation
+   domain ([docs home](https://nightscout.github.io/), `docs/index.md` at `9b5afad2`, 2026-08-07).
+   The list is not in alphabetical order; under this rule it would be, and T1Pal, the author's
+   company, would no longer be listed first.
 4. **Contributions are recognised by organisation, every year.** A yearly public report of what
    each organisation contributed (code, review, infrastructure, money, test devices) at published
    levels (OpenMRS). Commercial success then shows up as help to the commons.
