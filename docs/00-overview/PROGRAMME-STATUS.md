@@ -1,6 +1,6 @@
 # Programme status — cgm-remote-monitor
 
-*Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
+*Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
 Prose revised 2026-09-27 against cgm-remote-monitor `origin/dev` `295f1177` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*

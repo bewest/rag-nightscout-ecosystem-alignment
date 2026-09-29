@@ -1,6 +1,6 @@
 # Roadmap — what comes next, and in what order
 
-*Maintained by the Nightscout Foundation. Contributor-facing. Living document: prose dated
+*Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
 2026-09-27 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
@@ -16,7 +16,9 @@ live in these places, and this page links to them:
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 
 For where things stand, see [PROGRAMME-STATUS](PROGRAMME-STATUS.md). For which decisions are
-waiting on a person, see [NEEDS-A-HUMAN](NEEDS-A-HUMAN.md).
+waiting on a person, see [NEEDS-A-HUMAN](NEEDS-A-HUMAN.md). For how this work fits with the
+shared schemas, identity, research commons and new interfaces across the ecosystem, see
+[ECOSYSTEM-PROGRAMME](ECOSYSTEM-PROGRAMME.md).
 
 **How to read the order tables.** An item's *wave* comes from the blockers it is still waiting
 on. An item waiting on nothing that is still open is wave 1. Any other item is one wave later
