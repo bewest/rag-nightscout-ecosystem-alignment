@@ -3,7 +3,7 @@
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
 cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
-and `official/dev` `7000eb18` (the merge of #8786) the same day. Where it touches employment, contracting, tax or
+and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 were added 2026-09-29. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
 
@@ -27,7 +27,9 @@ survey mapped 40 client repositories against 15 parts of the API
 AndroidAPS, xDrip+, caregiver apps, watch faces and reporting tools all rely on how the server
 actually behaves. A change there reaches every one of them.
 
-**Releases have come in long gaps.** Tag dates in cgm-remote-monitor (`git tag --sort=creatordate`):
+**Releases have come in long gaps, here and across the ecosystem.** The other main projects have had
+gaps of the same length in the same years, and in cgm-remote-monitor the contributors left before
+releases slowed (both below). Tag dates in cgm-remote-monitor (`git tag --sort=creatordate`):
 
 | release | tagged | days since the previous release |
 |---|---|---:|
@@ -45,6 +47,44 @@ opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged
 in 15.0.7 on 2026-04-29 (`mongodb` `^3.6.0` → `^5.9.2`). #7344 was closed as superseded on
 2026-05-01. Hosting providers retire old database versions on their own schedule, so a site's
 database driver is not optional maintenance.
+
+**The same long waits appear across the ecosystem.** Longest gaps between stable GitHub releases in
+the main projects (`gh api repos/<owner>/<repo>/releases`, measured 2026-09-29):
+
+| project | longest gaps between stable releases | recent releases |
+|---|---|---|
+| cgm-remote-monitor | 383 days (2022–23), 561 (2023–25), 296 (2025–26), from the tag table above | 5 in 2026 |
+| AndroidAPS | 443 days (Aug 2022–Oct 2023), 306 (Feb–Dec 2024) | 6 in 2025, 8 in 2026 |
+| Loop | 323 days (2020–21), 284 (2022–23), 297 (2023–24) | 15 since April 2025, now published from LoopWorkspace |
+| Trio | 255 days (Aug 2025–Apr 2026) | 8 in 2026, including 1.0 |
+| xDrip+ | 422 days (2019–20), 234 (2024–25) | pre-release builds at least every 45 days since 2016 |
+| oref0 | 951 days (2019–22); none since v0.7.1 in June 2022 | its algorithm is now maintained inside AndroidAPS and Trio |
+
+Commits / distinct author emails per year (all branches, merge commits and bots excluded, from this
+workspace's clones fetched 2026-09-09 to 2026-09-23, so 2026 is partial; Loop is the Loop app plus
+LoopKit; Trio is left out because its history before 2024 is FreeAPS X's):
+
+| project | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| cgm-remote-monitor | 440/49 | 310/47 | 193/34 | 220/18 | 67/14 | 169/16 | 50/11 | 115/13 | 1050/27 |
+| AndroidAPS | 1993/50 | 1465/42 | 1653/42 | 2041/32 | 1531/34 | 1563/36 | 566/24 | 916/33 | 2944/28 |
+| Loop + LoopKit | 114/6 | 275/16 | 757/21 | 327/8 | 360/25 | 516/25 | 425/12 | 442/17 | 324/13 |
+| xDrip+ | 1217/28 | 832/18 | 402/17 | 791/23 | 832/17 | 640/16 | 480/13 | 408/19 | 521/16 |
+
+In cgm-remote-monitor the number of people committing fell first, from 47 in 2019 to 18 in 2021 and
+11 in 2024; the years of one release a year followed. AndroidAPS's lowest year, 2024, is also the
+year of its 306-day gap. Loop's commits held steady through its gaps, which suggests its waits were
+on testing and release rather than on code. The 2026 cgm-remote-monitor figure includes
+agent-written commits (§3).
+
+Dates do not show causes. Several gaps coincide with large rewrites and with Apple and Google
+platform changes. xDrip+ could not be built with current Android tools from September 2019 to
+December 2020 ([#1012](https://github.com/NightscoutFoundation/xDrip/issues/1012)), because of
+toolchain changes the project did not control. What the record shows is that every main project has
+had the same long waits, and that most of them released more often in 2025–26 as capacity returned.
+A gap in one project's history, read on its own, says little about the diligence of the people who
+maintain it. Set beside the others and the contributor counts, it reads as the same work carried by
+fewer people. Each project's maintainers are the right people to say what held their releases (§9).
 
 **2026 shows what steady attention produces.** Five releases so far this year. For 15.0.9 alone
 ([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md), measured on `295f1177`): 85 pull requests
@@ -197,6 +237,8 @@ For the maintainers:
 
 8. Whether the three roles in §4 are the right ones.
 9. Whether the success measures in §8 are the right ones.
+10. For the AndroidAPS, Loop, Trio and xDrip+ maintainers: whether §2's release gaps and
+    contributor counts describe their projects fairly, and what held their releases.
 
 Assumptions this draft makes:
 
