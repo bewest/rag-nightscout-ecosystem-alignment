@@ -3,7 +3,7 @@
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
 cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
-and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 and the vendor-change table in §6a were added 2026-09-29. Where it touches employment, contracting, tax or
+and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 the vendor-change table in §6a, the dated-work paragraph in §2 and the OpenStreetMap and SQLite rows in §6 were added 2026-09-29. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
 
@@ -86,6 +86,12 @@ A gap in one project's history, read on its own, says little about the diligence
 maintain it. Set beside the others and the contributor counts, it reads as the same work carried by
 fewer people. Each project's maintainers are the right people to say what held their releases (§9).
 
+**Much of the coming work is already dated.** Between now and the end of 2027 the ecosystem meets
+Apple's medical-device status declaration (early 2027) and Xcode 27 upload requirement (April 2027),
+Android developer verification for all installations (2027), Node 22 and Heroku-22 end of life on
+the same day (2027-04-30), and MongoDB 7.0 end of life (2027-08-31), each on the vendor's calendar,
+not a volunteer's ([collaboration model §3](COLLABORATION-MODEL.md#3-needs-we-can-predict)).
+
 **2026 shows what steady attention produces.** Five releases so far this year. For 15.0.9 alone
 ([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md), measured on `295f1177`): 85 pull requests
 merged in 23 days, 146 defects filed and 87 of the 122 in scope closed, and the full test suite grown
@@ -154,6 +160,8 @@ Figures are for the year shown. Re-check each against its source before quoting 
 | [W3C](https://www.w3.org/about/) (US 501(c)(3) since 2023) | mainly membership dues: FY2024 revenue $8.71M ([990](https://projects.propublica.org/nonprofits/organizations/844023862)); 335+ members | about 50 staff who coordinate and edit; members' employees do the technical work | a board, an advisory board, a technical architecture group; working groups decide by consensus | stable staff funding, but the overhead suits many paying members, not a small community |
 | [PSF Developers-in-Residence](https://www.python.org/psf/developersinresidence/) (Python) | each seat paid for by a named sponsor; the first began in July 2021 ([announcement](https://pyfound.blogspot.com/2021/07/ukasz-langa-is-inaugural-cpython.html)) | four residents today; the work is triage, reviews, build monitoring and security response in support of the volunteer core team | the core developers and their elected steering council | the nearest model to §4's roles: paid people doing the review and release work volunteers find hardest to sustain. Each seat lasts only as long as its sponsor |
 | [Sovereign Tech Fellowship](https://www.sovereign.tech/programs/fellowship) (German federal funding) | public money, competitive | up to 12 fellows, freelance or employed (up to three two-year posts at €64k–€82k a year), working on their own projects | the fellows' own projects | a possible grant source for option C; it supplements a plan, it cannot anchor one |
+| [OpenStreetMap Foundation](https://osmfoundation.org/wiki/Strategic_Plan) | donations and memberships | "Given that volunteer work has not proven to be sufficient in the past, support through paid development is necessary" for the core software ([strategic plan](https://osmfoundation.org/wiki/Strategic_Plan)); its scope is "needs that require an organization, and gaps that can not be filled by OSM's volunteer driven community" ([mission](https://osmfoundation.org/wiki/Mission_Statement)) | an elected board; it offers no commercial services and endorses no company | the same reasoning as §3: pay for the gaps volunteers cannot fill, and stay neutral among the companies that build on the commons |
+| [SQLite](https://sqlite.org/consortium.html) (public domain; developers employed by Hwaci) | companies buy assurance: consortium membership ($150K a year on the [support page](https://sqlite.org/prosupport.html)), support contracts, test runs in the customer's configuration | a small fulltime team; every release is tested to 100% MC/DC coverage ([TH3](https://sqlite.org/th3.html)) | "technical control and direction of SQLite remains with the SQLite architect and developers" | companies with their own quality and legal obligations will pay for evidence, fixes on the line they run and a support horizon, not for control. Its closed-contribution policy does not fit a community project ([collaboration model §4a](COLLABORATION-MODEL.md#4a-sqlite-paying-for-assurance-not-control)) |
 
 What they have in common:
 
@@ -161,6 +169,8 @@ What they have in common:
 - Money tied to one sponsor or a few donors is the usual weak point.
 - The smallest organisations that pay for code (Zig, the PSF residencies) spend almost all of it on
   engineering work and very little on administration.
+- Companies that build on the commons pay for work and assurance, not for control (OpenStreetMap,
+  SQLite). The rules that would keep it so here are in [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5.
 
 ## 6a. More than one server
 

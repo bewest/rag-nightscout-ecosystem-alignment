@@ -18,7 +18,10 @@ live in these places, and this page links to them:
 For where things stand, see [PROGRAMME-STATUS](PROGRAMME-STATUS.md). For which decisions are
 waiting on a person, see [NEEDS-A-HUMAN](NEEDS-A-HUMAN.md). For how this work fits with the
 shared schemas, identity, research commons and new interfaces across the ecosystem, see
-[ECOSYSTEM-PROGRAMME](ECOSYSTEM-PROGRAMME.md).
+[ECOSYSTEM-PROGRAMME](ECOSYSTEM-PROGRAMME.md). For who would do the work nobody is paid for, see the
+[sponsored-team proposal](SPONSORED-TEAM-PROPOSAL.md); for the rules the ecosystem's parties would
+work together under, and the dated work other organisations' calendars will bring, see
+[COLLABORATION-MODEL](COLLABORATION-MODEL.md).
 
 **How to read the order tables.** An item's *wave* comes from the blockers it is still waiting
 on. An item waiting on nothing that is still open is wave 1. Any other item is one wave later

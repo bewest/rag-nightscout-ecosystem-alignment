@@ -196,7 +196,9 @@ recorded decision.
 
 1. Which layers the foundation takes on as stewardship, and which it leaves to the projects.
 2. How a proposal for any layer is submitted, reviewed and answered, and where decisions are
-   published.
+   published. [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5 proposes rules for this and for
+   contributions, provider listings and disclosure, each borrowed from an organisation that uses
+   it (Apache, CNCF, OpenStreetMap, OpenMRS, SQLite; §4 there).
 3. Whether to take the datalake pilot and the sponsored team as separate decisions or as one
    programme with shared reporting.
 
@@ -204,7 +206,8 @@ recorded decision.
 
 4. Whether the five layers are the right cut, and which shared assets are missing.
 5. Whether the WHATWG pattern (one living description and shared tests) is acceptable to each
-   server's maintainers.
+   server's maintainers, with contract changes through a recorded problem-report and change-request
+   process like openEHR's ([COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5, rule 5).
 
 **For counsel, and for privacy and quality professionals:**
 
