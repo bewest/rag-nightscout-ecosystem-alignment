@@ -18,7 +18,7 @@ for. This page proposes **the rules for working together** that both depend on, 
 volunteers, app projects, second servers, commercial hosts and researchers can each contribute
 without any of them gaining control of what the others rely on.
 
-It asks for five decisions (§7). Each borrows a rule another open-source organisation already
+It asks for six decisions (§7). Each borrows a rule another open-source organisation already
 uses (§4), and each answers a need measured in this repository or dated on a vendor's calendar (§3).
 
 ## 2. Who takes part, and what each needs
@@ -138,13 +138,27 @@ What transfers, and what does not:
    welcome from anyone, on published terms that are the same for everyone. No contribution buys a
    say over what a project merges or what the shared contract says (Apache, OpenStreetMap). Each
    project's maintainers keep the merge decision.
-3. **Providers are listed neutrally.** Where the foundation or a project lists hosting providers or
-   services, it lists every provider that meets published criteria, in alphabetical or random
-   order, and endorses none (CNCF, OpenStreetMap). The Nightscout documentation already lists eight
-   hosted providers, each linking to its own site for pricing, with no purchase on the documentation
-   domain ([docs home](https://nightscout.github.io/), `docs/index.md` at `9b5afad2`, 2026-08-07).
-   The list is not in alphabetical order; under this rule it would be, and T1Pal, the author's
-   company, would no longer be listed first.
+3. **Providers are listed neutrally, and payment links say who is paid.** Where the foundation or
+   a project lists hosting providers or services, it lists every provider that meets published
+   criteria, endorses none (CNCF, OpenStreetMap), and labels any provider run by the project's own
+   maintainers or founders as such. The order is set by published criteria and chosen by people
+   without a stake in the result: alphabetical, rotating, or by the contribution levels of rule 4.
+   Wherever a project's documentation asks for money (a subscription, a donation, a purchase), it
+   names who receives it, and money described as going to the foundation goes to a foundation
+   account.
+
+   Both servers' documentation already does part of this:
+
+   - Nightscout's lists eight hosted providers, each linking to its own site for pricing, with no
+     purchase on the documentation domain ([docs home](https://nightscout.github.io/), `docs/index.md`
+     at `9b5afad2`, 2026-08-07). It publishes no listing criteria, and its order follows no stated
+     rule; T1Pal, the author's company, is listed first.
+   - Nocturne's lists managed instances in a random order on every page load, publishes what a
+     provider must supply to be listed, and labels its one entry, nocturne.run, as "the official
+     managed Nocturne instance, run by the creator of the project" ([installation
+     guide](https://github.com/nightscout/nocturne/blob/main/src/Web/packages/portal/src/routes/docs/installation/%2Bpage.svelte),
+     `eba84e58`). Its documentation pages also carry monthly support subscriptions described as going
+     to the Nightscout Foundation.
 4. **Contributions are recognised by organisation, every year.** A yearly public report of what
    each organisation contributed (code, review, infrastructure, money, test devices) at published
    levels (OpenMRS). Commercial success then shows up as help to the commons.
@@ -183,15 +197,18 @@ What transfers, and what does not:
    maintainers, paid staff and partners (counsel, §8).
 3. Decide whether to offer a partner programme under rules 2–4 and 8, and what a partner
    contributes and receives.
+4. Under rule 3, who sets the criteria and the order for provider listings in foundation-stewarded
+   documentation, and how payment links that name the foundation are confirmed to reach a
+   foundation account.
 
 **For the maintainers of each project:**
 
-4. Whether rules 5–7 are acceptable to your project, and which of §3's dates your project wants
+5. Whether rules 3 and 5–7 are acceptable to your project, and which of §3's dates your project wants
    shared preparation for.
 
 **For the commercial hosting providers:**
 
-5. What each would contribute under equal published terms: engineering time, test infrastructure
+6. What each would contribute under equal published terms: engineering time, test infrastructure
    (hosted test sites, CI, devices), or money toward the sponsored team; and which assurance under
    rule 8 (release evidence, fixes on an older line, a support horizon) each would pay for.
 
