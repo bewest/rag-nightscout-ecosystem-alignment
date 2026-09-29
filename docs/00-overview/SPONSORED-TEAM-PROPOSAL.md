@@ -3,7 +3,7 @@
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
 cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
-and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 were added 2026-09-29. Where it touches employment, contracting, tax or
+and `official/dev` `7000eb18` (the merge of #8786) the same day. The cross-project release and contributor figures in §2 and the vendor-change table in §6a were added 2026-09-29. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
 
@@ -120,7 +120,7 @@ A starting shape. The board and maintainers would settle the final one.
 | role | what it does | why it is needed |
 |---|---|---|
 | **Release and review lead** | reviews pull requests, keeps the release process running on a published schedule, tags releases with the maintainers | review and release are where work waits (§3) |
-| **Ecosystem compatibility engineer** | keeps the census of client apps current; runs the real-system checks with Loop, Trio, AndroidAPS and xDrip+ builders; turns what clients actually send into tests | a server change reaches every client (§2) |
+| **Ecosystem compatibility engineer** | keeps the census of client apps current; runs the real-system checks with Loop, Trio, AndroidAPS and xDrip+ builders; turns what clients actually send into tests; watches the vendor clouds the connectors log into and keeps a connector test lab that any server can use | a server change reaches every client (§2), and a vendor change reaches every server (§6a) |
 | **Quality and security lead** (part time at first) | triages security reports and dependency alerts, keeps the defect register and test records, is the named reviewer for security and safety items | 21 items ask for a kind of reviewer no one is assigned to be |
 
 Out of scope for the team:
@@ -181,6 +181,27 @@ A second server makes this proposal more necessary, not less:
   Its parity suite runs against Nightscout 15.0.3. A shared, current description of the API and a
   test suite that any server can run keep the apps working on both. This is the WHATWG pattern in §6:
   several implementations, one living standard, and shared tests.
+- **Building a server and keeping one current are different jobs.** Volunteers built both
+  servers. Keeping them current includes work whose timing neither project sets: the vendor clouds
+  that the CGM and pump connectors log into. When a vendor changes its service, glucose data stops
+  arriving at the site until a fix ships. Changes the vendors forced, from the connectors' commit
+  histories and issue trackers:
+
+  | vendor | change the connector had to follow | where |
+  |---|---|---|
+  | Abbott LibreLinkUp | version header raised to 4.7.0, June 2023 | nightscout-librelink-up |
+  | Abbott LibreLinkUp | requests blocked by Cloudflare from late March 2024; fixed 2024-04-02 ([#128](https://github.com/timoschlueter/nightscout-librelink-up/issues/128), 39 comments) | nightscout-librelink-up |
+  | Abbott LibreLinkUp | version header raised to 4.12.0, November 2024; China region added, March 2025 | nightscout-librelink-up |
+  | Abbott LibreLinkUp | "October 2025 changes", 2025-10-21 (`f52d929`) | nightscout-connect |
+  | Abbott LibreLinkUp | new response shape and login handling, 2026-09-22 (`370d9f4`) | nightscout-connect |
+  | Medtronic CareLink | OAuth and token-refresh changes, December 2020; care-partner login error 400, June 2023 | minimed-connect-to-nightscout, now deprecated |
+  | Dexcom Share | trend field changed from a number to a string, November 2021 | share2nightscout-bridge, now deprecated in favour of nightscout-connect |
+
+  Nocturne carries its own connectors for the same vendors (Dexcom, FreeStyle for LibreLinkUp,
+  CareLink, and others; `externals/nocturne/src/Connectors` at `42275c81`), and pins the same
+  LibreLinkUp version header, 4.16.0. Each vendor change therefore reaches both servers. A second
+  server adds implementations of this work; it does not remove the work or let anyone schedule it.
+  A connector test lab and one person watching the vendor clouds (§4) would serve both.
 - **The existing sites still need maintenance.** Operators run cgm-remote-monitor on MongoDB today,
   with its own settings, data and hosting. Moving to another server is a migration each operator
   chooses. Until they choose it, their site needs the releases, security fixes and driver upgrades
