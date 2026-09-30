@@ -26,19 +26,168 @@
 # The build report (build/site-report.json) lists matches per entry and per
 # axis. An entry that matches nothing is reported too, so stale entries show.
 #
-# Phase 1 carries only obviously safe noise entries. Phase 2 fills in the other
-# axes from the maintainer-reviewed candidate list.
+# First match wins, so the axis recorded for a path is the first entry that
+# matches it. Entries were filled in phase 2 (2026-09-30) from the reviewed
+# candidate list; `decided_by: maintainer 2026-09-30` marks a rule the
+# maintainer set, `phase2 review` a judgement made while applying it.
+# Excluding a path keeps it off the site only; it stays in the public repo and
+# in its history.
 
 exclusions:
+  # ---- correspondence ----
+  - pattern: "docs/30-design/remedial/advisory-response-2026-09/pull-requests/reply-to-reporter-*.md"
+    axis: correspondence
+    reason: "Drafted reply to an advisory reporter, not sent."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "docs/30-design/remedial/advisory-response-2026-09/advisories/ghsa-*-comment.md"
+    axis: correspondence
+    reason: "Drafted comment for an advisory thread, not sent."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "reports/phase0-pr-bodies/bf-api3-string-id.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-auth.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-connect-pin.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-object-id-consistency.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-object-id-other-collections.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-profile-object-id.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf-throttle.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf2-auth-hardening.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft. Full security-review body; the version opened as a PR is the .withheld.md file."
+    decided_by: "phase2 review"
+  - pattern: "reports/phase0-pr-bodies/bf2-subject-edit-keeps-fields.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/cgm-remote-monitor (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+  - pattern: "reports/connector-pr-bodies/profile-duplicate-stall.md"
+    axis: correspondence
+    reason: "PR body never opened as a pull request on nightscout/nightscout-connect (checked 2026-09-30); a draft."
+    decided_by: "phase2 review"
+
+  # ---- disclosure ----
+  - pattern: "docs/30-design/remedial/advisory-response-2026-09/**"
+    axis: disclosure
+    reason: "Draft advisory pack (advisory texts, PR bodies, metadata script) for defects of which two are unfixed on 15.0.8."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "docs/60-research/remedial/ghsa-8849-*.md"
+    axis: disclosure
+    reason: "Research on a websocket authorization defect unfixed on 15.0.8."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "docs/60-research/remedial/ghsa-gjhc-*.md"
+    axis: disclosure
+    reason: "Research on a websocket authorization defect unfixed on 15.0.8."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md"
+    axis: disclosure
+    reason: "Per-configuration reproduction matrix for advisories on defects live on 15.0.8."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md"
+    axis: disclosure
+    reason: "Query-operator defect fixed on dev but live on 15.0.8; carries request-shaped examples."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "reports/reviewer-packets/bfq-72.md"
+    axis: disclosure
+    reason: "Reviewer packet for a denial-of-service defect with no fix yet."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "reports/reviewer-packets/adv-*.md"
+    axis: disclosure
+    reason: "Reviewer packets for the draft advisories."
+    decided_by: "maintainer 2026-09-30"
+
+  # ---- health-data ----
+  - pattern: "reports/live-recent-analysis/**"
+    axis: health-data
+    reason: "Single-person report on a live recent data window, with hand-written personal context supplied out of band; not cleared as anonymised."
+    decided_by: "phase2 review"
+  - pattern: "reports/exp-3022b/ns-8f3527d1ee40/**"
+    axis: health-data
+    reason: "Per-person report keyed by an unsalted hash of a guessable source string, alongside a location (profile timezone); not cleared as anonymised."
+    decided_by: "phase2 review"
+
+  # ---- consent ----
+  - pattern: "tools/oref_inv_003_replication/figures/**"
+    axis: consent
+    reason: "Figures derived from an external data holder's data; published only with the holder's OK."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "tools/oref_inv_003_replication/reports/**"
+    axis: consent
+    reason: "Reports with figures and numbers derived from an external data holder's data; pending the holder's OK."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "tools/oref_inv_003_replication/README.md"
+    axis: consent
+    reason: "Describes the holder-data replication; kept with its figures pending the holder's OK."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "reports/nsprobe/**"
+    axis: consent
+    reason: "nsprobe baseline outputs from a data holder run; pending the holder's OK."
+    decided_by: "maintainer 2026-09-30"
+
+  # ---- noise ----
   - pattern: ".copilot/**"
     axis: noise
     reason: "Coding-assistant session state committed by accident; not documentation."
-    decided_by: "site phase 1 brief, maintainer 2026-09-30"
+    decided_by: "maintainer 2026-09-30"
   - pattern: "**/.build/**"
     axis: noise
-    reason: "Guard: vendored SwiftPM checkouts. None tracked at df5e2ade; keeps them out if one is added."
-    decided_by: "site phase 1 brief, maintainer 2026-09-30"
+    reason: "Guard: vendored SwiftPM checkouts. None tracked; keeps them out if one is added."
+    decided_by: "maintainer 2026-09-30"
   - pattern: "**/node_modules/**"
     axis: noise
-    reason: "Guard: vendored npm packages. None tracked at df5e2ade."
-    decided_by: "site phase 1 brief, maintainer 2026-09-30"
+    reason: "Guard: vendored npm packages. None tracked."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "*VERIFICATION*"
+    axis: noise
+    reason: "Root-level verification dumps from April 2026 sessions."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "verification*"
+    axis: noise
+    reason: "Root-level verification dumps (lower-case names)."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "SESSION_*"
+    axis: noise
+    reason: "Root-level session checkpoint."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "CAMPAIGN_FINAL_REPORT.md"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "PRODUCTIONIZATION-SESSION-2026-04-23.md"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "REVIEW_NOTES.md"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "replit.md"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "_report_list.txt"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
+  - pattern: "plan_update.txt"
+    axis: noise
+    reason: "Root-level session or campaign dump."
+    decided_by: "maintainer 2026-09-30"
