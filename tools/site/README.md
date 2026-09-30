@@ -110,6 +110,25 @@ prefix of; a short form that matches none or several fails the build.
   raw `odc-<2 to 12 digits>` left in `build/site-src/` or `build/site/` (HTML,
   search index, sitemap, file names). It cannot be allowlisted.
 
+## Search index
+
+Material builds its search index from every page, and the browser's search
+worker loads it on every page view. Unfiltered, this site's index was 24 MB and
+the worker held about 780 MB under phone emulation (2026-09-30). The staging
+step now applies `tools/site/search.yaml` with Material's own mechanisms
+(`search: exclude`, `search: boost` front matter and `{ data-search-exclude }`
+on headings), without editing any source doc:
+
+- generated folder-index and gallery pages are left out;
+- outside the `keep_full` areas (home, overview, releases, queue, design,
+  registers, site/pages), a page is indexed by its title and first `##` section
+  only, so it stays findable by title;
+- the overview pages, releases, the home page and REVIEWER-ONBOARDING are
+  boosted.
+
+`SITE_SEARCH_POLICY=off make site` builds without the policy (for comparison).
+The report records the index size and what the policy did.
+
 ## Page labels: Record or Living
 
 Published pages must be production-ready and accurate, unless they are an

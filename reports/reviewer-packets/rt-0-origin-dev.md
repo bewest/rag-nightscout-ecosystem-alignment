@@ -154,87 +154,95 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-27 - #8785 (boluswizardpreview test clock; the timing flake that
-failed one cell of #8784's CI) merged into dev as 295f1177 (head a9b77d1e,
-same tree; GitHub merge time 18:39Z). Test-only, so run 020 on ce30a94d
-stands; #8785's CI passed in all nine cells, the file passes 12/12 on
-295f1177, the browser gate names the same 14 paths, package files unchanged.
-dev is 295f1177: 505 commits and 85 first-parent merges ahead of master, 296
-files, +28279/-1703. Release PR #8598 is at 295f1177: mergeable, 27 checks
-passed and 3 skipped, reviewDecision APPROVED (both approvals given at
-e3adc91d). 2026-09-27 - npm audit triage done (contents.md); BF-147 filed and
-merged as #8786 into dev as 7000eb18 (head 64a9cc13, same tree; 20:40Z): the
-ajv 6 and request form-data overrides move to their patch releases and three
-build tools are refreshed, 9 locked versions, npm audit 17 -> 7 with no highs.
-Run 020 was not repeated: #8786's CI passed in all nine cells plus the npm 12
-install-and-build check, one local cell gave 3473/0/3 (Node 24.15.0, MongoDB
-7.0.43), and the production bundle from 295f1177 and 7000eb18 is byte-
-identical. dev is 7000eb18: 507 commits and 86 first-parent merges ahead of
-master, 297 files, +28363/-1722. Release PR #8598 is at 7000eb18: 27 checks
-passed and 3 skipped, reviewDecision APPROVED. Still owed by the maintainer:
-browser hand checks, the 24-72 h real-time soak, re-approval of #8598 at the
-final head, the semver decision. 2026-09-26 - #8784 (BF-146 with BF-133)
-merged into dev as ce30a94d (head d235bdf6; GitHub merge time 2026-09-27
-05:32Z); BFQ-146 and BFQ-133 are merged-upstream. dev is ce30a94d: 503 commits
-and 84 first-parent merges ahead of master, 295 files, +28274/-1701. Release
-PR #8598 is at ce30a94d: mergeable, 27 checks passed and 3 skipped,
-reviewDecision APPROVED (both approvals given at e3adc91d). RC run 020 on
-ce30a94d (2026-09-27, integration record): 3473/0/3 in six cells; run 019's
-probes unchanged; BF-146 probe exit 0 (1 on 699eb5fa and 15.0.8); compressed
-A/B soak recorded in tools/lab/rc-soak/results/proof-2026-09-27-run020.md.
-Still owed by the maintainer: browser hand checks, the 24-72 h real-time soak,
-re-approval of #8598 at the final head, the semver decision, the npm audit
-triage. 2026-09-26 (maintainer: "fix as appropriate"): BF-146, found by RC run
-019's trace (04a873ce), is fixed for 15.0.9 on bf/api3-cache-derived-fields
-db99bba4, extended to device status by d235bdf6 (maintainer, same day, for
-consistency; on official/dev 699eb5fa, ready-to-push, not pushed); BFQ-146 is
-added to blocks_on and is not merged-upstream. The same branch fixes BF-133
-(BFQ-133). Same code on 15.0.8, not a regression. 2026-09-26 (maintainer):
-BF-141, a regression from #8780 found in the review of #8778, is fixed for
-15.0.9 (BFQ-141, bf/fallback-key-empty-identifier aaf67785, ready-to-push);
-BF-142 is after 15.0.9 (BFQ-142). BFQ-141 is the one item in blocks_on that is
-not merged-upstream, besides RT-VERSION. 2026-09-26 (maintainer, later):
-BF-142 is fixed for 15.0.9 after all (BFQ-142, bf/api3-delete-nonstring-
-identifier 1c3aeb8c on official/dev ce7d754a, ready-to-push), and BFQ-142 is
-added to blocks_on; it is not merged-upstream. 2026-09-26 - #8781 (AndyLow91;
-BF-141, BF-143, BF-144) merged into dev as ce7d754a; RT-PR-8781 replaces
-BFQ-141 (closed, superseded; #8782 closed) in blocks_on. dev is ce7d754a: 498
-commits and 82 first-parent merges ahead of master; release PR #8598 at
-ce7d754a, 27 checks green, 3 skipped, APPROVED. Measured 2026-09-26 after
-fetching official: dev is ff93fa94 (merge of #8780) and declares 15.0.9.
-master is 92d08342 = tag 15.0.8; dev is 496 commits and 81 first-parent merges
-ahead, 0 behind; 291 files, +27503/-1699. Merged 2026-09-26, in this order:
-#8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832), #8773 (BF-125, e759a989),
-#8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135, 1157a8de), #8776 (BF-136,
-13f235e9), #8777 (BF-128, BF-138 and BF-139, d613c35f), #8779 (BF-80,
-750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and #8780 (BF-121, ff93fa94).
-Release PR #8598 is at head ff93fa94: mergeable, 27 checks green and 3
-skipped, reviewDecision APPROVED (the two approvals were given at e3adc91d).
-Full suite on ff93fa94 itself (fresh detached worktree, tree c342bce0, fresh
-database): 3396 passing / 0 failing / 3 pending, Node 22.23.2, MongoDB 7.0.43,
-one cell only (not the six-cell matrix of the integration record). On the same
-tree the round-2 probes give their expected exit codes: bf106 gate 0, maker-
-language 0, profile-switch-percentage 0, pebble-units 0, pebble-shared-scaled
-0, api3-app-field 0, same-time-carbs 0 (1 with --strict: v3-noid and ws-dbAdd,
-left by design), api3-empty-identifier-delete 0, v1-writes-v3-history 1 on the
-v1 DELETE arm only (kept by decision). The browser-check gate's --with list
-and the release notes are not updated here. Measured 2026-09-25 after fetching
-official: dev is e3adc91d (merge of #8770) and declares 15.0.9; it pins
-nightscout-connect exactly 0.1.0 (P0-PIN). master is 92d08342 = tag 15.0.8;
-dev is 461 commits and 71 first-parent merges ahead. Release PR #8598 (dev ->
-master, author AndyLow91) is at head e3adc91d: mergeable, 27 checks green and
-3 skipped, reviewDecision APPROVED (two approvals by the maintainer,
-2026-09-26 00:39Z). dev e3adc91d holds every PR decided for 15.0.9 except
-#8730, which is held out (decided 2026-09-25, maintainer; BF-132: its Crowdin
-sync reverts dev's corrected translations). Merged 2026-09-25: #8530, #8766
-(BF-118), #8767 (BF-119), #8758 (BFQ-102, head f1e8398b, merge 4d9ecc3b),
-#8568 (BF-114), #8768 (BF-120), #8769 (BF-126), #8419 and #8770 (BF-134).
-Every item in blocks_on is merged-upstream except RT-VERSION, whose red gate
-is on the cut branches, which are renumbered when rebased (decided
-2026-09-23). Still before the tag: - The browser checks. client-unchanged-
-since-hand-check.js on e3adc91d names 12 files that changed after the hand-
-checked 8d797ba4: lib/api2/index.js and notifications-v2.js (the Loop remote-
-command path, #8764), lib/client/clock-client.js (#8768),
+2026-09-30 - re-measured after fetching official: dev is still 7000eb18
+(merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges ahead of
+master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed and 3
+skipped, reviewDecision APPROVED (both approvals given at e3adc91d). No 15.0.9
+tag. The maintainer reported the same day that real sites running the
+candidate have shown no visible regression so far (no rig count or duration
+recorded), and decided that those real-site runs count as the 24-72 h real-
+time soak (RT-SOAK, done). Still owed by the maintainer: browser hand checks,
+re-approval of #8598 at the final head, the semver decision. 2026-09-27 -
+#8785 (boluswizardpreview test clock; the timing flake that failed one cell of
+#8784's CI) merged into dev as 295f1177 (head a9b77d1e, same tree; GitHub
+merge time 18:39Z). Test-only, so run 020 on ce30a94d stands; #8785's CI
+passed in all nine cells, the file passes 12/12 on 295f1177, the browser gate
+names the same 14 paths, package files unchanged. dev is 295f1177: 505 commits
+and 85 first-parent merges ahead of master, 296 files, +28279/-1703. Release
+PR #8598 is at 295f1177: mergeable, 27 checks passed and 3 skipped,
+reviewDecision APPROVED (both approvals given at e3adc91d). 2026-09-27 - npm
+audit triage done (contents.md); BF-147 filed and merged as #8786 into dev as
+7000eb18 (head 64a9cc13, same tree; 20:40Z): the ajv 6 and request form-data
+overrides move to their patch releases and three build tools are refreshed, 9
+locked versions, npm audit 17 -> 7 with no highs. Run 020 was not repeated:
+#8786's CI passed in all nine cells plus the npm 12 install-and-build check,
+one local cell gave 3473/0/3 (Node 24.15.0, MongoDB 7.0.43), and the
+production bundle from 295f1177 and 7000eb18 is byte-identical. dev is
+7000eb18: 507 commits and 86 first-parent merges ahead of master, 297 files,
++28363/-1722. Release PR #8598 is at 7000eb18: 27 checks passed and 3 skipped,
+reviewDecision APPROVED. Still owed by the maintainer: browser hand checks,
+the 24-72 h real-time soak, re-approval of #8598 at the final head, the semver
+decision. 2026-09-26 - #8784 (BF-146 with BF-133) merged into dev as ce30a94d
+(head d235bdf6; GitHub merge time 2026-09-27 05:32Z); BFQ-146 and BFQ-133 are
+merged-upstream. dev is ce30a94d: 503 commits and 84 first-parent merges ahead
+of master, 295 files, +28274/-1701. Release PR #8598 is at ce30a94d:
+mergeable, 27 checks passed and 3 skipped, reviewDecision APPROVED (both
+approvals given at e3adc91d). RC run 020 on ce30a94d (2026-09-27, integration
+record): 3473/0/3 in six cells; run 019's probes unchanged; BF-146 probe exit
+0 (1 on 699eb5fa and 15.0.8); compressed A/B soak recorded in tools/lab/rc-
+soak/results/proof-2026-09-27-run020.md. Still owed by the maintainer: browser
+hand checks, the 24-72 h real-time soak, re-approval of #8598 at the final
+head, the semver decision, the npm audit triage. 2026-09-26 (maintainer: "fix
+as appropriate"): BF-146, found by RC run 019's trace (04a873ce), is fixed for
+15.0.9 on bf/api3-cache-derived-fields db99bba4, extended to device status by
+d235bdf6 (maintainer, same day, for consistency; on official/dev 699eb5fa,
+ready-to-push, not pushed); BFQ-146 is added to blocks_on and is not merged-
+upstream. The same branch fixes BF-133 (BFQ-133). Same code on 15.0.8, not a
+regression. 2026-09-26 (maintainer): BF-141, a regression from #8780 found in
+the review of #8778, is fixed for 15.0.9 (BFQ-141, bf/fallback-key-empty-
+identifier aaf67785, ready-to-push); BF-142 is after 15.0.9 (BFQ-142). BFQ-141
+is the one item in blocks_on that is not merged-upstream, besides RT-VERSION.
+2026-09-26 (maintainer, later): BF-142 is fixed for 15.0.9 after all (BFQ-142,
+bf/api3-delete-nonstring-identifier 1c3aeb8c on official/dev ce7d754a, ready-
+to-push), and BFQ-142 is added to blocks_on; it is not merged-upstream.
+2026-09-26 - #8781 (AndyLow91; BF-141, BF-143, BF-144) merged into dev as
+ce7d754a; RT-PR-8781 replaces BFQ-141 (closed, superseded; #8782 closed) in
+blocks_on. dev is ce7d754a: 498 commits and 82 first-parent merges ahead of
+master; release PR #8598 at ce7d754a, 27 checks green, 3 skipped, APPROVED.
+Measured 2026-09-26 after fetching official: dev is ff93fa94 (merge of #8780)
+and declares 15.0.9. master is 92d08342 = tag 15.0.8; dev is 496 commits and
+81 first-parent merges ahead, 0 behind; 291 files, +27503/-1699. Merged
+2026-09-26, in this order: #8771 (BF-106, ab9c96e6), #8772 (BF-129, f1151832),
+#8773 (BF-125, e759a989), #8774 (BF-123, f0174d05), #8775 (BF-122 and BF-135,
+1157a8de), #8776 (BF-136, 13f235e9), #8777 (BF-128, BF-138 and BF-139,
+d613c35f), #8779 (BF-80, 750801a9), #8778 (BF-140, AndyLow91, aa1111b2) and
+#8780 (BF-121, ff93fa94). Release PR #8598 is at head ff93fa94: mergeable, 27
+checks green and 3 skipped, reviewDecision APPROVED (the two approvals were
+given at e3adc91d). Full suite on ff93fa94 itself (fresh detached worktree,
+tree c342bce0, fresh database): 3396 passing / 0 failing / 3 pending, Node
+22.23.2, MongoDB 7.0.43, one cell only (not the six-cell matrix of the
+integration record). On the same tree the round-2 probes give their expected
+exit codes: bf106 gate 0, maker-language 0, profile-switch-percentage 0,
+pebble-units 0, pebble-shared-scaled 0, api3-app-field 0, same-time-carbs 0 (1
+with --strict: v3-noid and ws-dbAdd, left by design), api3-empty-identifier-
+delete 0, v1-writes-v3-history 1 on the v1 DELETE arm only (kept by decision).
+The browser-check gate's --with list and the release notes are not updated
+here. Measured 2026-09-25 after fetching official: dev is e3adc91d (merge of
+#8770) and declares 15.0.9; it pins nightscout-connect exactly 0.1.0 (P0-PIN).
+master is 92d08342 = tag 15.0.8; dev is 461 commits and 71 first-parent merges
+ahead. Release PR #8598 (dev -> master, author AndyLow91) is at head e3adc91d:
+mergeable, 27 checks green and 3 skipped, reviewDecision APPROVED (two
+approvals by the maintainer, 2026-09-26 00:39Z). dev e3adc91d holds every PR
+decided for 15.0.9 except #8730, which is held out (decided 2026-09-25,
+maintainer; BF-132: its Crowdin sync reverts dev's corrected translations).
+Merged 2026-09-25: #8530, #8766 (BF-118), #8767 (BF-119), #8758 (BFQ-102, head
+f1e8398b, merge 4d9ecc3b), #8568 (BF-114), #8768 (BF-120), #8769 (BF-126),
+#8419 and #8770 (BF-134). Every item in blocks_on is merged-upstream except
+RT-VERSION, whose red gate is on the cut branches, which are renumbered when
+rebased (decided 2026-09-23). Still before the tag: - The browser checks.
+client-unchanged-since-hand-check.js on e3adc91d names 12 files that changed
+after the hand-checked 8d797ba4: lib/api2/index.js and notifications-v2.js
+(the Loop remote-command path, #8764), lib/client/clock-client.js (#8768),
 lib/data/calcdelta.js, dataloader.js and ddata.js, lib/plugins/pump.js
 (#8767), lib/profile/profileeditor.js, lib/settings.js (#8766),
 views/index.html, .gitignore and .nycrc.json. The last two are not browser

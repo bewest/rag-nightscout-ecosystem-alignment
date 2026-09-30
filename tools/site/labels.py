@@ -53,6 +53,13 @@ class Labeller:
         self.counts = collections.Counter()
         self.candidates: list[str] = []
 
+    def kind_of(self, path: str) -> str:
+        """The page kind, without counting (for the search policy)."""
+        o = self.overrides.get(path)
+        if o:
+            return o["kind"]
+        return "record" if DATE.search(path.rsplit("/", 1)[-1]) else "living"
+
     def kind(self, path: str) -> tuple[str, str | None]:
         name = path.rsplit("/", 1)[-1]
         m = DATE.search(name)

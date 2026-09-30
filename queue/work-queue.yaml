@@ -2898,6 +2898,16 @@ items:
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-09-30 - re-measured after fetching official: dev is still
+      7000eb18 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent
+      merges ahead of master; release PR #8598 is at 7000eb18, mergeable, 27
+      checks passed and 3 skipped, reviewDecision APPROVED (both approvals
+      given at e3adc91d). No 15.0.9 tag. The maintainer reported the same day
+      that real sites running the candidate have shown no visible regression
+      so far (no rig count or duration recorded), and decided that those
+      real-site runs count as the 24-72 h real-time soak (RT-SOAK, done).
+      Still owed by the maintainer: browser hand checks, re-approval of #8598
+      at the final head, the semver decision.
       2026-09-27 - #8785 (boluswizardpreview test clock; the timing flake
       that failed one cell of #8784's CI) merged into dev as 295f1177
       (head a9b77d1e, same tree; GitHub merge time 18:39Z). Test-only, so
@@ -11362,7 +11372,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: in-progress
+    state: done
     pr: []
     blast_radius: tools/lab/rc-soak only; runs two local Nightscout processes and two mongo containers on 127.0.0.1.
     review: maintainer
@@ -11383,9 +11393,10 @@ items:
           with docker and n, so they are recorded runs, not queue gates.
           Measured 2026-09-25: tools/lab/rc-soak/results/proof-2026-09-25.md.
       - no-gate: >
-          The 24-72 h real-time soak (lab.sh soak --hours 72, then lab.sh
-          analyze <run>, exit 0) needs a machine held for days by a person; its
-          gate is that analyze on the soak's run directory.
+          The 24-72 h real-time soak is met by real sites running the
+          candidate 7000eb18 (maintainer, 2026-09-30), which leave no run
+          directory here. The lab form (lab.sh soak --hours 72, then lab.sh
+          analyze <run>, exit 0) was not run.
     blocks_on: []
     evidence:
       - tools/lab/rc-soak/README.md
@@ -11421,6 +11432,10 @@ items:
       (about 280 to 330 MB) is the same on both arms without APNs, so it is
       not BF-134. Recorded in the integration record, run 017. Left: the
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
+      2026-09-30 (maintainer): real sites running the candidate 7000eb18
+      count as the 24-72 h real-time soak, and have shown no visible
+      regression so far; no rig count or duration is recorded. The lab
+      real-time soak was not run. Done.
   - id: BFQ-133
     title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9"
     parcel: register-open
