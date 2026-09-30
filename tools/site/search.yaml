@@ -1,0 +1,35 @@
+# Search-index policy (tools/site/searchpolicy.py), applied at staging time with
+# Material's own front matter and section attributes. Source docs are not edited.
+#
+#   keep_full           globs never trimmed or excluded (boost still applies)
+#   exclude_generated   drop generated folder-index and gallery pages
+#   exclude             globs dropped from the index entirely
+#   first_section_only  {path, kind: record|living|any}: index the title section
+#                       and the first `##` section only; later sections are
+#                       marked { data-search-exclude }
+#   boost               {path, boost}: first match wins
+#
+# Measured 2026-09-30 before this policy: 24.0 MB index; the search worker held
+# about 780 MB under phone emulation.
+keep_full:
+  - "index.md"
+  - "docs/00-overview/**"
+  - "releases/**"
+  - "queue/**"
+  - "docs/30-design/**"
+  - "**/*register*.md"
+  - "site/pages/**"
+exclude_generated: true
+exclude: []
+first_section_only:
+  # research Records: title and first section (the maintainer's proposal)
+  - {path: "docs/60-research/**", kind: record}
+  # everything else outside keep_full: the same, so every page stays findable
+  # by its title and opening section (breakdown 2026-09-30: domain deep dives,
+  # mappings, traceability matrices, reports and archives were 9 MB)
+  - {path: "**", kind: any}
+boost:
+  - {path: "docs/00-overview/REVIEWER-ONBOARDING.md", boost: 10}
+  - {path: "index.md", boost: 5}
+  - {path: "docs/00-overview/**", boost: 3}
+  - {path: "releases/**", boost: 3}
