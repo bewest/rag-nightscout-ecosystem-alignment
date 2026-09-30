@@ -298,7 +298,7 @@ oref0 uses these for UAM calculations; missing data may cause different predicti
 
 - [Algorithm Comparison Deep Dive](./algorithm-comparison-deep-dive.md) - Detailed algorithm comparison
 - [Conformance Test Runner](../../conformance/runners/oref0-runner.js) - oref0 runner implementation
-- [Test Results](../../conformance/results/oref0-results.json) - Full test results
+- Test Results (not in the repository) - Full test results
 - [Terminology Matrix](../../mapping/cross-project/terminology-matrix.md#algorithm-core-terminology) - Algorithm term mapping
 
 ---

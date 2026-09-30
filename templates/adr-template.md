@@ -99,7 +99,7 @@ YYYY-MM-DD
 
 - [GAP-XXX-NNN](../traceability/gaps.md#gap-xxx-nnn)
 - [REQ-NNN](../traceability/requirements.md#req-nnn)
-- [Related ADR](./adr-nnn-related.md)
+- Related ADR (not in the repository)
 - [External Reference](https://example.com)
 
 ---

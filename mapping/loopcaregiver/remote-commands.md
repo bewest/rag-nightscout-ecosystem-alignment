@@ -366,7 +366,7 @@ public extension NSRemoteCommandPayload {
 
 - [LoopCaregiver Authentication](authentication.md) - QR code linking and OTP details
 - [Remote Commands Comparison](../../docs/10-domain/remote-commands-comparison.md) - Cross-system security comparison
-- [Loop Remote Commands](../loop/remote-commands.md) - Loop-side implementation (if exists)
+- Loop Remote Commands (not in the repository) - Loop-side implementation (if exists)
 - [Terminology Matrix](../cross-project/terminology-matrix.md) - Field mapping
 
 ---

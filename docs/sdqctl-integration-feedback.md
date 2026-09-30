@@ -437,7 +437,7 @@ rag-nightscout-ecosystem-alignment/
 
 ## Appendix C: Related Documents
 
-- [INTEGRATION-PROPOSAL.md](../externals/copilot-do-proposal/sdqctl/INTEGRATION-PROPOSAL.md) - sdqctl team's integration roadmap
+- INTEGRATION-PROPOSAL.md (not in the repository) - sdqctl team's integration roadmap
 - [workflows/README.md](../workflows/README.md) - Workflow documentation
 - [replit.md](../replit.md) - Workspace overview and patterns
 
