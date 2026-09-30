@@ -301,12 +301,13 @@ branches, which are renumbered when they are rebased. Beside that:
    (after `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
    edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
    that was not checked in a browser.
-2. **The 24 to 72 h real-time soak** on `7000eb18`. Run 020's compressed A/B soak against 15.0.8 is
+2. **The 24 to 72 h real-time soak** on `7000eb18`: **done**. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
    Real sites are running the candidate (the `dev_7000eb18…` image or the `dev` branch at
-   `7000eb18`, per the [testing notes](testing-notes.md)); the maintainer reported on 2026-09-30
-   that they have shown no visible regression so far. No rig count, duration or client list is
-   recorded here. The lab real-time soak (`lab.sh soak --hours 72`) has not run.
+   `7000eb18`, per the [testing notes](testing-notes.md)). On 2026-09-30 the maintainer decided
+   that these real-site runs count as the real-time soak, and reported that they have shown no
+   visible regression so far. No rig count, duration or client list is recorded here. The lab
+   real-time soak (`lab.sh soak --hours 72`) was not run.
    **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
    the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
    override values and a lockfile refresh), merged as #8786 (`7000eb18`); `dev` now audits at 7,

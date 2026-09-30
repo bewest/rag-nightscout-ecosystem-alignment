@@ -82,8 +82,8 @@ candidate. Run 020 on `ce30a94d` gave 3473/0/3 on Node 20, 22 and 24 against Mon
 7.0.43. It stands for `295f1177`, whose one further merge (#8785) changes only a test file; #8786
 (BF-147, dependency overrides) is covered by its own nine-cell CI and a byte-identical production
 bundle ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The
-maintainer reported on 2026-09-30 that real sites running the candidate have shown no visible
-regression so far; the lab's 24 to 72 h real-time soak (`RT-SOAK`) has not run. Browser hand
+real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running the
+candidate count for it, and reported no visible regression so far. Browser hand
 checks are still owed at the final candidate: files they covered have changed since the hand check
 at `8d797ba4` (`client-unchanged-since-hand-check.js` names 14; RT-0). The 2026-09-26 walk on
 `ff93fa94` covered part of them, and [ROADMAP §1](ROADMAP.md#1-the-next-release-1509) lists the rest.

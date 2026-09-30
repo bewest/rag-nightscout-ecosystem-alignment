@@ -44,9 +44,9 @@ run 020 on `ce30a94d`, two merges (#8785, #8786) before today's `dev`: 3473/0/3 
 22 and 24 against MongoDB 4.4.24 and 7.0.43), with the A/B soak against 15.0.8
 ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). #8785 changes
 one test file and no file a site runs, so run 020 stands for `295f1177`; #8786 is covered by its own
-nine-cell CI and a production bundle byte-identical to `295f1177`'s. The maintainer reported on
-2026-09-30 that real sites running the candidate have shown no visible regression so far; the lab's
-24 to 72 h real-time soak (`RT-SOAK`) has not run. Release PR #8598 was approved at `e3adc91d` and
+nine-cell CI and a production bundle byte-identical to `295f1177`'s. The real-time soak (`RT-SOAK`) is
+done: the maintainer decided on 2026-09-30 that real sites running the candidate count for it, and
+reported that they have shown no visible regression so far; the lab's 72 h soak was not run. Release PR #8598 was approved at `e3adc91d` and
 needs re-approval at its final head. The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
@@ -199,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 5 |  | 5 | 11 | 2 |  |  |  | 1 | **30** |
+| `release-train` | 5 |  | 5 |  | 5 | 11 | 2 | 1 |  |  | 1 | **30** |
 | `register-open` | 27 | 1 | 5 |  | 4 | 44 | 4 |  | 2 | 2 |  | **89** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
@@ -269,7 +269,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `7000eb18`, approved at `e3adc91d`). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: `RT-VERSION`, the browser hand checks, the 24 to 72 h real-time soak, re-approval of #8598 at its final head, the semver decision, the `npm audit` triage, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `7000eb18`, approved at `e3adc91d`). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: `RT-VERSION`, the browser hand checks, re-approval of #8598 at its final head, the semver decision, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 
