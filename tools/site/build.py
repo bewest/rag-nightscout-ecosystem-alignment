@@ -439,8 +439,13 @@ class Site:
                 edits.append((ts, te, new))
         # reference definitions
         pos = 0
+        prev_line = ""
+        prev_blank = True  # a reference definition cannot interrupt a paragraph (CommonMark)
         for line in text.splitlines(keepends=True):
-            if pos < len(mask) and not mask[pos]:
+            starts_def = prev_blank or bool(REFDEF_RE.match(prev_line)) if pos else True
+            prev_line = line.rstrip("\n")
+            prev_blank = not line.strip()
+            if pos < len(mask) and not mask[pos] and starts_def:
                 m = REFDEF_RE.match(line.rstrip("\n"))
                 if m:
                     tgt = m.group(2)
