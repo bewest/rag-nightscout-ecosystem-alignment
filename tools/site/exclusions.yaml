@@ -1,0 +1,44 @@
+# Site exclusions: git-tracked paths the static site must NOT publish.
+#
+# tools/site/build.py reads this file on every build. A path that matches any
+# entry is not staged into build/site-src/, so it never reaches build/site/.
+# Links to an excluded path (or to a directory whose tracked files are all
+# excluded) are replaced by a short plain-text "(not published)" marker, so the
+# site does not point readers at it either.
+#
+# Schema: a top-level `exclusions:` list. Each entry has exactly these fields:
+#   pattern     glob, matched against the full repo-relative path (POSIX, no
+#               leading slash). `*` and `?` stop at `/`; `**` crosses
+#               directories (`**/` = zero or more directories). A pattern
+#               ending in `/**` covers everything under that directory.
+#               Patterns are NOT gitignore-style: `*.log` matches only at the
+#               repo root; write `**/*.log` for any depth.
+#   axis        why class of exclusion. One of:
+#                 disclosure    security material about defects still live on
+#                               the shipping release (mechanism yes, recipe no)
+#                 health-data   per-person clinical or CGM-derived material
+#                 consent       material that needs an external data holder's OK
+#                 correspondence drafted replies or emails not yet sent
+#                 noise         dumps, logs, session state, vendored or build output
+#   reason      one line a reviewer can check
+#   decided_by  who decided (a person or a dated decision record)
+#
+# The build report (build/site-report.json) lists matches per entry and per
+# axis. An entry that matches nothing is reported too, so stale entries show.
+#
+# Phase 1 carries only obviously safe noise entries. Phase 2 fills in the other
+# axes from the maintainer-reviewed candidate list.
+
+exclusions:
+  - pattern: ".copilot/**"
+    axis: noise
+    reason: "Coding-assistant session state committed by accident; not documentation."
+    decided_by: "site phase 1 brief, maintainer 2026-09-30"
+  - pattern: "**/.build/**"
+    axis: noise
+    reason: "Guard: vendored SwiftPM checkouts. None tracked at df5e2ade; keeps them out if one is added."
+    decided_by: "site phase 1 brief, maintainer 2026-09-30"
+  - pattern: "**/node_modules/**"
+    axis: noise
+    reason: "Guard: vendored npm packages. None tracked at df5e2ade."
+    decided_by: "site phase 1 brief, maintainer 2026-09-30"

@@ -1,0 +1,5 @@
+# Static site toolchain (make site). Installed into tools/site/.venv (untracked).
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==12.1
+PyYAML==6.0.3

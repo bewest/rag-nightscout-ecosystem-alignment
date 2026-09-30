@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{#- Phase 1 site is not for search engines. tools/site/check.py (make site-check)
+    fails if any output HTML page lacks this tag. -#}
+{% block extrahead %}
+  <meta name="robots" content="noindex, nofollow">
+{% endblock %}

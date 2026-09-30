@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: site serve site-check site-clean site-venv queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -83,6 +83,14 @@ help:
 	@echo "  make queue-check    - Prove QUEUE.md is not stale AND the register is covered (CI)"
 	@echo "  make queue-vacuity  - Run each gate's negative control; report gates that"
 	@echo "                        cannot fail. SLOW=1 adds the branch ablations"
+	@echo ""
+	@echo "Static site (MkDocs Material, local only, noindex — see tools/site/README.md):"
+	@echo "  make site          - Stage git-tracked docs and build build/site/"
+	@echo "  make serve         - Build, then serve build/site/ on 127.0.0.1:$(SITE_PORT)"
+	@echo "                        (SITE_PORT= to change)"
+	@echo "  make site-check    - Build, then fail unless every page is noindex and"
+	@echo "                        robots.txt disallows all"
+	@echo "  make site-clean    - Remove the site build output"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -1014,3 +1022,30 @@ queue-vacuity:
 	  $(if $(INTEGRATION),--integration) \
 	  $(if $(NETWORK),--network) \
 	  $(if $(VERBOSE),--verbose)
+
+# ---------------------------------------------------------------------------
+# Static site (tools/site/README.md). Reads git ls-files only; nothing deploys.
+SITE_VENV := tools/site/.venv
+SITE_PY := $(SITE_VENV)/bin/python
+SITE_PORT ?= 8765
+SITE_STAMP := $(SITE_VENV)/.installed
+
+$(SITE_STAMP): tools/site/requirements.txt
+	test -x $(SITE_PY) || python3 -m venv $(SITE_VENV)
+	$(SITE_PY) -m pip install -q -r tools/site/requirements.txt
+	@touch $(SITE_STAMP)
+
+site-venv: $(SITE_STAMP)
+
+site: $(SITE_STAMP)
+	$(SITE_PY) tools/site/build.py
+
+serve: site
+	@echo "Serving build/site/ at http://127.0.0.1:$(SITE_PORT)/ (Ctrl-C to stop)"
+	$(SITE_PY) -m http.server --bind 127.0.0.1 --directory build/site $(SITE_PORT)
+
+site-check: site
+	$(SITE_PY) tools/site/check.py
+
+site-clean:
+	rm -rf build/site-src build/site build/site-nav.yaml build/site-report.json build/site-mkdocs.log

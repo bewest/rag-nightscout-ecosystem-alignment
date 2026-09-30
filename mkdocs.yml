@@ -1,0 +1,85 @@
+# Static site for this repository. Built by `make site`; see tools/site/README.md.
+# tools/site/build.py stages git-tracked files into build/site-src/ and writes
+# the nav to build/site-nav.yaml, which tools/site/hooks.py loads.
+site_name: Nightscout ecosystem alignment
+site_description: Contributor workspace for the Nightscout ecosystem alignment programme
+repo_url: https://github.com/bewest/rag-nightscout-ecosystem-alignment
+repo_name: rag-nightscout-ecosystem-alignment
+edit_uri: ""
+
+docs_dir: build/site-src
+site_dir: build/site
+# page.html rather than page/index.html: raw-HTML <img>/<a> links inside the
+# markdown are not rewritten by MkDocs, and keep working only with this layout.
+use_directory_urls: false
+
+# What build.py staged is exactly what gets published: undo MkDocs' default
+# exclusion of dot-paths and /templates/ (exclusions live in
+# tools/site/exclusions.yaml instead).
+exclude_docs: |
+  !.*
+  !/templates/
+
+hooks:
+  - tools/site/hooks.py
+
+validation:
+  nav:
+    omitted_files: info
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: info
+    absolute_links: info
+    unrecognized_links: info
+
+theme:
+  name: material
+  custom_dir: tools/site/overrides
+  features:
+    - navigation.tabs
+    # navigation.sections left out: it keeps every level-2 section expanded,
+    # which defeats navigation.prune (measured: 639 MB output, 350 KB per docs page)
+    - navigation.indexes
+    - navigation.prune
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      guess_lang: false
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

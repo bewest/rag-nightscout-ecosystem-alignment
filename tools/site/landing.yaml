@@ -1,0 +1,31 @@
+# Hand-written landing sections, placed first in the site nav in this order.
+# Each section names a repo directory. Pages listed under `pages` come first,
+# in the order given; any other staged page in the directory follows,
+# alphabetically. Subdirectories follow as sub-sections.
+# `index` (optional) is a hand-written landing page staged as <dir>/index.md
+# when the directory has no README.md or index.md of its own.
+sections:
+  - title: Overview
+    dir: docs/00-overview
+    index: tools/site/landing/docs-00-overview.md
+    pages:
+      - REVIEWER-ONBOARDING.md
+      - mission.md
+      - ECOSYSTEM-PROGRAMME.md
+      - PROGRAMME-STATUS.md
+      - ROADMAP.md
+      - NEEDS-A-HUMAN.md
+      - DEFINITION-OF-DONE.md
+      - DOCUMENT-CONTROL.md
+      - SPONSORED-TEAM-PROPOSAL.md
+      - COLLABORATION-MODEL.md
+  - title: Releases
+    dir: releases
+    pages:
+      - README.md
+      - VERIFICATION-RECORDS.md
+  - title: Queue
+    dir: queue
+    pages:
+      - README.md
+      - QUEUE.md

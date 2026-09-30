@@ -1,0 +1,63 @@
+# Static site (MkDocs Material)
+
+*Contributor-facing.* Builds a browsable, local-only copy of this repository's
+documentation. Nothing is deployed. Every page carries
+`<meta name="robots" content="noindex, nofollow">` and the site root serves a
+`robots.txt` with `Disallow: /`.
+
+## Build and serve
+
+```sh
+make site        # creates tools/site/.venv on first run, stages, builds build/site/
+make serve       # builds, then serves build/site/ at http://127.0.0.1:8765/
+make serve SITE_PORT=8790
+make site-check  # builds, then fails unless noindex is on 100% of HTML and robots.txt exists
+make site-clean  # removes build/site-src, build/site and the report files
+```
+
+A full build takes under a minute. `build/site-report.json` records what was
+staged, excluded and rewritten; `build/site-mkdocs.log` keeps the MkDocs log.
+
+## How the build works
+
+`tools/site/build.py` reads **only `git ls-files`**; it never walks the working
+tree, so untracked material (`externals/`, virtualenvs, vendored build output)
+cannot reach the site. Stage a new file with `git add` before building if you
+want to see it.
+
+1. Tracked `.md`, `.png`, `.svg`, `.jpg`, `.jpeg` and `.gif` files are copied
+   into `build/site-src/` with the repository's path layout, so relative links
+   keep working.
+2. Links whose target is not staged are rewritten:
+   - a tracked file that is not staged (code, JSON, YAML) goes to GitHub at the
+     built commit (`blob/<sha>/path`, `tree/<sha>/path` for directories);
+   - `externals/<name>/…` goes to the upstream repository at the `ref` pinned
+     in `workspace.lock.json`, when `<name>` is a lockfile entry;
+   - a link to a directory goes to that directory's index page;
+   - anything else is left unchanged and listed under `unresolved` in the report.
+   `#anchors`, `#L10` line fragments and `?query` strings are kept.
+3. Every directory in the nav gets an index page: its `README.md` or
+   `index.md`, or a generated list of its pages and subfolders.
+4. Each image folder under `visualizations/` and `docs/visualizations/` gets a
+   generated `gallery.md` with lazy-loaded images.
+5. The nav follows the folder tree. The hand-written landing sections in
+   `tools/site/landing.yaml` (Overview, Releases, Queue) come first; top-level
+   folders with 20 or more staged files get a tab; the rest sit under **More**.
+6. MkDocs builds `build/site/` (`mkdocs.yml` at the repo root; the theme
+   override in `tools/site/overrides/main.html` adds the noindex meta;
+   `tools/site/hooks.py` loads the generated nav).
+
+## Exclusions
+
+`tools/site/exclusions.yaml` lists glob patterns for tracked paths that must not
+be published, each with an `axis`, a `reason` and who decided it (the schema is
+in the file's header). An excluded file is not staged, and every link to it
+becomes the plain text `(not published)`. The report counts matches per entry,
+so an entry that matches nothing is visible.
+
+## site/pages
+
+Committed rich HTML pages go in [`site/pages/`](../../site/pages/README.md).
+They are copied into the site unchanged (plus the noindex meta if missing) and
+listed in the nav under **Pages**. Rule: rich pages are committed here;
+artifacts are only for private drafts.
