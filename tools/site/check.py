@@ -2,6 +2,7 @@
 """Post-build gate for the static site (make site-check).
 
 Fails unless:
+  * the content scan (tools/site/scan.py) over build/site-src/ passes,
   * build/site/robots.txt exists and disallows everything, and
   * every HTML file under build/site/ carries
     <meta name="robots" content="noindex, nofollow"> inside <head>.
@@ -43,6 +44,10 @@ def main() -> int:
         print(f"site-check: no noindex meta: {m}")
     if missing:
         problems.append(f"{len(missing)} of {pages} HTML pages lack the noindex meta")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import scan
+    if scan.report(scan.scan(), prefix="site-check scan") != 0:
+        problems.append("content scan blocked (see lines above)")
     if problems:
         for p in problems:
             print(f"site-check: FAIL: {p}")

@@ -1,0 +1,85 @@
+# Allowlist for the fail-closed content scan (tools/site/scan.py).
+#
+# The scan runs over the STAGED site tree on every `make site` and again in
+# `make site-check`. A hit fails the build unless its (path, kind) pair is
+# listed here. An entry covers every hit of that kind in that file, so review
+# the whole file before adding one.
+#
+# Schema: a top-level `allow:` list; each entry has exactly
+#   path    staged path (repo-relative, as in build/site-src/)
+#   kind    email | ns-host | token | payload
+#   reason  why the hits are safe to publish
+# NEVER write the matched text into this file, a commit message or an issue.
+#
+# Reviewed 2026-09-30 (site phase 2). Entries that stop matching are printed as
+# notes so they can be removed.
+
+allow:
+  # ---- token: documented placeholders and test values ----
+  - path: docs/10-domain/authentication-flows-deep-dive.md
+    kind: token
+    reason: "Illustrative subject token with a sequential placeholder hash."
+  - path: docs/10-domain/cgm-remote-monitor-auth-deep-dive.md
+    kind: token
+    reason: "Same illustrative subject token as the auth-flows page."
+  - path: docs/10-domain/websocket-event-coverage.md
+    kind: token
+    reason: "Example token copied from the upstream API v3 socket documentation, and a descriptive secret placeholder."
+  - path: docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md
+    kind: token
+    reason: "Schema example whose value describes the format; not a secret."
+  - path: docs/30-design/remedial/nightscout-backfix-register.md
+    kind: token
+    reason: "Illustrative subject token showing how a URL decoder corrupted names with underscores."
+  - path: reports/phase0-pr-bodies/bf-parms.md
+    kind: token
+    reason: "Same illustrative subject token as the register entry (PR body as opened)."
+  - path: docs/60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md
+    kind: token
+    reason: "Tokens of a lab probe subject and a unit-test subject on throwaway instances."
+  - path: docs/60-research/programme/workflow-completeness-critique-2026-09-15.md
+    kind: token
+    reason: "Connection-string shape with literal user/pass placeholders."
+  - path: mapping/xdrip-android/external-integrations.md
+    kind: token
+    reason: "Connection-string format with literal username/password placeholders."
+  - path: mapping/xdrip-android/local-web-server.md
+    kind: token
+    reason: "Hash of a documented example password, copied from upstream xDrip documentation."
+  - path: mapping/loopcaregiver/authentication.md
+    kind: token
+    reason: "Example OTP URI from the upstream LoopCaregiver unit tests."
+  - path: mapping/nightguard/nightscout-sync.md
+    kind: token
+    reason: "Placeholder token on a placeholder site URL."
+  - path: docs/backlogs/README.md
+    kind: token
+    reason: "Test-harness API secret placeholder for a local instance."
+  - path: docs/backlogs/integration-test-harness.md
+    kind: token
+    reason: "Test-harness API secret placeholders for a local instance."
+  - path: docs/reports/nightscout-telemetry-local-e2e-report-2026-07-16.md
+    kind: token
+    reason: "Test-harness API secret placeholder for a local instance."
+  - path: docs/reports/option-g-test-validation-report.md
+    kind: token
+    reason: "Test-harness API secret placeholder for a local instance."
+  - path: tools/kotlin-nightscout-tests/README.md
+    kind: token
+    reason: "Test-harness API secret placeholder for a local instance."
+  - path: tools/swift-nightscout-tests/README.md
+    kind: token
+    reason: "Test-harness API secret placeholder for a local instance."
+
+  # ---- ns-host ----
+  - path: docs/sdqctl-proposals/ns-community-idp-proposal.md
+    kind: ns-host
+    reason: "A proposed identity-provider service host, not a person's Nightscout site."
+
+  # ---- payload ----
+  - path: docs/10-domain/cgm-remote-monitor-sync-deep-dive.md
+    kind: payload
+    reason: "Quotes the upstream web client's own retro-load call; the defect is the missing server-side check, which the page does not describe."
+  - path: reports/consumer-impact-15.0.9/change-inventory.md
+    kind: payload
+    reason: "Lists the retro-load event name among changed client surfaces; no request."

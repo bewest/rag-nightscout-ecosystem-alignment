@@ -123,7 +123,7 @@ def load_externals() -> tuple[str, dict]:
 # markdown scanning
 # --------------------------------------------------------------------------
 FENCE_RE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
-INLINE_CODE_RE = re.compile(r"(`+)(?:.+?)\1", re.S)
+INLINE_CODE_RE = re.compile(r"(?<!`)(`+)(?!`)((?:(?!\n[ \t]*\n).)+?)(?<!`)\1(?!`)", re.S)  # no span across a blank line
 REFDEF_RE = re.compile(r"^( {0,3}\[[^\]]+\]:[ \t]*)(<[^>]*>|\S+)(.*)$")
 HTML_ATTR_RE = re.compile(r"(<(img|a|source|video)\b[^>]*?\s(?:src|href)\s*=\s*)([\"'])(.*?)\3([^>]*>)",
                           re.I | re.S)
@@ -235,6 +235,8 @@ class Site:
         self.exclusions = load_exclusions(exclusions_path)
         self.ext_dir, self.externals = load_externals()
         self.landing = yaml.safe_load((SITE_TOOLS / "landing.yaml").read_text())["sections"]
+        self.nav_groups = (yaml.safe_load((SITE_TOOLS / "nav-groups.yaml").read_text()) or {}).get("groups") or {}
+        self.group_counts: dict[str, dict[str, int]] = {}
 
         self.excluded: dict[str, dict] = {}
         self.match_counts = collections.Counter()
@@ -567,7 +569,10 @@ class Site:
             if p in pages and p != idx:
                 ordered.append(p)
         rest = [p for p in pages if p != idx and p not in ordered]
-        items += ordered + rest
+        if d in self.nav_groups:
+            items += ordered + self.grouped(d, rest)
+        else:
+            items += ordered + rest
         if d in self.gallery_dirs:
             items.append({"Gallery": posixpath.join(d, GALLERY_NAME)})
         for s in subdirs:
@@ -575,6 +580,29 @@ class Site:
                 continue
             items.append({posixpath.basename(s) + "/": self.section_nav(s, skip=skip)})
         return items
+
+    def grouped(self, d: str, pages: list[str]) -> list:
+        """Bucket a large flat folder's pages into titled sub-sections."""
+        cfg = self.nav_groups[d]
+        rules = cfg.get("rules") or []
+        buckets = {r["title"]: [] for r in rules}
+        other = []
+        for p in pages:
+            name = posixpath.basename(p)
+            m = re.match(r"exp[-_]?(\d+)", name)
+            for r in rules:
+                if "exp_range" in r:
+                    lo, hi = r["exp_range"]
+                    if m and lo <= int(m.group(1)) < hi:
+                        buckets[r["title"]].append(p); break
+                elif re.search(r["match"], name):
+                    buckets[r["title"]].append(p); break
+            else:
+                other.append(p)
+        if other:
+            buckets[cfg.get("other", "Other")] = other
+        self.group_counts[d] = {t: len(v) for t, v in buckets.items() if v}
+        return [{t: v} for t, v in buckets.items() if v]
 
     def nav(self):
         landing_dirs = {s["dir"] for s in self.landing}
@@ -677,9 +705,19 @@ def main():
         "unresolved": site.unresolved,
         "not_published_markers": site.marker_links,
         "stage_seconds": round(stage_s, 2),
+        "nav_groups": site.group_counts,
     }
+    # fail closed: the content scan over the staged tree must pass before MkDocs runs
+    sys.path.insert(0, str(SITE_TOOLS))
+    import scan as content_scan
+    scan_res = content_scan.scan(SRC)
+    report["content_scan"] = scan_res
     rc = 0
-    if not args.stage_only:
+    if scan_res["blocked"]:
+        rc = 2
+        if OUT.exists():
+            shutil.rmtree(OUT)  # never leave a stale, unscanned site behind
+    elif not args.stage_only:
         mk_s, warnings, rc = run_mkdocs()
         kinds = collections.Counter(classify(w) for w in warnings)
         report.update({
@@ -699,7 +737,8 @@ def main():
     print(f"  excluded: {report['excluded_files']} files {report['excluded_per_axis']}")
     print(f"  links: {report['links_per_kind']}")
     print(f"  unresolved links: {report['unresolved_count']} (see {REPORT_FILE.relative_to(REPO)})")
-    if not args.stage_only:
+    content_scan.report(scan_res, prefix="  scan")
+    if "mkdocs_exit" in report:
         print(f"  mkdocs: exit {rc}, {report['warnings']} warnings, {report['mkdocs_seconds']} s")
         for k, v in list(report["warning_kinds"].items())[:5]:
             print(f"    {v:6d}  {k}")

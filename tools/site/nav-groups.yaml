@@ -1,0 +1,31 @@
+# Nav sub-sections for large flat folders. For each listed directory, the
+# pages directly in it (not in subfolders) are grouped by the FIRST rule whose
+# regex matches the file name; pages matching no rule go to `other`. The
+# folder's index page stays first; existing subfolders stay sections after the
+# groups. Groups are collapsed in the sidebar. Aim for fewer than ~40 pages
+# per group; build.py reports the counts in build/site-report.json.
+#
+# A rule is either {title, match: <regex on the file name>} or
+# {title, exp_range: [lo, hi]} for exp-NNNN files with lo <= NNNN < hi.
+groups:
+  docs/60-research:
+    other: "Other research notes"
+    rules:
+      - {title: "Experiments EXP-0001 to 2869", exp_range: [0, 2870]}
+      - {title: "Experiments EXP-2870 to 2909", exp_range: [2870, 2910]}
+      - {title: "Experiments EXP-2910 to 2949", exp_range: [2910, 2950]}
+      - {title: "Experiments EXP-2950 to 2999", exp_range: [2950, 3000]}
+      - {title: "Experiments EXP-3000 and later", exp_range: [3000, 100000]}
+      - {title: "Programme, closeouts and syntheses", match: '^(INDEX|CLOSEOUT|AUTORESEARCH|CAPSTONE|VERIFICATION|autoresearch|research-|overall-|strategic-|top-5|synthesis-|experiment|experimentation|e-series|use-case|beyond-|structural-|copilot|mlflow|visualization-toolkit|evidence-synthesis|cross-report|gap-closing|objective-|fda-)'}
+      - {title: "Productionization and pipelines", match: '^(autoproductioni|production|pipeline-|parquet-|mongodb-|routing-|event-aware|inference-|validation-|accuracy-|crossval|retrospective|data-volume|audition|two-stream|asymmetric|non-bolusing|cgm-remote-monitor|cgm-trace|era-bridge|encoding-)'}
+      - {title: "Capability reports", match: '^capability-report'}
+      - {title: "Therapy", match: '^(therapy-|revised-therapy|integrated-therapy|fidelity-therapy|harmonic-context-therapy|circadian-therapy|splitloss-therapy|loop-deconfounded-therapy|tier3-therapy)'}
+      - {title: "Settings and profiles", match: '^(settings-|aid-aware-settings|waterfall-settings|profile-|aid-settings|wave7-|wave9-|overnight-)'}
+      - {title: "Natural experiments", match: '^natural-experiment'}
+      - {title: "EGP, supply-demand and deconfounding", match: '^(egp-|metabolic-|supply-demand|multitimescale-supply|hypo-supply|deconfounding|bilateral-|glycogen-|demand-|state-|wall-resolution|two-stream|cumulative-integral|continuous-physiological|variability-|unexplained)'}
+      - {title: "Meals and carbohydrates", match: '^(meal-|carb-|multi-scale-meal|rescue-carb|uam-|context-(cr|adaptive-uam)|cr-improvement|autotune-uam|excursion-|exp-meal)'}
+      - {title: "Insulin, ISF and pharmacokinetics", match: '^(insulin-|pk-|pharmaco|dia-|dose-dependent|kinetics-|isf-|effective-isf|sc-ceiling|causal-pk|dynisf)'}
+      - {title: "Clinical, safety and hypoglycaemia", match: '^(clinical-|hypo|personalized-hypo|safety|control-theory|alert-filtering|acceleration-clinical|exercise-|glycemic-|confidence-intervals|intervention-)'}
+      - {title: "AID controllers, cohorts and waves", match: '^(aid-|loop-|algorithm-|controller-|cross-controller|cross-layer|tier2-|wave|vignette-|patient-|phenotyping|comprehensive-phenotyping|expanded-|parameter_recovery|predictive_validation|envelope-vs|diabetes-|multi-objective)'}
+      - {title: "Forecasting, prediction and classification", match: '^(classification|validated-classification|verified-ml|forecast|prediction|horizon|hindcast|extended-horizon|multi-horizon|history-horizon|window-|glucose-symmetry|centering|temporal-|digital-twin|phase-analysis|circadian-profiling)'}
+      - {title: "ML methods and architectures", match: '^(ml-|ensemble|conformal|cnn-|dualscale|advanced-|combined-|combination|composite|gen[234]|model-|feature-|training-|transfer-|autoregressive|winner-|optimized-|gb-|uniform-|symmetry|timescale|classification|validated-classification|cross-scale|multi-scale|causal-|clinical-zone|splitloss|kinetics|context-features)'}
