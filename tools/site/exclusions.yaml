@@ -123,6 +123,10 @@ exclusions:
     axis: health-data
     reason: "Per-person report keyed by an unsalted hash of a guessable source string, alongside a location (profile timezone); not cleared as anonymised."
     decided_by: "phase2 review"
+  - pattern: "reports/exp-3022b/odc-86025410/**"
+    axis: health-data
+    reason: "Per-participant report keyed by the data commons' own participant ID rather than a local pseudonym; kept off the public site."
+    decided_by: "maintainer 2026-09-30"
 
   # ---- consent ----
   - pattern: "tools/oref_inv_003_replication/figures/**"
