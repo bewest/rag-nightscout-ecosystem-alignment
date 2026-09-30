@@ -1,0 +1,70 @@
+# layer	repo	role
+# layer: device = BLE/radio drivers, simulators, reverse-engineering and crypto for CGMs and pumps
+#        controller = AID controllers and algorithms
+#        cloud = connectors that bring vendor-cloud or third-party data out
+#        server = Nightscout-compatible servers and gateways
+#        follower = remote-monitoring and caregiver apps
+#        reports = reporting and analysis tools
+device	loopandlearn/OmnipodKit	Omnipod Eros + DASH driver for Loop and Trio
+device	loopandlearn/DanaKit	Dana-i / Dana RS pump driver (Swift)
+device	loopandlearn/MedtrumKit	Medtrum Nano pump driver (Swift), loopandlearn fork
+device	jbr7rr/MedtrumKit	Medtrum Nano pump driver (Swift), upstream
+device	bastiaanv/EversenseKit	Eversense CGM driver (Swift), upstream
+device	loopandlearn/AccuChekKit	Accu-Chek pump driver (Swift), fork
+device	loopandlearn/LibreCRKit	Libre CGM driver (Swift), fork
+device	loopandlearn/LibreLoop	Libre plugin for Loop, fork
+device	loopandlearn/dana-simulator	Dana pump BLE simulator (Go), fork
+device	loopandlearn/pod	Omnipod simulator (Go), fork
+device	LoopKit/OmniBLE	Omnipod DASH driver, predecessor of OmnipodKit
+device	LoopKit/OmniKit	Omnipod Eros driver, predecessor of OmnipodKit
+device	LoopKit/CGMBLEKit	Dexcom G5/G6 BLE driver
+device	LoopKit/G7SensorKit	Dexcom G7 / ONE+ BLE driver
+device	LoopKit/RileyLinkKit	RileyLink radio bridge for Eros and Medtronic
+device	LoopKit/MinimedKit	Medtronic 5xx/7xx pump driver over RileyLink
+device	LoopKit/LibreTransmitter	Libre 1/2 via transmitters and NFC
+device	OpenMinimed/PythonPumpConnector	Medtronic 7xxG pump BLE connector (Python)
+device	OpenMinimed/PythonSake	Medtronic SAKE key agreement (Python)
+device	OpenMinimed/JavaPumpConnector	Medtronic 7xxG pump BLE connector (Java)
+device	OpenMinimed/JavaSake	Medtronic SAKE key agreement (Java)
+device	OpenMinimed/NativeSakeTests	tests against the vendor's native SAKE library
+device	OpenMinimed/SakeLibraryRE	reverse engineering notes for the SAKE library
+device	OpenMinimed/Documentation	protocol documentation
+device	OpenMinimed/JadxProjects	decompilation projects
+device	OpenMinimed/FridaScripts	dynamic-instrumentation scripts
+device	openaps/openomni	Omnipod Eros radio decoding (docs and library)
+device	jwoglom/faketandem	Tandem pump BLE simulator (Go)
+device	jwoglom/pumpX2	Tandem t:slim X2 / Mobi BLE protocol library (Java)
+device	jwoglom/controlX2	Android + Wear OS controller app for Tandem pumps over pumpX2
+device	j-kaltes/Juggluco	Libre 2/3 and Dexcom direct-to-phone reader (Android)
+device	gui-dos/DiaBLE	multi-sensor BLE/NFC reader and research app (Swift)
+device	xdrip-js/xdrip-js	Dexcom G5/G6 BLE in JavaScript for OpenAPS rigs
+device	openaps/decocare	Medtronic CareLink USB stick protocol (Python), historical
+device	ps2/rileylink	RileyLink hardware and firmware, historical
+controller	LoopKit/Loop	Loop iOS app
+controller	LoopKit/LoopKit	LoopKit framework shared by Loop and Trio
+controller	LoopKit/LoopAlgorithm	Loop's algorithm as a package
+controller	nightscout/Trio	Trio iOS app (oref on iOS)
+controller	nightscout/AndroidAPS	AndroidAPS, with pump and CGM drivers in-tree
+controller	openaps/oref0	oref0 reference algorithm and rig tooling
+controller	Artificial-Pancreas/iAPS	iAPS iOS app
+device	NightscoutFoundation/xDrip	xDrip+ Android CGM collector and follower
+device	JohanDegraeve/xdripswift	xDrip4iOS CGM collector and follower
+cloud	nightscout/nightscout-connect	vendor-cloud connectors built into cgm-remote-monitor
+cloud	timoschlueter/nightscout-librelink-up	LibreLinkUp to Nightscout uploader
+cloud	nightscout/share2nightscout-bridge	Dexcom Share to Nightscout bridge
+cloud	nightscout/minimed-connect-to-nightscout	Medtronic CareLink to Nightscout bridge
+cloud	jwoglom/tconnectsync	Tandem t:connect to Nightscout sync
+cloud	LoopKit/TidepoolService	Loop and Trio upload to Tidepool
+cloud	LoopKit/dexcom-share-client-swift	Dexcom Share client (Swift)
+cloud	tidepool-org/uploader	Tidepool desktop uploader (device drivers for many meters and pumps)
+cloud	tidepool-org/platform	Tidepool data platform (Go)
+server	nightscout/cgm-remote-monitor	Nightscout server
+server	nightscout/nocturne	Nocturne server (.NET)
+server	t1pal/nightscout-roles-gateway	roles gateway for hosted Nightscout
+follower	loopandlearn/LoopFollow	LoopFollow iOS follower
+follower	LoopKit/LoopCaregiver	LoopCaregiver iOS follower and remote commands
+follower	nightscout/nightguard	nightguard iOS follower
+follower	sulkaharo/nsfitbit	Nightscout Fitbit watch face
+reports	zreptil/nightscout-reporter	Nightscout Reporter PDF reports
+reports	loopandlearn/lnl-scripts	Loop and Learn build and support scripts
+reports	loopandlearn/customization	Loop and Learn customization patches

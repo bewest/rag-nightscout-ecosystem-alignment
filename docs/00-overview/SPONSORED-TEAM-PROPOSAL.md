@@ -136,6 +136,12 @@ A starting shape. The board and maintainers would settle the final one.
 | **Ecosystem compatibility engineer** | keeps the census of client apps current; runs the real-system checks with Loop, Trio, AndroidAPS and xDrip+ builders; turns what clients actually send into tests; watches the vendor clouds the connectors log into and keeps a connector test lab that any server can use | a server change reaches every client (§2), and a vendor change reaches every server (§6a) |
 | **Quality and security lead** (part time at first) | triages security reports and dependency alerts, keeps the defect register and test records, is the named reviewer for security and safety items | 21 items ask for a kind of reviewer no one is assigned to be |
 
+Beyond cgm-remote-monitor, the [stack census](../60-research/programme/stack-census-2026-09-30.md)
+estimates a shared quality kit for the device drivers and vendor-cloud connectors at 167–388
+person-weeks one-time and 0.4–0.7 of a full-time engineer after that (estimates, with their
+assumptions). The [quality-system proposal](QUALITY-SYSTEM.md) sets out what that kit contains and
+which parts volunteers can do alone.
+
 Out of scope for the team:
 
 - It does not decide what a project accepts. Each project's maintainers keep the merge decision.

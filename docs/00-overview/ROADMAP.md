@@ -204,6 +204,13 @@ maintainers. It proposes these work packages once the modernization branch is ac
 Library and implementation choices are open. Detail:
 [modernization review and proposed next steps](../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md).
 
+**A shared quality kit for the whole stack.** A proposal to every project: vector corpora for device
+protocols, simulators, fixture suites and a change canary for vendor clouds, a conformance suite any
+server can run, and one record shape for every test run, built in four stages. It also proposes how
+requirements that touch several projects are agreed. Detail:
+[quality-system proposal](QUALITY-SYSTEM.md), measured by the
+[stack census](../60-research/programme/stack-census-2026-09-30.md).
+
 ## 6. What bounds all of it
 
 Review capacity, not engineering. Most queue items route to the maintainer, and the SECURITY and
