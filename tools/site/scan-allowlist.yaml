@@ -83,3 +83,8 @@ allow:
   - path: reports/consumer-impact-15.0.9/change-inventory.md
     kind: payload
     reason: "Lists the retro-load event name among changed client surfaces; no request."
+
+  # ---- email ----
+  - path: docs/60-research/programme/stack-census-2026-09-30/histories.md
+    kind: email
+    reason: "A public mailing-list address inside a mail-archive citation URL (merged from main 2026-09-30); a list address, not a person's."
