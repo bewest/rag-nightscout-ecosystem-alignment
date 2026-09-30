@@ -10913,6 +10913,55 @@ items:
       0.1.0 via tools/lab/connector-soak with a string-stored profile on
       the sink, P-ID-9 tconnectsync profile replace-mode PUT; (4) P-ID-7
       through oref0's ns-dedupe-treatments.sh itself. (5) a lab cell for deleting an auth subject stored with a string _id by its hex: P-ID-12's DELETE cell became vacuous when #8754 made subject create keep only owned fields; a one-off check on 2026-09-25 gave n=1 left on 15.0.8 and dev, n=0 on ab7b22d6. (6) P-ID-1's README row is corrected: Loop does not re-POST a dose with a cached _id (NightscoutService DoseEntry.swift, the _id argument is commented out); it uses a cached id only for a carb PUT and DELETE by id.
+  - id: WS-LAB
+    title: "tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3)"
+    parcel: register-open
+    repo: rag-nightscout-ecosystem-alignment
+    branch: lab/proxy-trust-ws
+    base: main
+    worktree: ../rag-alignment-proxy-trust-ws
+    state: in-progress
+    pr: []
+    blast_radius: >
+      tools/lab/proxy-trust/ws_chain.sh, tools/ws_probe.js, tools/ws_echo.js,
+      tools/ws_analyze.py, README-ws.md, results/*ws*; one source guard
+      (AR_SOURCED) added to ar_chain.sh.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme tooling
+    register: []
+    gates:
+      - run: sh -c 'bash -n tools/lab/proxy-trust/ws_chain.sh && bash -n tools/lab/proxy-trust/ar_chain.sh && node --check tools/lab/proxy-trust/tools/ws_probe.js && node --check tools/lab/proxy-trust/tools/ws_echo.js && python3 -m py_compile tools/lab/proxy-trust/tools/ws_analyze.py'
+        kind: static
+        describe: The lab scripts parse. Says nothing about what they measure.
+      - no-gate: >
+          The measurement needs Docker, MongoDB and two Nightscout trees
+          (ws_chain.sh selftest/run/o2families/idle), so it is not a queue gate.
+          2026-09-28: selftest 27/27; run 64/64 cells W0 ok and socket address
+          equal to HTTP; o2families 16 rows, 80 probes, none vacuous;
+          idle 12 cells.
+    blocks_on: []
+    evidence:
+      - tools/lab/proxy-trust/README-ws.md
+      - tools/lab/proxy-trust/results/matrix-ws-2026-09-28.md
+      - tools/lab/proxy-trust/results/o2-families-ws-2026-09-28.md
+      - tools/lab/proxy-trust/results/ws-idle-2026-09-28.md
+    notes: >
+      Closes the "WebSocket upgrades" gap listed in README-ar-chain.md. Measured
+      2026-09-28 against dev f1591069 and #8754 81623f9b: socket.io upgrades
+      through every AR hop (101 logged at each), and the address recorded for
+      a wrong-secret socket authorize equals the HTTP one in every topology x
+      TRUST_PROXY x transport cell, so the TRUST_PROXY deployment matrix applies
+      to sockets unchanged. W2 (all header families in the handshake) matches
+      the HTTP families table row for row: unset not protected everywhere,
+      the expected count protected. W3 (idle vs hop timeouts, off by default):
+      a hop timeout below the 25s socket.io ping drops the idle socket every
+      cycle (10s: 8, 20s: 4, 24s: 3 drops in 90s); 26s and above hold. Owed: cloud-LB cells
+      (backend keepalive with PROXY protocol on an L7 rule, LB idle timeout,
+      health checks) need a real LB and are outside this lab; O3/O4 throttle
+      over sockets; wss:// through the chain. Measured before #8765 (one TRUST_PROXY
+      source) and BF-80 reached dev; re-run on the 15.0.9 candidate owed.
   - id: OID-PREVALENCE
     title: "Count string _ids and twin pairs per collection in real data, counts only"
     parcel: register-open

@@ -157,7 +157,8 @@ The output JSONL has the same fields as `run_matrix.sh`, plus `expected_tp` and
 - TLS/O5 on this chain. The tenant router passes the first hop's
   `X-Forwarded-Proto` through, so O5 should behave as it does in `TLS`, but
   that is unmeasured.
-- WebSocket upgrades, and O3/O4 throttle cells.
+- O3/O4 throttle cells. (WebSocket upgrades are now covered by
+  [`ws_chain.sh`](README-ws.md), measured 2026-09-28.)
 - Full-family O2 at settings other than unset and the expected count.
 - In-cluster callers that bypass the edge and reach the tenant router
   directly, which a hop count would trust.

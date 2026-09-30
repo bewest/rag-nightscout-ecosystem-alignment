@@ -250,6 +250,9 @@ PY
   echo "private: $jsonl"; echo "summary: $summary"
 }
 
+# When sourced by ws_chain.sh (AR_SOURCED=1) we only export functions/config.
+if [ "${AR_SOURCED:-}" = 1 ]; then return 0 2>/dev/null || true; fi
+
 case "${1:-}" in
   up)       ar_up ns ;;
   selftest) ar_selftest ;;

@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 172 |
-| runnable gates | 240 |
-| explicit `no-gate:` markers | 226 |
+| items | 173 |
+| runnable gates | 241 |
+| explicit `no-gate:` markers | 227 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 226 of the 466 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 227 of the 468 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 2 | OID-LAB, RT-SOAK |
+| `in-progress` | 3 | OID-LAB, WS-LAB, RT-SOAK |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
@@ -2039,7 +2039,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 89 items
+`parcel: register-open` &mdash; 90 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2122,6 +2122,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `merged-upstream` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
+| `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `in-progress` | `lab/proxy-trust-ws` | n/a | 1 run + 1 no-gate |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `merged-upstream` | `bf/entries-unknown-id` | patch | 1 run |
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -4614,6 +4615,39 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/object-id/results/object-id-2026-09-24.md`
 
 **Notes.** The lab ran 2026-09-24 against v15.0.8 92d08342, dev ddd9b600 and #8758 6d120fa2: 43 cells, repeated with identical results, and an ablation build for P-ID-10. Owed: (1) an integration gate per BF item that runs the lab and checks one cell, so BFQ-109 to BFQ-112 get a runnable gate; (2) build b moved to dev 153e5658 (the local clone lacks it; ddd9b600..153e5658 touches only count code and the connector pin); (3) replays through real client code instead of request shapes: P-ID-1 with tools/swift-nightscout-tests (Loop's NightscoutKit), P-ID-2 through AndroidAPS core/nssdk NSAndroidClientImpl from a jvmTest, P-ID-5 with the real connector 0.1.0 via tools/lab/connector-soak with a string-stored profile on the sink, P-ID-9 tconnectsync profile replace- mode PUT; (4) P-ID-7 through oref0's ns-dedupe-treatments.sh itself. (5) a lab cell for deleting an auth subject stored with a string _id by its hex: P-ID-12's DELETE cell became vacuous when #8754 made subject create keep only owned fields; a one-off check on 2026-09-25 gave n=1 left on 15.0.8 and dev, n=0 on ab7b22d6. (6) P-ID-1's README row is corrected: Loop does not re-POST a dose with a cached _id (NightscoutService DoseEntry.swift, the _id argument is commented out); it uses a cached id only for a carb PUT and DELETE by id.
+
+### `WS-LAB` &mdash; tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3)
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `lab/proxy-trust-ws` |
+| base | `main` |
+| worktree | `../rag-alignment-proxy-trust-ws` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** tools/lab/proxy-trust/ws_chain.sh, tools/ws_probe.js, tools/ws_echo.js, tools/ws_analyze.py, README-ws.md, results/*ws*; one source guard (AR_SOURCED) added to ar_chain.sh.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme tooling
+
+**Gates.**
+
+- `[static]` `sh -c 'bash -n tools/lab/proxy-trust/ws_chain.sh && bash -n tools/lab/proxy-trust/ar_chain.sh && node --check tools/lab/proxy-trust/tools/ws_probe.js && node --check tools/lab/proxy-trust/tools/ws_echo.js && python3 -m py_compile tools/lab/proxy-trust/tools/ws_analyze.py'`
+  - The lab scripts parse. Says nothing about what they measure.
+- **NO GATE** &mdash; The measurement needs Docker, MongoDB and two Nightscout trees (ws_chain.sh selftest/run/o2families/idle), so it is not a queue gate. 2026-09-28: selftest 27/27; run 64/64 cells W0 ok and socket address equal to HTTP; o2families 16 rows, 80 probes, none vacuous; idle 12 cells.
+
+**Evidence.**
+
+- `tools/lab/proxy-trust/README-ws.md`
+- `tools/lab/proxy-trust/results/matrix-ws-2026-09-28.md`
+- `tools/lab/proxy-trust/results/o2-families-ws-2026-09-28.md`
+- `tools/lab/proxy-trust/results/ws-idle-2026-09-28.md`
+
+**Notes.** Closes the "WebSocket upgrades" gap listed in README-ar-chain.md. Measured 2026-09-28 against dev f1591069 and #8754 81623f9b: socket.io upgrades through every AR hop (101 logged at each), and the address recorded for a wrong-secret socket authorize equals the HTTP one in every topology x TRUST_PROXY x transport cell, so the TRUST_PROXY deployment matrix applies to sockets unchanged. W2 (all header families in the handshake) matches the HTTP families table row for row: unset not protected everywhere, the expected count protected. W3 (idle vs hop timeouts, off by default): a hop timeout below the 25s socket.io ping drops the idle socket every cycle (10s: 8, 20s: 4, 24s: 3 drops in 90s); 26s and above hold. Owed: cloud-LB cells (backend keepalive with PROXY protocol on an L7 rule, LB idle timeout, health checks) need a real LB and are outside this lab; O3/O4 throttle over sockets; wss:// through the chain. Measured before #8765 (one TRUST_PROXY source) and BF-80 reached dev; re-run on the 15.0.9 candidate owed.
 
 ### `OID-PREVALENCE` &mdash; Count string _ids and twin pairs per collection in real data, counts only
 

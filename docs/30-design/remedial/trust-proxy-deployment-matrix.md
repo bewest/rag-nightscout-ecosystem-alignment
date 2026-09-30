@@ -24,6 +24,14 @@ lab topologies, including nginx `$remote_addr`, Caddy and Traefik, which replace
 with the right setting (`false` direct, `1` one proxy, `2` two hops or the PROXY-protocol chain),
 **protected** on all nine. A replacing proxy does not make the unset default protected.
 
+**Sockets follow the same table.** The socket.io server resolves the handshake request through the same
+helper, and a wrong-secret `authorize` feeds the same failed-auth delay. Measured 2026-09-28 on the four
+auth_request-chain topologies (`tools/lab/proxy-trust/README-ws.md`, dev `f1591069`, PR `81623f9b`). In
+every topology × setting × transport cell (polling-then-upgrade and websocket-only), the upgrade went
+through every hop, and the address recorded for the socket matched the HTTP one. Across all header
+families, the result was the same as HTTP: unset not protected, the expected count protected. No row
+below needs a separate socket column.
+
 Operator-facing versions: the Nightscout docs page *Proxy setting (`TRUST_PROXY`)* (draft,
 `nightscout.github.io` `docs/nightscout/trust_proxy.md`) and the cgm-remote-monitor reference
 `docs/proposals/trusted-proxy-migration.md`.
