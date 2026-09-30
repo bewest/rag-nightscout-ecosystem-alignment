@@ -140,7 +140,7 @@ and the attack targets exactly the moment help is welcome. Two practices are che
 - **An earned-trust path to maintainer rights**, with review by a second person.
 
 **Sources.**
-[Collin, xz-devel 2022-06-08](https://www.mail-archive.com/xz-devel@tukaani.org/msg00567.html),
+[Collin, xz-devel 2022-06-08, quoted in Cox, "Timeline of the xz open source attack"](https://research.swtch.com/xz-timeline),
 [Freund, oss-security 2024-03-29](https://www.openwall.com/lists/oss-security/2024/03/29/4),
 [tukaani.org incident page](https://tukaani.org/xz-backdoor/),
 [CISA alert 2024-03-29](https://www.cisa.gov/news-events/alerts/2024/03/29/reported-supply-chain-compromise-affecting-xz-utils-data-compression-library-cve-2024-3094),
