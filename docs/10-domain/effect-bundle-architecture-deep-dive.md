@@ -3,7 +3,7 @@
 > **Domain**: AID Algorithms / Nightscout API
 > **Last Updated**: 2026-02-08
 > **Source**: T1Pal Mobile Workspace Architecture Documentation
-> **Cross-Reference**: [T1Pal EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md](../../../t1pal-mobile-workspace/docs/architecture/EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md)
+> **Cross-Reference**: T1Pal EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md (not in the repository)
 
 ---
 

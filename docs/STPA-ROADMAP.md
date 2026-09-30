@@ -317,8 +317,8 @@ Phase 3 (6-12 months)
 
 - [STPA Usage Guide](STPA-USAGE-GUIDE.md) - How to perform STPA analysis
 - [Cross-Project Patterns](../traceability/stpa/cross-project-patterns.md) - Shared UCAs and SCs
-- [Severity Scale](../../../sdqctl/docs/stpa-severity-scale.md) - S1-S4 definitions
-- [STPA Audit Report](../../../sdqctl/reports/stpa-audit-2026-01-27.md) - Current state baseline
+- [Severity Scale](https://github.com/bewest/sdqctl/blob/3832ca140f1efbda0983755fecef72b70f7a6897/docs/stpa-severity-scale.md) - S1-S4 definitions
+- [STPA Audit Report](https://github.com/bewest/sdqctl/blob/3832ca140f1efbda0983755fecef72b70f7a6897/reports/stpa-audit-2026-01-27.md) - Current state baseline
 - [STPA-TRACEABILITY-FRAMEWORK](sdqctl-proposals/STPA-TRACEABILITY-FRAMEWORK.md) - Methodology
 
 ---

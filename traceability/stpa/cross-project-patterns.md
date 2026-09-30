@@ -243,8 +243,8 @@ Override lifecycle information is not synced:
 
 ## References
 
-- [STPA Audit Report](../../../sdqctl/reports/stpa-audit-2026-01-27.md)
-- [Severity Scale](../../../sdqctl/docs/stpa-severity-scale.md)
+- [STPA Audit Report](https://github.com/bewest/sdqctl/blob/3832ca140f1efbda0983755fecef72b70f7a6897/reports/stpa-audit-2026-01-27.md)
+- [Severity Scale](https://github.com/bewest/sdqctl/blob/3832ca140f1efbda0983755fecef72b70f7a6897/docs/stpa-severity-scale.md)
 - [STPA-TRACEABILITY-FRAMEWORK.md](../../docs/sdqctl-proposals/STPA-TRACEABILITY-FRAMEWORK.md)
 - [AID Controller Sync Patterns](../../mapping/cross-project/aid-controller-sync-patterns.md)
 - [Gaps](../gaps.md)

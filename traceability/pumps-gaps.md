@@ -405,7 +405,7 @@ Requires Tandem to open BLE protocol or provide control API. Unlikely due to:
 3. Protocol-oriented design with shared base for common fields
 4. State machine validation per device type
 
-**Status**: Documented in [STATE-ARCHITECTURE-AUDIT.md](../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+**Status**: Documented in STATE-ARCHITECTURE-AUDIT.md (not in the repository)
 
 **Related**:
 - [Device Capability Architecture Deep Dive](../docs/10-domain/device-capability-architecture-deep-dive.md)
