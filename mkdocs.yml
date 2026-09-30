@@ -71,6 +71,11 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      # GitHub-compatible heading ids, so an anchor written for GitHub (the
+      # repo's main reading surface) works on the site unchanged
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
