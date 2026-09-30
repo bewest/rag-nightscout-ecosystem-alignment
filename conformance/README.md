@@ -126,14 +126,10 @@ java -cp .build/aaps-runner.jar:.build/json-20231013.jar \
 
 ### GitHub Actions
 
-The CI workflow runs conformance tests automatically:
-
-```yaml
-# .github/workflows/ci.yml
-jobs:
-  conformance:           # Fast assertion tests
-  algorithm-conformance: # Full algorithm suite
-```
+Conformance is not run in GitHub Actions. The offline scenarios have no event
+fixtures yet, and the algorithm suite needs `externals/oref0` and reports a
+known divergence, so both run locally (`make conformance`,
+`make conformance-algorithms`).
 
 ### Local CI Mode
 
