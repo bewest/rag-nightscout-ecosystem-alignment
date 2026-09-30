@@ -72,7 +72,9 @@ Three things follow:
 ## 4. What other open-source organisations do
 
 Each rule in §5 comes from one of these. Every figure and quote below was read from the
-organisation's own page on 2026-09-29.
+organisation's own page on 2026-09-29. More histories (OpenSSL after Heartbleed, xz-utils, curl, Debian's paid
+long-term support and Dunc-Tank, KernelCI, ELISA and Zephyr, Tidepool Loop) are in the
+[quality-system proposal §7](QUALITY-SYSTEM.md#7-histories-that-map), sourced on 2026-09-30.
 
 | organisation | the rule it uses | source |
 |---|---|---|
@@ -184,6 +186,7 @@ What transfers, and what does not:
 
 - The foundation choosing a winning server or app.
 - Influence in proportion to money given.
+- Payment decided by one person (Debian's lesson from 2006, [QUALITY-SYSTEM §7](QUALITY-SYSTEM.md#7-histories-that-map)).
 - Decisions that exist only in private channels.
 - A maturity level read as a statement that software is safe for dosing decisions.
 - Any account of past disagreements in place of measured needs.

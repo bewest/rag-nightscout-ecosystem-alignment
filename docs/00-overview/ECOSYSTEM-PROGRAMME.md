@@ -42,6 +42,22 @@ The principle: **the foundation stewards the shared layers and keeps them open t
 implementation; each implementation makes its own technical choices.** A second server, such as
 Nocturne, is a second implementation of the same contract, not a competitor for the shared layers.
 
+## 2a. Beneath the layers: devices and vendor clouds
+
+The five layers rest on work that reaches the data in the first place: drivers that talk to CGMs and
+pumps over Bluetooth and radio, often through pairing cryptography that volunteers had to work out,
+and connectors that bring a person's data back out of vendor clouds. This is where data sovereignty
+starts: the data holder's ability to get their own data, in a form they can compute on, and to hand
+that job to tools and helpers they choose.
+
+The [stack census of 2026-09-30](../60-research/programme/stack-census-2026-09-30.md) measured 63
+repositories across these parts of the stack. 14 device protocols have 41 independent
+implementations; six code bases log in to Dexcom Share and five to LibreLinkUp; and no device or
+connector repository publishes a per-release test report. The
+[quality-system proposal](QUALITY-SYSTEM.md) proposes a shared kit for every layer: vector corpora,
+simulators, fixture suites, a change canary and one record shape. It also proposes how the
+requirements for it would be agreed.
+
 ## 3. Layer 1 — the reference implementation
 
 cgm-remote-monitor is the server most existing sites run, on MongoDB, with its own settings, data
@@ -200,7 +216,8 @@ recorded decision.
    contributions, provider listings and disclosure, each borrowed from an organisation that uses
    it (Apache, CNCF, OpenStreetMap, OpenMRS, SQLite; §4 there).
 3. Whether to take the datalake pilot and the sponsored team as separate decisions or as one
-   programme with shared reporting.
+   programme with shared reporting, and whether the shared quality kit of the
+   [quality-system proposal](QUALITY-SYSTEM.md) belongs in it.
 
 **For the maintainers of the ecosystem projects:**
 
