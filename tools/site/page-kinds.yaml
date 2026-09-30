@@ -1,0 +1,16 @@
+# Page-kind overrides for the site labels (tools/site/labels.py).
+#
+# By default a markdown page whose FILE NAME carries a YYYY-MM-DD date is a
+# Record ("Record as of <date>. A point-in-time document; it is not kept up to
+# date.") and every other page is Living ("Living document, last changed <git
+# date> at <short sha>."). An entry here sets one path to either kind.
+#
+# Schema: `overrides:` list of
+#   path    repo-relative path of the markdown file
+#   kind    record | living
+#   as_of   YYYY-MM-DD; required for a record whose file name has no date
+#   reason  why the default is wrong for this page
+#
+# The build report lists dated pages whose names suggest a living document
+# (plans, registers, proposals, ...) as candidates for this file.
+overrides: []

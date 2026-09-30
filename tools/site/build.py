@@ -33,6 +33,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pseudonym import Pseudonymizer  # noqa: E402
+from labels import Labeller  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 BUILD = REPO / "build"
@@ -240,6 +241,7 @@ class Site:
         self.landing = yaml.safe_load((SITE_TOOLS / "landing.yaml").read_text())["sections"]
         self.nav_groups = (yaml.safe_load((SITE_TOOLS / "nav-groups.yaml").read_text()) or {}).get("groups") or {}
         self.group_counts: dict[str, dict[str, int]] = {}
+        self.labeller = Labeller(REPO, SITE_TOOLS / "page-kinds.yaml")
 
         self.excluded: dict[str, dict] = {}
         self.match_counts = collections.Counter()
@@ -515,8 +517,9 @@ class Site:
                 dst = SRC / P.path(p)
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(REPO / p, dst)
+        L = self.labeller
         for p in self.pages:
-            write(p, self.rewrite_markdown(p, raw[p]))
+            write(p, L.label(p, self.rewrite_markdown(p, raw[p])))
         for p in self.passthrough:
             html = raw[p]
             if 'name="robots"' not in html:
@@ -527,7 +530,8 @@ class Site:
         for d in sorted(self.generated_index):
             dirpath = posixpath.dirname(d)
             if dirpath in self.landing_index:
-                body = self.rewrite_markdown(d, raw[self.landing_index[dirpath]])
+                src = self.landing_index[dirpath]
+                body = L.label(d, self.rewrite_markdown(d, raw[src]), date_source=src)
             else:
                 body = self.render_index(dirpath)
             write(d, body)
@@ -684,6 +688,56 @@ def classify(msg: str) -> str:
     return re.sub(r"'[^']*'", "'…'", msg)[:90]
 
 
+def check_pages_manifest(site: "Site") -> dict:
+    """site/pages/pages.yaml rules; returns counts, exits naming every problem."""
+    mf = REPO / PASSTHROUGH_DIR / "pages.yaml"
+    entries = ((yaml.safe_load(mf.read_text()) or {}).get("pages") or {}) if mf.exists() else {}
+    files = {posixpath.basename(p): p for p in site.passthrough}
+    errors, kinds = [], collections.Counter()
+    for name in sorted(set(files) - set(entries)):
+        errors.append(f"{name}: no entry in site/pages/pages.yaml")
+    for name, e in sorted(entries.items()):
+        if name not in files:
+            errors.append(f"{name}: listed in pages.yaml but not a tracked, unexcluded file in site/pages/")
+            continue
+        kind = (e or {}).get("kind")
+        kinds[kind] += 1
+        html = (REPO / files[name]).read_text(encoding="utf-8", errors="replace")
+        if kind == "snapshot":
+            as_of = e.get("as_of")
+            if not as_of:
+                errors.append(f"{name}: snapshot without as_of")
+                continue
+            m = re.search(r'<[^>]*data-site-banner="snapshot"[^>]*>(.*?)</', html, re.S)
+            if not m or str(as_of) not in re.sub(r"<[^>]+>", "", html[m.start():m.start() + 2000]):
+                errors.append(f"{name}: snapshot without a visible banner naming {as_of} "
+                              f'(an element with data-site-banner="snapshot")')
+        elif kind == "living":
+            sources, commit = e.get("sources"), e.get("source_commit")
+            if not sources or not commit:
+                errors.append(f"{name}: living page needs sources and source_commit")
+                continue
+            for src in sources:
+                if src not in site.tracked_set:
+                    errors.append(f"{name}: source {src} is not a tracked file")
+                    continue
+                r = subprocess.run(["git", "-C", str(REPO), "diff", "--quiet", str(commit), "HEAD", "--", src])
+                if r.returncode == 1:
+                    errors.append(f"{name}: source {src} changed after source_commit {commit}; "
+                                  f"re-render the page and move source_commit forward")
+                elif r.returncode != 0:
+                    errors.append(f"{name}: source_commit {commit} is not a commit here")
+        else:
+            errors.append(f"{name}: kind must be snapshot or living")
+    if errors:
+        for er in errors:
+            print(f"site: pages.yaml: {er}", file=sys.stderr)
+        if OUT.exists():
+            shutil.rmtree(OUT)
+        raise SystemExit(f"site: FAIL: {len(errors)} site/pages manifest problem(s)")
+    return dict(kinds)
+
+
 def run_mkdocs() -> tuple[float, list[str], int]:
     exe = SITE_TOOLS / ".venv" / "bin" / "mkdocs"
     cmd = [str(exe) if exe.exists() else "mkdocs", "build", "-f", str(REPO / "mkdocs.yml"), "--clean"]
@@ -712,6 +766,7 @@ def main():
 
     BUILD.mkdir(exist_ok=True)
     site = Site(Path(args.exclusions))
+    pages_manifest = check_pages_manifest(site)
     site.stage()
     stage_s = time.time() - site.t0
 
@@ -735,6 +790,9 @@ def main():
         "stage_seconds": round(stage_s, 2),
         "nav_groups": site.group_counts,
         "participant_ids": site.pseudo.stats(),
+        "page_labels": dict(site.labeller.counts),
+        "rich_pages": pages_manifest,
+        "record_candidates_for_living": sorted(site.labeller.candidates),
     }
     # fail closed: the content scan over the staged tree must pass before MkDocs runs
     sys.path.insert(0, str(SITE_TOOLS))
@@ -767,6 +825,8 @@ def main():
     print(f"  excluded: {report['excluded_files']} files {report['excluded_per_axis']}")
     print(f"  links: {report['links_per_kind']}")
     print(f"  participant IDs: {report['participant_ids']}")
+    print(f"  page labels: {report['page_labels']}; {len(site.labeller.candidates)} dated page(s) "
+          f"look living (candidates for tools/site/page-kinds.yaml, listed in the report)")
     print(f"  unresolved links: {report['unresolved_count']} (see {REPORT_FILE.relative_to(REPO)})")
     content_scan.report(scan_res, prefix="  scan")
     if "mkdocs_exit" in report:

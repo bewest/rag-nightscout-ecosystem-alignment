@@ -1,7 +1,8 @@
 # Static site (MkDocs Material)
 
-*Contributor-facing.* Builds a browsable, local-only copy of this repository's
-documentation. Nothing is deployed. Every page carries
+*Contributor-facing.* Builds a browsable copy of this repository's
+documentation. It is deployed only by the maintainer, from a local build, as an
+orphan `gh-pages` branch (see [Publishing](#publishing)). Every page carries
 `<meta name="robots" content="noindex, nofollow">` and the site root serves a
 `robots.txt` with `Disallow: /`.
 
@@ -96,15 +97,53 @@ prefix of; a short form that matches none or several fails the build.
   names carry a pseudonym should stay stable.
 - Neither the key nor any ID-to-pseudonym mapping is written to the repo, the
   build output or `build/site-report.json` (it records counts only).
-- **Phase 4 (GitHub Pages) needs the key as an Actions secret**, passed to the
-  build step as `SITE_PSEUDONYM_KEY`.
+- The key stays on the maintainer's machine. The site is built and published
+  locally (`make site-publish`); there is no Actions workflow and no Actions
+  secret.
 - The `participant-id` scan kind fails the build and `make site-check` on any
   raw `odc-<2 to 12 digits>` left in `build/site-src/` or `build/site/` (HTML,
   search index, sitemap, file names). It cannot be allowlisted.
 
+## Page labels: Record or Living
+
+Published pages must be production-ready and accurate, unless they are an
+explicit snapshot or point-in-time record (maintainer rule, 2026-09-30). So every
+markdown page carries a label under its title:
+
+- **Record**: the file name has a `YYYY-MM-DD` date. Banner: "Record as of
+  <date>. A point-in-time document; it is not kept up to date."
+- **Living**: every other page. Line: "Living document, last changed <git
+  date> at <short sha>." Dates come from one `git log --name-only` pass.
+- `tools/site/page-kinds.yaml` sets a path to either kind (a record with an
+  undated name needs `as_of`). The build report lists dated pages whose names
+  suggest a living document (`record_candidates_for_living`) for review; none
+  is overridden automatically.
+
 ## site/pages
 
 Committed rich HTML pages go in [`site/pages/`](../../site/pages/README.md).
-They are copied into the site unchanged (plus the noindex meta if missing) and
-listed in the nav under **Pages**. Rule: rich pages are committed here;
-artifacts are only for private drafts.
+They are copied into the site (plus the noindex meta if missing) and listed in
+the nav under **Pages**. Rule: rich pages are committed here; artifacts are only
+for private drafts. Every page needs an entry in `site/pages/pages.yaml`:
+
+- `kind: snapshot` needs `as_of`, and the page must show a banner (an element
+  with `data-site-banner="snapshot"` naming that date).
+- `kind: living` needs `sources` and `source_commit`. The build fails, naming
+  the page and the source, when a source changed after `source_commit`.
+  Re-render the page (for the programme page:
+  `tools/site/.venv/bin/python tools/site/render_programme.py`), check it, and
+  move `source_commit` to the commit that last changed the source.
+
+## Publishing
+
+`make site-publish` refuses unless the working tree is clean, `HEAD` is on a
+remote branch (`git branch -r --contains HEAD`), `SITE_PSEUDONYM_KEY` is set
+and `make site-check` passes. It then copies `build/site/` plus `.nojekyll`
+into the worktree `../rag-alignment-gh-pages` (created on first use) and makes
+the ONLY commit of a fresh orphan `gh-pages` branch, with the source sha and
+build date in its message. It prints the force-push command; it never pushes.
+
+- `make site-publish DRY_RUN=1` skips the remote check and stages the files in
+  the worktree without committing.
+- One-time repository setting: **Settings → Pages → Build and deployment →
+  Deploy from a branch → `gh-pages` / `(root)`**.

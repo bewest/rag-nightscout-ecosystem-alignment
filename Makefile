@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: site serve site-check site-clean site-venv queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: site serve site-check site-clean site-venv site-publish queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -92,6 +92,9 @@ help:
 	@echo "  make site-check    - Build, then fail unless every page is noindex and"
 	@echo "                        robots.txt disallows all"
 	@echo "  make site-clean    - Remove the site build output"
+	@echo "  make site-publish  - Build, check, and commit build/site as the single commit of"
+	@echo "                        an orphan gh-pages branch in ../rag-alignment-gh-pages;"
+	@echo "                        prints the push command. DRY_RUN=1 stages without committing"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -1053,3 +1056,6 @@ site-check: site
 
 site-clean:
 	rm -rf build/site-src build/site build/site-nav.yaml build/site-report.json build/site-mkdocs.log
+
+site-publish: $(SITE_STAMP)
+	DRY_RUN="$(DRY_RUN)" tools/site/publish.sh
