@@ -128,6 +128,656 @@ exclusions:
     reason: "Per-participant report keyed by the data commons' own participant ID rather than a local pseudonym; kept off the public site."
     decided_by: "maintainer 2026-09-30"
 
+  # ---- health-data: images embedded by pages that name a participant ID (162, generated 2026-09-30) ----
+  - pattern: "docs/60-research/figures/exp-2848_backfill_coverage.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "docs/60-research/figures/exp-3021_scenario_A.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "docs/60-research/figures/exp-3021_scenario_B.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "docs/60-research/figures/exp-3021_scenario_C.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "reports/exp-3022b/a/plots/01_agp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "reports/exp-3022b/cross_patient_summary.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "reports/exp-3022b/g/plots/01_agp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "reports/exp-3022b/i/plots/01_agp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/absorption-dynamics/exp-2750-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/absorption-refinement/exp-2752-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/autocorr-residuals/exp-2734-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/basal-optimization/exp-2775-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/basal-validation/exp-2745-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/bilateral-bgi/exp-2773-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/bounded-bgi/exp-2772-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/category-settings/exp-2776-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/circadian-basal/exp-2746-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/circadian-basal/exp-2780-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/circadian-isf/exp-2748-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/controller-compensation/exp-2735-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/controller-effort/exp-2783-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/controller-recommendations/exp-2792-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/conv-bgi/exp-2788-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/cr-compensated/exp-2741-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/cross-patient-transfer/exp-2798-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/deconf-settings/exp-2789-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/deconfounding-cascade/exp-2799-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/deviation-categorize/exp-2774-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/deviation-circadian/exp-2794-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/dia-window/exp-2778-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/dose-dependent-cr/exp-2747-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/egp-aware-validation/exp-2728-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/egp-personalized-isf/exp-2742-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/egp-settings/exp-2797-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/empirical-isf-validation/exp-2726b-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/enhanced-pipeline/exp-2749-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/fifty-fifty/exp-2771-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/final-pipeline-v4/exp-2796-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/hourly-settings/exp-2800-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/insulin-72h/exp-2769-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/insulin-accounting/exp-2790-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/integrated-pipeline-v3/exp-2791-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/integrated-pipeline/exp-2743-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/intercept-iob/exp-2768-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/iob-bgi/exp-2787-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/isf-gap-decomposition/exp-2727-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/isf-gap/exp-2777-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/isf-only-validation/exp-2739-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/joint-optimization/exp-2737-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/meal-ar/exp-2781-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/multiday-isf/exp-2785-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/multifactor-deconfounding/exp-2732-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/multiscale-deconfound/exp-2786-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/multiscale-subtraction/exp-2770-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/production-report-v2/production-report-v2-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/production-report-v3/production-report-v3-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/prospective-validation/exp-2726-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/prospective-validation/exp-2795-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/residual-autocorrelation/exp-2751-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/residual-decomp/exp-2779-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/safety-validation/exp-2738-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/settings-audit/exp-2782-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/simulator-isf-extraction/exp-2733-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/supply-demand/exp-2767-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/temporal-ar/exp-2793-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "tools/visualizations/tir-predictors/exp-2784-dashboard.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/aggregate-outcomes/fig1_outcomes_by_controller.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/aggregate-outcomes/fig5_safety_frontier.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/basal-circadian/basal_circadian.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/basal-optimization/basal_optimization.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/bg-drop-model/fig1_drop_vs_dose.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/bg-drop-model/fig4_multivariate.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/carb-ratio/carb_ratio.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/carb-ratio/carb_ratio_circadian.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/causal-psm/fig1_ps_distribution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/causal-psm/fig2_love_plot.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/confounding-analysis/fig1_pre_trajectory.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/confounding-analysis/fig4_matched.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/controller-decomposition/controller_decomposition.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/controller-strategy/fig1_dosing_by_zone.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/controller-strategy/fig4_basal_modulation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/controller-vs-bolus/fig1_insulin_vs_drop.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/controller-vs-bolus/fig3_controller_response.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/cross-controller-validation/fig2_tir_by_controller.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/cross-controller-validation/fig8_per_patient_summary.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/cross-layer-interactions/fig01_state_egp_interaction.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/cross-layer-interactions/fig02_inverse_egp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/cross-layer-interactions/fig03_pipeline.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/data-volume-and-triage/fig01_volume.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/data-volume-and-triage/fig02_triage.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/data-volume-and-triage/fig03_coverage.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/definitive-isf/fig1_isf_distribution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/definitive-isf/fig3_variance_decomposition.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/dynisf-deconfound/dynisf_deconfound.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig10_three_phase_correction.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig11_isf_decomposition.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig12_settings_recommendations.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig13_controller_error.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig15_hill_curves.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig16_odc_validation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig17_sticky_hypers.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig18_hill_distribution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig19_basal_recommendations.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig1_meal_census_by_block.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig20_isf_decomposition.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig21_isf_inflation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig22_circadian_isf.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig23_nyquist_multiscale.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig24_cr_adequacy.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig25_sc_ceiling.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig26_dual_isf_safety.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig27_sticky_hyper.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig28_patience_mode.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig29_extended_prediction.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig2_spectral_bands.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig30_patience_mode.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig3_glycogen_vs_drift.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig4_unannounced_vs_spectral.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig5_egp_enrichment.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig6_correction_recovery.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig7_per_patient_egp_profiles.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig8_circadian_egp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/egp-phase-research/fig9_basal_vs_egp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/envelope-vs-cell-level/fig01_reconciliation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/envelope-vs-cell-level/fig02_isf_gap.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/grand-synthesis/grand_synthesis.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/impulse-response/fig1_impulse_response.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/isf-reconciliation/isf_reconciliation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/multi-channel/fig4_variance_decomposition.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/multi-channel/fig5_controller_stratified.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/null-model/fig1_null_vs_bolus.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/null-model/fig3_treatment_effect.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/patient-settings/patient_settings.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/safety-analysis/fig4_prehypo_controller.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/safety-analysis/fig5_iob_at_hypo.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig1_iob_vs_glucose_roc.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig2_linear_vs_ceiling_fit.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig3_ceiling_distribution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig4_ceiling_vs_sticky.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig5_wall_episode_trajectories.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig6_demand_vs_sched_isf.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/sc-ceiling-demand-isf/fig7_data_quality_tiers.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/settings-mediation/fig1_settings_to_behavior.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/settings-mediation/fig3_mediation.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/temporal-crossval/temporal_crossval.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/temporal-trends/fig1_weekly_tir.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/temporal-trends/fig3_settings_drift.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/time-resolved/fig1_r2_by_horizon.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/time-resolved/fig2_temporal_marginals.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/tir-gap/fig1_feature_comparison.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/tir-gap/fig2_oaxaca.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/unexplained-variance/fig5_full_model_comparison.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/unified-settings/unified_settings.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/variance-decomposition/fig1_variance_decomp.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/variance-decomposition/fig2_between_patient.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig1_glucose_change_after_wall.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig2_resolution_timing.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig3_unaccounted_resolution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig4_wall_vs_nonwall_roc.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig5_duration_vs_resolution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig6_episode_anatomy.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+  - pattern: "visualizations/wall-resolution-mechanism/fig7_mechanism_attribution.png"
+    axis: health-data
+    reason: "participant ID may be rendered in the image"
+    decided_by: "phase2 review (no OCR available)"
+
   # ---- consent ----
   - pattern: "tools/oref_inv_003_replication/figures/**"
     axis: consent
