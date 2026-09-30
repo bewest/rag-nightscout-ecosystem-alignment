@@ -1,0 +1,466 @@
+<!doctype html>
+<!-- Provenance: recovered from the private artifact https://claude.ai/artifact/QgCm2hpc9KFugXu5c6v4wE, read 2026-09-30 with the Artifact tool and reviewed for the public site (tools/site). Snapshot; not updated in place. -->
+<html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<div role="note" style="max-width:1080px;margin:12px auto 0;padding:10px 14px;border-left:3px solid #a86a00;background:#fbf0d9;color:#101615;font:14px/1.5 system-ui,sans-serif;border-radius:0 6px 6px 0"><b>Snapshot of 2026-09-27.</b> This page records the 15.0.9 candidate as measured on 2026-09-27 and is not updated. Current state: <code>releases/cgm-remote-monitor-15.0.9/</code> in the repository.</div>
+
+<title>15.0.9 Release Readiness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f6f8f7; --surface:#fcfcfb; --ink:#101615; --ink2:#4a5553; --ink3:#77817f;
+  --rule:#dde3e1; --grid:#e8ecea; --accent:#0e6a64; --accent-soft:#d9ece9;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s0:#b4bcba;
+  --good:#1f7a3a; --warn:#a86a00; --crit:#b3261e;
+  --good-bg:#e3f2e7; --warn-bg:#fbf0d9; --crit-bg:#fae3e1;
+  --display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111514; --surface:#1a1a19; --ink:#eef2f1; --ink2:#b7c1bf; --ink3:#8a9492;
+    --rule:#2c3331; --grid:#262c2a; --accent:#5cc2b8; --accent-soft:#1d3532;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s0:#5b6361;
+    --good:#6fcf8a; --warn:#e7b24a; --crit:#f08a80;
+    --good-bg:#17301f; --warn-bg:#342a12; --crit-bg:#3a1c19;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111514; --surface:#1a1a19; --ink:#eef2f1; --ink2:#b7c1bf; --ink3:#8a9492;
+  --rule:#2c3331; --grid:#262c2a; --accent:#5cc2b8; --accent-soft:#1d3532;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s0:#5b6361;
+  --good:#6fcf8a; --warn:#e7b24a; --crit:#f08a80;
+  --good-bg:#17301f; --warn-bg:#342a12; --crit-bg:#3a1c19;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(28px,4.4vw,42px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:23px;font-weight:700;margin-bottom:6px}
+h3{font-size:16px;font-weight:700}
+p{margin:0;max-width:68ch}
+code,.mono{font-family:var(--mono);font-size:.88em}
+a{color:var(--accent)}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+header{display:grid;gap:14px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
+.anchor{display:flex;flex-wrap:wrap;gap:6px 18px;font:13px/1.5 var(--mono);color:var(--ink2)}
+.anchor b{color:var(--ink);font-weight:500}
+.lede{font-size:17px;color:var(--ink2)}
+section{display:grid;gap:16px;padding-block:34px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+.sub{color:var(--ink2);max-width:72ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.tile{background:var(--surface);padding:14px 16px;display:grid;gap:2px;align-content:start}
+.tile .v{font:600 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.tile .l{font-size:13px;color:var(--ink2)}
+.tile .n{font:12px/1.4 var(--mono);color:var(--ink3)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--mono);padding:5px 9px;border-radius:99px;width:max-content}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.good{color:var(--good);background:var(--good-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.crit{color:var(--crit);background:var(--crit-bg)}
+ul.clean{margin:0;padding-left:18px;display:grid;gap:6px}
+ul.clean li{max-width:70ch}
+.fig{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:16px 16px 12px;display:grid;gap:10px;position:relative}
+.fig .cap{font-size:13px;color:var(--ink2);max-width:80ch}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.chart text{fill:var(--ink2);font:11px var(--mono)}
+.chart .strong{fill:var(--ink);font-weight:500}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:12px/1.45 var(--mono);padding:7px 9px;border-radius:6px;max-width:260px;z-index:5;transform:translate(-50%,calc(-100% - 10px))}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px}
+@media (max-width:420px){.two{grid-template-columns:1fr}}
+.tbl{width:100%;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:500 11.5px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3)}
+td.num{text-align:right;font-family:var(--mono)}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;counter-reset:step}
+.flow .st{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.flow .st h3{font-size:14.5px}
+.flow .st p{font-size:13px;color:var(--ink2)}
+.flow .st .k{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+blockquote{margin:0;padding:12px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;max-width:72ch}
+blockquote p{font-style:italic}
+blockquote footer{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.note{font-size:13px;color:var(--ink3);max-width:80ch}
+details{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;font-weight:600}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">cgm-remote-monitor · release candidate · contributor-facing</div>
+  <h1>15.0.9 release readiness</h1>
+  <p class="lede">Nightscout 15.0.9 is ready to be tried on real looping phones. It is not ready to tag yet. This page shows how it got here: the defect counts, the tests, the checks, and the records kept along the way.</p>
+  <div class="anchor">
+    <span>measured <b>2026-09-27</b></span>
+    <span>candidate <b>dev 295f1177</b></span>
+    <span>shipping <b>15.0.8 = 92d08342</b></span>
+    <span>release PR <b><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8598">#8598</a></b></span>
+    <span>status <b>DRAFT · nothing tagged</b></span>
+  </div>
+</header>
+
+<section>
+  <div class="tiles">
+    <div class="tile"><div class="v">23 days</div><div class="l">15.0.8 tag to candidate</div><div class="n">2026-09-04 → 09-27</div></div>
+    <div class="tile"><div class="v">85</div><div class="l">PRs merged to dev</div><div class="n">first-parent merges</div></div>
+    <div class="tile"><div class="v">505</div><div class="l">commits past 15.0.8</div><div class="n">316 non-merge · 16 authors</div></div>
+    <div class="tile"><div class="v">296 / 885</div><div class="l">files touched</div><div class="n">+28,279 / −1,703 lines</div></div>
+    <div class="tile"><div class="v">3473/0/3</div><div class="l">pass/fail/pending, 6 cells</div><div class="n">Node 20·22·24 × Mongo 4.4·7.0</div></div>
+    <div class="tile"><div class="v">146</div><div class="l">defect IDs filed</div><div class="n">122 in 15.0.9's scope · 87 closed</div></div>
+  </div>
+
+  <div class="verdict">
+    <div class="card">
+      <span class="pill good">ready</span>
+      <h3>Confirmation on real AID rigs</h3>
+      <p>Every PR the maintainer chose for 15.0.9 is merged except Crowdin #8730, which is held out. Run 020 passed 3473 tests with 0 failures in all six cells. #8598 has 27 CI checks passing and 3 skipped on <code>295f1177</code>. In the 2026-09-26 browser walk, lab scripts stood in for the phones. No real Loop, Trio, AAPS or xDrip+ rig has run against the candidate yet. That is the missing check.</p>
+    </div>
+    <div class="card">
+      <span class="pill warn">owed before tag</span>
+      <h3>Five items stand between the candidate and the tag</h3>
+      <ul class="clean">
+        <li>Browser checks still owed: a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, the alarm level labels, and the Bolus Wizard Preview pill and reports during a percentage profile switch.</li>
+        <li>A 24–72 h real-time soak. The one that ran was compressed.</li>
+        <li><code>npm audit</code> triage: 17 findings (1 low, 13 moderate, 3 high).</li>
+        <li>Re-approval of #8598 at <code>295f1177</code>. Both approvals were given on <code>e3adc91d</code>. The version class of #8772, #8775 and #8780 is still undecided.</li>
+        <li>The tag, by the maintainer.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="pill crit">carried as known issues</span>
+      <h3>35 defects in scope stay open</h3>
+      <p>The release notes list each one as a known issue or as deferred until after 15.0.9 by decision. Examples: BF-72, where an expensive search can occupy the database; BF-86/67, thresholds in the wrong units; BF-92, no server alarm on a page with no reading; BF-95, an uploader clock running ahead delays the stale-data alarm.</p>
+    </div>
+  </div>
+</section>
+
+<section id="bounce">
+  <div class="eyebrow">Zero bug bounce</div>
+  <h2>Defects arrive in bursts, and each burst follows a new check</h2>
+  <p class="sub">The daily count of new defect IDs does not fall smoothly. Each burst starts the day a new check is first run: the code audit, the security review, the survey of 40 client apps, the review of #8758, the triage of old GitHub issues, and then the release-candidate runs, soak and journey lab. The count then drops once that check stops finding new problems. A clearer readiness signal is the number of regressions that fix PRs put onto <code>dev</code> (orange below). There were seven, and all seven were fixed on 2026-09-26. Since the last four merges there have been no new IDs and no regressions, and the only change was a test-only fix. That is one quiet day, so it counts as one data point.</p>
+
+  <div class="fig" id="figDaily">
+    <div class="legend" id="legDaily"></div>
+    <div class="chart" id="chDaily"></div>
+    <div class="cap">Defect IDs by the date they first appear in the alignment repository's docs (<code>git log --reverse -G'BF-0*N([^0-9]|$)' -- docs</code>, commit dates, Pacific time). "Not in 15.0.9" covers the unmerged multitenancy seam (BF-18–26 and the reserved BF-82–84), the modernization cut branches (BF-56–66 except 63), and two entries closed as invalid.</div>
+  </div>
+
+  <div class="two">
+    <div class="fig">
+      <h3>Open defects in 15.0.9's scope</h3>
+      <div class="chart" id="chOpen"></div>
+      <div class="cap">IDs filed by that day minus IDs merged, closed or decided by that day. The end value is 35, the known issues and deferred items listed above. "Partly merged" (BF-07, BF-63) counts as open.</div>
+    </div>
+    <div class="fig">
+      <h3>PRs merged to dev per day</h3>
+      <div class="chart" id="chMerges"></div>
+      <div class="cap"><code>git log --first-parent --format=%ad --date=short official/master..official/dev</code>. 2026-09-05 is the Dependabot batch. 2026-09-25/26 is the #8758 merge followed by ten fix PRs, and five of the seven escaped regressions came from that wave.</div>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h3>The seven regressions that reached dev, and how long each lasted</h3>
+    <div class="chart" id="chEsc"></div>
+    <div class="cap">From left to right on each row: the day the causing PR merged, the day the regression was filed, and the day its fix merged. None of them shipped, because 15.0.8 contains none of them. Ten more were caught in review of #8758 before it merged (BF-109–113, 115–117, 130, 131).</div>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h3>What the seven regressions have in common</h3>
+      <ul class="clean">
+        <li><b>A rule applied on one path and not its siblings</b> (BF-106, BF-140, BF-142). One example: v3 reads showed an empty <code>identifier</code> as the <code>_id</code>, but v3 DELETE fell back to the <code>_id</code> only when <code>identifier</code> was absent.</li>
+        <li><b>Empty values</b> (BF-141, BF-143). <code>""</code>, <code>null</code> and a missing field were treated as the same on one side of a comparison and as different on the other.</li>
+        <li><b>State lost on restart</b> (BF-144). The v3 history clock lived only in memory.</li>
+        <li><b>Coupling to shared state</b> (BF-80). <code>/alarm</code> delivery waited on the failed-login delay list, which a whole household behind one address shares.</li>
+      </ul>
+      <p class="note">Each fix also adds tests for the same failure on the sibling paths: +30 in #8783 and +32 in #8781.</p>
+    </div>
+    <div class="card">
+      <h3>Timeline: PR merges per phase</h3>
+      <div class="tbl"><table>
+        <tbody>
+          <tr><td class="mono">09-04–06</td><td class="num">32</td><td>cycle opens, Dependabot batch, outside contributors' fixes</td></tr>
+          <tr><td class="mono">09-09</td><td class="num">1</td><td>#8726, quieter logging</td></tr>
+          <tr><td class="mono">09-14–16</td><td class="num">0</td><td>code audit, BF-01 to BF-68 filed</td></tr>
+          <tr><td class="mono">09-17–21</td><td class="num">15</td><td>Phase 0 backfixes, socket advisory fixes</td></tr>
+          <tr><td class="mono">09-22–24</td><td class="num">14</td><td>backfix 2, connector 0.1.0, count compatibility, auth hardening</td></tr>
+          <tr><td class="mono">09-25–27</td><td class="num">23</td><td>#8758, GitHub triage fixes, carried outside PRs, regression fixes</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Where the 146 IDs came from</th><th class="num">IDs</th><th class="num">closed</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td>Already in 15.0.8, found by audit, lab or survey</td><td class="num">84</td><td class="num">51</td><td>Old defects that operators already run. Most of the work.</td></tr>
+        <tr><td>Imported from GitHub issue triage</td><td class="num">12</td><td class="num">10</td><td>User reports from as far back as #5622, reproduced and fixed.</td></tr>
+        <tr><td>nightscout-connect</td><td class="num">9</td><td class="num">9</td><td>Eight in connector 0.1.0, which 15.0.9 pins exactly. BF-43 by the axios override.</td></tr>
+        <tr><td>Caught in review, before merge</td><td class="num">10</td><td class="num">10</td><td>#8758 findings. Nine fixed on the branch, BF-110 kept by decision.</td></tr>
+        <tr><td>Escaped to dev from a fix PR</td><td class="num">7</td><td class="num">7</td><td>Found in 0–5 days. All fixed on 2026-09-26.</td></tr>
+        <tr><td>Not in 15.0.9 (seam, cuts, invalid)</td><td class="num">24</td><td class="num">—</td><td>Tracked for later releases.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="tests">
+  <div class="eyebrow">Delta in testing</div>
+  <h2>The test suite has more than doubled while production code grew modestly</h2>
+  <div class="tiles">
+    <div class="tile"><div class="v">1,533 → 3,473</div><div class="l">passing tests, full suite</div><div class="n">15.0.8 one cell · candidate six cells</div></div>
+    <div class="tile"><div class="v">1,288 → 2,290</div><div class="l"><code>it(</code> calls in tests/</div><div class="n">+78% · <code>git grep -c</code> at both tags</div></div>
+    <div class="tile"><div class="v">157 → 245</div><div class="l">test files</div><div class="n">*.test.js</div></div>
+    <div class="tile"><div class="v">+20,159</div><div class="l">lines added in tests/</div><div class="n">134 files</div></div>
+    <div class="tile"><div class="v">+4,819 / −765</div><div class="l">lines changed in lib/</div><div class="n">101 of 240 files</div></div>
+  </div>
+  <div class="fig">
+    <h3>Passing tests per integration run</h3>
+    <div class="chart" id="chSuite"></div>
+    <div class="cap">Runs from the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/main/docs/30-design/remedial/rc-15.0.9-integration-record.md#run-history">integration record</a>. Every run had 0 failing tests except 016, which had 4–5 failures from the Crowdin merge. That failure is why #8730 is held out. Each run is a candidate tree (dev plus the PRs under test), so a count can dip when a PR is taken out. For comparison, 15.0.8 (<code>92d08342</code>) passes 1,533 with 0 failing and 3 pending, measured on 2026-09-27 in one cell (Node 24.15.0, MongoDB 7.0.43). The candidate passes 1,940 more.</div>
+  </div>
+  <div class="fig">
+    <h3>Files touched and untouched, by directory</h3>
+    <div class="legend"><span><i style="background:var(--s1)"></i>changed since 15.0.8</span><span><i style="background:var(--s0)"></i>unchanged</span></div>
+    <div class="chart" id="chFiles"></div>
+    <div class="cap"><code>git diff --name-only official/master official/dev</code> against <code>git ls-tree -r official/dev</code>. 589 of 885 files are unchanged. <code>static/</code> (133 files) and <code>views/</code> are almost untouched. The hand-check gate lists the 14 browser-reached files changed since the last browser walk, and each one is re-checked by hand.</div>
+  </div>
+  <details>
+    <summary>Known test gaps. A green suite does not cover these.</summary>
+    <ul class="clean" style="margin-top:10px">
+      <li>73 of the 219 <code>tests/*.test.js</code> files match neither <code>test:unit</code> nor <code>test:integration</code>. Only <code>npm test</code> and <code>test-ci</code> reach them.</li>
+      <li>The D3 drag clamps: <code>TEST=dependency-d3</code> still passes with both clamps deleted. The drag was checked by hand instead (queue <code>RT-D3-SUITE</code>).</li>
+      <li>The <code>/alarm</code> client path under <code>AUTH_DEFAULT_ROLES=denied</code> has no automated test. It was checked by hand on 2026-09-23.</li>
+      <li>No MongoDB 5.0 or 6.0 cell ran on this tree locally. CI covers 4.4, 5.0 and 6.0.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="rigor">
+  <div class="eyebrow">Quality control</div>
+  <h2>Each claim has a record behind it, and each check has been shown to fail when it should</h2>
+  <p class="sub">The workflow borrows the design-control vocabulary that medical-device quality systems use, as a working method.</p>
+  <div class="flow">
+    <div class="st"><span class="k">design input</span><h3>Register, journey map, client census</h3><p>Every defect gets a row and a detail section with a status word: open, merged or released. The journey map spells out what "working" means for each person using the site. The census maps 40 client apps across 15 API surfaces.</p></div>
+    <div class="st"><span class="k">design output</span><h3>PR + tests + notes</h3><p>Each PR explains what changes for the reader, lists the tests it adds and names its register IDs. The release notes say what changes for operators. Anything still live on 15.0.8 is described by mechanism only, never as a working attack.</p></div>
+    <div class="st"><span class="k">verification</span><h3>Six cells, break-its, probes, soak</h3><p>Each cell runs against a fresh <code>mongod</code> whose version is read from the server. New tests are added by title only. Break-its revert one fix and confirm its tests fail. Red controls show that the harness can fail. An A/B soak runs against 15.0.8 with an entry for every expected difference.</p></div>
+    <div class="st"><span class="k">validation</span><h3>Real rigs, real households</h3><p>The maintainer walked the site in a browser with 15.0.8 open alongside, while lab scripts played the phones. The step still open is real Loop, Trio, AAPS and xDrip+ rigs over real days.</p></div>
+    <div class="st"><span class="k">release decision</span><h3>Humans publish</h3><p>Agents prepare branches and stop. Only people push, merge, tag or publish. A push to <code>dev</code> or <code>master</code> publishes a Docker image, so it counts as a publication event.</p></div>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Control</th><th>What it is</th><th class="num">size today</th></tr></thead>
+      <tbody>
+        <tr><td>Backfix register</td><td>Each defect's facts live in one place. Gates parse the tables.</td><td class="num">146 IDs · 6,334 lines</td></tr>
+        <tr><td>Executable work queue</td><td><code>make queue-status</code> runs each item's gates. An item without a gate must say <code>no-gate: &lt;reason&gt;</code>.</td><td class="num">171 items · 36 gate scripts</td></tr>
+        <tr><td>Integration record</td><td>One living file per release series. Each earlier run is cited by commit.</td><td class="num">19 runs</td></tr>
+        <tr><td>Labs</td><td>rc-soak, object-id, aaps-offline, apns-shutdown, proxy-trust, connector-soak, journey lab</td><td class="num">6 + journey lab</td></tr>
+        <tr><td>Consumer survey</td><td>What each client really sends, replayed against both releases</td><td class="num">40 clients · 13 replay probes</td></tr>
+        <tr><td>Document control</td><td>Documents are corrected in place. Records are dated and never edited. The verification record is generated.</td><td class="num">DRAFT procedure</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Two records are still owed. #8598's approvals were given on <code>e3adc91d</code>, so it needs re-approval at <code>295f1177</code>. The 2026-09-16 verification record describes an earlier candidate and is marked superseded, and no 15.0.9 record has been captured yet.</p>
+</section>
+
+<section id="earlier">
+  <div class="eyebrow">Six months</div>
+  <h2>This is the second release built this way in 2026</h2>
+  <p class="sub">The first was the MongoDB driver upgrade. An upgrade PR had been open since February 2022. Starting in January 2026, the same method was applied: a readiness report, a test baseline, a check of how Loop and Trio store their <code>_id</code>s, and a reviewer's guide. The upgrade merged in eight weeks and shipped in 15.0.7.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>date</th><th>event</th><th>anchor</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">2022-02-16</td><td>MongoDB 5 driver upgrade PR opened</td><td class="mono">#7344</td></tr>
+      <tr><td class="mono">2026-01-19</td><td>readiness report and impact assessment; #8421 opened</td><td class="mono">#8421</td></tr>
+      <tr><td class="mono">2026-03-16</td><td>#8421 merged to dev: 147 files, +36,208 / −4,655</td><td class="mono">cdef1e7c</td></tr>
+      <tr><td class="mono">2026-04-29</td><td>15.0.7 tagged, <code>mongodb ^3.6.0 → ^5.9.2</code></td><td class="mono">#8444</td></tr>
+      <tr><td class="mono">2026-05-01</td><td>#7344 closed as superseded</td><td class="mono">#7344</td></tr>
+      <tr><td class="mono">2026-09-04</td><td>15.0.8 tagged; 15.0.9 cycle opens</td><td class="mono">92d08342</td></tr>
+      <tr><td class="mono">2026-09-27</td><td>15.0.9 candidate: 85 PRs, 3473/0/3 in six cells</td><td class="mono">295f1177</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="cowpaths">
+  <div class="eyebrow">Paving the cowpaths</div>
+  <h2>A spec should describe what clients really do</h2>
+  <blockquote>
+    <p>"There go my people; I must find out where they are going so I can lead them."</p>
+    <footer>quoted in Ian Hickson, <a href="https://ln.hixie.ch/?start=1721260117&amp;count=1">Power dynamics in web specifications</a>, 2024-07-17. The WHATWG was founded on the rule that a specification has to describe reality.</footer>
+  </blockquote>
+  <p class="sub">Nightscout, a secondary display for CGM and pump data, sits in the same position as a web browser. Dozens of independent clients depend on how it actually behaves, not on what its documentation says. 15.0.9 shows the method in practice. First, take a census of how clients really use each API surface. Next, turn what they do into tests. Then fix defects without breaking those clients. Where a fix would break a real client, keep the client working behind a named setting and announce when that setting will go away.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Cowpath (what clients actually do)</th><th>How 15.0.9 paves it</th></tr></thead>
+      <tbody>
+        <tr><td>oref0 sends <code>count=N?…</code>. GluPredKit sends <code>count=0</code> with a date window.</td><td>#8761 accepts both shapes, sends a deprecation header, and gives each tolerance its own setting (<code>API_V1_COUNT_*</code>, on by default). 15.0.9 stays a patch release.</td></tr>
+        <tr><td>Records stored with a string <code>_id</code> by earlier releases and clients</td><td>#8758 finds, edits and deletes a record by either form, through v1, v3 and the websocket, and a 489-test CRUD matrix covers it.</td></tr>
+        <tr><td>AndroidAPS syncs through v3 history and deletes by marking <code>isValid:false</code></td><td>#8775 gives v1 writes a place in v3 history and stops counting soft-deleted records in IOB and COB. Hard delete in v1 stays as it is by decision, and the notes say so.</td></tr>
+        <tr><td>mmol/L sites set some thresholds in mmol/L and others in mg/dL</td><td>#8766 reads each threshold on its own, so the low alarms come back.</td></tr>
+        <tr><td>Operators behind Azure and other proxies</td><td><code>TRUST_PROXY</code> comes with a migration guide. Leaving it unset is a documented, permanent setting.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="sub">The same need was written down in 2011 in the <em>Diabetes Data Bus</em> note: many devices, many apps, and one shared store that each app subscribes to and that the user controls. Fifteen years on, that bus exists, and it is several dozen apps talking to Nightscout. Keeping it healthy means managing it as a shared contract. The alignment workspace holds the pieces: 44 upstream repository checkouts side by side, mappings for 23 projects, 118 spec files and a 521-file conformance suite. This release is the first to run through that loop from start to finish: census, test, fix, declare, verify, record.</p>
+  </section>
+</div>
+
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(function(){
+const days=['09-14','09-15','09-16','09-17','09-18','09-19','09-20','09-21','09-22','09-23','09-24','09-25','09-26','09-27'];
+const series=[
+ {k:'latent',name:'already in 15.0.8',c:'--s1'},
+ {k:'escaped',name:'escaped to dev',c:'--s2'},
+ {k:'review',name:'caught in review',c:'--s3'},
+ {k:'github',name:'GitHub triage',c:'--s4'},
+ {k:'connector',name:'connector',c:'--s5'},
+ {k:'other',name:'not in 15.0.9',c:'--s0'}];
+const daily={
+ latent:[15,12,17,1,1,0,0,10,8,8,0,5,7,0],
+ escaped:[0,0,0,0,0,0,0,1,0,1,0,0,5,0],
+ review:[0,0,0,0,0,0,0,0,0,0,5,5,0,0],
+ github:[0,0,0,0,0,0,0,0,0,1,0,11,0,0],
+ connector:[1,1,3,0,0,0,0,0,3,1,0,0,0,0],
+ other:[1,9,11,0,0,0,0,0,3,0,0,0,0,0]};
+const why={'09-14':'code audit begins','09-15':'audit; tenancy seam','09-16':'audit; cut branches','09-21':'security review','09-22':'consumer survey','09-23':'survey + replay lab','09-24':'#8758 review','09-25':'GitHub triage; #8758 review','09-26':'RC runs, soak, journey lab','09-27':'test-only fix'};
+const openS=[16,29,48,49,35,35,26,33,44,40,40,42,35,35];
+const mDays=['09-04','09-05','09-06','09-07','09-08','09-09','09-10','09-11','09-12','09-13','09-14','09-15','09-16','09-17','09-18','09-19','09-20','09-21','09-22','09-23','09-24','09-25','09-26','09-27'];
+const merges=[5,21,6,0,0,1,0,0,0,0,0,0,0,1,4,0,6,4,0,11,3,9,13,1];
+const esc=[
+ {id:'BF-106',why:'v1 numeric filters on /activity (from #8737)',c:'09-18',f:'09-23',x:'09-26',pr:'#8771'},
+ {id:'BF-80',why:'/alarm tied to failed-login delay (from #8745)',c:'09-21',f:'09-21',x:'09-26',pr:'#8779'},
+ {id:'BF-140',why:'v3 DELETE of null/"" identifier (from #8758)',c:'09-25',f:'09-26',x:'09-26',pr:'#8778'},
+ {id:'BF-142',why:'v3 DELETE of 0/false identifier (from #8758)',c:'09-25',f:'09-26',x:'09-26',pr:'#8783'},
+ {id:'BF-144',why:'history clock after restart (from #8775)',c:'09-26',f:'09-26',x:'09-26',pr:'#8781'},
+ {id:'BF-141',why:'empty-identity re-send stored twice (from #8780)',c:'09-26',f:'09-26',x:'09-26',pr:'#8781'},
+ {id:'BF-143',why:'re-send rewrites srvCreated (from #8780)',c:'09-26',f:'09-26',x:'09-26',pr:'#8781'}];
+const runs=[['bf2','09-23',2480],['a','09-23',2416],['b','09-23',2421],['c','09-23',2508],['d','09-23',2520],['e','09-23',2534],['36b','09-23',3015],['59','09-23',3028],['010','09-24',3046],['011','09-25',3066],['012','09-25',3090],['013','09-25',3094],['014','09-25',3097],['015','09-25',3106],['016','09-25',3139],['017','09-25',3170],['018','09-26',3396],['019','09-26',3458],['020','09-27',3473]];
+const files=[['tests',134,312],['lib',101,240],['static',2,133],['docs',11,84],['translations',34,34],['(root)',10,30],['views',2,15],['bin',0,12],['.github',1,6],['other',1,19]];
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const tip=document.getElementById('tip');
+function hover(node,html,host){
+  node.addEventListener('mouseenter',ev=>{tip.innerHTML=html;tip.hidden=false;move(ev,host)});
+  node.addEventListener('mousemove',ev=>move(ev,host));
+  node.addEventListener('mouseleave',()=>{tip.hidden=true});
+}
+function move(ev,host){const r=host.getBoundingClientRect();tip.style.left=(ev.clientX-r.left)+'px';tip.style.top=(ev.clientY-r.top)+'px';host.appendChild(tip)}
+function frame(id,W,H,m){const host=document.getElementById(id);host.innerHTML='';const s=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'},host);return {s,host:host.closest('.fig'),iw:W-m.l-m.r,ih:H-m.t-m.b,m}}
+function yaxis(f,max,step){const {s,m,iw,ih}=f;for(let v=0;v<=max;v+=step){const y=m.t+ih-v/max*ih;el('line',{x1:m.l,x2:m.l+iw,y1:y,y2:y,stroke:css('--grid'),'stroke-width':1},s);const t=el('text',{x:m.l-6,y:y+4,'text-anchor':'end'},s);t.textContent=v.toLocaleString()}}
+function colTop(s,x,y,w,h,fill,round){ // rounded top only
+  if(h<=0)return null; const r=Math.min(4,h,w/2);
+  const d=round?`M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`:`M${x},${y}H${x+w}V${y+h}H${x}Z`;
+  return el('path',{d,fill},s)}
+
+// legend
+const leg=document.getElementById('legDaily');
+series.forEach(se=>{const sp=document.createElement('span');sp.innerHTML=`<i style="background:var(${se.c})"></i>${se.name}`;leg.appendChild(sp)});
+
+function drawDaily(){
+  const f=frame('chDaily',900,300,{l:40,r:12,t:22,b:40});const {s,m,iw,ih}=f;
+  const max=35;yaxis(f,max,5);const bw=iw/days.length;const w=Math.min(24,bw*.6);
+  days.forEach((d,i)=>{
+    let acc=0;const x=m.l+i*bw+(bw-w)/2;const tot=series.reduce((a,se)=>a+daily[se.k][i],0);
+    const visible=series.filter(se=>daily[se.k][i]>0);
+    visible.forEach((se,j)=>{const v=daily[se.k][i];const h=v/max*ih;const y=m.t+ih-(acc+v)/max*ih;
+      const top=j===visible.length-1;const p=colTop(s,x,y+(acc>0?0:0),w,h-(acc>0?2:0),css(se.c),top);acc+=v;});
+    const hit=el('rect',{x:m.l+i*bw,y:m.t,width:bw,height:ih,fill:'transparent'},s);
+    const lines=series.filter(se=>daily[se.k][i]).map(se=>`${se.name}: ${daily[se.k][i]}`).join('<br>');
+    hover(hit,`<b>2026-${d}</b> · ${tot} new IDs${why[d]?'<br><i>'+why[d]+'</i>':''}${lines?'<br>'+lines:''}`,f.host);
+    const t=el('text',{x:m.l+i*bw+bw/2,y:m.t+ih+16,'text-anchor':'middle'},s);t.textContent=d.slice(3);
+    if(tot){const tt=el('text',{x:m.l+i*bw+bw/2,y:m.t+ih-tot/max*ih-6,'text-anchor':'middle',class:'strong'},s);tt.textContent=tot}
+    else{const tt=el('text',{x:m.l+i*bw+bw/2,y:m.t+ih-6,'text-anchor':'middle'},s);tt.textContent='0'}
+  });
+  const cap=el('text',{x:m.l,y:m.t+ih+34},s);cap.textContent='September 2026';
+}
+function drawOpen(){
+  const f=frame('chOpen',520,240,{l:36,r:30,t:16,b:34});const {s,m,iw,ih}=f;const max=50;yaxis(f,max,10);
+  const X=i=>m.l+i/(days.length-1)*iw,Y=v=>m.t+ih-v/max*ih;
+  const pts=openS.map((v,i)=>`${X(i)},${Y(v)}`).join(' ');
+  el('polygon',{points:`${X(0)},${Y(0)} ${pts} ${X(days.length-1)},${Y(0)}`,fill:css('--s1'),opacity:.1},s);
+  el('polyline',{points:pts,fill:'none',stroke:css('--s1'),'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'},s);
+  [0,3,6,8,12,13].forEach(i=>{const t=el('text',{x:X(i),y:m.t+ih+16,'text-anchor':'middle'},s);t.textContent=days[i].slice(3)});
+  const last=days.length-1;el('circle',{cx:X(last),cy:Y(openS[last]),r:4.5,fill:css('--s1'),stroke:css('--surface'),'stroke-width':2},s);
+  const lt=el('text',{x:X(last)-8,y:Y(openS[last])-10,'text-anchor':'end',class:'strong'},s);lt.textContent='35 open';
+  const pk=el('text',{x:X(3),y:Y(49)-8,'text-anchor':'middle'},s);pk.textContent='49';
+  openS.forEach((v,i)=>{const hit=el('rect',{x:X(i)-iw/(2*(days.length-1)),y:m.t,width:iw/(days.length-1),height:ih,fill:'transparent'},s);hover(hit,`<b>2026-${days[i]}</b><br>${v} open in scope`,f.host)});
+}
+function drawMerges(){
+  const f=frame('chMerges',520,240,{l:36,r:8,t:16,b:34});const {s,m,iw,ih}=f;const max=25;yaxis(f,max,5);
+  const bw=iw/mDays.length;const w=Math.min(14,bw*.7);
+  mDays.forEach((d,i)=>{const v=merges[i];const x=m.l+i*bw+(bw-w)/2;const h=v/max*ih;
+    colTop(s,x,m.t+ih-h,w,h,css('--accent'),true);
+    const hit=el('rect',{x:m.l+i*bw,y:m.t,width:bw,height:ih,fill:'transparent'},s);hover(hit,`<b>2026-${d}</b><br>${v} PR merge${v===1?'':'s'}`,f.host);
+    if(i%4===0||i===mDays.length-1){const t=el('text',{x:m.l+i*bw+bw/2,y:m.t+ih+16,'text-anchor':'middle'},s);t.textContent=d.slice(3)}
+    if(v>=9){const t=el('text',{x:m.l+i*bw+bw/2,y:m.t+ih-h-5,'text-anchor':'middle',class:'strong'},s);t.textContent=v}
+  });
+}
+function drawEsc(){
+  const rowH=30;const f=frame('chEsc',960,esc.length*rowH+48,{l:430,r:20,t:24,b:24});const {s,m,iw,ih}=f;
+  const ds=['09-18','09-19','09-20','09-21','09-22','09-23','09-24','09-25','09-26','09-27'];
+  const X=d=>m.l+ds.indexOf(d)/(ds.length-1)*iw;
+  ds.forEach(d=>{el('line',{x1:X(d),x2:X(d),y1:m.t-6,y2:m.t+ih,stroke:css('--grid')},s);const t=el('text',{x:X(d),y:m.t-10,'text-anchor':'middle'},s);t.textContent=d.slice(3)});
+  esc.forEach((e,i)=>{const y=m.t+i*rowH+rowH/2;
+    const t=el('text',{x:8,y:y+4},s);t.innerHTML=`<tspan class="strong">${e.id}</tspan>  ${e.why}`;
+    el('line',{x1:X(e.c),x2:X(e.x),y1:y,y2:y,stroke:css('--s2'),'stroke-width':2,'stroke-linecap':'round'},s);
+    el('circle',{cx:X(e.c),cy:y,r:4.5,fill:css('--surface'),stroke:css('--s2'),'stroke-width':2},s);
+    el('circle',{cx:X(e.f),cy:y,r:4.5,fill:css('--s2'),stroke:css('--surface'),'stroke-width':2},s);
+    el('rect',{x:X(e.x)-4.5,y:y-4.5,width:9,height:9,rx:2,fill:css('--good'),stroke:css('--surface'),'stroke-width':2},s);
+    const hit=el('rect',{x:0,y:y-rowH/2,width:960,height:rowH,fill:'transparent'},s);
+    hover(hit,`<b>${e.id}</b> ${e.why}<br>cause merged 2026-${e.c}<br>filed 2026-${e.f}<br>fix ${e.pr} merged 2026-${e.x}`,f.host);
+  });
+  const ly=m.t+ih+16;const L=[['○','cause merged'],['●','filed'],['■','fix merged']];
+  L.forEach((l,i)=>{const t=el('text',{x:m.l+i*120,y:ly},s);t.textContent=l[0]+' '+l[1]});
+}
+function drawSuite(){
+  const f=frame('chSuite',900,270,{l:48,r:20,t:18,b:40});const {s,m,iw,ih}=f;const lo=2300,hi=3500;
+  for(let v=lo;v<=hi;v+=200){const y=m.t+ih-(v-lo)/(hi-lo)*ih;el('line',{x1:m.l,x2:m.l+iw,y1:y,y2:y,stroke:css('--grid')},s);const t=el('text',{x:m.l-6,y:y+4,'text-anchor':'end'},s);t.textContent=v.toLocaleString()}
+  const X=i=>m.l+i/(runs.length-1)*iw,Y=v=>m.t+ih-(v-lo)/(hi-lo)*ih;
+  const pts=runs.map((r,i)=>`${X(i)},${Y(r[2])}`).join(' ');
+  el('polyline',{points:pts,fill:'none',stroke:css('--s1'),'stroke-width':2,'stroke-linejoin':'round'},s);
+  runs.forEach((r,i)=>{const fail=r[0]==='016';
+    el('circle',{cx:X(i),cy:Y(r[2]),r:4.5,fill:fail?css('--surface'):css('--s1'),stroke:fail?css('--crit'):css('--surface'),'stroke-width':2},s);
+    const t=el('text',{x:X(i),y:m.t+ih+16,'text-anchor':'middle'},s);t.textContent=r[0];
+    const hit=el('rect',{x:X(i)-iw/(2*runs.length),y:m.t,width:iw/runs.length,height:ih,fill:'transparent'},s);
+    hover(hit,`<b>run ${r[0]}</b> · 2026-${r[1]}<br>${r[2].toLocaleString()} passing${fail?'<br>4–5 failing (Crowdin #8730 merge)':' · 0 failing'}`,f.host)});
+  const e=el('text',{x:X(runs.length-1)-8,y:Y(3473)-10,'text-anchor':'end',class:'strong'},s);e.textContent='3,473 · run 020';
+  const b=el('text',{x:X(0)+6,y:Y(2480)-10},s);b.textContent='2,480 · 09-23';
+  const cap=el('text',{x:m.l,y:m.t+ih+34},s);cap.textContent='run id (letters = 2026-09-23 additions runs)';
+}
+function drawFiles(){
+  const rh=26;const f=frame('chFiles',900,files.length*rh+30,{l:110,r:70,t:8,b:22});const {s,m,iw,ih}=f;const max=320;
+  [0,100,200,300].forEach(v=>{const x=m.l+v/max*iw;el('line',{x1:x,x2:x,y1:m.t,y2:m.t+ih,stroke:css('--grid')},s);const t=el('text',{x,y:m.t+ih+14,'text-anchor':'middle'},s);t.textContent=v});
+  files.forEach((r,i)=>{const [n,c,tot]=r;const y=m.t+i*rh+(rh-16)/2;
+    const t=el('text',{x:m.l-8,y:y+12,'text-anchor':'end'},s);t.textContent=n;
+    const wc=c/max*iw,wt=tot/max*iw;
+    if(c>0)el('rect',{x:m.l,y,width:Math.max(wc-(tot>c?1:0),1),height:16,fill:css('--s1')},s);
+    if(tot>c)el('path',{d:`M${m.l+wc+1},${y}H${m.l+wt-4}Q${m.l+wt},${y} ${m.l+wt},${y+4}V${y+12}Q${m.l+wt},${y+16} ${m.l+wt-4},${y+16}H${m.l+wc+1}Z`,fill:css('--s0')},s);
+    const v=el('text',{x:m.l+wt+6,y:y+12},s);v.textContent=`${c} / ${tot}`;
+    const hit=el('rect',{x:0,y:y-5,width:900,height:rh,fill:'transparent'},s);hover(hit,`<b>${n}/</b><br>${c} of ${tot} files changed (${Math.round(c/tot*100)}%)`,f.host)});
+}
+function all(){drawDaily();drawOpen();drawMerges();drawEsc();drawSuite();drawFiles()}
+all();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',all)}catch(e){}
+new MutationObserver(all).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+
+</body></html>
