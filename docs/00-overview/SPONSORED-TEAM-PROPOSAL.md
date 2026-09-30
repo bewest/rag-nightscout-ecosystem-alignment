@@ -66,9 +66,10 @@ the question the studies above cannot yet answer. The
 evidence. It proposes consented data from many sites, governed research extracts, and a
 methods-review step before any clinical claim is published. Its current pilot outputs are a
 data-quality report, a release-comparison report and extracts for two or three researchers.
-Comparative studies across systems would be a later use of the same commons, not yet named in the
-proposal. Observational comparisons need study designs that account for who chooses which system,
-and the OHDSI network's rule (data stays at each site; only aggregate results are shared,
+Its research agenda lists comparative outcome studies across systems as a later use of the same
+commons, with what a comparison needs before it is published: a registered protocol, a design that
+accounts for who chooses which system, aggregate results only, and review by the maintainers of each
+system compared. The OHDSI network's rule (data stays at each site; only aggregate results are shared,
 [COLLABORATION-MODEL §4](COLLABORATION-MODEL.md#4-what-other-open-source-organisations-do)) is one
 tested model. The team in §4 keeps the software and records such studies rely on; it does not run
 the studies or make clinical claims.
