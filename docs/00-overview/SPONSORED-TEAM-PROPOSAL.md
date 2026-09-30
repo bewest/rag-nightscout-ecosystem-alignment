@@ -5,7 +5,8 @@
 cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
 and `official/dev` `7000eb18` (the merge of #8786) the same day. Added 2026-09-29: the cross-project
 release and contributor figures and the dated-work paragraph in §2, the OpenStreetMap and SQLite rows
-in §6, and the vendor-change table in §6a. Where it touches employment, contracting, tax or
+in §6, and the vendor-change table in §6a. Added 2026-09-30: §1a, with the published clinical evidence
+and the case for a research commons. Where it touches employment, contracting, tax or
 the foundation's exempt status, it needs review by the foundation's counsel and accountant before
 any decision rests on it (§9). Nothing here is decided.*
 
@@ -24,6 +25,53 @@ takes no authority away from any project.
 Long-standing maintainers of the ecosystem projects have asked the foundation for this.
 **[To confirm before this is shared: whether the maintainers who made the request agree to be named
 here.]**
+
+## 1a. What is at stake
+
+**Open-source AID has published evidence behind it.** Abstracts read on PubMed, 2026-09-30:
+
+| study | design | what it found | caveats the authors state or the design implies |
+|---|---|---|---|
+| CREATE ([Burnside et al., NEJM 2022;387:869–881](https://www.nejm.org/doi/full/10.1056/NEJMoa2203913)) | randomised controlled trial, 97 children and adults, 24 weeks; AndroidAPS 2.8 with the OpenAPS 0.7.0 algorithm against a sensor-augmented pump | time in range rose from 61.2% to 71.2% with AID and fell from 57.7% to 54.5% in the control group (adjusted difference 14 percentage points, 95% CI 9.2–18.8); no severe hypoglycaemia or DKA in either group | the comparator was a pump without automation, not a commercial AID system; two AID participants withdrew because of connectivity issues |
+| Loop observational study ([Lum et al., Diabetes Technol Ther 2021;23:367–375](https://pubmed.ncbi.nlm.nih.gov/33226840/)) | prospective, real-world, 558 adults and children, 6 months | time in range rose from 67% to 73%; time below 54 mg/dL fell slightly | people who chose to start Loop themselves; no control group |
+| Canadian comparison ([Wu et al., Diabetes Technol Ther 2025;27:517–526](https://pubmed.ncbi.nlm.nih.gov/40100927/)) | prospective, observational non-inferiority study, 26 open-source and 52 commercial AID users, 12 weeks | open-source non-inferior on 24-hour time in range (78.3% against 71.2%) | open-source users spent more time below 3.9 mmol/L (3.9% against 1.8%, "yet within the recommended range"); not randomised |
+| Systematic review ([Knoll et al., Diabet Med 2022;39:e14741](https://pubmed.ncbi.nlm.nih.gov/34773301/)) | 21 real-world studies, 2018–2021 | improvements "observed in open-source and commercially developed AID systems alike" | real-world studies; most were of one commercial system |
+
+So the evidence shows that open-source AID beat pump therapy in a randomised trial, and that in
+real-world comparisons it matches or exceeds commercial systems on time in range, with differences
+in time below range that matter for some people. No randomised head-to-head trial against commercial
+AID systems has been published among the studies read here. The people in the real-world studies
+chose these systems themselves, and the authors of one comparison describe them as "a very selected
+group of people" ([Journal of Diabetes Science and Technology,
+2024](https://pmc.ncbi.nlm.nih.gov/articles/PMC11571566/)).
+
+**The assets grew in the open, over more than ten years.** #WeAreNotWaiting dates from 2013 and
+OpenAPS from February 2015. On 2026-09-30 the [stack census](../60-research/programme/stack-census-2026-09-30.md)
+counted 63 repositories, from device drivers to vendor-cloud connectors, with 219 distinct human authors committing
+in the last year. 13 of the 63 are held under personal GitHub accounts, and most of the rest sit in
+GitHub organisations run by volunteers. A foundation taking stewardship responsibility for these
+assets is how the software behind that evidence keeps working, and how new evidence can be built on
+it.
+
+**Today the cost falls on people with diabetes and individual maintainers.** Their own time pays for
+the review, releases, vendor changes and security response of §3. After the xz-utils backdoor in
+2024, CISA wrote that "the burden of security shouldn't fall on an individual open source
+maintainer" ([QUALITY-SYSTEM §7](QUALITY-SYSTEM.md#7-histories-that-map)). Full-time stewards
+funded by the foundation would move that cost off the people the software serves.
+
+**Better evidence needs a shared commons.** Which system does better, for whom and in which
+circumstances (children, pregnancy, exercise, different pumps and sensors, different settings) is
+the question the studies above cannot yet answer. The
+[Nightscout datalake proposal](https://bewest.github.io/ns-data-proposal/) is the route to that
+evidence. It proposes consented data from many sites, governed research extracts, and a
+methods-review step before any clinical claim is published. Its current pilot outputs are a
+data-quality report, a release-comparison report and extracts for two or three researchers.
+Comparative studies across systems would be a later use of the same commons, not yet named in the
+proposal. Observational comparisons need study designs that account for who chooses which system,
+and the OHDSI network's rule (data stays at each site; only aggregate results are shared,
+[COLLABORATION-MODEL §4](COLLABORATION-MODEL.md#4-what-other-open-source-organisations-do)) is one
+tested model. The team in §4 keeps the software and records such studies rely on; it does not run
+the studies or make clinical claims.
 
 ## 2. Why now
 
@@ -276,6 +324,13 @@ For the board:
 
 6. Cost ranges for options A–C, and which funding sources to approach.
 7. Who the team reports to, and how the maintainers take part in hiring and reviews.
+
+For a clinician or clinical researcher:
+
+- Whether §1a summarises the four studies fairly, including their comparators, the time-below-range
+  difference in the Canadian study and the selection of participants; whether other studies (for
+  example of Trio, or head-to-head comparisons published since) belong beside them; and what study
+  designs a comparative analysis on the research commons would need before any result is published.
 
 For the maintainers:
 
