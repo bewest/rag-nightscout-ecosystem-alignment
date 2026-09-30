@@ -10920,7 +10920,7 @@ items:
     branch: lab/proxy-trust-ws
     base: main
     worktree: ../rag-alignment-proxy-trust-ws
-    state: in-progress
+    state: ready-to-push
     pr: []
     blast_radius: >
       tools/lab/proxy-trust/ws_chain.sh, tools/ws_probe.js, tools/ws_echo.js,
@@ -10938,30 +10938,34 @@ items:
       - no-gate: >
           The measurement needs Docker, MongoDB and two Nightscout trees
           (ws_chain.sh selftest/run/o2families/idle), so it is not a queue gate.
-          2026-09-28: selftest 27/27; run 64/64 cells W0 ok and socket address
-          equal to HTTP; o2families 16 rows, 80 probes, none vacuous;
-          idle 12 cells.
+          2026-09-30 on dev 7000eb18 (15.0.8 92d08342 unset): selftest 27/27;
+          run 96/96 cells W0 ok and socket address equal to HTTP over three
+          transports; o2families 24 rows, 120 probes, none vacuous; idle 12
+          cells. 2026-09-28 on #8754 81623f9b gave the same grid.
     blocks_on: []
     evidence:
       - tools/lab/proxy-trust/README-ws.md
+      - tools/lab/proxy-trust/results/matrix-ws-2026-09-30.md
+      - tools/lab/proxy-trust/results/o2-families-ws-2026-09-30.md
+      - tools/lab/proxy-trust/results/ws-idle-2026-09-30.md
       - tools/lab/proxy-trust/results/matrix-ws-2026-09-28.md
-      - tools/lab/proxy-trust/results/o2-families-ws-2026-09-28.md
-      - tools/lab/proxy-trust/results/ws-idle-2026-09-28.md
     notes: >
-      Closes the "WebSocket upgrades" gap listed in README-ar-chain.md. Measured
-      2026-09-28 against dev f1591069 and #8754 81623f9b: socket.io upgrades
-      through every AR hop (101 logged at each), and the address recorded for
-      a wrong-secret socket authorize equals the HTTP one in every topology x
-      TRUST_PROXY x transport cell, so the TRUST_PROXY deployment matrix applies
-      to sockets unchanged. W2 (all header families in the handshake) matches
-      the HTTP families table row for row: unset not protected everywhere,
-      the expected count protected. W3 (idle vs hop timeouts, off by default):
-      a hop timeout below the 25s socket.io ping drops the idle socket every
-      cycle (10s: 8, 20s: 4, 24s: 3 drops in 90s); 26s and above hold. Owed: cloud-LB cells
-      (backend keepalive with PROXY protocol on an L7 rule, LB idle timeout,
-      health checks) need a real LB and are outside this lab; O3/O4 throttle
-      over sockets; wss:// through the chain. Measured before #8765 (one TRUST_PROXY
-      source) and BF-80 reached dev; re-run on the 15.0.9 candidate owed.
+      Closes the "WebSocket upgrades" gap listed in README-ar-chain.md.
+      Measured 2026-09-30 on the 15.0.9 candidate, dev 7000eb18 (#8754, #8765
+      and BF-80 merged), at every TRUST_PROXY setting, with 15.0.8 unset, over
+      polling-only (the web client's setting), polling-then-upgrade and
+      websocket-only: every cell ended on the transport asked for, and the
+      address recorded for a wrong-secret socket authorize equals the HTTP one,
+      so the TRUST_PROXY deployment matrix applies to sockets unchanged. The
+      upgrade grids are identical to the 2026-09-28 run on #8754 81623f9b. W2
+      (all header families in the handshake) matches the HTTP families table
+      row for row: unset not protected everywhere, the expected count
+      protected. W3 (idle vs hop timeouts, off by default): a hop timeout below
+      the 25s socket.io ping drops the idle socket every cycle (10s: 8, 20s: 4,
+      24s: 3 drops in 90s); 26s and above hold. Owed, outside this item:
+      cloud-LB cells (backend keepalive with PROXY protocol on an L7 rule, LB
+      idle timeout, health checks) need a real LB; O3/O4 throttle over
+      sockets; wss:// through the chain.
   - id: OID-PREVALENCE
     title: "Count string _ids and twin pairs per collection in real data, counts only"
     parcel: register-open

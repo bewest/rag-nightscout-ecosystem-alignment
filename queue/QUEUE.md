@@ -42,9 +42,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 3 | OID-LAB, WS-LAB, RT-SOAK |
+| `in-progress` | 2 | OID-LAB, RT-SOAK |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 74 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
@@ -2122,7 +2122,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `merged-upstream` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
-| `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `in-progress` | `lab/proxy-trust-ws` | n/a | 1 run + 1 no-gate |
+| `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `lab/proxy-trust-ws` | n/a | 1 run + 1 no-gate |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `merged-upstream` | `bf/entries-unknown-id` | patch | 1 run |
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -4620,7 +4620,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `lab/proxy-trust-ws` |
 | base | `main` |
@@ -4638,16 +4638,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `sh -c 'bash -n tools/lab/proxy-trust/ws_chain.sh && bash -n tools/lab/proxy-trust/ar_chain.sh && node --check tools/lab/proxy-trust/tools/ws_probe.js && node --check tools/lab/proxy-trust/tools/ws_echo.js && python3 -m py_compile tools/lab/proxy-trust/tools/ws_analyze.py'`
   - The lab scripts parse. Says nothing about what they measure.
-- **NO GATE** &mdash; The measurement needs Docker, MongoDB and two Nightscout trees (ws_chain.sh selftest/run/o2families/idle), so it is not a queue gate. 2026-09-28: selftest 27/27; run 64/64 cells W0 ok and socket address equal to HTTP; o2families 16 rows, 80 probes, none vacuous; idle 12 cells.
+- **NO GATE** &mdash; The measurement needs Docker, MongoDB and two Nightscout trees (ws_chain.sh selftest/run/o2families/idle), so it is not a queue gate. 2026-09-30 on dev 7000eb18 (15.0.8 92d08342 unset): selftest 27/27; run 96/96 cells W0 ok and socket address equal to HTTP over three transports; o2families 24 rows, 120 probes, none vacuous; idle 12 cells. 2026-09-28 on #8754 81623f9b gave the same grid.
 
 **Evidence.**
 
 - `tools/lab/proxy-trust/README-ws.md`
+- `tools/lab/proxy-trust/results/matrix-ws-2026-09-30.md`
+- `tools/lab/proxy-trust/results/o2-families-ws-2026-09-30.md`
+- `tools/lab/proxy-trust/results/ws-idle-2026-09-30.md`
 - `tools/lab/proxy-trust/results/matrix-ws-2026-09-28.md`
-- `tools/lab/proxy-trust/results/o2-families-ws-2026-09-28.md`
-- `tools/lab/proxy-trust/results/ws-idle-2026-09-28.md`
 
-**Notes.** Closes the "WebSocket upgrades" gap listed in README-ar-chain.md. Measured 2026-09-28 against dev f1591069 and #8754 81623f9b: socket.io upgrades through every AR hop (101 logged at each), and the address recorded for a wrong-secret socket authorize equals the HTTP one in every topology x TRUST_PROXY x transport cell, so the TRUST_PROXY deployment matrix applies to sockets unchanged. W2 (all header families in the handshake) matches the HTTP families table row for row: unset not protected everywhere, the expected count protected. W3 (idle vs hop timeouts, off by default): a hop timeout below the 25s socket.io ping drops the idle socket every cycle (10s: 8, 20s: 4, 24s: 3 drops in 90s); 26s and above hold. Owed: cloud-LB cells (backend keepalive with PROXY protocol on an L7 rule, LB idle timeout, health checks) need a real LB and are outside this lab; O3/O4 throttle over sockets; wss:// through the chain. Measured before #8765 (one TRUST_PROXY source) and BF-80 reached dev; re-run on the 15.0.9 candidate owed.
+**Notes.** Closes the "WebSocket upgrades" gap listed in README-ar-chain.md. Measured 2026-09-30 on the 15.0.9 candidate, dev 7000eb18 (#8754, #8765 and BF-80 merged), at every TRUST_PROXY setting, with 15.0.8 unset, over polling-only (the web client's setting), polling-then-upgrade and websocket-only: every cell ended on the transport asked for, and the address recorded for a wrong- secret socket authorize equals the HTTP one, so the TRUST_PROXY deployment matrix applies to sockets unchanged. The upgrade grids are identical to the 2026-09-28 run on #8754 81623f9b. W2 (all header families in the handshake) matches the HTTP families table row for row: unset not protected everywhere, the expected count protected. W3 (idle vs hop timeouts, off by default): a hop timeout below the 25s socket.io ping drops the idle socket every cycle (10s: 8, 20s: 4, 24s: 3 drops in 90s); 26s and above hold. Owed, outside this item: cloud-LB cells (backend keepalive with PROXY protocol on an L7 rule, LB idle timeout, health checks) need a real LB; O3/O4 throttle over sockets; wss:// through the chain.
 
 ### `OID-PREVALENCE` &mdash; Count string _ids and twin pairs per collection in real data, counts only
 

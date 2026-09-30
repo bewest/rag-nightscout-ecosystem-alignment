@@ -9,8 +9,9 @@
 #   admin-notify. These cells check that the socket path agrees with HTTP, and
 #   that the upgrade really happens through every hop.
 #
-#     W0  upgrade    the socket ends on the websocket transport and every HTTP
-#                    hop on the path logged a 101 for it (non-vacuity for W1/W2)
+#     W0  upgrade    the socket ends on the transport asked for: websocket with a
+#                    101 logged at every HTTP hop, or polling alone without an
+#                    upgrade (non-vacuity for W1/W2)
 #     W1  address    the IP recorded for a socket `authorize` with a wrong
 #                    secret is the honest client, and equals the IP recorded for
 #                    an HTTP request with a wrong secret from the same client
@@ -20,9 +21,10 @@
 #                    proxy_read/send_timeout set on every hop; the tradeoff
 #                    between hop timeouts and the socket.io ping interval
 #
-#   Transports: "polling,websocket" (polling first, then upgrade: what the web
-#   client does; socket.request is the first polling request) and "websocket"
-#   (the upgrade request is the handshake).
+#   Transports: "polling" (what the Nightscout web client asks for on / and
+#   /alarm; every request is a long-poll), "polling,websocket" (socket.io's
+#   default: polling first, then upgrade; socket.request is the first polling
+#   request) and "websocket" (the upgrade request is the handshake).
 #
 # USAGE (same environment as lab.sh / ar_chain.sh)
 #   ./ws_chain.sh selftest   # NO Nightscout: upgrade + forwarded headers per hop
@@ -42,7 +44,7 @@ IP_WS_CLIENT=$NETP.14
 WS_CLIENT=$PFX-wsclient
 IMG_NODE=${IMG_NODE:-node:22-alpine}
 WS_TOPOS=(${WS_TOPOS:-${AR_TOPOS[*]}})
-WS_TRANSPORTS=(${WS_TRANSPORTS:-polling,websocket websocket})
+WS_TRANSPORTS=(${WS_TRANSPORTS:-polling polling,websocket websocket})
 # HTTP hops on each path; each must log a 101 for the upgrade (L4 hops are streams)
 declare -A WS_HOPS=( [AR-PP3]="argw arrt artr" [AR-PP2]="argw artr" [AR-L4]="arrt artr" [AR-L4PP]="arrtpp artr" )
 
@@ -138,10 +140,15 @@ ws_cell () { # ws_cell <topology> <tree_dir> <tree_label> <tp> <transports> <jso
   transport=$(jf "$r" transport); upgraded=$(jf "$r" upgraded); auth=$(jf "$r" auth); err=$(jf "$r" error)
   sleep 1
   hops=$(hops_101 "$topo" "$since")
-  # W0: websocket-only must be on websocket; polling-first must have upgraded
+  # W0: websocket-only must be on websocket; polling-first must have upgraded;
+  # polling-only (the web client's case) must have stayed on polling
   w0=fail
-  if [ -z "$err" ] && [ "$transport" = websocket ] && [ "$hops" = ok ]; then
-    case "$tr" in websocket) w0=ok ;; *) [ "$upgraded" = true ] && w0=ok ;; esac
+  if [ -z "$err" ]; then
+    case "$tr" in
+      polling) [ "$transport" = polling ] && [ "$upgraded" != true ] && w0=ok ;;
+      websocket) [ "$transport" = websocket ] && [ "$hops" = ok ] && w0=ok ;;
+      *) [ "$transport" = websocket ] && [ "$hops" = ok ] && [ "$upgraded" = true ] && w0=ok ;;
+    esac
   fi
   assert_alive || { echo "SKIP $id (died during probe)"; return; }
   ws_ip=$(notify_ips)
@@ -200,7 +207,8 @@ PY
     local r hd; hd=$(python3 -c 'import json,sys;print(json.dumps({sys.argv[1]:sys.argv[2]}))' "$4" "$5")
     r=$(probe "$(pjson auth "$1" "$2" "$3" "$(wrongsecret "wso2f-$6")" "$hd")")
     case "$(jf "$r" error)" in unsendable-on-polling) echo vacuous; return ;; esac
-    [ "$(jf "$r" transport)" = websocket ] || { echo vacuous; return; }
+    local want=websocket; [ "$3" = polling ] && want=polling
+    [ "$(jf "$r" transport)" = "$want" ] || { echo vacuous; return; }
     assert_alive || { echo dead; return; }
     notify_ips | tr ',' '\n' | grep -qxF "$5" && echo moved || echo held
   }

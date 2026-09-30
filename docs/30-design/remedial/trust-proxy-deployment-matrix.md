@@ -25,12 +25,15 @@ with the right setting (`false` direct, `1` one proxy, `2` two hops or the PROXY
 **protected** on all nine. A replacing proxy does not make the unset default protected.
 
 **Sockets follow the same table.** The socket.io server resolves the handshake request through the same
-helper, and a wrong-secret `authorize` feeds the same failed-auth delay. Measured 2026-09-28 on the four
-auth_request-chain topologies (`tools/lab/proxy-trust/README-ws.md`, dev `f1591069`, PR `81623f9b`). In
-every topology × setting × transport cell (polling-then-upgrade and websocket-only), the upgrade went
-through every hop, and the address recorded for the socket matched the HTTP one. Across all header
-families, the result was the same as HTTP: unset not protected, the expected count protected. No row
-below needs a separate socket column.
+helper, and a wrong-secret `authorize` feeds the same failed-auth delay. Measured 2026-09-30 on the four
+auth_request-chain topologies (`tools/lab/proxy-trust/README-ws.md`) against the 15.0.9 candidate, dev
+`7000eb18`, at every setting, and 15.0.8 unset; first measured 2026-09-28 on #8754 `81623f9b`, same
+grid. In every topology × setting × transport cell (polling-only, which is what the web client uses;
+polling-then-upgrade; websocket-only), the socket ended on the transport asked for, and the address
+recorded for it matched the HTTP one. Across all header families and all three transports, the result was
+the same as HTTP: unset not protected, the expected count protected. No row below needs a separate socket
+column. One socket-only constraint: every hop's idle timeout, and any load balancer's, must sit well above
+socket.io's 25 s ping; a hop timeout below it dropped an idle socket every cycle in the lab, and 60 s held.
 
 Operator-facing versions: the Nightscout docs page *Proxy setting (`TRUST_PROXY`)* (draft,
 `nightscout.github.io` `docs/nightscout/trust_proxy.md`) and the cgm-remote-monitor reference

@@ -31,7 +31,9 @@ def matrix(rows, out, date, dev_sha, pr_sha):
          f"Socket address = the address Nightscout recorded for a wrong-secret socket `authorize`"
          f" (correct = `{CLIENT}`). **=http** means a wrong-secret HTTP request from the same client"
          " then recorded the same address; **≠http** means it recorded a different one. W0 = the"
-         " socket ended on the websocket transport and every HTTP hop logged a 101 for it.", ""]
+         " socket ended on the transport asked for: with `websocket` in the list, on websocket with"
+         " a 101 logged at every HTTP hop; with `polling` alone (the web client's setting), on"
+         " polling without an upgrade.", ""]
     for tr in trs:
         L += [f"## Transports `{tr}`", "", "| topology | dev UNSET | " +
               " | ".join(f"TP={s}" for s in settings) + " |",
@@ -51,7 +53,7 @@ def matrix(rows, out, date, dev_sha, pr_sha):
     bad = [r for r in rows if r["w0"] != "ok" or r["http_match"] != "yes"]
     L += ["## Cells needing attention", ""]
     if not bad:
-        L.append("None: every cell upgraded through every hop and agreed with HTTP.")
+        L.append("None: every cell ended on the transport asked for and agreed with HTTP.")
     for r in bad:
         L.append(f"- {r['topology']} {r['tree']} TP={r['trust_proxy']} `{r['transports']}`: "
                  f"W0={r['w0']} (transport={r['transport']}, hops={r['hops_101']}, error={r['error'] or '-'}), "

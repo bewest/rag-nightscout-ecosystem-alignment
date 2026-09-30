@@ -25,9 +25,9 @@ from HTTP:
     clients), it is the first long-poll GET.
   - **The Nightscout web client never upgrades.** `lib/client/index.js`
     connects both the main and the `/alarm` namespaces with
-    `transports: ["polling"]` (15.0.5 and dev `f1591069`). So every browser
+    `transports: ["polling"]` (15.0.5 through dev `7000eb18`). So every browser
     socket, including alarm acks, is a series of HTTP long-polls through
-    every hop. The W3 `polling` cells are the browser's case.
+    every hop. The `polling` cells in W1, W2 and W3 are the browser's case.
   - With `websocket` alone, it is the Upgrade request.
 - **A hop can pass HTTP but break the upgrade.** It might drop `Upgrade` or
   `Connection`, or not speak HTTP/1.1 upstream. When that happens, the client
@@ -40,9 +40,9 @@ from HTTP:
 
 | cell | question | how we know it's not vacuous |
 |---|---|---|
-| **W0 upgrade** | Does the socket end up on `websocket`, and did every HTTP hop on the path log a `101` for it? | This is the precondition for W1 and W2. The selftest control shows that a plain GET logs no `101`. |
+| **W0 upgrade** | Does the socket end on the transport asked for? With `websocket` in the list: on `websocket`, with a `101` logged at every HTTP hop. With `polling` alone: on polling, never upgraded. | This is the precondition for W1 and W2. The selftest control shows that a plain GET logs no `101`. |
 | **W1 address** | Which address is recorded for a wrong-secret socket `authorize`? Is it the honest client? Does a wrong-secret HTTP request from the same client record the **same** address? | The cell fails with `(no notify)` if nothing was recorded. |
-| **W2 adversarial** | Each header family from the private probes set in the socket handshake. Tracked output says protected / not protected only. | A probe that ended on polling, or that the polling transport can't send (XHR-forbidden header), counts as `vacuous`, not `protected`. |
+| **W2 adversarial** | Each header family from the private probes set in the socket handshake. Tracked output says protected / not protected only. | A probe that ended on a transport other than the one asked for, or that the polling transport can't send (XHR-forbidden header), counts as `vacuous`, not `protected`. |
 | **W3 idle** (off by default) | A socket left idle, with `proxy_read_timeout` and `proxy_send_timeout` set to N on every HTTP hop. How many disconnects happen in the window? | `default` means no directive (nginx's 60s). The requested and final transports are both reported. |
 
 The client is a `node:22-alpine` container at `172.31.66.14`. It uses
@@ -59,11 +59,12 @@ The environment is the same as for `ar_chain.sh`:
 PROXYLAB_STATE=/outside/git ./ws_chain.sh selftest     # no Nightscout: upgrade + headers per hop (27 checks)
 PROXYLAB_STATE=… DEV_TREE=… PR_TREE=… ./ws_chain.sh run                       # W0 + W1
 PROXYLAB_PRIVATE_PROBES=… PROXYLAB_PRIVATE_RESULTS=… ./ws_chain.sh o2families # W2
-WS_IDLE=1 WS_IDLE_TIMEOUTS="10 20 30 default" ./ws_chain.sh idle             # W3
+WS_IDLE=1 WS_IDLE_TIMEOUTS="10 20 24 26 30 default" ./ws_chain.sh idle       # W3
 ```
 
 Knobs:
 - `WS_TOPOS`, `WS_SETTINGS` and `WS_TRANSPORTS` pick a subset of cells.
+  `WS_TRANSPORTS` defaults to `polling polling,websocket websocket`.
 - `WS_IDLE_TOPO` (default `AR-PP2`), `WS_IDLE_MS` (default 90000) and
   `WS_IDLE_TRANSPORTS` (default `websocket polling`) control W3.
 
@@ -72,11 +73,14 @@ originals back.
 
 ## Results
 
-Measured 2026-09-28. dev `f1591069`, PR (#8754) `81623f9b`, socket.io 4.8.3 on both ends. Files:
+Measured 2026-09-30 on the 15.0.9 candidate: dev `7000eb18` (#8754, #8765 and
+BF-80 merged) at every setting, and 15.0.8 `92d08342` unset. socket.io 4.8.3 on
+both ends; three transports (`polling`, `polling,websocket`, `websocket`).
+Files:
 
-- `results/matrix-ws-2026-09-28.md` (W0, W1);
-- `results/o2-families-ws-2026-09-28.md` (W2);
-- `results/ws-idle-2026-09-28.md` (W3).
+- `results/matrix-ws-2026-09-30.md` (W0, W1);
+- `results/o2-families-ws-2026-09-30.md` (W2);
+- `results/ws-idle-2026-09-30.md` (W3).
 
 **Selftest: 27/27 checks pass.** The upgrade reaches the backend with
 `Upgrade: websocket` and `Connection: upgrade` in all four shapes. The
@@ -84,24 +88,25 @@ forwarded `X-Forwarded-For` on the upgrade equals the honest HTTP chain. Every
 HTTP hop logs a `101`. The plain-GET control reaches the backend without being
 upgraded and logs no `101`.
 
-**W0 + W1: 64/64 cells.**
-- Every cell ended on `websocket`, with a `101` at every hop.
+**W0 + W1: 96/96 cells.**
+- Every cell ended on the transport asked for: the two upgrade transports on
+  `websocket` with a `101` at every hop, polling-only on polling.
 - In every cell, the address recorded for the socket was the same as for HTTP
   from the same client.
-- The grid is **identical to the HTTP O1 grid** of 2026-09-24
-  (`results/matrix-ar-2026-09-24.md`), with the client address `.14`. That
-  holds for both transports, the dev tree unset, and the PR tree at every
-  setting. `AR-L4` resolves the L4 box or a proxy at every setting, as it does
-  for HTTP.
-- So the socket path has no address logic of its own, and the `TRUST_PROXY`
-  deployment matrix applies to sockets as it stands.
+- The `polling,websocket` and `websocket` grids are identical, cell for cell,
+  to the 2026-09-28 run on #8754 `81623f9b`. The `polling` grid (the web
+  client's case, not measured before) gives the same addresses.
+- So the socket path has no address logic of its own on the candidate either,
+  and the `TRUST_PROXY` deployment matrix applies to sockets as it stands.
+  `AR-L4` resolves the L4 box or a proxy at every setting, as it does for HTTP.
 
-**W2: 16 rows, 80 probes, none vacuous.**
-- It matches `results/o2-families-ar-2026-09-24.md` row for row: unset **not
-  protected** on all four shapes, the expected count protected.
-- The result is the same for both transports.
+**W2: 24 rows, 120 probes, none vacuous.**
+- Unset is **not protected** on all four shapes and all three transports; the
+  expected count is protected on all of them.
+- It matches `results/o2-families-ar-2026-09-24.md` (HTTP) row for row.
 
-**W3: idle socket vs hop timeouts.** `AR-PP2`, `TRUST_PROXY=2`, 90s idle:
+**W3: idle socket vs hop timeouts.** `AR-PP2`, `TRUST_PROXY=2`, 90s idle.
+The same counts on `7000eb18` as on 2026-09-28:
 
 | hop timeout | drops in 90s (websocket = polling) |
 |---|---|
@@ -127,6 +132,14 @@ upgraded and logs no `101`.
   - Set every hop, and any LB idle timeout, **comfortably above 25s**. 60s is
     the measured-safe default.
 
+
+### Earlier run
+
+2026-09-28, dev `f1591069` unset and #8754 `81623f9b` before it merged, two
+transports: selftest 27/27, W0+W1 64/64, W2 16 rows and 80 probes, W3 as
+above. Files `results/*-ws-2026-09-28.*`. The 2026-09-30 run repeats it on the
+candidate after #8765 moved every client-address consumer onto one
+`TRUST_PROXY` policy and BF-80 changed the alarm socket's delay.
 
 ## Not covered here
 
