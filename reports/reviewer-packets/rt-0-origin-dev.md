@@ -154,10 +154,18 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-27 - #8785 (boluswizardpreview test clock; the timing flake that
-failed one cell of #8784's CI) merged into dev as 295f1177 (head a9b77d1e,
-same tree; GitHub merge time 18:39Z). Test-only, so run 020 on ce30a94d
-stands; #8785's CI passed in all nine cells, the file passes 12/12 on
+2026-09-30 - re-measured after fetching official: dev is still 7000eb18
+(merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges ahead of
+master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed and 3
+skipped, reviewDecision APPROVED (both approvals given at e3adc91d). No 15.0.9
+tag. The maintainer reported the same day that real sites running the
+candidate have shown no visible regression so far (no rig count or duration
+recorded). Still owed by the maintainer: browser hand checks, the 24-72 h
+real-time soak (RT-SOAK), re-approval of #8598 at the final head, the semver
+decision. 2026-09-27 - #8785 (boluswizardpreview test clock; the timing flake
+that failed one cell of #8784's CI) merged into dev as 295f1177 (head
+a9b77d1e, same tree; GitHub merge time 18:39Z). Test-only, so run 020 on
+ce30a94d stands; #8785's CI passed in all nine cells, the file passes 12/12 on
 295f1177, the browser gate names the same 14 paths, package files unchanged.
 dev is 295f1177: 505 commits and 85 first-parent merges ahead of master, 296
 files, +28279/-1703. Release PR #8598 is at 295f1177: mergeable, 27 checks

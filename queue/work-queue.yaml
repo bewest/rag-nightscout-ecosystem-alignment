@@ -2898,6 +2898,15 @@ items:
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-09-30 - re-measured after fetching official: dev is still
+      7000eb18 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent
+      merges ahead of master; release PR #8598 is at 7000eb18, mergeable, 27
+      checks passed and 3 skipped, reviewDecision APPROVED (both approvals
+      given at e3adc91d). No 15.0.9 tag. The maintainer reported the same day
+      that real sites running the candidate have shown no visible regression
+      so far (no rig count or duration recorded). Still owed by the
+      maintainer: browser hand checks, the 24-72 h real-time soak (RT-SOAK),
+      re-approval of #8598 at the final head, the semver decision.
       2026-09-27 - #8785 (boluswizardpreview test clock; the timing flake
       that failed one cell of #8784's CI) merged into dev as 295f1177
       (head a9b77d1e, same tree; GitHub merge time 18:39Z). Test-only, so
@@ -11421,6 +11430,10 @@ items:
       (about 280 to 330 MB) is the same on both arms without APNs, so it is
       not BF-134. Recorded in the integration record, run 017. Left: the
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
+      2026-09-30: the maintainer reported that real sites running the
+      candidate 7000eb18 have shown no visible regression so far; the lab
+      real-time soak has not run. Whether real-site runs stand in for it is
+      the maintainer's call.
   - id: BFQ-133
     title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9"
     parcel: register-open

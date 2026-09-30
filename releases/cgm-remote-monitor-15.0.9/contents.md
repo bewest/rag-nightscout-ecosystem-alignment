@@ -2,7 +2,7 @@
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
 Nothing here is tagged or released. Measured 2026-09-27 against `official/dev` `7000eb18`
-(merge of #8786) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+(merge of #8786), re-checked unchanged on 2026-09-30, and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
@@ -27,7 +27,7 @@ is `merged`; none is `released`.
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `7000eb18`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-27) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `7000eb18`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-30) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -303,6 +303,10 @@ branches, which are renumbered when they are rebased. Beside that:
    that was not checked in a browser.
 2. **The 24 to 72 h real-time soak** on `7000eb18`. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
+   Real sites are running the candidate (the `dev_7000eb18…` image or the `dev` branch at
+   `7000eb18`, per the [testing notes](testing-notes.md)); the maintainer reported on 2026-09-30
+   that they have shown no visible regression so far. No rig count, duration or client list is
+   recorded here. The lab real-time soak (`lab.sh soak --hours 72`) has not run.
    **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
    the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
    override values and a lockfile refresh), merged as #8786 (`7000eb18`); `dev` now audits at 7,

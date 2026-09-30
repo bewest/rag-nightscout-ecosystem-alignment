@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-09-27 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
+2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -51,7 +51,8 @@ Also before the tag, and not queue items of their own (they are in `RT-0`'s note
 the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
 by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
 [the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the 24 to 72 h
-real-time soak (`RT-SOAK`), the semver decision, the release notes,
+real-time soak (`RT-SOAK`; the maintainer reported on 2026-09-30 that real sites running the
+candidate have shown no visible regression so far, and the lab soak has not run), the semver decision, the release notes,
 re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `7000eb18`), a
 review of #8598 by someone other than the author, and the maintainer's tag. The last full test run
 is run 020 on `ce30a94d`; it stands for `295f1177` (test-only #8785), and #8786's dependency change
