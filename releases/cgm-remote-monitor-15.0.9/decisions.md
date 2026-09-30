@@ -1,7 +1,7 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-09-26, as of `dev` `7000eb18`. Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-09-30, as of `dev` `3014f883`. Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
@@ -13,7 +13,7 @@ and this repository is public.*
 | decision | queue | as it stands |
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
-| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `7000eb18`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; CI on `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-27) |
+| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `3014f883`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; CI on `3014f883`: 27 checks passed, 3 skipped (read 2026-09-30) |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
 | **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |
@@ -27,6 +27,8 @@ and this repository is public.*
 | **BF-141 is fixed in 15.0.9** (a v1 treatment re-sent with an empty identity stored twice, a `dev`-only regression from #8780). It shipped in #8781 from AndyLow91, with BF-143 (a re-send rewrote `srvCreated`) and BF-144 (v3 history could miss records written after a restart), both `dev`-only as well; `bf/fallback-key-empty-identifier` and #8782 were closed as superseded (2026-09-26) | `RT-PR-8781`, `BFQ-141` | #8781 merged (`ce7d754a`) |
 | **BF-142 ships in 15.0.9 (#8783)**: v3 DELETE reaches records whose identifier is `0` or `false`; a record whose identifier is a list stays undeletable through v3, unlike 15.0.8, because v3 GET shows the list as its identifier. Listed in the release notes as a known difference (2026-09-26) | `BFQ-142` | #8783 merged (`699eb5fa`); release notes, Known issues |
 | **BF-146 is fixed in 15.0.9 (#8784), and fixes BF-133 with it**: API v3 treatments enter the server's in-memory copy with `mills`, so a late or edited v3 treatment counts in the treatment-based IOB and COB and the treatments stay in time order ("fix as appropriate", 2026-09-26); extended the same day to device status, for consistency, so a late v3 device status is placed by time in the in-memory v1 read. Entries are left unchanged. The same code is on 15.0.8 | `BFQ-146`, `BFQ-133` | #8784 merged (`ce30a94d`) |
+| **#8788 is in 15.0.9** (the Day to Day report draws an event with a duration on every day it covers; awss1i; BF-148, fixes #8223). The maintainer merged it on 2026-09-30 after its review; BF-149, found in that review, is after 15.0.9 and a known issue | `RT-PR-8788`, `BFQ-149` | merged 2026-09-30 as `3014f883` |
+| **Real sites count as the 24 to 72 h real-time soak** (2026-09-30); the lab's 72 h soak is not run | `RT-SOAK` | done |
 | **BF-145 after 15.0.9**: v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy); the same on 15.0.8 (2026-09-26) | `BFQ-145` | release notes, Known issues |
 | **Version class of #8772, #8775 and #8780 deferred**: the queue classes #8775 and #8780 as minor and #8772's 500 → 200 is an open question; the maintainer is still collecting data before deciding whether they are recorded as minor-under-patch exceptions (as #8530) or re-classed (2026-09-26) | `BFQ-129`, `BFQ-122`, `BFQ-121` | undecided |
 | **After 15.0.9**: BF-137 (several IFTTT Maker keys), and making a v3 or websocket edit of a record stored twice merge the two copies (2026-09-26) | `BFQ-137`, `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` | not started |

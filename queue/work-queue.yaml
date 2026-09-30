@@ -2891,24 +2891,33 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
-      2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) opened against
-      dev 7000eb18; whether it goes into 15.0.9 is the maintainer's call
-      (RT-PR-8788, not in blocks_on). Merging it moves dev and re-anchors
-      the 15.0.9 records.
+      2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) merged into dev
+      as 3014f883 (22:38Z, tree 3549306b = head bbc6e75e); RT-PR-8788 added
+      to blocks_on. dev is 3014f883: 509 commits and 87 first-parent merges
+      ahead of master, 298 files, +28617/-1819. Release PR #8598 is at
+      3014f883, mergeable, reviewDecision APPROVED (approvals at e3adc91d);
+      CI 27 passed and 3 skipped. Local full suite on bbc6e75e 3481/0/3 (Node 22.23.2,
+      MongoDB 7.0.43). The browser-check gate names 15 files (adds
+      lib/report_plugins/daytoday.js; its hand check is the smoke
+      checklist's new Day to Day section). The real-site soak ran on
+      7000eb18, before #8788. The 15.0.9 records are re-anchored on
+      3014f883. Still owed by the maintainer: browser hand checks,
+      re-approval of #8598 at the final head, the semver decision.
       2026-09-30 - re-measured after fetching official: dev is still
       7000eb18 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent
       merges ahead of master; release PR #8598 is at 7000eb18, mergeable, 27
       checks passed and 3 skipped, reviewDecision APPROVED (both approvals
       given at e3adc91d). No 15.0.9 tag. The maintainer reported the same day
       that real sites running the candidate have shown no visible regression
-      so far (no rig count or duration recorded), and decided that those
+      so far (the testing notes record one Loop, one Trio and one AndroidAPS
+      user for about two days as of 2026-09-29), and decided that those
       real-site runs count as the 24-72 h real-time soak (RT-SOAK, done).
       Still owed by the maintainer: browser hand checks, re-approval of #8598
       at the final head, the semver decision.
@@ -10761,14 +10770,14 @@ items:
       externals/cgm-remote-monitor-official fetch official
       pull/8778/head:refs/triage/pr-8778`.
   - id: RT-PR-8788
-    title: "#8788 - the Day to Day report draws an event with a duration on every day it covers (awss1i; BF-148, fixes #8223); open, 15.0.9 or after is the maintainer's call"
+    title: "#8788 - the Day to Day report draws an event with a duration on every day it covers (awss1i; BF-148, fixes #8223); merged for 15.0.9"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: awss1i:wip/daytoday-duration-past-midnight
     base: origin/dev@7000eb18
-    state: needs-decision
+    state: merged-upstream
     pr: [8788]
-    ships_to_operators_today: true
+    ships_to_operators_today: false
     blast_radius: >
       lib/report_plugins/daytoday.js only in code (+55/-97): the five copies
       of the duration-band code become appendDurationBand, reached through
@@ -10793,8 +10802,8 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e origin/dev
         kind: static
         describe: >
-          #8788's head bbc6e75e is contained in origin/dev. RED while the PR
-          is open (2026-09-30).
+          #8788's head bbc6e75e is contained in origin/dev (merged
+          2026-09-30 as 3014f883; RED before that).
       - no-gate: >
           Measured 2026-09-30 in externals/work/crm-8788 (bbc6e75e, Node
           22.23.2): the PR's test 3/3, and 1/3 with 7000eb18's daytoday.js
@@ -10811,6 +10820,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      Merged 2026-09-30 22:38Z by the maintainer as 3014f883 (tree 3549306b,
+      the same as bbc6e75e); dev is 3014f883, 509 commits and 87
+      first-parent merges ahead of master. BF-148 merged; BF-149 is after
+      15.0.9 and a known issue in the release notes.
       Opened 2026-09-30 16:19Z by awss1i (first PR to the repository), one
       commit bbc6e75e on dev 7000eb18, MERGEABLE, no review yet; CI ran on
       the fork PR (CodeQL and the npm 12 install-and-build check passed; the
@@ -11552,7 +11565,8 @@ items:
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
       2026-09-30 (maintainer): real sites running the candidate 7000eb18
       count as the 24-72 h real-time soak, and have shown no visible
-      regression so far; no rig count or duration is recorded. The lab
+      regression so far; the testing notes record one Loop, one Trio and one
+      AndroidAPS user running it for about two days as of 2026-09-29. The lab
       real-time soak was not run. Done.
   - id: BFQ-133
     title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9"

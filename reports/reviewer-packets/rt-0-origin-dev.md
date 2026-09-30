@@ -143,7 +143,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`
+`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`
 
 ## Evidence
 
@@ -154,45 +154,54 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) opened against dev
-7000eb18; whether it goes into 15.0.9 is the maintainer's call (RT-PR-8788,
-not in blocks_on). Merging it moves dev and re-anchors the 15.0.9 records.
-2026-09-30 - re-measured after fetching official: dev is still 7000eb18
-(merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges ahead of
-master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed and 3
-skipped, reviewDecision APPROVED (both approvals given at e3adc91d). No 15.0.9
-tag. The maintainer reported the same day that real sites running the
-candidate have shown no visible regression so far (no rig count or duration
-recorded), and decided that those real-site runs count as the 24-72 h real-
-time soak (RT-SOAK, done). Still owed by the maintainer: browser hand checks,
-re-approval of #8598 at the final head, the semver decision. 2026-09-27 -
-#8785 (boluswizardpreview test clock; the timing flake that failed one cell of
-#8784's CI) merged into dev as 295f1177 (head a9b77d1e, same tree; GitHub
-merge time 18:39Z). Test-only, so run 020 on ce30a94d stands; #8785's CI
-passed in all nine cells, the file passes 12/12 on 295f1177, the browser gate
-names the same 14 paths, package files unchanged. dev is 295f1177: 505 commits
-and 85 first-parent merges ahead of master, 296 files, +28279/-1703. Release
-PR #8598 is at 295f1177: mergeable, 27 checks passed and 3 skipped,
-reviewDecision APPROVED (both approvals given at e3adc91d). 2026-09-27 - npm
-audit triage done (contents.md); BF-147 filed and merged as #8786 into dev as
-7000eb18 (head 64a9cc13, same tree; 20:40Z): the ajv 6 and request form-data
-overrides move to their patch releases and three build tools are refreshed, 9
-locked versions, npm audit 17 -> 7 with no highs. Run 020 was not repeated:
-#8786's CI passed in all nine cells plus the npm 12 install-and-build check,
-one local cell gave 3473/0/3 (Node 24.15.0, MongoDB 7.0.43), and the
-production bundle from 295f1177 and 7000eb18 is byte-identical. dev is
-7000eb18: 507 commits and 86 first-parent merges ahead of master, 297 files,
-+28363/-1722. Release PR #8598 is at 7000eb18: 27 checks passed and 3 skipped,
-reviewDecision APPROVED. Still owed by the maintainer: browser hand checks,
-the 24-72 h real-time soak, re-approval of #8598 at the final head, the semver
-decision. 2026-09-26 - #8784 (BF-146 with BF-133) merged into dev as ce30a94d
-(head d235bdf6; GitHub merge time 2026-09-27 05:32Z); BFQ-146 and BFQ-133 are
-merged-upstream. dev is ce30a94d: 503 commits and 84 first-parent merges ahead
-of master, 295 files, +28274/-1701. Release PR #8598 is at ce30a94d:
+2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) merged into dev as
+3014f883 (22:38Z, tree 3549306b = head bbc6e75e); RT-PR-8788 added to
+blocks_on. dev is 3014f883: 509 commits and 87 first-parent merges ahead of
+master, 298 files, +28617/-1819. Release PR #8598 is at 3014f883, mergeable,
+reviewDecision APPROVED (approvals at e3adc91d); CI 27 passed and 3 skipped.
+Local full suite on bbc6e75e 3481/0/3 (Node 22.23.2, MongoDB 7.0.43). The
+browser-check gate names 15 files (adds lib/report_plugins/daytoday.js; its
+hand check is the smoke checklist's new Day to Day section). The real-site
+soak ran on 7000eb18, before #8788. The 15.0.9 records are re-anchored on
+3014f883. Still owed by the maintainer: browser hand checks, re-approval of
+#8598 at the final head, the semver decision. 2026-09-30 - re-measured after
+fetching official: dev is still 7000eb18 (merged 2026-09-27 20:40Z), 507
+commits and 86 first-parent merges ahead of master; release PR #8598 is at
+7000eb18, mergeable, 27 checks passed and 3 skipped, reviewDecision APPROVED
+(both approvals given at e3adc91d). No 15.0.9 tag. The maintainer reported the
+same day that real sites running the candidate have shown no visible
+regression so far (the testing notes record one Loop, one Trio and one
+AndroidAPS user for about two days as of 2026-09-29), and decided that those
+real-site runs count as the 24-72 h real-time soak (RT-SOAK, done). Still owed
+by the maintainer: browser hand checks, re-approval of #8598 at the final
+head, the semver decision. 2026-09-27 - #8785 (boluswizardpreview test clock;
+the timing flake that failed one cell of #8784's CI) merged into dev as
+295f1177 (head a9b77d1e, same tree; GitHub merge time 18:39Z). Test-only, so
+run 020 on ce30a94d stands; #8785's CI passed in all nine cells, the file
+passes 12/12 on 295f1177, the browser gate names the same 14 paths, package
+files unchanged. dev is 295f1177: 505 commits and 85 first-parent merges ahead
+of master, 296 files, +28279/-1703. Release PR #8598 is at 295f1177:
 mergeable, 27 checks passed and 3 skipped, reviewDecision APPROVED (both
-approvals given at e3adc91d). RC run 020 on ce30a94d (2026-09-27, integration
-record): 3473/0/3 in six cells; run 019's probes unchanged; BF-146 probe exit
-0 (1 on 699eb5fa and 15.0.8); compressed A/B soak recorded in tools/lab/rc-
+approvals given at e3adc91d). 2026-09-27 - npm audit triage done
+(contents.md); BF-147 filed and merged as #8786 into dev as 7000eb18 (head
+64a9cc13, same tree; 20:40Z): the ajv 6 and request form-data overrides move
+to their patch releases and three build tools are refreshed, 9 locked
+versions, npm audit 17 -> 7 with no highs. Run 020 was not repeated: #8786's
+CI passed in all nine cells plus the npm 12 install-and-build check, one local
+cell gave 3473/0/3 (Node 24.15.0, MongoDB 7.0.43), and the production bundle
+from 295f1177 and 7000eb18 is byte-identical. dev is 7000eb18: 507 commits and
+86 first-parent merges ahead of master, 297 files, +28363/-1722. Release PR
+#8598 is at 7000eb18: 27 checks passed and 3 skipped, reviewDecision APPROVED.
+Still owed by the maintainer: browser hand checks, the 24-72 h real-time soak,
+re-approval of #8598 at the final head, the semver decision. 2026-09-26 -
+#8784 (BF-146 with BF-133) merged into dev as ce30a94d (head d235bdf6; GitHub
+merge time 2026-09-27 05:32Z); BFQ-146 and BFQ-133 are merged-upstream. dev is
+ce30a94d: 503 commits and 84 first-parent merges ahead of master, 295 files,
++28274/-1701. Release PR #8598 is at ce30a94d: mergeable, 27 checks passed and
+3 skipped, reviewDecision APPROVED (both approvals given at e3adc91d). RC run
+020 on ce30a94d (2026-09-27, integration record): 3473/0/3 in six cells; run
+019's probes unchanged; BF-146 probe exit 0 (1 on 699eb5fa and 15.0.8);
+compressed A/B soak recorded in tools/lab/rc-
 soak/results/proof-2026-09-27-run020.md. Still owed by the maintainer: browser
 hand checks, the 24-72 h real-time soak, re-approval of #8598 at the final
 head, the semver decision, the npm audit triage. 2026-09-26 (maintainer: "fix

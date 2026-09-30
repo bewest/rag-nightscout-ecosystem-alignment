@@ -65,7 +65,7 @@ and hosting. The work on it runs in three horizons ([PROGRAMME-STATUS](PROGRAMME
 
 - **Remedial.** Defects in what ships to operators today, tracked in the
   [backfix register](../30-design/remedial/nightscout-backfix-register.md). The 15.0.9 candidate is
-  `7000eb18`, not yet tagged ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
+  `3014f883`, not yet tagged ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
 - **Modernization.** A staged release train for the dependency tree and runtime
   ([ROADMAP §2](ROADMAP.md#2-modernization-the-release-train)).
 - **Multitenancy.** A second deployment target for hosting providers, on PostgreSQL. Self-hosted,

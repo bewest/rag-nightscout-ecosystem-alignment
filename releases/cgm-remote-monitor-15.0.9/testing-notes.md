@@ -1,7 +1,7 @@
 # Nightscout 15.0.9 — testing notes for the release candidate
 
 **DRAFT — prepared for maintainer review before it is shared.** Living document: the "reported so
-far" line and the test build change as reports arrive. Last updated 2026-09-29.
+far" line and the test build change as reports arrive. Last updated 2026-09-30.
 
 *For people who would like to help test the next Nightscout release before it comes out. Part 1 is
 for people who **use** a Nightscout site, for themselves or a family member. Part 2 is for people who
@@ -77,14 +77,16 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`7000eb18`**
-(full: `7000eb18bdb49fc1b9fc582aec4329c0473f5430`). Its version reads **15.0.9**.
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`3014f883`**
+(full: `3014f883a1f2def76841776a20a275569e0f5799`). Its version reads **15.0.9**. It differs from the
+previous test build, `7000eb18`, only in the Day to Day report (events that run past midnight show on
+both days; see 1.7). If you are running `7000eb18`, keep going: your reports still count.
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_7000eb18bdb49fc1b9fc582aec4329c0473f5430`. This tag
+- **Docker:** `nightscout/cgm-remote-monitor:dev_3014f883a1f2def76841776a20a275569e0f5799`. This tag
   always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `7000eb18`.
+  branch. Check the commit is `3014f883`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
 If `dev` moves on to a new commit, these notes will name the new one.
@@ -187,6 +189,9 @@ These alerts could never fire before. Check them when the situation happens anyw
   are expected to change**, because filters now return the right records. Tell us if a number
   changed in a way you can't explain, with the report name and date range, not the data itself.
 - The treatments report can now be filtered by treatment type.
+- **Day to day** (build `3014f883` only): an event that lasts a while and runs past midnight, such
+  as an exercise at 22:00 for four hours, should show on both days and stay inside each day's chart.
+  A temporary target cancelled early is still drawn for the full time it was set for (a known issue).
 
 ---
 
