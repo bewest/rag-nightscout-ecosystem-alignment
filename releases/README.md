@@ -52,6 +52,9 @@ releases/
                         the semver facts; what is unsettled.
     decisions.md        optional; the maintainer's decisions that shape the
                         release, each stated as it stands.
+    testing-notes.md    optional; the call for testers of a release candidate.
+                        Part 1 user-facing (plain language), part 2 for
+                        operators and tool authors. Living until the tag.
     verification-record.{json,md}   optional; see VERIFICATION-RECORDS.md
   _template/            copy this to start a new release directory
 ```

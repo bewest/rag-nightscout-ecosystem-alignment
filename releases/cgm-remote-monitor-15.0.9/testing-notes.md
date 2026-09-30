@@ -1,0 +1,265 @@
+# Nightscout 15.0.9 — testing notes for the release candidate
+
+**DRAFT — prepared for maintainer review before it is shared.** Living document: the "reported so
+far" line and the test build change as reports arrive. Last updated 2026-09-29.
+
+*For people who would like to help test the next Nightscout release before it comes out. Part 1 is
+for people who **use** a Nightscout site, for themselves or a family member. Part 2 is for people who
+**run** a site (set up its hosting and settings) or write apps and scripts that talk to it. Nightscout
+is a secondary display, and this is test software. Nothing here is medical advice or advice about
+insulin doses. For changes to your own or your family member's therapy settings, talk to your care
+team.*
+
+## Where testing stands
+
+As of 2026-09-29: **one Loop, one Trio and one AndroidAPS user have each run the test build for about
+two days, with no errors and no changes in behaviour.** Nobody has yet tried to provoke the unusual
+cases. That is what these notes ask for. The release notes list what changed:
+[release notes](release-notes.md). These notes pick out the changes that need someone with a
+particular setup to try them.
+
+## Words used here
+
+| word | meaning |
+|---|---|
+| **site** | your Nightscout web page and the database behind it |
+| **uploader** | anything that sends data to your site: Loop, Trio, AndroidAPS (AAPS), xDrip+, a CGM connector |
+| **follower** | anything that only watches: a parent's phone, LoopFollow, a watch face, a report tool |
+| **careportal** | your site's own form for entering treatments (the **+** button) |
+| **token** | a limited-access login made on your site's admin page ("Admin tools"), for example read-only for a follower. Each one belongs to a **user** there and gets that user's **roles** (for example `readable` or `admin`) |
+| **API secret** | your site's master password (`API_SECRET`) |
+| **setting** | a value your site is started with, such as `DISPLAY_UNITS=mmol`. Where you change them depends on where your site is hosted |
+| **server log** | the messages your site writes while it runs. Your hosting service has a page or command to show them |
+| **IOB / COB** | insulin on board / carbs on board |
+
+---
+
+## Before you start (everyone)
+
+**Stay safe while testing.**
+
+- **Have a second way to see your readings** the whole time you test: your CGM app, your pump or
+  your meter. **Keep the alarms on your CGM, pump and phone app switched on.** Do not rely on the
+  test build to warn you.
+- **Do not change any therapy to test something.** Where a check below needs a situation such as a
+  suspended pump or an overdue reservoir, check it when that happens anyway. If you want to provoke
+  it, use a separate test site with a simulated pump and CGM (Loop, Trio and AAPS each have one),
+  not the site and phone that deliver your insulin.
+- **Remote commands send real treatments.** Only send a remote bolus or carbs you would send anyway,
+  or send them to a test phone with a simulated pump.
+- **Back up your database before you switch** to the test build. Going back to 15.0.8 has not been
+  tested as its own step; if you do go back, tell us how it went.
+
+**Keep your data private when you report.**
+
+- **Never post** your site's address, your API secret, tokens, or screenshots that show names, dates
+  of birth or other personal details. Crop or blur them first. Glucose values in a screenshot are
+  fine only if you are comfortable sharing them.
+- Tell us what happened in words. If someone asks for a log, remove anything that looks like a
+  password, token or web address first.
+
+**What to put in a report** (copy this list):
+
+1. What you did, what you expected, and what you saw.
+2. Your apps and their versions (for example "Loop 3.x", "AAPS 3.3.x", "xDrip+ nightly of …").
+3. Whether your site shows **mg/dL or mmol/L**.
+4. Whether your site needs a login to view (`AUTH_DEFAULT_ROLES=denied`) or not (`readable`, the usual).
+5. Where your site is hosted, and your database's MongoDB version if you know it.
+6. For each app that uses a token: **which role** that token has (`readable`, `careportal`, `admin`…).
+7. Whether the same thing happens on 15.0.8, if you can tell.
+
+**Where to report:** *[maintainer to fill in: the channel or issue template for 15.0.9 reports]*.
+"It worked" reports are useful too. Say which check you did.
+
+**Already known — please don't report these again**, but do tell us if one looks worse than
+described: the [known issues](release-notes.md#known-issues--not-fixed-in-this-release) in the release
+notes.
+
+## Getting the test build
+
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`7000eb18`**
+(full: `7000eb18bdb49fc1b9fc582aec4329c0473f5430`). Its version reads **15.0.9**.
+
+- **Docker:** `nightscout/cgm-remote-monitor:dev_7000eb18bdb49fc1b9fc582aec4329c0473f5430`. This tag
+  always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes.
+- **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
+  similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
+  branch. Check the commit is `7000eb18`.
+- **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
+
+If `dev` moves on to a new commit, these notes will name the new one.
+
+---
+
+# Part 1: for people who use a site
+
+Pick the checks that match your setup. Every check is useful on its own, and most take only a look.
+
+## 1.1 Everyone: keep it running for three days or more
+
+Most of the reports so far cover two quiet days. What we most need now is **three days or more that
+include ordinary disruptions**. Note down when each of these happened and whether your site kept up:
+
+- a sensor change, and a cannula or reservoir change;
+- your phone restarting, or the app being force-closed and reopened;
+- a period without signal (a flight, a basement, a phone left at home), and catching up afterwards;
+- a caregiver or follower watching from another phone the whole time;
+- editing or deleting a wrong entry, on the site and in your app.
+
+**Working looks like:** readings keep arriving; after a gap the missing readings and treatments fill
+in; the IOB and COB your site shows agree with your app as closely as they did on 15.0.8; nothing
+appears twice; followers keep updating.
+
+## 1.2 Sites that show mmol/L
+
+**This is the most important check for anyone on mmol/L.** 15.0.9 reads each alarm level on its own,
+so on some sites **low alarms start working** where they never did. See
+[Low alarms on sites that use mmol/L](release-notes.md#low-alarms-on-sites-that-use-mmoll).
+
+1. **Before switching,** write down the alarm levels you expect (urgent high, top and bottom of your
+   target range, urgent low), and whether each is set on your site or left at the default.
+2. **After switching,** look at the target lines on your chart and the alarm levels your site shows.
+   Are they the numbers you meant?
+3. If you can see your server log, look for lines like
+   `Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl`, one for each level.
+4. Over the next days: did a low alarm go off that never used to, or did "Warning HIGH" on in-range
+   readings stop? Either can be the fix. Tell us which, and tell whoever receives your alerts.
+
+## 1.3 AndroidAPS
+
+See [AndroidAPS, the careportal and caregivers](release-notes.md#androidaps-the-careportal-and-caregivers).
+
+- **Silencing an alarm from AAPS.** In 15.0.9 an app can silence a Nightscout alarm only if its token's
+  user has the `admin` role. With any other role, the silence does nothing, and **the app is not
+  told**. When a Nightscout alarm next goes off on its own, silence it from AAPS and check whether it
+  also goes quiet on your site. **Tell us your AAPS token's role and what happened.** Nobody has
+  tested this from the phone yet.
+- **Careportal and caregiver entries.** Carbs or insulin entered in the careportal, or by a caregiver,
+  should reach the phone. An edit made on the site should show up in AAPS.
+- **No meal twice.** Check the treatment list on the phone and on the site after a day that included
+  a gap in signal.
+- **Late entries.** An entry that reaches the site late (after being offline), or one you edit to an
+  earlier time, should count in IOB and COB on the site, the same as on the phone.
+- **Percentage Profile Switch.** During one you would make anyway, the basal, ISF and carb ratio on
+  the site should match the phone. Also look at the **Bolus Wizard Preview** pill and
+  **Reports**; neither has been checked in a browser during a switch yet.
+- **Loop turned off and back on.** If you turn the loop off in AAPS and later back on, Nightscout's
+  "not looping" and pump alerts (if you use them) should work again afterwards.
+
+## 1.4 Loop, Trio and LoopCaregiver: remote commands
+
+Remote overrides, remote carbs and cancelling an override from the careportal have been checked. Still
+to check:
+
+- **A remote bolus**, from the careportal and from the **LoopCaregiver app itself** (so far only
+  scripted). Follow the safety note above. **Working looks like:** the phone in use receives it once,
+  and the site records it.
+- **After changing phones or reinstalling Loop:** for up to about a minute a remote command can still
+  go to the old phone (a known issue). Tell us if you see it take longer.
+
+## 1.5 Followers, clocks and watch faces
+
+- **Clock views** (menu → Clock, or `/clock/…`): they should show when their reading is old, including
+  after the page loses its connection. If your site needs a login, a clock opened from the menu can
+  be blank (a known issue); opening it directly with a token in the address should work.
+- **Watch faces** that read your site: the change since the last reading (delta) and any bolus
+  estimate should look right **without** any adjustment. If you had set up a watch face to multiply
+  or divide by 18, undo that and tell us whether the numbers are right.
+- **Sites that need a login** (`AUTH_DEFAULT_ROLES=denied`): followers such as LoopFollow and signed-in
+  pages should keep receiving live updates and alarms.
+
+## 1.6 Alarms that now reach your phone
+
+These alerts could never fire before. Check them when the situation happens anyway.
+
+- **Insulin age** (the IAGE box): past your urgent level (72 hours unless you changed `IAGE_URGENT`)
+  the box should show **URGENT**. With `IAGE_ENABLE_ALERTS` on, one notification is sent when the
+  reservoir reaches that age, and it does not repeat.
+- **Pump suspended**: with `PUMP_ENABLE_ALERTS` and `PUMP_WARN_ON_SUSPEND` on, while your pump is
+  suspended the pump box on the page should turn the warning colour and a "Pump Suspended" warning
+  should arrive. Tell us your app and pump if the box says "suspended" but no warning arrives.
+- **IFTTT** on a site not set to English: applets named `ns-warning`, `ns-urgent` and so on should now
+  fire. If you had renamed them to translated names, rename them back.
+
+## 1.7 Reports
+
+- Reports you use at clinic visits (Day to day, Daily stats, Distribution, Treatments): **some numbers
+  are expected to change**, because filters now return the right records. Tell us if a number
+  changed in a way you can't explain, with the report name and date range, not the data itself.
+- The treatments report can now be filtered by treatment type.
+
+---
+
+# Part 2: for people who run a site, or write tools that use it
+
+Contributor detail on what changed is in [contents](contents.md) and the
+[consumer-impact survey](../../docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md). The
+checks below are the ones only a real deployment or a real client can answer.
+
+## 2.1 `TRUST_PROXY` on your actual host
+
+`TRUST_PROXY` is new and optional; unset behaves as 15.0.8. See
+[The new `TRUST_PROXY` setting](release-notes.md#the-new-trust_proxy-setting). We would like one
+report per hosting setup: Heroku, Railway, Northflank, Render, Fly, Azure App Service, a VPS behind
+nginx or Caddy, Cloudflare in front of any of these, and hosted Nightscout services.
+
+1. Start with the setting unset. The server log should say at startup that the failed-login delay does
+   not protect against guessing.
+2. Set the value you think is right (usually a number of proxies, such as `1`).
+3. **Working looks like:** the site loads over https with no redirect loop; the startup warning is
+   gone; one deliberately wrong password sent from a phone on mobile data shows **the phone's
+   address** in the admin page's "Failed authentication" notice.
+4. **If the site stops loading, remove the setting** and report the host and the value you tried.
+
+Report: host, value, and whether each of the three results in step 3 held. Don't post the address you
+saw, only whether it was the phone's, the proxy's or something else.
+
+## 2.2 Sites that need a login (`AUTH_DEFAULT_ROLES=denied`)
+
+- Signed-in pages and followers get live updates and alarms; a page that is not signed in gets none.
+- After an uploader with an old password fails to sign in from the same network, a signed-in page may
+  start receiving alarms only after the failed-login delay. Tell us if that delay looks long enough to
+  matter.
+
+## 2.3 Tokens and roles used by apps
+
+- **Silencing alarms needs `admin`.** For each app on your site that silences alarms, tell us its
+  token's role, and whether that app's setup guide tells people to use that role. This decides how
+  many people the change reaches; it is not in any code we could read.
+- **Users edited on the admin page** keep their notes and creation date. Other fields a tool stored on
+  a user are dropped the next time that user is saved. Tell us if a tool you use stored its own fields
+  there.
+
+## 2.4 Clients we have no field evidence for
+
+The replay lab reproduced these, but no one has run the real thing against the test build yet.
+
+| client | what to check | working looks like |
+|---|---|---|
+| **OpenAPS / oref0 rig** | the rig's logs during normal looping | no `400 Bad count`; the rig does not re-upload its last 24 h of treatments on every loop; the site's server log shows one `API v1: … (logged once)` deprecation line |
+| **GluPredKit** | building a dataset over a date range | entries, treatments and profiles come back, not empty lists; one `API v1: … (logged once)` line |
+| **nightscout-reporter** (the current app), **Sugarmate**, **python-nightscout**, home-made scripts, spreadsheets | whatever you use them for | same results as on 15.0.8; any `Bad count` or "unsupported operator" error is from the [corrections](release-notes.md#corrections-requests-answered-differently): report the tool, its version and the request's shape (not its data) |
+| **xDrip+, xDrip4iOS, Loop, tconnectsync** on a site with records from 15.0.6 or earlier, or copied from another site | edit and delete an old record from the app | the record updates in place or is deleted, with no second copy |
+| **Bulk-delete tools** | a delete by a list of more than 20 ids | on 15.0.8 this failed and deleted nothing; on 15.0.9 it deletes every match. Check that is what you meant |
+
+## 2.5 Setup changes
+
+- **Docker Compose** with the bundled `docker-compose.yml` or a copy: MongoDB should start and stay up
+  (the file now raises its open-files limit). See
+  [If you run Nightscout with Docker Compose](release-notes.md#if-you-run-nightscout-with-docker-compose).
+- **`MMCONNECT_` or `BRIDGE_` settings:** move to the connector's `CONNECT_*` settings and check that
+  readings arrive through the connector. See
+  [The old MiniMed and Dexcom connections are being retired](release-notes.md#the-old-minimed-and-dexcom-connections-are-being-retired).
+- **The built-in CGM connector** (Dexcom Share, LibreLinkUp, CareLink, Glooko): readings keep arriving
+  over several days, including after the vendor app logs you out or you change your CGM account
+  password.
+- **MongoDB versions:** tell us your database's version (4.4, 5.0, 6.0, 7.0, or a hosted service). 4.4
+  still works but is deprecated.
+- **Node.js 20, 22 or 24:** tell us which one your host runs.
+
+## 2.6 Logs worth sending (with secrets removed)
+
+- Anything logged at startup that you did not see on 15.0.8.
+- `API v1: … (logged once)` deprecation lines: which one, and which client you think sent it.
+- Any line that mentions a refused alarm silence, a refused filter condition, or `Bad count`.
+- Any error followed by the site restarting.
