@@ -38,6 +38,7 @@ For CI/CD:
 """
 
 import argparse
+import contextlib
 import json
 import subprocess
 import sys
@@ -321,17 +322,21 @@ def main():
     
     start_time = datetime.now(timezone.utc)
     
+    # With --json, stdout carries only the JSON report; progress goes to stderr
+    progress = contextlib.redirect_stdout(sys.stderr) if args.json else contextlib.nullcontext()
+
     # Run selected workflow
-    if args.workflow == "validation":
-        run_validation_workflow(runner)
-    elif args.workflow == "verification":
-        run_verification_workflow(runner)
-    elif args.workflow == "coverage":
-        run_coverage_workflow(runner)
-    elif args.workflow == "quick":
-        run_quick_workflow(runner)
-    else:  # full
-        run_full_workflow(runner)
+    with progress:
+        if args.workflow == "validation":
+            run_validation_workflow(runner)
+        elif args.workflow == "verification":
+            run_verification_workflow(runner)
+        elif args.workflow == "coverage":
+            run_coverage_workflow(runner)
+        elif args.workflow == "quick":
+            run_quick_workflow(runner)
+        else:  # full
+            run_full_workflow(runner)
     
     end_time = datetime.now(timezone.utc)
     duration = (end_time - start_time).total_seconds()
