@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-09-27 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
+2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -50,13 +50,13 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
 by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
-[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the 24 to 72 h
-real-time soak (`RT-SOAK`), the semver decision, the release notes,
+[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the semver decision, the release notes,
 re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `7000eb18`), a
 review of #8598 by someone other than the author, and the maintainer's tag. The last full test run
 is run 020 on `ce30a94d`; it stands for `295f1177` (test-only #8785), and #8786's dependency change
 on `7000eb18` is covered by its own nine-cell CI and a byte-identical bundle, not by run 020
-([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The `npm audit`
+([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running
+the candidate count for it, and reported no visible regression so far. The `npm audit`
 triage is done ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)).
 
 | for | read |
@@ -100,7 +100,6 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
 | 1 | `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | `needs-decision` | &mdash; |
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
-| 1 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 | `in-progress` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
 | 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION` |
