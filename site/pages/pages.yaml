@@ -1,0 +1,25 @@
+# Manifest for the committed rich pages in site/pages/ (tools/site/build.py).
+#
+# Every .html file here needs an entry, keyed by file name. The build fails on
+# a page without one, on an entry without its file, or when a rule below fails.
+#
+#   kind: snapshot   a point-in-time record. Needs `as_of: YYYY-MM-DD`, and the
+#                    page must show a banner: an element with
+#                    data-site-banner="snapshot" whose text names the as_of date.
+#   kind: living     kept in step with repository sources. Needs `sources:` (repo
+#                    paths) and `source_commit:` (the commit the page was
+#                    rendered at). The build fails, naming the page and source,
+#                    if any source changed between source_commit and HEAD:
+#                    re-render the page, then move source_commit forward.
+pages:
+  nightscout-ecosystem-programme.html:
+    kind: living
+    sources: [docs/00-overview/ECOSYSTEM-PROGRAMME.md]
+    source_commit: 10e86ffb
+    render: tools/site/render_programme.py
+  cgm-remote-monitor-15.0.9-release-readiness-2026-09-27.html:
+    kind: snapshot
+    as_of: 2026-09-27
+  cgm-remote-monitor-15.0.9-journeys-2026-09-27.html:
+    kind: snapshot
+    as_of: 2026-09-27
