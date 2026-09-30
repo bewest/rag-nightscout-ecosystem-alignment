@@ -8,7 +8,7 @@ This document provides a comprehensive comparison of Dexcom G7 support across op
 - [Project Overview](#project-overview)
 - [Feature Matrix](#feature-matrix)
 - [Authentication Comparison](#authentication-comparison)
-- [Data Capabilities](#data-capabilities)
+- Data Capabilities
 - [Source File Reference](#source-file-reference)
 - [Blockers and Gaps](#blockers-and-gaps)
 - [Recommendations](#recommendations)

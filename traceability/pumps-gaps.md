@@ -259,7 +259,7 @@ See [gaps.md](gaps.md) for the index.
 **Status**: Documented
 
 **Related**:
-- [Pump Protocols Spec - Medtronic History](../specs/pump-protocols-spec.md#34-history-entry-types)
+- [Pump Protocols Spec - Medtronic History](../specs/pump-protocols-spec.md#33-history-entry-types)
 
 ---
 
@@ -305,7 +305,7 @@ rT.predBGs = {
 - AAPS and Trio already upload these arrays to Nightscout `devicestatus.openaps`
 
 **Related**:
-- [GAP-SYNC-002](#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
+- [GAP-SYNC-002](sync-identity-gaps.md#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
 - [oref0 Algorithm](../mapping/oref0/algorithm.md)
 
 ---

@@ -262,5 +262,5 @@ Or use Foundation's URLSession (simpler, cross-platform in Swift 6).
 - [Integration Test Harness](integration-test-harness.md) - How to run tests
 - [loop-nightscout-upload-testing.md](archive/loop-nightscout-upload-testing.md) - Main backlog
 - [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - UUID _id issue
-- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) - **Option G (Recommended)**: Transparent UUID promotion
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) - **Option G (Recommended)**: Transparent UUID promotion
 - [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) - Long-term: Server-controlled ID proposal

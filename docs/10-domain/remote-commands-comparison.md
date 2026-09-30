@@ -595,7 +595,7 @@ func otpValidationRequired() -> Bool {
 
 **Recommendation**: Require OTP for all commands that affect insulin dosing.
 
-**Reference**: See [GAP-REMOTE-001 in gaps.md](../../traceability/gaps.md#gap-remote-001-remote-command-authorization-unverified) for full gap documentation.
+**Reference**: See [GAP-REMOTE-001 in gaps.md](../../traceability/treatments-gaps.md#gap-remote-001-remote-command-authorization-unverified) for full gap documentation.
 
 ### GAP-REMOTE-002: No Command Signing Across Systems
 

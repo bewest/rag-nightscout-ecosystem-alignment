@@ -4,7 +4,7 @@
 **Author:** Agent  
 **Date:** 2026-01-17 (Updated)  
 **Target Repository:** `nightscout/cgm-remote-monitor` (Nightscout Core)  
-**Related:** [GAP-003](../../traceability/gaps.md#gap-003-no-unified-sync-identity-field-across-controllers), [Authority Model](../10-domain/authority-model.md), [CGM Remote Monitor Source Synthesis](./cgm-remote-monitor-source-synthesis.md)
+**Related:** [GAP-003](../../traceability/gaps.md), [Authority Model](../10-domain/authority-model.md), [CGM Remote Monitor Source Synthesis](./cgm-remote-monitor-source-synthesis.md)
 
 ---
 

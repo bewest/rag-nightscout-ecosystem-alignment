@@ -173,7 +173,7 @@ Option G:               { "_id": ObjectId, "identifier": "UUID-..." }  ← Clean
 2. On lookup: Check `identifier` first, then `_id`
 3. On response: Return both fields
 
-See [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) for full specification.
+See [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) for full specification.
 
 ### Testing Matrix
 

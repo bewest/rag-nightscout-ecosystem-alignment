@@ -156,7 +156,7 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 **CRITICAL**: Tests have no safeguards against running on production databases.
 
-See [GAP-SYNC-046](../../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
+See [GAP-SYNC-046](../../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../../PR-8421-reviewers-guide.md#-theme-7-test-database-safety-resolved)
 
 **Status**: ✅ **COMPLETE** (2026-03-12)
 

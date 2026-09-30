@@ -21,10 +21,10 @@ Draft | Under Review | Accepted | Rejected | Superseded
 [What problem does this solve?]
 
 ### Related Gaps
-- [GAP-XXX-NNN](../traceability/gaps.md#gap-xxx-nnn): [Brief description]
+- [GAP-XXX-NNN](../traceability/gaps.md): [Brief description]
 
 ### Related Requirements
-- [REQ-NNN](../traceability/requirements.md#req-nnn): [Brief description]
+- [REQ-NNN](../traceability/requirements.md): [Brief description]
 
 ## Detailed Design
 
@@ -130,8 +130,8 @@ See `externals/repo/path/file.ext:line` for current implementation.
 
 ## References
 
-- [GAP-XXX-NNN](../traceability/gaps.md#gap-xxx-nnn)
-- [REQ-NNN](../traceability/requirements.md#req-nnn)
+- [GAP-XXX-NNN](../traceability/gaps.md)
+- [REQ-NNN](../traceability/requirements.md)
 - [External Reference](https://example.com)
 
 ---
