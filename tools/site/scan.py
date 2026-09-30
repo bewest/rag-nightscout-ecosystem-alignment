@@ -14,6 +14,10 @@ Kinds:
   token    a credential-shaped value: KEY=value / key: value with a 16+ char
            value holding letters and digits, a Nightscout subject-hash token,
            or a well-known provider key / private-key / URI-credential shape
+  participant-id  a raw data-commons participant ID (odc- plus 2 to 12
+           digits) in a staged or built file or file name. The build rewrites
+           these to pseudonyms (tools/site/pseudonym.py); any survivor fails the
+           build and cannot be allowlisted.
   payload  a request-shaped string for a defect class still live on the
            shipping release: socket.io frames for the alarm namespace or the
            retro-load handler, nested-quantifier patterns sent as a regex query,
@@ -32,7 +36,13 @@ REPO = Path(__file__).resolve().parents[2]
 SRC = REPO / "build" / "site-src"
 ALLOWLIST = REPO / "tools" / "site" / "scan-allowlist.yaml"
 TEXT_EXT = {".md", ".svg", ".html", ".htm"}
-KINDS = ("email", "ns-host", "token", "payload")
+KINDS = ("email", "ns-host", "token", "payload")      # allowlistable
+HARD_KINDS = ("participant-id",)                      # never allowlistable
+OUT = REPO / "build" / "site"
+OUTPUT_EXT = {".html", ".htm", ".json", ".xml", ".txt", ".js", ".svg", ".md", ".yaml"}
+# a data-commons participant ID or a short form of one; the 13-digit record-id
+# form cannot match (12 digits followed by a digit fails the lookahead)
+PARTICIPANT = re.compile(r"(?<![A-Za-z0-9])odc-\d{2,12}(?!\d)")
 
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
 EMAIL_OK = re.compile(
@@ -84,6 +94,7 @@ def hits_in(text: str) -> collections.Counter:
         c["token"] += len(rx.findall(text))
     for rx in PAYLOADS:
         c["payload"] += len(rx.findall(text))
+    c["participant-id"] += len(PARTICIPANT.findall(text))
     return +c
 
 
@@ -93,6 +104,8 @@ def load_allowlist() -> dict[tuple[str, str], str]:
     for n, e in enumerate(data.get("allow") or []):
         if set(e) != {"path", "kind", "reason"}:
             sys.exit(f"scan-allowlist.yaml entry {n}: fields must be exactly path, kind, reason")
+        if e["kind"] in HARD_KINDS:
+            sys.exit(f"scan-allowlist.yaml entry {n}: kind {e['kind']!r} cannot be allowlisted")
         if e["kind"] not in KINDS:
             sys.exit(f"scan-allowlist.yaml entry {n}: unknown kind {e['kind']!r}")
         allow[(e["path"], e["kind"])] = e["reason"]
@@ -109,12 +122,30 @@ def scan(root: Path = SRC) -> dict:
         c = hits_in(p.read_text(encoding="utf-8", errors="replace"))
         for kind, n in c.items():
             found[f"{rel}|{kind}"] = n
-            if (rel, kind) in allow:
+            if kind not in HARD_KINDS and (rel, kind) in allow:
                 used.add((rel, kind))
             else:
                 blocked.append({"path": rel, "kind": kind, "count": n})
+    for p in sorted(root.rglob("*")):  # file and directory names
+        rel = p.relative_to(root).as_posix()
+        if PARTICIPANT.search(p.name):
+            blocked.append({"path": rel, "kind": "participant-id (in the name)", "count": 1})
     stale = [{"path": p, "kind": k} for (p, k) in allow if (p, k) not in used]
     return {"hits": len(found), "allowed": len(used), "blocked": blocked, "stale_allowlist": stale}
+
+
+def scan_output(root: Path = OUT) -> dict:
+    """participant-id over the BUILT site: HTML, search index, sitemap, names."""
+    blocked = []
+    for p in sorted(root.rglob("*")):  # our own build output
+        rel = p.relative_to(root).as_posix()
+        if PARTICIPANT.search(p.name):
+            blocked.append({"path": rel, "kind": "participant-id (in the name)", "count": 1})
+        if p.is_file() and p.suffix.lower() in OUTPUT_EXT:
+            n = len(PARTICIPANT.findall(p.read_text(encoding="utf-8", errors="replace")))
+            if n:
+                blocked.append({"path": rel, "kind": "participant-id", "count": n})
+    return {"hits": len(blocked), "allowed": 0, "blocked": blocked, "stale_allowlist": []}
 
 
 def report(res: dict, prefix: str = "scan") -> int:

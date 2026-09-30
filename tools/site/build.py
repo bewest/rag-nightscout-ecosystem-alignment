@@ -31,6 +31,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pseudonym import Pseudonymizer  # noqa: E402
+
 REPO = Path(__file__).resolve().parents[2]
 BUILD = REPO / "build"
 SRC = BUILD / "site-src"
@@ -485,37 +488,62 @@ class Site:
         if SRC.exists():
             shutil.rmtree(SRC)
         SRC.mkdir(parents=True)
+        # participant-ID pseudonyms: collect the raw staged text first, so the
+        # full-ID set (and the fail-closed key check) sees everything
+        raw = {p: (REPO / p).read_text(encoding="utf-8", errors="replace")
+               for p in self.pages + self.passthrough + [i for i in self.images if i.lower().endswith(".svg")]}
+        for src in set(self.landing_index.values()):
+            raw[src] = (REPO / src).read_text(encoding="utf-8", errors="replace")
+        try:
+            self.pseudo = Pseudonymizer(raw, sorted(self.staged) + sorted(self.generated_index))
+        except SystemExit:
+            shutil.rmtree(SRC)
+            if OUT.exists():
+                shutil.rmtree(OUT)  # never leave a stale site behind a failed build
+            raise
+        P = self.pseudo
+
+        def write(rel: str, text: str):
+            dst = SRC / P.path(rel)
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_text(P.text(text, where=rel), encoding="utf-8")
+
         for p in self.images:
-            dst = SRC / p
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(REPO / p, dst)
+            if p.lower().endswith(".svg"):
+                write(p, raw[p])
+            else:
+                dst = SRC / P.path(p)
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(REPO / p, dst)
         for p in self.pages:
-            dst = SRC / p
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            text = (REPO / p).read_text(encoding="utf-8", errors="replace")
-            dst.write_text(self.rewrite_markdown(p, text), encoding="utf-8")
+            write(p, self.rewrite_markdown(p, raw[p]))
         for p in self.passthrough:
-            dst = SRC / p
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            html = (REPO / p).read_text(encoding="utf-8", errors="replace")
+            html = raw[p]
             if 'name="robots"' not in html:
                 html, n = re.subn(r"(<head[^>]*>)", r"\1\n" + NOINDEX, html, count=1, flags=re.I)
                 if n == 0:
                     html = NOINDEX + "\n" + html
-            dst.write_text(html, encoding="utf-8")
+            write(p, html)
         for d in sorted(self.generated_index):
             dirpath = posixpath.dirname(d)
             if dirpath in self.landing_index:
-                body = (REPO / self.landing_index[dirpath]).read_text(encoding="utf-8")
-                body = self.rewrite_markdown(d, body)
+                body = self.rewrite_markdown(d, raw[self.landing_index[dirpath]])
             else:
                 body = self.render_index(dirpath)
-            (SRC / d).parent.mkdir(parents=True, exist_ok=True)
-            (SRC / d).write_text(body, encoding="utf-8")
+            write(d, body)
         for d in self.gallery_dirs:
-            (SRC / d / GALLERY_NAME).write_text(self.render_gallery(d), encoding="utf-8")
+            write(posixpath.join(d, GALLERY_NAME), self.render_gallery(d))
         (SRC / "robots.txt").write_text("User-agent: *\nDisallow: /\n")
-        NAV_FILE.write_text(yaml.safe_dump(self.nav(), sort_keys=False, allow_unicode=True))
+        NAV_FILE.write_text(P.text(yaml.safe_dump(self.nav(), sort_keys=False, allow_unicode=True),
+                                   where="build/site-nav.yaml"))
+        if P.errors:
+            for e in P.errors:
+                print(f"site: participant-id: {e}", file=sys.stderr)
+            shutil.rmtree(SRC)
+            if OUT.exists():
+                shutil.rmtree(OUT)
+            raise SystemExit(f"site: FAIL: {len(P.errors)} participant-ID short form(s) could not be resolved; "
+                             f"fix them at the source")
 
     def children(self, d: str):
         pages = sorted(p for p in self.pages if posixpath.dirname(p) == d)
@@ -706,6 +734,7 @@ def main():
         "not_published_markers": site.marker_links,
         "stage_seconds": round(stage_s, 2),
         "nav_groups": site.group_counts,
+        "participant_ids": site.pseudo.stats(),
     }
     # fail closed: the content scan over the staged tree must pass before MkDocs runs
     sys.path.insert(0, str(SITE_TOOLS))
@@ -728,7 +757,8 @@ def main():
             "output_bytes": dir_size(OUT) if OUT.exists() else 0,
         })
     report["build_seconds"] = round(time.time() - site.t0, 2)
-    REPORT_FILE.write_text(json.dumps(report, indent=1) + "\n")
+    # the report names files and link targets: never let a raw participant ID into it
+    REPORT_FILE.write_text(site.pseudo.text(json.dumps(report, indent=1)) + "\n")
 
     print(f"site: HEAD {site.head[:8]}, {report['tracked_files']} tracked files")
     print(f"  staged: {report['pages_staged']} pages (+{report['generated_index_pages']} generated index, "
@@ -736,6 +766,7 @@ def main():
           f"{report['passthrough_html']} site/pages HTML")
     print(f"  excluded: {report['excluded_files']} files {report['excluded_per_axis']}")
     print(f"  links: {report['links_per_kind']}")
+    print(f"  participant IDs: {report['participant_ids']}")
     print(f"  unresolved links: {report['unresolved_count']} (see {REPORT_FILE.relative_to(REPO)})")
     content_scan.report(scan_res, prefix="  scan")
     if "mkdocs_exit" in report:

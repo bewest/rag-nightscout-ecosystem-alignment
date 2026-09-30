@@ -7,7 +7,10 @@ documentation. Nothing is deployed. Every page carries
 
 ## Build and serve
 
+The build needs a pseudonym key (see [Participant IDs](#participant-ids)):
+
 ```sh
+export SITE_PSEUDONYM_KEY="$(cat ~/.config/nightscout-site/pseudonym-key)"  # keep it out of the repo
 make site        # creates tools/site/.venv on first run, stages, builds build/site/
 make serve       # builds, then serves build/site/ at http://127.0.0.1:8765/
 make serve SITE_PORT=8790
@@ -73,6 +76,31 @@ on the shipping release). Any hit whose (path, kind) pair is not in
 the stale `build/site/` is removed. Output names the path, kind and count,
 never the matched text. To clear a hit, fix the text at its source, or add an
 allowlist entry with a reason, and never copy the matched text into it.
+
+## Participant IDs
+
+The repository keeps the data commons' own participant IDs (`odc-` plus eight
+digits). The site never shows them. `tools/site/pseudonym.py` rewrites every
+one in staged text, link targets, generated pages, nav entries and staged file
+names to `odc-p-<first 8 hex of HMAC-SHA256(key, id)>`. A short form (`odc-`
+plus 2 to 7 digits) becomes the pseudonym of the one staged full ID it is a
+prefix of; a short form that matches none or several fails the build.
+13-digit `odc-<timestamp>` record ids are left alone.
+
+- The key comes from `SITE_PSEUDONYM_KEY`. There is no default: with IDs
+  present and no key, `make site` fails. `make` exports the variable to the
+  build and never echoes it.
+- Make a key once, for example `head -c 32 /dev/urandom | base64`, and keep it
+  outside the repository. The same key gives byte-identical output; a new key
+  gives new pseudonyms, so keep one key for as long as links to pages whose
+  names carry a pseudonym should stay stable.
+- Neither the key nor any ID-to-pseudonym mapping is written to the repo, the
+  build output or `build/site-report.json` (it records counts only).
+- **Phase 4 (GitHub Pages) needs the key as an Actions secret**, passed to the
+  build step as `SITE_PSEUDONYM_KEY`.
+- The `participant-id` scan kind fails the build and `make site-check` on any
+  raw `odc-<2 to 12 digits>` left in `build/site-src/` or `build/site/` (HTML,
+  search index, sitemap, file names). It cannot be allowlisted.
 
 ## site/pages
 

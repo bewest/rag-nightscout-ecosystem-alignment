@@ -86,6 +86,7 @@ help:
 	@echo ""
 	@echo "Static site (MkDocs Material, local only, noindex — see tools/site/README.md):"
 	@echo "  make site          - Stage git-tracked docs and build build/site/"
+	@echo "                        (needs SITE_PSEUDONYM_KEY in the environment)"
 	@echo "  make serve         - Build, then serve build/site/ on 127.0.0.1:$(SITE_PORT)"
 	@echo "                        (SITE_PORT= to change)"
 	@echo "  make site-check    - Build, then fail unless every page is noindex and"
@@ -1029,6 +1030,9 @@ SITE_VENV := tools/site/.venv
 SITE_PY := $(SITE_VENV)/bin/python
 SITE_PORT ?= 8765
 SITE_STAMP := $(SITE_VENV)/.installed
+# Participant-ID pseudonym key (tools/site/README.md). Read from the environment
+# or `make site SITE_PSEUDONYM_KEY=...`; exported to the build, never echoed.
+export SITE_PSEUDONYM_KEY
 
 $(SITE_STAMP): tools/site/requirements.txt
 	test -x $(SITE_PY) || python3 -m venv $(SITE_VENV)

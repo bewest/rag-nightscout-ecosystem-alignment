@@ -3,6 +3,8 @@
 
 Fails unless:
   * the content scan (tools/site/scan.py) over build/site-src/ passes,
+  * no raw participant ID appears in build/site/ (HTML, search index, sitemap,
+    file names),
   * build/site/robots.txt exists and disallows everything, and
   * every HTML file under build/site/ carries
     <meta name="robots" content="noindex, nofollow"> inside <head>.
@@ -48,6 +50,8 @@ def main() -> int:
     import scan
     if scan.report(scan.scan(), prefix="site-check scan") != 0:
         problems.append("content scan blocked (see lines above)")
+    if scan.report(scan.scan_output(), prefix="site-check output") != 0:
+        problems.append("raw participant IDs in the built site (see lines above)")
     if problems:
         for p in problems:
             print(f"site-check: FAIL: {p}")
