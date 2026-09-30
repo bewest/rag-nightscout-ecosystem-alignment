@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 121 | 37 | 7 |
-| **Modernization** | `release-train` | 30 | 5 | 2 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 122 | 38 | 7 |
+| **Modernization** | `release-train` | 31 | 5 | 3 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **172** | **51** | **12** |
+| | **total** | **174** | **52** | **13** |
 
 <!-- END GENERATED: horizons -->
 
@@ -107,8 +107,8 @@ For somebody running Nightscout today:
 > team.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators) on
-2026-09-30 at `7000eb18`: **103 defects** (BF-12, invalid, and BF-41, closed, excluded) — 26 `open`,
-75 `merged`, 1 `partly merged`, 1 `fixed`. On 2026-09-26, 97 of the then 100 were present for every self-hoster on
+2026-09-30 at `7000eb18`: **105 defects** (BF-12, invalid, and BF-41, closed, excluded) — 27 `open`,
+75 `merged`, 1 `partly merged`, 2 `fixed` (BF-148's fix is open PR #8788). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
 15.0.8, and BF-80, BF-106 and BF-142 existed only on `dev`; that split has not been re-derived
 since. Re-derive with
 `node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
@@ -164,6 +164,7 @@ cover more than one `BF-`:
 | `BFQ-145` | `not-started` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" o |
 | `BFQ-146` | `merged-upstream` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `merged-upstream` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
+| `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -185,6 +186,7 @@ cover more than one `BF-`:
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
+| `RT-PR-8788` | `needs-decision` | #8788 - the Day to Day report draws an event with a duration on every day it covers (awss1 |
 
 <!-- END GENERATED: operator-exposure -->
 
@@ -199,8 +201,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 5 | 11 | 2 | 1 |  |  | 1 | **30** |
-| `register-open` | 27 | 1 | 5 |  | 4 | 44 | 4 |  | 2 | 2 |  | **89** |
+| `release-train` | 5 |  | 5 |  | 5 | 11 | 3 | 1 |  |  | 1 | **31** |
+| `register-open` | 28 | 1 | 5 |  | 4 | 44 | 4 |  | 2 | 2 |  | **90** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -239,14 +241,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 138 | 80% |
+| Maintainer | 140 | 80% |
 | SECURITY reviewer | 15 | 9% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **172** | |
+| **total** | **174** | |
 
 <!-- END GENERATED: reviewer-load -->
 

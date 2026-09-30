@@ -38,6 +38,12 @@ is `merged`; none is `released`.
 |---|---|---|---|---|---|
 | #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 32 files, +518/−454 | BF-132 | Crowdin translation updates. Decided 2026-09-25 (maintainer) to carry, then held out the same day: the sync puts back translations `dev` corrected (for example Traditional Chinese "ml" shown as grams). A reconciled translations branch is an option |
 
+### Open, awaiting the maintainer's decision
+
+| PR | branch | head | diff | register | what merging before the tag means |
+|---|---|---|---|---|---|
+| #8788 | `awss1i:wip/daytoday-duration-past-midnight` | `bbc6e75e` (one commit on `7000eb18`) | 4 files, +254/−97; code only in `lib/report_plugins/daytoday.js` | BF-148 (fixes #8223); BF-149 found in review | The Day to Day report draws an event with a duration on every day it covers, clipped to each day. Browser-side only. If it goes into 15.0.9: `dev` moves past `7000eb18` and these records are re-anchored; `lib/report_plugins/daytoday.js` joins the browser checks, with the smoke checklist's new Day to Day section as the hand check; the real-site soak ran on `7000eb18` without it. Queue item `RT-PR-8788` |
+
 ### Merged to `dev`
 
 Merge SHAs and dates: `git log --first-parent --format='%h %ad %s' --date=short official/master..official/dev`.

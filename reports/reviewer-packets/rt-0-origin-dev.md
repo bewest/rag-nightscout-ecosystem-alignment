@@ -154,6 +154,9 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
+2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) opened against dev
+7000eb18; whether it goes into 15.0.9 is the maintainer's call (RT-PR-8788,
+not in blocks_on). Merging it moves dev and re-anchors the 15.0.9 records.
 2026-09-30 - re-measured after fetching official: dev is still 7000eb18
 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges ahead of
 master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed and 3
