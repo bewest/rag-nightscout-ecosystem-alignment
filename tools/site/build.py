@@ -33,7 +33,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pseudonym import Pseudonymizer  # noqa: E402
-from labels import Labeller  # noqa: E402
+from labels import Labeller, label_generated  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 BUILD = REPO / "build"
@@ -518,6 +518,7 @@ class Site:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(REPO / p, dst)
         L = self.labeller
+        head_date, head_sha = git("log", "-1", "--format=%cs %h").split()
         for p in self.pages:
             write(p, L.label(p, self.rewrite_markdown(p, raw[p])))
         for p in self.passthrough:
@@ -533,10 +534,11 @@ class Site:
                 src = self.landing_index[dirpath]
                 body = L.label(d, self.rewrite_markdown(d, raw[src]), date_source=src)
             else:
-                body = self.render_index(dirpath)
+                body = label_generated(L, self.render_index(dirpath), head_date, head_sha)
             write(d, body)
         for d in self.gallery_dirs:
-            write(posixpath.join(d, GALLERY_NAME), self.render_gallery(d))
+            write(posixpath.join(d, GALLERY_NAME),
+                  label_generated(L, self.render_gallery(d), head_date, head_sha))
         (SRC / "robots.txt").write_text("User-agent: *\nDisallow: /\n")
         NAV_FILE.write_text(P.text(yaml.safe_dump(self.nav(), sort_keys=False, allow_unicode=True),
                                    where="build/site-nav.yaml"))

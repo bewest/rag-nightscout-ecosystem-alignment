@@ -80,6 +80,13 @@ class Labeller:
         return insert_after_title(text, block)
 
 
+def label_generated(labeller: "Labeller", text: str, head_date: str, head_sha: str) -> str:
+    """Generated index and gallery pages are rebuilt from the tree at HEAD."""
+    labeller.counts["living-generated"] += 1
+    return insert_after_title(text, f"*Living document, last changed {head_date} at `{head_sha}` "
+                                    f"(generated from the repository tree).*\n")
+
+
 def insert_after_title(text: str, block: str) -> str:
     lines = text.splitlines(keepends=True)
     i = 0
