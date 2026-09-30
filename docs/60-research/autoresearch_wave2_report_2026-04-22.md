@@ -25,42 +25,42 @@ for publication:
 
 ![
 Fig1 Sr Distributions
-](../../visualizations/autoresearch-wave2/fig1_sr_distributions.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig1_sr_distributions.png)
 
 
 #### Dashboard 2
 
 ![
 Fig2 Effective Vs Demand
-](../../visualizations/autoresearch-wave2/fig2_effective_vs_demand.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig2_effective_vs_demand.png)
 
 
 #### Dashboard 3
 
 ![
 Fig3 Event Sr Vs Isf
-](../../visualizations/autoresearch-wave2/fig3_event_sr_vs_isf.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig3_event_sr_vs_isf.png)
 
 
 #### Dashboard 4
 
 ![
 Fig4 Inflation Ratios
-](../../visualizations/autoresearch-wave2/fig4_inflation_ratios.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig4_inflation_ratios.png)
 
 
 #### Dashboard 5
 
 ![
 Fig5 Per Patient Sr Isf R
-](../../visualizations/autoresearch-wave2/fig5_per_patient_sr_isf_r.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig5_per_patient_sr_isf_r.png)
 
 
 #### Dashboard 6
 
 ![
 Fig6 Summary
-](../../visualizations/autoresearch-wave2/fig6_summary.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/autoresearch-wave2/fig6_summary.png)
 
 
 ---
