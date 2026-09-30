@@ -1,7 +1,7 @@
 # Trio → Nightscout Entries Upload Testing Backlog
 
 > **Goal**: Develop comprehensive tests for cgm-remote-monitor `entries.js` that handle Trio's UUID `_id` pattern.
-> **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
+> **Gap**: [GAP-SYNC-045](../../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
 > **Related Fix**: [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) (treatments only)
 > **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-11
@@ -651,9 +651,9 @@ function createTrioStoredGlucoseEntry(coreDataId, glucose, direction, date) {
 
 ## References
 
-- **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
-- **Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072)
-- **Deep Dive**: [Client ID Handling](../10-domain/client-id-handling-deep-dive.md)
+- **Gap**: [GAP-SYNC-045](../../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
+- **Requirement**: [REQ-SYNC-072](../../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g)
+- **Deep Dive**: [Client ID Handling](../../10-domain/client-id-handling-deep-dive.md)
 - **Treatments Fix**: [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
 - **Source Analysis**: 
   - `externals/Trio/Trio/Sources/APS/DeviceDataManager.swift:332-346`

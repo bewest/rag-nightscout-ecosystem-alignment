@@ -3,7 +3,7 @@
 > **Date**: 2026-02-01  
 > **Status**: Draft (Reference Implementation)  
 > **Target**: cgm-remote-monitor maintainers  
-> **Related**: [statespan-standardization-proposal.md](../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+> **Related**: [statespan-standardization-proposal.md](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)
 
 ---
 
@@ -484,7 +484,7 @@ suspend fun supportsStateSpansV3(): Boolean {
 
 | Document | Relationship |
 |----------|--------------|
-| [statespan-standardization-proposal.md](../docs/sdqctl-proposals/statespan-standardization-proposal.md) | Parent proposal |
-| [nightscout-v4-integration-proposal.md](../docs/sdqctl-proposals/nightscout-v4-integration-proposal.md) | V4 context |
+| [statespan-standardization-proposal.md](../../docs/sdqctl-proposals/statespan-standardization-proposal.md) | Parent proposal |
+| [nightscout-v4-integration-proposal.md](../../docs/sdqctl-proposals/nightscout-v4-integration-proposal.md) | V4 context |
 | [nocturne-v4-extension.yaml](nocturne-v4-extension.yaml) | V4 OpenAPI spec |
 | [aid-treatments-2025.yaml](aid-treatments-2025.yaml) | Current treatment model |

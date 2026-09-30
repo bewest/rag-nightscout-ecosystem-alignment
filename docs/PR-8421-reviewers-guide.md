@@ -5,7 +5,7 @@
 > **Branch**: `wip/bewest/mongodb-5x`  
 > **Size**: 146 files, +36,222 / -4,654 lines  
 > **Created**: 2026-03-12  
-> **Work Tracking**: [pr-8421-review-analysis.md](./backlogs/pr-8421-review-analysis.md)  
+> **Work Tracking**: [pr-8421-review-analysis.md](backlogs/archive/pr-8421-review-analysis.md)  
 > **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 
 ---
@@ -375,6 +375,6 @@ Audits, proposals, requirements, schemas - all new documentation.
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
 - [Issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450) - Loop override sync
 - [GAP-SYNC-045 Test Report](./test-reports/GAP-SYNC-045-entries-uuid-fix.md)
-- [GAP-TREAT-012](../traceability/treatments-gaps.md#gap-treat-012) - Treatment UUID fix
+- [GAP-TREAT-012](../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - Treatment UUID fix
 - [Client ID Handling Deep Dive](./10-domain/client-id-handling-deep-dive.md)
-- [Analysis Backlog](./backlogs/pr-8421-review-analysis.md) - Detailed work tracking
+- [Analysis Backlog](backlogs/archive/pr-8421-review-analysis.md) - Detailed work tracking

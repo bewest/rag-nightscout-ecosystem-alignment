@@ -1290,11 +1290,11 @@ Analyzed documentation structure for AI and human comprehension optimization.
 | **Proposal** | `docs/sdqctl-proposals/documentation-reorganization-proposal.md` | 223 lines |
 
 
-> **Archive**: More 2026-01-29 entries moved to [progress-archive-2026-01-29-batch2.md](docs/archive/progress-archive-2026-01-29-batch2.md)
+> **Archive**: More 2026-01-29 entries moved to [progress-archive-2026-01-29-batch2.md](progress-archive-2026-01-29-batch2.md)
 
 - Loop: Full (push notifications)
 
-> **Archive**: Earlier 2026-01-29 entries (Statistics API through Algorithm Conformance runners) moved to [progress-archive-2026-01-29-batch1.md](docs/archive/progress-archive-2026-01-29-batch1.md)
+> **Archive**: Earlier 2026-01-29 entries (Statistics API through Algorithm Conformance runners) moved to [progress-archive-2026-01-29-batch1.md](progress-archive-2026-01-29-batch1.md)
 
 ### Algorithm Conformance Suite Proposal (2026-01-29)
 
@@ -1346,7 +1346,7 @@ Analyzed open PRs, issues, and WIP branches for ecosystem impact.
 
 ---
 
-> **Archive**: Earlier 2026-01-29 entries moved to [progress-archive-2026-01-29-batch3.md](docs/archive/progress-archive-2026-01-29-batch3.md)
+> **Archive**: Earlier 2026-01-29 entries moved to [progress-archive-2026-01-29-batch3.md](progress-archive-2026-01-29-batch3.md)
 
 ---
 

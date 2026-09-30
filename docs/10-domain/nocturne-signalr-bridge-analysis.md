@@ -323,4 +323,4 @@ For most AID clients (Loop, AAPS, xDrip+), the bridge is **functionally equivale
 
 - [Nocturne Deep Dive](nocturne-deep-dive.md)
 - [cgm-remote-monitor WebSocket](../../mapping/cgm-remote-monitor/websocket.md)
-- [GAP-NOCTURNE-003](../../traceability/connectors-gaps.md#gap-nocturne-003-signalr-to-socket-io-bridge-adds-latency)
+- [GAP-NOCTURNE-003](../../traceability/connectors-gaps.md#gap-nocturne-003-signalr-to-socketio-bridge-adds-latency)

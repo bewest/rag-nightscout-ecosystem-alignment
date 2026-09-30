@@ -143,7 +143,7 @@ obj.identifier = obj.identifier || obj.syncIdentifier || obj.uuid;
 
 - [Client ID Handling Deep Dive](./client-id-handling-deep-dive.md) - Full analysis of client patterns
 - [uuid-identifier-lookup.md](../backlogs/uuid-identifier-lookup.md) - UUID_HANDLING implementation
-- [GAP-SYNC-005](../../traceability/sync-identity-gaps.md#gap-sync-005) - Loop ObjectIdCache not persistent
+- [GAP-SYNC-005](../../traceability/sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent) - Loop ObjectIdCache not persistent
 - Loop source: `ObjectIdCache.swift`, `SyncCarbObject.swift`
 - xDrip+ source: `Treatments.java`
 

@@ -64,5 +64,5 @@ npm start            # Starts on localhost:1337
 ## Related Documentation
 
 - [Integration Test Harness](../../docs/backlogs/integration-test-harness.md)
-- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072) - Option G spec
-- [Loop Source Analysis](../../docs/backlogs/loop-source-analysis.md)
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) - Option G spec
+- [Loop Source Analysis](../../docs/backlogs/archive/loop-source-analysis.md)

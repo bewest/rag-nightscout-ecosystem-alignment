@@ -176,6 +176,6 @@ Full audit of the foundational OpenAPS ecosystem - the original DIY closed-loop 
 ---
 
 
-> **Archive**: 2026-01-28 entries moved to [progress-archive-2026-01-28.md](docs/archive/progress-archive-2026-01-28.md)
+> **Archive**: 2026-01-28 entries moved to [progress-archive-2026-01-28.md](progress-archive-2026-01-28.md)
 
 ---

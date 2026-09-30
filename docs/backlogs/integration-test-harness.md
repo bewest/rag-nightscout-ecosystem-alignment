@@ -405,9 +405,9 @@ cd tools/kotlin-nightscout-tests && ./gradlew test
 
 ## Related Documents
 
-- [Loop Upload Testing](loop-nightscout-upload-testing.md) - Loop-specific backlog
-- [AAPS Upload Testing](aaps-nightscout-upload-testing.md) - AAPS-specific backlog
+- [Loop Upload Testing](archive/loop-nightscout-upload-testing.md) - Loop-specific backlog
+- [AAPS Upload Testing](archive/aaps-nightscout-upload-testing.md) - AAPS-specific backlog
 - [Swift Integration Proposal](swift-integration-testing-proposal.md) - Swift architecture
-- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) - UUID _id issue
-- [REQ-SYNC-070](../../traceability/sync-identity-requirements.md#req-sync-070) - Identifier-first
-- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071) - Server-controlled ID
+- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - UUID _id issue
+- [REQ-SYNC-070](../../traceability/sync-identity-requirements.md#req-sync-070-identifier-first-architecture) - Identifier-first
+- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) - Server-controlled ID

@@ -21,7 +21,7 @@
 9. [Safety Guardrails](#9-safety-guardrails)
 10. [Forward Simulation (Digital Twin)](#10-forward-simulation-digital-twin)
 11. [Key Paradoxes & Limitations](#11-key-paradoxes--limitations)
-12. [Research-Only Findings](#12-research-only-findings)
+12. [Research-Only Findings](#12-research-only-findings-not-yet-productionized)
 13. [Quantitative Summary](#13-quantitative-summary)
 14. [Verification Checklist](#14-verification-checklist)
 

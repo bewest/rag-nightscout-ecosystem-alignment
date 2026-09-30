@@ -1873,7 +1873,7 @@ return fetchedResults.map { result in
 **Related**:
 - [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - Same issue for treatments (fixed)
 - [Client ID Handling Deep Dive](../docs/10-domain/client-id-handling-deep-dive.md)
-- [REQ-SYNC-072](sync-identity-requirements.md#req-sync-072) - Server-controlled ID requirement
+- [REQ-SYNC-072](sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) - Server-controlled ID requirement
 - [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Treatments fix (does not include entries)
 
 ---

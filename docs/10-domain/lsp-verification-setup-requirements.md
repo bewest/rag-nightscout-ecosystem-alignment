@@ -1,7 +1,7 @@
 # LSP Verification Setup Requirements
 
 > **Purpose**: Concrete setup requirements for LSP-based claim verification  
-> **Parent**: [lsp-integration-proposal.md](../lsp-integration-proposal.md)  
+> **Parent**: [lsp-integration-proposal.md](../sdqctl-proposals/lsp-integration-proposal.md)  
 > **Last Updated**: 2026-01-30
 
 ## Executive Summary
