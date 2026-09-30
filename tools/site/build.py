@@ -238,7 +238,11 @@ class Site:
                 d = posixpath.dirname(d)
         self.exclusions = load_exclusions(exclusions_path)
         self.ext_dir, self.externals = load_externals()
-        self.landing = yaml.safe_load((SITE_TOOLS / "landing.yaml").read_text())["sections"]
+        landing_cfg = yaml.safe_load((SITE_TOOLS / "landing.yaml").read_text())
+        self.landing = landing_cfg["sections"]
+        self.home = landing_cfg.get("home")
+        # staged under another name (repo path -> staged path)
+        self.stage_as = {"README.md": "repository-readme.md"} if self.home else {}
         self.nav_groups = (yaml.safe_load((SITE_TOOLS / "nav-groups.yaml").read_text()) or {}).get("groups") or {}
         self.group_counts: dict[str, dict[str, int]] = {}
         self.labeller = Labeller(REPO, SITE_TOOLS / "page-kinds.yaml")
@@ -254,7 +258,7 @@ class Site:
 
         # hand-written landing pages are published at <dir>/index.md, not
         # at their own path under tools/site/landing/
-        landing_sources = {s["index"] for s in self.landing if s.get("index")}
+        landing_sources = {s["index"] for s in self.landing if s.get("index")} | ({self.home} if self.home else set())
         self.pages, self.images, self.passthrough = [], [], []
         for p in self.tracked:
             if p in self.excluded or p in landing_sources:
@@ -289,7 +293,7 @@ class Site:
             while d:
                 self.section_dirs.add(d)
                 d = posixpath.dirname(d)
-        self.landing_index = {}
+        self.landing_index = {"": self.home} if self.home else {}
         for s in self.landing:
             if s.get("index"):
                 self.landing_index[s["dir"]] = s["index"]
@@ -299,6 +303,10 @@ class Site:
         self.generated_index: set[str] = set()
         staged_pages = set(self.pages)
         for d in self.section_dirs:
+            if d in self.landing_index and d == "":
+                self.index_of[d] = GENERATED_INDEX
+                self.generated_index.add(GENERATED_INDEX)
+                continue
             for name in ("index.md", "README.md"):
                 cand = posixpath.join(d, name) if d else name
                 if cand in staged_pages:
@@ -354,6 +362,8 @@ class Site:
         if norm in self.excluded or norm in self.excluded_dirs:
             return "excluded", None
         # staged file
+        if norm in self.stage_as:
+            return "renamed", rel(self.stage_as[norm])
         if norm in self.staged:
             if rooted:
                 return "root-relative", rel(norm)
@@ -506,7 +516,7 @@ class Site:
         P = self.pseudo
 
         def write(rel: str, text: str):
-            dst = SRC / P.path(rel)
+            dst = SRC / P.path(self.stage_as.get(rel, rel))
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(P.text(text, where=rel), encoding="utf-8")
 
@@ -532,7 +542,14 @@ class Site:
             dirpath = posixpath.dirname(d)
             if dirpath in self.landing_index:
                 src = self.landing_index[dirpath]
-                body = L.label(d, self.rewrite_markdown(d, raw[src]), date_source=src)
+                text = raw[src]
+                if src == self.home:
+                    full = git("rev-parse", "HEAD").strip()
+                    branch = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+                    for k, v in {"@@SOURCE_SHA_FULL@@": full, "@@SOURCE_SHA@@": full[:8], "@@BRANCH@@": branch,
+                                 "@@SOURCE_DATE@@": head_date}.items():
+                        text = text.replace(k, v)
+                body = L.label(d, self.rewrite_markdown(d, text), date_source=src)
             else:
                 body = label_generated(L, self.render_index(dirpath), head_date, head_sha)
             write(d, body)
@@ -655,7 +672,7 @@ class Site:
                 nav.append({t + "/": sub})
             else:
                 more.append({t + "/": sub})
-        roots = [p for p in top_pages if p != self.index_of[""]]
+        roots = [self.stage_as.get(p, p) for p in top_pages if p != self.index_of[""]]
         if roots:
             more.append({"Root files": roots})
         if self.passthrough:

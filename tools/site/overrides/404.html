@@ -1,0 +1,8 @@
+{% extends "main.html" %}
+{#- Reached from any path, so links are absolute from site_url (mkdocs.yml). -#}
+{% block content %}
+  <h1>Page not found</h1>
+  <p>There is no page at this address. It may have moved, or it may be
+    material this site does not publish.</p>
+  <p><a href="{{ config.site_url or '/' }}">Go to the home page</a></p>
+{% endblock %}

@@ -3,6 +3,10 @@
 # the nav to build/site-nav.yaml, which tools/site/hooks.py loads.
 site_name: Nightscout ecosystem alignment
 site_description: Contributor workspace for the Nightscout ecosystem alignment programme
+# The GitHub Pages address for this repository (Settings -> Pages, deploy from
+# the gh-pages branch). Used for absolute links on the 404 page, which is served
+# at any path.
+site_url: https://bewest.github.io/rag-nightscout-ecosystem-alignment/
 repo_url: https://github.com/bewest/rag-nightscout-ecosystem-alignment
 repo_name: rag-nightscout-ecosystem-alignment
 edit_uri: ""
