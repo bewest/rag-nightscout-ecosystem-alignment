@@ -10,7 +10,7 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering, ProfileS
 
 ## OQ-010 Focus: ProfileSwitch → Override Mapping
 
-Per [OQ-010](../../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping), this requires systematic analysis of how ProfileSwitch semantics relate to Override behavior, with Nocturne as a key reference.
+Per [OQ-010](../../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended), this requires systematic analysis of how ProfileSwitch semantics relate to Override behavior, with Nocturne as a key reference.
 
 ---
 
@@ -39,7 +39,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 **Gaps Added:** GAP-NOCTURNE-004
 **Requirements Added:** REQ-SYNC-054, REQ-SYNC-055, REQ-SYNC-056
 
-**Source:** [OQ-010](../../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping)
+**Source:** [OQ-010](../../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended)
 
 ### 6. [P2] Nocturne percentage/timeshift handling
 **Type:** Analysis | **Effort:** Medium  
@@ -130,7 +130,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 - ✅ Same basal/ISF/CR block parsing as JS oref? → **YES** (minutes-from-midnight, i-index sorting)
 - ✅ Any divergence in profile time interpretation? → **NO** (algorithm equivalent)
 
-**Deliverable:** [Rust oref Profile Analysis](../../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+**Deliverable:** [Rust oref Profile Analysis](../../10-domain/nocturne-rust-oref-profile-analysis.md)
 
 **Gaps Added:** GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
 

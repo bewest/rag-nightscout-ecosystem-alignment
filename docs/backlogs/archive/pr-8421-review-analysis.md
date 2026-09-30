@@ -156,7 +156,7 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 **CRITICAL**: Tests have no safeguards against running on production databases.
 
-See [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
+See [GAP-SYNC-046](../../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
 
 **Status**: ✅ **COMPLETE** (2026-03-12)
 
@@ -278,7 +278,7 @@ function guardDestructiveOperation(ctx, operationName) {
 2. **Read the backlog tables** above to understand file scope for each work item
 
 3. **Check the reviewer's guide** to see what's already documented:
-   - [docs/PR-8421-reviewers-guide.md](../PR-8421-reviewers-guide.md)
+   - [docs/PR-8421-reviewers-guide.md](../../PR-8421-reviewers-guide.md)
 
 ### Workflow Per Iteration
 
@@ -440,8 +440,8 @@ git status
 ## References
 
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
-- [Reviewer's Guide](../PR-8421-reviewers-guide.md)
-- [LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) - Session tracking
+- [Reviewer's Guide](../../PR-8421-reviewers-guide.md)
+- [LIVE-BACKLOG.md](../../../LIVE-BACKLOG.md) - Session tracking
 - [Worktree](file:///home/bewest/src/worktrees/nightscout/cgm-pr-8447)
-- [GAP-SYNC-045 Test Report](../test-reports/GAP-SYNC-045-entries-uuid-fix.md)
-- [Client ID Deep Dive](../10-domain/client-id-handling-deep-dive.md)
+- [GAP-SYNC-045 Test Report](../../test-reports/GAP-SYNC-045-entries-uuid-fix.md)
+- [Client ID Deep Dive](../../10-domain/client-id-handling-deep-dive.md)

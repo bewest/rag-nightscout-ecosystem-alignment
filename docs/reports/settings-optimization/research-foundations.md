@@ -23,7 +23,7 @@ For full source-cited per-patient data, see the [Comprehensive Reference](best-o
 4. [Irreducible Hypo Rate](#4-irreducible-hypo-rate)
 5. [Evidence Inventory](#5-evidence-inventory)
 6. [Comparison with oref0 Autotune](#6-comparison-with-oref0-autotune)
-7. [Disproved Hypotheses](#7-disproved-hypotheses)
+7. [Disproved Hypotheses](#7-disproved-hypotheses--lessons-learned)
 8. [Promising Research Directions](#8-promising-research-directions)
 9. [Experiment Cross-Reference](#9-experiment-cross-reference)
 

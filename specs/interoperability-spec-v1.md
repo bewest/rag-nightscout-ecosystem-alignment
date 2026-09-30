@@ -309,8 +309,8 @@ Known interoperability gaps to address:
 
 ## References
 
-- [Nightscout Integration Guide](../30-design/nightscout-integration-guide.md)
-- [API Deep Dive](../10-domain/cgm-remote-monitor-api-deep-dive.md)
-- [Sync Deep Dive](../10-domain/cgm-remote-monitor-sync-deep-dive.md)
-- [Auth Deep Dive](../10-domain/cgm-remote-monitor-auth-deep-dive.md)
-- [OpenAPI Specs](../../specs/openapi/)
+- [Nightscout Integration Guide](../docs/30-design/nightscout-integration-guide.md)
+- [API Deep Dive](../docs/10-domain/cgm-remote-monitor-api-deep-dive.md)
+- [Sync Deep Dive](../docs/10-domain/cgm-remote-monitor-sync-deep-dive.md)
+- [Auth Deep Dive](../docs/10-domain/cgm-remote-monitor-auth-deep-dive.md)
+- [OpenAPI Specs](openapi/)

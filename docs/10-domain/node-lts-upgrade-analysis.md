@@ -279,7 +279,7 @@ All Nightscout JavaScript projects are running on **end-of-life Node.js versions
 ## Cross-References
 
 - [cgm-remote-monitor PR Analysis](cgm-remote-monitor-pr-analysis.md) - PR#8421 MongoDB 5.x
-- [Connector Bridge Deprecation Plan](../sdqctl-proposals/backlogs/nightscout-api.md#12) - Backlog item
+- [Connector Bridge Deprecation Plan](../sdqctl-proposals/backlogs/nightscout-api.md#12-p2-connector-bridge-deprecation-plan--complete) - Backlog item
 - [nightscout-connect Design Review](nightscout-connect-design-review.md) - Architecture
 
 ---

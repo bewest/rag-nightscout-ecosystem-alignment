@@ -226,8 +226,8 @@ Test Suite 'OverrideUploadTests' passed at 2026-03-10 16:04:52.368
 
 ## References
 
-- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072) - Full specification
-- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) - Original gap
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) - Full specification
+- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - Original gap
 - [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Implementation
 - [Issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450) - Bug report
-- [Loop Source Analysis](../backlogs/loop-source-analysis.md) - Client behavior deep dive
+- [Loop Source Analysis](../backlogs/archive/loop-source-analysis.md) - Client behavior deep dive

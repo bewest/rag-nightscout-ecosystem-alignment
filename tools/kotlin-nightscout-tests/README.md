@@ -58,5 +58,5 @@ export API_SECRET="test_api_secret_12_chars"
 ## Related Documentation
 
 - [Integration Test Harness](../../docs/backlogs/integration-test-harness.md)
-- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072) - Option G spec
-- [AAPS Upload Testing](../../docs/backlogs/aaps-nightscout-upload-testing.md)
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) - Option G spec
+- [AAPS Upload Testing](../../docs/backlogs/archive/aaps-nightscout-upload-testing.md)

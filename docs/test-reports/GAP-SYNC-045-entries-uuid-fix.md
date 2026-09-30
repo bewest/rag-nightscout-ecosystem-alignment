@@ -5,7 +5,7 @@
 **Branch**: `pr-8447`  
 **Commit**: `b8815505`  
 **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)  
-**Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072)
+**Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g)
 
 ---
 
@@ -273,10 +273,10 @@ These are optional enhancements, not required for the fix.
 
 ## References
 
-- **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045)
-- **Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072)
-- **Backlog**: [trio-entries-upload-testing.md](../backlogs/trio-entries-upload-testing.md)
-- **API Comparison**: [api-version-uuid-comparison.md](../backlogs/api-version-uuid-comparison.md)
+- **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
+- **Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g)
+- **Backlog**: [trio-entries-upload-testing.md](../backlogs/archive/trio-entries-upload-testing.md)
+- **API Comparison**: [api-version-uuid-comparison.md](../backlogs/archive/api-version-uuid-comparison.md)
 - **Deep Dive**: [client-id-handling-deep-dive.md](../10-domain/client-id-handling-deep-dive.md)
 - **PR #8447**: [GitHub](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
 

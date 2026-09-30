@@ -246,5 +246,5 @@ Both tools could use a shared library for:
 ## Cross-References
 
 - [nightscout-reporter mapping](../../mapping/nightscout-reporter) - 2,559 lines of documentation
-- [Statistics API Proposal](statistics-api-proposal.md) - Server-side statistics design
+- [Statistics API Proposal](../sdqctl-proposals/statistics-api-proposal.md) - Server-side statistics design
 - [cgm-remote-monitor Plugin Deep Dive](cgm-remote-monitor-plugin-deep-dive.md) - Plugin architecture

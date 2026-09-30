@@ -11,7 +11,9 @@ orphan `gh-pages` branch (see [Publishing](#publishing)). Every page carries
 The build needs a pseudonym key (see [Participant IDs](#participant-ids)):
 
 ```sh
-export SITE_PSEUDONYM_KEY="$(cat ~/.config/nightscout-site/pseudonym-key)"  # keep it out of the repo
+# one-time: the key file, outside the repository (back it up; see Participant IDs)
+mkdir -p -m 700 ~/.config/nightscout-alignment
+(umask 077; openssl rand -hex 32 > ~/.config/nightscout-alignment/pseudonym.key)
 make site        # creates tools/site/.venv on first run, stages, builds build/site/
 make serve       # builds, then serves build/site/ at http://127.0.0.1:8765/
 make serve SITE_PORT=8790
@@ -88,11 +90,15 @@ plus 2 to 7 digits) becomes the pseudonym of the one staged full ID it is a
 prefix of; a short form that matches none or several fails the build.
 13-digit `odc-<timestamp>` record ids are left alone.
 
-- The key comes from `SITE_PSEUDONYM_KEY`. There is no default: with IDs
-  present and no key, `make site` fails. `make` exports the variable to the
-  build and never echoes it.
-- Make a key once, for example `head -c 32 /dev/urandom | base64`, and keep it
-  outside the repository. The same key gives byte-identical output; a new key
+- The key comes from `SITE_PSEUDONYM_KEY`, then `NS_PSEUDONYM_KEY`, then the
+  file `~/.config/nightscout-alignment/pseudonym.key` (override the path with
+  `SITE_PSEUDONYM_KEY_FILE`). There is no default: with IDs present and no
+  key, `make site` fails. `make` exports the key to the build and never
+  echoes it.
+- This is the one key shared with ns2parquet
+  (`docs/30-design/ns2parquet-keyed-pseudonyms.md`). Make it once, keep it
+  outside the repository, and back it up.
+  The same key gives byte-identical output; a new key
   gives new pseudonyms, so keep one key for as long as links to pages whose
   names carry a pseudonym should stay stable.
 - Neither the key nor any ID-to-pseudonym mapping is written to the repo, the

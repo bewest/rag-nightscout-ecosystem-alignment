@@ -3,7 +3,7 @@
 > **Date**: 2026-01-30  
 > **Status**: Complete  
 > **Domain**: Sync & Identity / Profile  
-> **OQ Reference**: [OQ-010](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping)
+> **OQ Reference**: [OQ-010](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended)
 
 ---
 
@@ -328,7 +328,7 @@ public class OrefProfile
 
 - [Profile Switch Sync Comparison](profile-switch-sync-comparison.md)
 - [Nocturne Deep Dive](nocturne-deep-dive.md)
-- [OQ-010: ProfileSwitch → Override mapping](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping)
+- [OQ-010: ProfileSwitch → Override mapping](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended)
 - [GAP-SYNC-037](../../traceability/sync-identity-gaps.md)
 - [Sync Identity Backlog](../sdqctl-proposals/backlogs/sync-identity.md)
 

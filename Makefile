@@ -86,7 +86,7 @@ help:
 	@echo ""
 	@echo "Static site (MkDocs Material, local only, noindex — see tools/site/README.md):"
 	@echo "  make site          - Stage git-tracked docs and build build/site/"
-	@echo "                        (needs SITE_PSEUDONYM_KEY in the environment)"
+	@echo "                        (key: SITE_PSEUDONYM_KEY, or ~/.config/nightscout-alignment/pseudonym.key)"
 	@echo "  make serve         - Build, then serve build/site/ on 127.0.0.1:$(SITE_PORT)"
 	@echo "                        (SITE_PORT= to change)"
 	@echo "  make site-check    - Build, then fail unless every page is noindex and"
@@ -1033,8 +1033,16 @@ SITE_VENV := tools/site/.venv
 SITE_PY := $(SITE_VENV)/bin/python
 SITE_PORT ?= 8765
 SITE_STAMP := $(SITE_VENV)/.installed
-# Participant-ID pseudonym key (tools/site/README.md). Read from the environment
-# or `make site SITE_PSEUDONYM_KEY=...`; exported to the build, never echoed.
+# Participant-ID pseudonym key (tools/site/README.md). Taken from
+# SITE_PSEUDONYM_KEY, then NS_PSEUDONYM_KEY, then the private key file; exported
+# to the build, never echoed. The key file is outside the repository.
+SITE_PSEUDONYM_KEY_FILE ?= $(HOME)/.config/nightscout-alignment/pseudonym.key
+ifeq ($(strip $(SITE_PSEUDONYM_KEY)),)
+SITE_PSEUDONYM_KEY := $(strip $(NS_PSEUDONYM_KEY))
+endif
+ifeq ($(strip $(SITE_PSEUDONYM_KEY)),)
+SITE_PSEUDONYM_KEY := $(strip $(shell cat '$(SITE_PSEUDONYM_KEY_FILE)' 2>/dev/null))
+endif
 export SITE_PSEUDONYM_KEY
 
 $(SITE_STAMP): tools/site/requirements.txt

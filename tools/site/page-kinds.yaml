@@ -13,4 +13,30 @@
 #
 # The build report lists dated pages whose names suggest a living document
 # (plans, registers, proposals, ...) as candidates for this file.
-overrides: []
+overrides:
+  # ---- Living: dated file names, but kept current (evidence 2026-09-30) ----
+  - path: docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
+    kind: living
+    reason: "Header says 'Status: living document'; 14 commits after its date; cited by 16 docs as the versioning policy."
+  - path: docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    kind: living
+    reason: "Header says 'Status: living document, the decision record' (D1-D17); 12 commits after its date; cited by 40 docs."
+  - path: docs/30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md
+    kind: living
+    reason: "Section 2.2 added 2026-09-27, after its date; ECOSYSTEM-PROGRAMME cites it as the current proposal."
+  - path: docs/60-research/two-stream-methodology-charter-2026-04-22.md
+    kind: living
+    reason: "Header says the charter is binding on all subsequent experiments and reports; cited by 11 docs."
+  # ---- Record: undated file names in a dated record directory ----
+  - path: docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md
+    kind: record
+    as_of: "2026-09-30"
+    reason: "Annex of the dated 2026-09-30 stack-census record."
+  - path: docs/60-research/programme/stack-census-2026-09-30/device-layer.md
+    kind: record
+    as_of: "2026-09-30"
+    reason: "Annex of the dated 2026-09-30 stack-census record."
+  - path: docs/60-research/programme/stack-census-2026-09-30/histories.md
+    kind: record
+    as_of: "2026-09-30"
+    reason: "Annex of the dated 2026-09-30 stack-census record."

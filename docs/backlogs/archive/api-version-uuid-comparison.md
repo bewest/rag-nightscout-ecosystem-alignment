@@ -2,7 +2,7 @@
 
 > **Purpose**: Document how v1 and v3 APIs handle client-supplied identifiers and what fixes are needed.
 > **Created**: 2026-03-11
-> **Related**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id), [Client ID Deep Dive](../10-domain/client-id-handling-deep-dive.md)
+> **Related**: [GAP-SYNC-045](../../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id), [Client ID Deep Dive](../../10-domain/client-id-handling-deep-dive.md)
 
 ---
 

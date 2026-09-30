@@ -4,6 +4,9 @@
 # alphabetically. Subdirectories follow as sub-sections.
 # `index` (optional) is a hand-written landing page staged as <dir>/index.md
 # when the directory has no README.md or index.md of its own.
+# `home` is the site root page (index.md). The repository README.md is then
+# published as repository-readme.md, and links to it are rewritten.
+home: tools/site/landing/home.md
 sections:
   - title: Overview
     dir: docs/00-overview
