@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 127 | 37 | 10 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 127 | 37 | 11 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **180** | **51** | **15** |
+| | **total** | **180** | **51** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -108,8 +108,8 @@ For somebody running Nightscout today:
 > team.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators) on
-2026-10-01 at `50bc1084`: **109 defects** (BF-12, invalid, and BF-41, closed, excluded) — 29 `open`,
-78 `merged`, 1 `partly merged`, 1 `fixed` (BF-52). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
+2026-10-01 at `50bc1084`: **109 defects** (BF-12, invalid, and BF-41, closed, excluded) — 28 `open`,
+78 `merged`, 1 `partly merged`, 2 `fixed` (BF-52; BF-151 on `bf/braces-expansion-cap`). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
 15.0.8, and BF-80, BF-106 and BF-142 existed only on `dev`; that split has not been re-derived
 since. Re-derive with
 `node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
@@ -165,7 +165,7 @@ cover more than one `BF-`:
 | `BFQ-146` | `merged-upstream` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `merged-upstream` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-151` | `in-progress` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
+| `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
@@ -205,7 +205,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 3 | 5 | 1 | 4 | 45 | 6 |  | 2 | 2 |  | **95** |
+| `register-open` | 27 | 2 | 5 | 2 | 4 | 45 | 6 |  | 2 | 2 |  | **95** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
