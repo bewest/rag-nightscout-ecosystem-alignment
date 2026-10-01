@@ -283,7 +283,7 @@ function guardDestructiveOperation(ctx, operationName) {
 ### Workflow Per Iteration
 
 1. **Pick a work item** from the tables above (start with P0)
-2. **Read relevant files** from worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+2. **Read relevant files** from worktree: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 3. **Document findings** using the analysis template below
 4. **Update the reviewer's guide** with key review points
 5. **Mark complete** in this backlog and SQL todos
@@ -393,7 +393,7 @@ PROMPT Pick task from `docs/backlogs/pr-8421-review-analysis.md`:
   - Phase 3: DOC-001 to DOC-006 (documentation audit)
 
 # Phase 2: Analysis - use worktree path:
-PROMPT Analyze files in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/`
+PROMPT Analyze files in `<workspace>/worktrees/nightscout/cgm-pr-8447/`
 
 # Phase 4: Update guide - add this:
 PROMPT Update `docs/PR-8421-reviewers-guide.md` with findings.
