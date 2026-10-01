@@ -1,136 +1,54 @@
 name: CI
 
+# Checks that run on a plain checkout, with no externals/ clones.
+# Reproduce locally with Python 3.12:
+#   python -m compileall -q tools/
+#   pip install pyyaml==6.0.3 jsonschema==4.26.0
+#   python tools/validate_json.py
+#   python tools/validate_telemetry_schema.py
+
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  syntax-check:
-    name: Python Syntax Check
-    runs-on: ubuntu-latest
+  python-syntax:
+    name: Python syntax (3.12)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      # 3.12 or later: tools/ uses PEP 701 f-strings (nested quotes, backslashes)
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
-      - name: Check Python syntax
-        run: python -m compileall tools/
+      - name: Compile every Python file under tools/
+        run: python -m compileall -q tools/
 
-  link-check:
-    name: Link Integrity
-    runs-on: ubuntu-latest
-    needs: syntax-check
+  specs-and-fixtures:
+    name: Specs and fixtures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
         with:
-          submodules: false
+          python-version: '3.12'
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Install validator dependencies
+        run: pip install pyyaml==6.0.3 jsonschema==4.26.0
 
-      - name: Bootstrap external repos
-        run: python tools/bootstrap.py bootstrap
+      - name: OpenAPI specs (specs/openapi/*.yaml)
+        run: python tools/validate_json.py
 
-      - name: Check links
-        run: python tools/linkcheck.py
-
-  validate-fixtures:
-    name: Fixture Validation
-    runs-on: ubuntu-latest
-    needs: syntax-check
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install optional dependencies
-        run: pip install pyyaml jsonschema || true
-
-      - name: Validate fixtures
-        run: python tools/validate_fixtures.py
-
-  conformance:
-    name: Conformance Tests
-    runs-on: ubuntu-latest
-    needs: validate-fixtures
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install optional dependencies
-        run: pip install pyyaml || true
-
-      - name: Run conformance tests (offline)
-        run: python tools/run_conformance.py
-
-  algorithm-conformance:
-    name: Algorithm Conformance
-    runs-on: ubuntu-latest
-    needs: validate-fixtures
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Bootstrap external repos
-        run: python tools/bootstrap.py bootstrap
-
-      - name: Install oref0 dependencies
-        run: |
-          cd externals/oref0
-          npm install --ignore-scripts || true
-
-      - name: Run algorithm conformance suite
-        run: python tools/conformance_suite.py --ci
-        continue-on-error: true  # Known divergence, don't fail CI
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: conformance-results
-          path: conformance/results/
-
-  coverage-matrix:
-    name: Coverage Matrix
-    runs-on: ubuntu-latest
-    needs: syntax-check
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Generate coverage matrix
-        run: python tools/gen_coverage.py
-
-      - name: Check for uncommitted changes
-        run: |
-          git diff --exit-code traceability/coverage-matrix.md || \
-            echo "::warning::Coverage matrix is out of date. Run 'python tools/gen_coverage.py' locally."
+      - name: Telemetry schema fixtures (valid pass, invalid fail)
+        run: python tools/validate_telemetry_schema.py

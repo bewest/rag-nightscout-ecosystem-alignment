@@ -28,6 +28,10 @@ info:
   license:
     name: AGPL-3.0
 
+# Components only: this document defines schemas for other specs to reference.
+# OpenAPI 3.0.3 requires `paths`; an empty object declares no operations.
+paths: {}
+
 components:
   schemas:
     # =========================================================================

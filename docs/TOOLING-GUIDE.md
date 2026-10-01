@@ -215,25 +215,18 @@ make cli
 
 ## GitHub Actions Integration
 
-The `.github/workflows/validation.yml` workflow provides automated CI/CD:
+The `.github/workflows/ci.yml` workflow runs on pushes and pull requests to
+`main`, on a plain checkout with no `externals/` clones, on Python 3.12:
 
 **Jobs**:
-1. **Quick Validation** - Fast checks (runs first)
-2. **Full Validation** - Comprehensive validation
-3. **Verification** - Static verification tools
-4. **Coverage** - Coverage analysis and reports
-5. **Summary** - Aggregate results
+1. **Python syntax (3.12)** - `python -m compileall -q tools/`
+2. **Specs and fixtures** - `python tools/validate_json.py` (OpenAPI specs) and
+   `python tools/validate_telemetry_schema.py` (telemetry fixtures: valid ones
+   must pass, invalid ones must fail)
 
-**Triggered On**:
-- Push to `main` or `dev` branches
-- Pull requests
-- Manual workflow dispatch
-
-**Artifacts**:
-- Validation results (JSON)
-- Verification results (JSON)
-- Coverage reports
-- Traceability matrices
+Checks that need `externals/` (code references, algorithm conformance) and
+the report generators (`run_workflow.py`, coverage and traceability) run
+locally through `make`; they are not CI jobs.
 
 ## AI Agent Workflows
 
