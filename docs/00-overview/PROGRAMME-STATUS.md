@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 127 | 37 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 127 | 37 | 10 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **180** | **51** | **14** |
+| | **total** | **180** | **51** | **15** |
 
 <!-- END GENERATED: horizons -->
 
@@ -167,7 +167,7 @@ cover more than one `BF-`:
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
 | `BFQ-151` | `in-progress` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
-| `BFQ-153` | `in-progress` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh |
+| `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -205,7 +205,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 4 | 5 |  | 4 | 45 | 6 |  | 2 | 2 |  | **95** |
+| `register-open` | 27 | 3 | 5 | 1 | 4 | 45 | 6 |  | 2 | 2 |  | **95** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

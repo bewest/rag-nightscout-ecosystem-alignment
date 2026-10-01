@@ -11045,7 +11045,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/dependency-refresh-2026-10
     base: official/dev@50bc1084
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -11062,11 +11062,26 @@ items:
     semver_reason: patch and minor dependency versions; no behaviour change intended
     register: [BF-153]
     gates:
+      - run: "git -C externals/cgm-remote-monitor-official show bf/dependency-refresh-2026-10:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
+        kind: static
+        describe: >
+          The branch's overrides carry the fixed ip-address (a presence check;
+          tests/dependency-overrides.test.js on the installed tree decides).
       - no-gate: >
           npm audit depends on the advisory database on the day it runs, so
-          it is a measurement, not a gate. 2026-10-01, npm 11.12.1, scratch
-          trial on dev's lockfile: 20 findings (4 high) -> 7 (0 high),
-          --omit=dev 17 -> 5; the 7 left are the 2026-09-27 set.
+          it is a measurement, not a gate. 2026-10-01, npm 11.12.1,
+          --package-lock-only (a count of packages with a finding, parents
+          counted again): dev 50bc1084 20 (4 high), the branch 8 (0 high);
+          --omit=dev 16 -> 6. The 8 left are the 2026-09-27 set of 7 plus
+          moment, held by decision. Measured on 22d82889 in
+          externals/work/crm-bf153 (Node 22.23.2, MongoDB 7.0.43): full suite
+          3512/0/4 (dev 3489/0/3; the added pending is the connector's own
+          axios 1.20.0 copy, outside the advisory range, which the new floor
+          check skips); the 27 new or raised dependency checks fail on dev's
+          installed tree and pass here; test:dependencies 345/0/1; npm ci on
+          Node 20.20.0, 22.23.2, 24.20.0 and the npm 12 job; production bundle
+          byte-identical (7 files); IMPORT_CONFIG fetched and applied as on dev
+          with axios 0.34.0.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -11076,8 +11091,11 @@ items:
       decided on the measured result. moment stays at 2.30.1 (2026-10-01):
       no request input reaches moment.locale on dev (BF-31), and 2.31.0
       changes parsing and locale display output. Not in RT-0's blocks_on
-      until decided. Branch being built in externals/work/crm-bf153 by a
-      background agent; not pushed.
+      until decided. Branch bf/dependency-refresh-2026-10 22d82889 (one
+      commit on 50bc1084), 26 lockfile version changes, all patch or minor;
+      @types/tough-cookie's dev flag, which npm 10 and 11 both flip on dev's
+      own package.json, is kept as on dev. Not pushed. PR body:
+      reports/phase0-pr-bodies/dependency-refresh-2026-10.md.
   - id: BFQ-152
     title: "BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission"
     parcel: register-open

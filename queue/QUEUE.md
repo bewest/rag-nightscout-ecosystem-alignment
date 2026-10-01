@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 180 |
-| runnable gates | 244 |
+| runnable gates | 245 |
 | explicit `no-gate:` markers | 235 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 235 of the 479 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 235 of the 480 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 4 | BFQ-151, BFQ-73, BFQ-153, OID-LAB |
+| `in-progress` | 3 | BFQ-151, BFQ-73, OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-153 |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 77 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
@@ -2194,7 +2194,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-149` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `in-progress` | `bf/braces-expansion-cap` | patch | 0 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `in-progress` | `bf/production-error-handler` | patch | 0 run + 1 no-gate |
-| `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `in-progress` | `bf/dependency-refresh-2026-10` | patch | 0 run + 1 no-gate |
+| `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `ready-to-push` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
@@ -4727,7 +4727,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/dependency-refresh-2026-10` |
 | base | `official/dev@50bc1084` |
@@ -4745,14 +4745,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; npm audit depends on the advisory database on the day it runs, so it is a measurement, not a gate. 2026-10-01, npm 11.12.1, scratch trial on dev's lockfile: 20 findings (4 high) -> 7 (0 high), --omit=dev 17 -> 5; the 7 left are the 2026-09-27 set.
+- `[static]` `git -C externals/cgm-remote-monitor-official show bf/dependency-refresh-2026-10:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'`
+  - The branch's overrides carry the fixed ip-address (a presence check; tests/dependency-overrides.test.js on the installed tree decides).
+- **NO GATE** &mdash; npm audit depends on the advisory database on the day it runs, so it is a measurement, not a gate. 2026-10-01, npm 11.12.1, --package-lock-only (a count of packages with a finding, parents counted again): dev 50bc1084 20 (4 high), the branch 8 (0 high); --omit=dev 16 -> 6. The 8 left are the 2026-09-27 set of 7 plus moment, held by decision. Measured on 22d82889 in externals/work/crm-bf153 (Node 22.23.2, MongoDB 7.0.43): full suite 3512/0/4 (dev 3489/0/3; the added pending is the connector's own axios 1.20.0 copy, outside the advisory range, which the new floor check skips); the 27 new or raised dependency checks fail on dev's installed tree and pass here; test:dependencies 345/0/1; npm ci on Node 20.20.0, 22.23.2, 24.20.0 and the npm 12 job; production bundle byte-identical (7 files); IMPORT_CONFIG fetched and applied as on dev with axios 0.34.0.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `releases/cgm-remote-monitor-15.0.9/contents.md`
 
-**Notes.** 2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is decided on the measured result. moment stays at 2.30.1 (2026-10-01): no request input reaches moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale display output. Not in RT-0's blocks_on until decided. Branch being built in externals/work/crm-bf153 by a background agent; not pushed.
+**Notes.** 2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is decided on the measured result. moment stays at 2.30.1 (2026-10-01): no request input reaches moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale display output. Not in RT-0's blocks_on until decided. Branch bf/dependency- refresh-2026-10 22d82889 (one commit on 50bc1084), 26 lockfile version changes, all patch or minor; @types/tough-cookie's dev flag, which npm 10 and 11 both flip on dev's own package.json, is kept as on dev. Not pushed. PR body: reports/phase0-pr-bodies/dependency-refresh-2026-10.md.
 
 ### `BFQ-152` &mdash; BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 
