@@ -33,18 +33,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 |---|---|
 | items | 174 |
 | runnable gates | 242 |
-| explicit `no-gate:` markers | 228 |
+| explicit `no-gate:` markers | 229 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 228 of the 470 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 229 of the 471 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-108, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 2 | P0-C-REMEDIATE, T30-AUTH |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, BFQ-108 |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 75 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG |
@@ -2123,7 +2123,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-103` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move | `merged-upstream` | `bf/split-drag-time` | patch | 0 run + 1 no-gate |
 | `BFQ-106` | BF-106 - a numeric date filter on API v1 activity matches nothing on dev | `merged-upstream` | `bf/activity-date-coercion` | patch | 2 run + 1 no-gate |
 | `BFQ-107` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 | `merged-upstream` | `fix/treatments-query-errors-8675` | patch | 1 run + 1 no-gate |
-| `BFQ-108` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing | `not-started` | `origin/dev` | patch | 1 run |
+| `BFQ-108` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing | `ready-to-push` | `bf/date-filter-list` | patch | 1 run + 1 no-gate |
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `merged-upstream` | `fix/profile-sync-bounded-update` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `merged-upstream` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `blocked` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
@@ -3535,17 +3535,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
-| base | `origin/dev@ddd9b600` |
+| branch | `bf/date-filter-list` |
+| base | `official/dev@3014f883` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-108` |
 
-**Blast radius.** lib/server/query.js enforceDateFilter, the ISO rewrite of date operator values.
+**Blast radius.** lib/server/query.js enforceDateFilter: each element of a list operand ($in, $nin) under the date field goes through the single-date rewrite (new normalizeDate, the old body unchanged); single operands unchanged. Tests in tests/query.test.js (3) and tests/api.entries.test.js (1). Branch bf/date- filter-list 350f6f09, one commit on dev 3014f883, local worktree externals/work/crm-bf108, not pushed.
 
 **What an operator sees.** If you use xDrip4iOS, readings it asks Nightscout to delete in bulk stay on your site. Nothing is lost or changed; the extra readings are ones the app meant to remove.
 
@@ -3553,15 +3553,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/bf108-date-in-list.js`
-  - Builds the entries query from origin/dev's own query.js with a two-timestamp find[date][$in]; its control is the same filter with one timestamp. RED on v15.0.8, dev ddd9b600 and the candidate 1067e668. No ref carrying a fix exists yet, so the gate has never been seen green.
+- `[static]` `node tools/queue/gates/bf108-date-in-list.js --ref bf/date-filter-list`
+  - Builds the entries query from the fix branch's own query.js with a two-timestamp find[date][$in]; its control is the same filter with one timestamp. GREEN on bf/date-filter-list 350f6f09; RED on v15.0.8, dev ddd9b600, 3014f883 and the candidate 1067e668 (run without --ref it measures origin/dev). Once merged, measure origin/dev again.
+- **NO GATE** &mdash; The tests need MongoDB and a tree with node_modules, so they are not a queue gate. 2026-09-30 in externals/work/crm-bf108 (Node 22.23.2, MongoDB 7.0.43, dedicated container): tests/query.test.js and tests/api.entries.test.js 65 passing on the branch; with 3014f883's query.js 61 passing and the 4 new tests failing. Full suite 3485/0/3 (3481 on 3014f883). A DELETE listing 50 of 60 posted readings deletes those 50 (deletedCount 50, 10 left).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md`
 
-**Notes.** Open, no branch. Reproduced 2026-09-23 by the consumer-replay lab on v15.0.8, dev ddd9b600 and the candidate, with a one-value control; the gate is red on origin/dev 153e5658 (2026-09-24). xdripswift c268542e NightscoutSyncManager.swift:794-806 is the client that sends it. Filed by session -6a.
+**Notes.** 2026-09-30: fixed on local branch bf/date-filter-list 350f6f09 (one commit on dev 3014f883), not pushed; PR body draft reports/phase0-pr-bodies/date-filter- list.md. Whether it goes into 15.0.9 is the maintainer's call (not in RT-0's blocks_on). Reproduced 2026-09-23 by the consumer-replay lab on v15.0.8, dev ddd9b600 and the candidate, with a one-value control; the gate is red on origin/dev 153e5658 (2026-09-24). xdripswift c268542e NightscoutSyncManager.swift:794-806 is the client that sends it. Filed by session -6a.
 
 ### `BFQ-97` &mdash; BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
 

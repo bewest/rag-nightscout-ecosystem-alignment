@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 122 | 38 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 122 | 37 | 8 |
 | **Modernization** | `release-train` | 31 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **174** | **52** | **12** |
+| | **total** | **174** | **51** | **13** |
 
 <!-- END GENERATED: horizons -->
 
@@ -108,8 +108,8 @@ For somebody running Nightscout today:
 > team.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators) on
-2026-09-30 at `3014f883`: **105 defects** (BF-12, invalid, and BF-41, closed, excluded) — 27 `open`,
-76 `merged`, 1 `partly merged`, 1 `fixed`. On 2026-09-26, 97 of the then 100 were present for every self-hoster on
+2026-09-30 at `3014f883`: **105 defects** (BF-12, invalid, and BF-41, closed, excluded) — 26 `open`,
+76 `merged`, 1 `partly merged`, 2 `fixed` (BF-52; BF-108 on `bf/date-filter-list`). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
 15.0.8, and BF-80, BF-106 and BF-142 existed only on `dev`; that split has not been re-derived
 since. Re-derive with
 `node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
@@ -139,7 +139,7 @@ cover more than one `BF-`:
 | `BFQ-102` | `merged-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
 | `BFQ-103` | `merged-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
 | `BFQ-107` | `merged-upstream` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 |
-| `BFQ-108` | `not-started` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timesta |
+| `BFQ-108` | `ready-to-push` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timesta |
 | `BFQ-111` | `merged-upstream` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
 | `BFQ-112` | `merged-upstream` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
 | `BFQ-114` | `merged-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
@@ -202,7 +202,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 12 | 2 | 1 |  |  | 1 | **31** |
-| `register-open` | 28 | 1 | 5 |  | 4 | 44 | 4 |  | 2 | 2 |  | **90** |
+| `register-open` | 27 | 1 | 5 | 1 | 4 | 44 | 4 |  | 2 | 2 |  | **90** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

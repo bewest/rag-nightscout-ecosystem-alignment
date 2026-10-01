@@ -324,7 +324,12 @@ branches, which are renumbered when they are rebased. Beside that:
 4. **Re-approval of #8598 at the final head and the semver decision**, by the maintainer (the
    approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
    see [decisions](decisions.md)).
-5. **The tag**, by the maintainer.
+5. **Whether the BF-108 fix goes in**, by the maintainer. A v1 filter listing two or more dates
+   under the date field answers 500, so xDrip4iOS bulk deletes remove nothing (on 15.0.8 too). The
+   fix is one commit on `3014f883`, local branch `bf/date-filter-list` `350f6f09`, not pushed
+   (queue `BFQ-108`; PR body draft `reports/phase0-pr-bodies/date-filter-list.md`). Taking it moves
+   `dev` once more; it changes `lib/server/query.js` only, server-side, so no browser check.
+6. **The tag**, by the maintainer.
 
 #8598's two approvals were given on `e3adc91d`; its head is now `3014f883`. The release notes and
 tag body are drafted for `3014f883`.
