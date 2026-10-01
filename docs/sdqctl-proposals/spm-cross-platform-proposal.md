@@ -307,7 +307,7 @@ jobs:
 
 **The Trio app builds AND packages successfully with SPM on Linux using xtool!**
 
-📦 **App Bundle Created:** `/home/bewest/src/Trio/xtool/Trio.app` (180MB)
+📦 **App Bundle Created:** `<workspace>/Trio/xtool/Trio.app` (180MB)
 
 Build time: ~175 seconds (clean build with static linking)
 

@@ -4,7 +4,7 @@ Date: 2026-07-07
 
 ## Executive summary
 
-This report reviews the dependency-alert posture around `nightscout/cgm-remote-monitor` using the local worktree `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`, with emphasis on the `candidates/inspect/dev` branch that includes the dependency-dev-tooling merge.
+This report reviews the dependency-alert posture around `nightscout/cgm-remote-monitor` using the local worktree `<workspace>/worktrees/nightscout/cgm-pr-8447`, with emphasis on the `candidates/inspect/dev` branch that includes the dependency-dev-tooling merge.
 
 The short finding is that raw Dependabot and `npm audit` counts are not a reliable proxy for maintainer diligence, project safety, or practical user risk. The current development branch has already removed the previous critical audit findings and substantially reduced the total alert surface. Remaining findings need to be interpreted by code path, deployment context, optional feature reachability, and the stability constraints of Nightscout's user base.
 
@@ -26,7 +26,7 @@ Because of those constraints, criticism that treats the raw number of Dependabot
 
 The current dependency update branch has materially improved the audit posture.
 
-Command used from `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`:
+Command used from `<workspace>/worktrees/nightscout/cgm-pr-8447`:
 
 ```bash
 for ref in official/master pr-8447 candidates/inspect/dev; do
@@ -52,10 +52,10 @@ package.json      |   92 +-
 
 The branch also moves the project to a modern runtime baseline and adds explicit dependency overrides:
 
-- Node and npm baseline: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:88-91`
-- Runtime dependencies including `body-parser`, `d3`, `express`, `minimed-connect-to-nightscout`, `nightscout-connect`, `share2nightscout-bridge`, `socket.io`, `uuid`, and `webpack`: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:93-158`
-- Dev/test dependencies including `axios`, `dompurify`, `jsdom`, `mocha`, `supertest`, and webpack middleware: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:159-179`
-- Overrides for `follow-redirects`, `node-forge`, `lodash`, `ip-address`, `postcss`, `qs`, `ajv`, `socket.io-parser`, `mocha`, `terser-webpack-plugin`, connector subdependencies, `request`, `minimatch`, and MongoDB URL parsing: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:181-225`
+- Node and npm baseline: `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:88-91`
+- Runtime dependencies including `body-parser`, `d3`, `express`, `minimed-connect-to-nightscout`, `nightscout-connect`, `share2nightscout-bridge`, `socket.io`, `uuid`, and `webpack`: `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:93-158`
+- Dev/test dependencies including `axios`, `dompurify`, `jsdom`, `mocha`, `supertest`, and webpack middleware: `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:159-179`
+- Overrides for `follow-redirects`, `node-forge`, `lodash`, `ip-address`, `postcss`, `qs`, `ajv`, `socket.io-parser`, `mocha`, `terser-webpack-plugin`, connector subdependencies, `request`, `minimatch`, and MongoDB URL parsing: `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:181-225`
 
 ## Code-path classification
 
@@ -63,11 +63,11 @@ Remaining alerts should be classified by where the package is actually used, not
 
 | Class | Examples | Observed code paths | Interpretation |
 |-------|----------|---------------------|----------------|
-| Core server runtime | `express`, `body-parser`, `socket.io`, `ws`, `qs` | Express app bootstrap at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:3-5`; middleware body parser at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js:3-6`; websocket startup at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js:87-96` | These deserve the highest priority because they sit on deployed request paths. They should be handled through targeted upgrades, tests, and release validation rather than blind automated merges. |
-| Development-only or development-gated | `webpack`, `webpack-dev-middleware`, Babel tooling, `supertest`, `jsdom`, `dompurify` differential tests | Webpack dev middleware is gated by `NODE_ENV === 'development'` at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:291-302`; `supertest`, `jsdom`, and `dompurify` are used in tests, for example `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/sanitizer-differential.test.js:46-47` | These alerts may matter for developer machines and CI, but they should not be represented as equivalent to exposed production vulnerabilities. |
-| Optional connector or import paths | `axios`, `request`, connector subdependencies | Remote config import uses `axios` only when `IMPORT_CONFIG` supplies a config URL at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:92-99`; connector packages are declared at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:130-145` | These require feature-level review. Risk depends on whether the deployment enables the connector or import path and whether attacker-controlled URLs, redirects, headers, or payloads can reach the vulnerable behavior. |
-| Browser/report rendering | `d3` and related transitive packages | Browser client imports `d3` at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/client/index.js:3-4`; report plugins import `d3` in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/daytoday.js:5`, `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/calibrations.js:3`, and `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/weektoweek.js:4` | These are real dependencies, but major-version upgrades can affect charting and report behavior. They should be handled as UI/report migrations, not single-alert drive-by PRs. |
-| Sanitization runtime | `sanitize-html` | Runtime purifier uses `sanitize-html` at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js:35-45` | This is security-sensitive. It should be reviewed directly with sanitizer tests and HTML rendering paths, not conflated with unrelated test-only `dompurify` alerts. |
+| Core server runtime | `express`, `body-parser`, `socket.io`, `ws`, `qs` | Express app bootstrap at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:3-5`; middleware body parser at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js:3-6`; websocket startup at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js:87-96` | These deserve the highest priority because they sit on deployed request paths. They should be handled through targeted upgrades, tests, and release validation rather than blind automated merges. |
+| Development-only or development-gated | `webpack`, `webpack-dev-middleware`, Babel tooling, `supertest`, `jsdom`, `dompurify` differential tests | Webpack dev middleware is gated by `NODE_ENV === 'development'` at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:291-302`; `supertest`, `jsdom`, and `dompurify` are used in tests, for example `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/sanitizer-differential.test.js:46-47` | These alerts may matter for developer machines and CI, but they should not be represented as equivalent to exposed production vulnerabilities. |
+| Optional connector or import paths | `axios`, `request`, connector subdependencies | Remote config import uses `axios` only when `IMPORT_CONFIG` supplies a config URL at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:92-99`; connector packages are declared at `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:130-145` | These require feature-level review. Risk depends on whether the deployment enables the connector or import path and whether attacker-controlled URLs, redirects, headers, or payloads can reach the vulnerable behavior. |
+| Browser/report rendering | `d3` and related transitive packages | Browser client imports `d3` at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/client/index.js:3-4`; report plugins import `d3` in `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/daytoday.js:5`, `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/calibrations.js:3`, and `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/report_plugins/weektoweek.js:4` | These are real dependencies, but major-version upgrades can affect charting and report behavior. They should be handled as UI/report migrations, not single-alert drive-by PRs. |
+| Sanitization runtime | `sanitize-html` | Runtime purifier uses `sanitize-html` at `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js:35-45` | This is security-sensitive. It should be reviewed directly with sanitizer tests and HTML rendering paths, not conflated with unrelated test-only `dompurify` alerts. |
 
 ## Dependabot PR interpretation
 

@@ -3,7 +3,7 @@
 **Status**: ✅ **COMPLETE** - Ready for Implementation  
 **Priority**: P1  
 **Scope**: cgm-remote-monitor v15.0.x  
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ## Executive Summary
 
@@ -365,7 +365,7 @@ Track B uses file diff comparison - verification is inherent to the research pro
 # Compare current vs v14.2.5
 cd externals/cgm-remote-monitor-official
 git show 1ad48672:lib/server/treatments.js > /tmp/old.js
-diff /tmp/old.js /home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/treatments.js
+diff /tmp/old.js <workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/treatments.js
 ```
 
 ---
@@ -992,7 +992,7 @@ All storage files now follow the pattern:
 ### Current Worktree (changes under test)
 
 ```
-/home/bewest/src/worktrees/nightscout/cgm-pr-8447/
+<workspace>/worktrees/nightscout/cgm-pr-8447/
 ├── lib/server/     # Storage layer
 ├── lib/api/        # API v1 handlers
 ├── lib/api3/       # API v3 handlers

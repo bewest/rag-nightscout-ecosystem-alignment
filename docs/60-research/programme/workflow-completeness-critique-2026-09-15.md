@@ -376,8 +376,8 @@ This is not medical advice; if an alarm you rely on has been silent, talk it thr
 team as well as checking your settings."* That is the right register for the audience.
 
 **One item to watch:** `meta.repo_root` in `work-queue.yaml` hard-codes
-`/home/bewest/src/rag-nightscout-ecosystem-alignment`, and several documents embed absolute paths
-under `/home/bewest/`. Not sensitive, but it names a user account and would need scrubbing before
+`<workspace>/rag-nightscout-ecosystem-alignment`, and several documents embed absolute paths
+under `~/`. Not sensitive, but it names a user account and would need scrubbing before
 anything here is published outside the project.
 
 ---
@@ -555,7 +555,7 @@ Every measurement in this document, in order. All read-only; nothing pushed; no 
 modified or removed. Mutation testing used copies in the session scratchpad.
 
 ```bash
-cd /home/bewest/src/rag-nightscout-ecosystem-alignment
+cd <workspace>/rag-nightscout-ecosystem-alignment
 git log -1 --format='%h %ad %s' --date=iso          # 08753474
 
 # §A file census

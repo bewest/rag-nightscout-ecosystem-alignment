@@ -16,7 +16,7 @@ These gaps track Nightscout telemetry and observability infrastructure needed to
 
 **Remediation**: Define separate data planes, settings, schemas, endpoints, retention policies, and governance responsibilities before implementing telemetry collection.
 
-**Evidence**: `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`; `/home/bewest/Downloads/nightscout_telemetry_observability_options.md`.
+**Evidence**: `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`; `~/Downloads/nightscout_telemetry_observability_options.md`.
 
 ### GAP-OBS-002: No Nightscout-owned aggregate feature census schema
 

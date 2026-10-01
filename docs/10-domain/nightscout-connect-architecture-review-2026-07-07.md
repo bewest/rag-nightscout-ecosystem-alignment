@@ -15,11 +15,11 @@ This review updates the earlier `nightscout-connect` design review after the `or
 
 Relevant source references:
 
-- `/home/bewest/src/worktrees/nightscout-connect/package.json:13`
-- `/home/bewest/src/worktrees/nightscout-connect/test/dexcomshare.test.js`
-- `/home/bewest/src/worktrees/nightscout-connect/test/nightscout-connectivity.test.js`
-- `/home/bewest/src/worktrees/nightscout-connect/test/librelinkup.test.js`
-- `/home/bewest/src/worktrees/nightscout-connect/test/glooko.test.js`
+- `<workspace>/worktrees/nightscout-connect/package.json:13`
+- `<workspace>/worktrees/nightscout-connect/test/dexcomshare.test.js`
+- `<workspace>/worktrees/nightscout-connect/test/nightscout-connectivity.test.js`
+- `<workspace>/worktrees/nightscout-connect/test/librelinkup.test.js`
+- `<workspace>/worktrees/nightscout-connect/test/glooko.test.js`
 
 ## Architecture Summary
 
@@ -36,11 +36,11 @@ The builder keeps vendor code mostly separate from XState:
 
 Key files:
 
-- `/home/bewest/src/worktrees/nightscout-connect/lib/builder.js:18-78`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/session.js:5-260`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/fetch.js:5-354`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/cycle.js:5-227`
-- `/home/bewest/src/worktrees/nightscout-connect/machines.md:163-184`
+- `<workspace>/worktrees/nightscout-connect/lib/builder.js:18-78`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/session.js:5-260`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/fetch.js:5-354`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/cycle.js:5-227`
+- `<workspace>/worktrees/nightscout-connect/machines.md:163-184`
 
 ## Additional Tests Worth Adding
 

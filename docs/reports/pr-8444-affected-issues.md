@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-19  
 **PR:** [nightscout/cgm-remote-monitor#8444](https://github.com/nightscout/cgm-remote-monitor/pull/8444) (dev → master, 15.0.7)  
-**Worktree:** `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**Worktree:** `<workspace>/worktrees/nightscout/cgm-pr-8447`  
 **Branch analysed:** `wip/test-improvements`  
 **Purpose:** Map 15.0.7 fixes to known GitHub issues, assess test coverage, identify gaps.
 

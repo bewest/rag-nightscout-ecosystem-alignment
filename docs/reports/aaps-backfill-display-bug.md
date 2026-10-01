@@ -3,7 +3,7 @@
 **Date:** 2026-07-23  
 **Context:** PR [#8444](https://github.com/nightscout/cgm-remote-monitor/pull/8444) / dev branch  
 **Reported by:** AAPS user (Discord)  
-**Worktree:** `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**Worktree:** `<workspace>/worktrees/nightscout/cgm-pr-8447`  
 **Test file:** `tests/cache-objectid-compat.test.js`
 
 ---

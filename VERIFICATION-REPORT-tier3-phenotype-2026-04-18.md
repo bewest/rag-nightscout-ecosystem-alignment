@@ -1,7 +1,7 @@
 # Verification Report: tier3-therapy-phenotype-report-2026-04-18.md
 
 **Date of Review**: 2026-04-22  
-**Report Reviewed**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/tier3-therapy-phenotype-report-2026-04-18.md`  
+**Report Reviewed**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/tier3-therapy-phenotype-report-2026-04-18.md`  
 **Experiments**: EXP-2291, EXP-2321, EXP-2331, EXP-2351  
 **Data Sources**:
 - `externals/experiments/exp-2351-2358_insulin_pk.json`

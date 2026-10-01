@@ -1,7 +1,7 @@
 # Integration Test Harness
 
 > **Goal**: Run cgm-remote-monitor locally and test with Swift, Kotlin, and JavaScript clients to validate proposed fixes.
-> **Server Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+> **Server Location**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 > **Created**: 2026-03-10
 > **Last Updated**: 2026-05-11 (pivot to fixture-replay)
 
@@ -84,7 +84,7 @@ This document describes how to set up integration testing across all three clien
 │  ┌─────────────────────────────────────────────────────────────────┐   │
 │  │              cgm-remote-monitor (cgm-pr-8447)                   │   │
 │  │                                                                 │   │
-│  │  Location: /home/bewest/src/worktrees/nightscout/cgm-pr-8447    │   │
+│  │  Location: <workspace>/worktrees/nightscout/cgm-pr-8447    │   │
 │  │  Config:   my.test.env                                          │   │
 │  │  Branch:   pr-8447 (UUID _id fix)                               │   │
 │  └─────────────────────────────────────────────────────────────────┘   │
@@ -105,7 +105,7 @@ This document describes how to set up integration testing across all three clien
 ### Start cgm-remote-monitor Locally
 
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 
 # Load test environment
 source my.test.env
@@ -190,12 +190,12 @@ See [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072
 
 ## JavaScript Tests (Native)
 
-**Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
+**Location**: `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/`
 
 ### Run All Tests
 
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 npm test
 ```
 
@@ -225,7 +225,7 @@ npm test -- --grep "UUID treatment ids"
 
 ```bash
 # Ensure Swift is available
-export PATH="/home/bewest/.local/share/swiftly/bin:$PATH"
+export PATH="~/.local/share/swiftly/bin:$PATH"
 swift --version  # Should show 6.2.3
 
 # Build and test
@@ -300,7 +300,7 @@ object TestConfig {
 
 ```bash
 # Start server with current code (before any fix)
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 git stash  # or checkout clean state
 source my.test.env && npm test
 
@@ -353,7 +353,7 @@ cd tools/kotlin-nightscout-tests && ./gradlew test
 ## Directory Structure
 
 ```
-/home/bewest/src/
+<workspace>/
 ├── worktrees/nightscout/
 │   └── cgm-pr-8447/              # Server under test
 │       ├── my.test.env           # Test configuration

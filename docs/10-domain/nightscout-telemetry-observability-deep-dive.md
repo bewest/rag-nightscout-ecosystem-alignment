@@ -17,7 +17,7 @@ This separation is the main unifying design choice. It lets different stakeholde
 
 | Source | Relevant findings |
 |--------|-------------------|
-| `/home/bewest/Downloads/nightscout_telemetry_observability_options.md` | Recommends separate planes for usage telemetry, diagnostic observability, and operational logs; proposes daily aggregate reporting, rotating installation identifiers, strict exclusion of therapy and identity data, OpenTelemetry for optional operational instrumentation, Sentry for scrubbed exceptions, and Grafana/Plausible/Umami style dashboards. |
+| `~/Downloads/nightscout_telemetry_observability_options.md` | Recommends separate planes for usage telemetry, diagnostic observability, and operational logs; proposes daily aggregate reporting, rotating installation identifiers, strict exclusion of therapy and identity data, OpenTelemetry for optional operational instrumentation, Sentry for scrubbed exceptions, and Grafana/Plausible/Umami style dashboards. |
 | `externals/trio-telemetry` | The closest ecosystem precedent: an App-Attest-protected telemetry sink, S3 object storage, daily SQLite/report generation, Prometheus metrics, Loki logs, and Grafana/Scaleway Cockpit alerting. |
 | `externals/cgm-remote-monitor-official` | Current Nightscout Heroku manifest includes Papertrail as a deployment log add-on, not product telemetry; the package manifest scan did not find Sentry, OpenTelemetry, Prometheus, Grafana, Datadog, PostHog, Plausible, Umami, or Matomo dependencies. |
 | `../ns-ml-data-ops-proposal` | Defines a Foundation data commons, identity, consent, DataOps, MLOps, release support, and shared-service model that telemetry can feed without becoming a research dataset by default. |

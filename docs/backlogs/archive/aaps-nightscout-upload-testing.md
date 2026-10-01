@@ -1,7 +1,7 @@
 # AAPS → Nightscout Upload Testing Backlog
 
 > **Goal**: Develop comprehensive tests for cgm-remote-monitor that faithfully simulate all ways AAPS uploads data to Nightscout.
-> **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
+> **Test Location**: `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-10
 
 ## IDs.kt Analysis (AAPS-SRC-004, AAPS-ID-001)

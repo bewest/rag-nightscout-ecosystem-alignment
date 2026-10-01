@@ -9,7 +9,7 @@
 - `lib/plugins/iob.js` - IOB decay calculation (time-sensitive)
 - `lib/plugins/boluswizardpreview.js` - Bolus wizard calculation
 
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ---
 
@@ -172,7 +172,7 @@ After implementing the fix:
 
 ```bash
 # Stress test - should pass 100%
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 for i in {1..20}; do 
   npm test -- --grep "BWP with infos" 2>&1 | grep -E "(passing|failing)"
 done

@@ -7,7 +7,7 @@ report's timeline. Each report gets its own findings/decision doc; this
 README indexes them and tracks overall branch/worktree state.
 
 **Working repo:** `nightscout/cgm-remote-monitor` (external, cloned under
-`/home/bewest/src/worktrees/nightscout/`), not this repo. This repo
+`<workspace>/worktrees/nightscout/`), not this repo. This repo
 (`rag-nightscout-ecosystem-alignment`) hosts planning/decision records only —
 code changes land as commits in the `cgm-remote-monitor` worktrees/branches
 referenced below.
@@ -25,7 +25,7 @@ referenced below.
   (`4982e954`, PR #8558 merge) so each fix is independently reviewable,
   revertable, and mergeable without coupling unrelated CVEs together.
 - Each report gets a dedicated worktree under
-  `/home/bewest/src/worktrees/nightscout/` with `my.test.env` copied in and
+  `<workspace>/worktrees/nightscout/` with `my.test.env` copied in and
   `npm install` run before investigation begins.
 - Tests always run via `NODE_ENV=test npm test` (or `npm run test-single`),
   never ad-hoc `npx mocha` without `--exit --require ./tests/hooks.js` — see

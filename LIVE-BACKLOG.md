@@ -9,9 +9,9 @@
 
 Swift toolchain available:
 ```bash
-export SWIFTLY_TOOLCHAINS_DIR=/home/bewest/.local/share/swiftly/toolchains
-export SWIFTLY_BIN_DIR=/home/bewest/.local/share/swiftly/bin
-export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
+export SWIFTLY_TOOLCHAINS_DIR=~/.local/share/swiftly/toolchains
+export SWIFTLY_BIN_DIR=~/.local/share/swiftly/bin
+export SWIFTLY_HOME_DIR=~/.local/share/swiftly
 [[ :$PATH: == *":$SWIFTLY_BIN_DIR:"* ]] || PATH+=":$SWIFTLY_BIN_DIR"
 ```
 

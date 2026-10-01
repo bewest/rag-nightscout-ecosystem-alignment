@@ -4,7 +4,7 @@
 **Audience**: cgm-remote-monitor maintainers, AndroidAPS maintainers
 **Reporter**: Nightscout ecosystem alignment workspace
 **c-r-m PR**: [nightscout/cgm-remote-monitor#8475](https://github.com/nightscout/cgm-remote-monitor/pull/8475)
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` (branch `wip/test-improvements`)
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447` (branch `wip/test-improvements`)
 **Fix commit (c-r-m)**: `85f7e6ac` — fix(websocket): dedup AAPS profile dbAdd by startDate; warn on insert errors
 **AAPS reference**: tag `3.4.2.2` (commit `5b1a2fec02`)
 

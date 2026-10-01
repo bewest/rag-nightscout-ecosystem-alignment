@@ -65,7 +65,7 @@ Build as a small service because the public boundary needs:
 - no retained network metadata,
 - Nightscout-specific aggregate semantics.
 
-The current prototype is `/home/bewest/src/crm-telemetry`.
+The current prototype is `<workspace>/crm-telemetry`.
 
 ## Buy or managed-service candidates
 

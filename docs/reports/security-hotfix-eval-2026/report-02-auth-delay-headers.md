@@ -1,11 +1,11 @@
 # Report #2 — Auth-Failure Delay Keyed on Spoofable `X-Forwarded-For`
 
 **Date evaluated:** 2026-09-01
-**Source materials:** `/home/bewest/potential-ns-issue-auth-delay-headers`
+**Source materials:** `~/potential-ns-issue-auth-delay-headers`
 (external report, reporter: Ofri Peretz; reference only, not reproduced here
 verbatim beyond quoted excerpts needed for traceability)
 **Branch:** `wip/bewest/security-hotfix-eval-auth-delay`
-**Worktree:** `/home/bewest/src/worktrees/nightscout/cgm-auth-delay-eval`
+**Worktree:** `<workspace>/worktrees/nightscout/cgm-auth-delay-eval`
 **Base:** `dev@4982e954` (same known-good tip as report #1; confirmed
 unchanged as of evaluation date via `git fetch official dev`)
 **Status:** ✅ Primary issue resolved upstream by PR #8723 (see §10);

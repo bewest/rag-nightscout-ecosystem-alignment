@@ -111,7 +111,7 @@ Raw accepted payload retention: 60 days.
 
 Rejected payload retention should be avoided by default. If temporarily enabled for debugging, store only rejection reason and schema path, not the raw request body.
 
-Prototype implementation: `/home/bewest/src/crm-telemetry` commit `4b6f25f` stores accepted payloads under `raw/accepted/nightscout/YYYY/MM/DD/<receipt_id>.json` and keeps IP/user-agent/hostname/raw URL out of stored payloads and object metadata.
+Prototype implementation: `<workspace>/crm-telemetry` commit `4b6f25f` stores accepted payloads under `raw/accepted/nightscout/YYYY/MM/DD/<receipt_id>.json` and keeps IP/user-agent/hostname/raw URL out of stored payloads and object metadata.
 
 Object metadata must not include:
 
@@ -127,7 +127,7 @@ Object metadata must not include:
 
 Daily aggregation reads raw accepted payloads and writes aggregate records.
 
-Prototype implementation: `/home/bewest/src/crm-telemetry` commit `e42040c` adds `crm_telemetry.aggregate.aggregate_payloads()`, which dedupes monthly active installations and feature-active installations without exposing raw installation IDs.
+Prototype implementation: `<workspace>/crm-telemetry` commit `e42040c` adds `crm_telemetry.aggregate.aggregate_payloads()`, which dedupes monthly active installations and feature-active installations without exposing raw installation IDs.
 Commit `5a37596` adds `crm_telemetry.export.export_monthly()`, which writes monthly aggregate JSON exports under `exports/nightscout/monthly/YYYY-MM.json`.
 
 Suggested aggregate tables or JSON sections:
@@ -165,7 +165,7 @@ Prototype export output:
 exports/nightscout/monthly/YYYY-MM.json
 ```
 
-Prototype dashboard implementation: `/home/bewest/src/crm-telemetry` commit `d0ca8f3` adds `crm_telemetry.report.write_dashboard()`, which renders `reports/nightscout/dashboard.html` from monthly exports without raw installation IDs or network metadata.
+Prototype dashboard implementation: `<workspace>/crm-telemetry` commit `d0ca8f3` adds `crm_telemetry.report.write_dashboard()`, which renders `reports/nightscout/dashboard.html` from monthly exports without raw installation IDs or network metadata.
 
 Public dashboards must not expose:
 

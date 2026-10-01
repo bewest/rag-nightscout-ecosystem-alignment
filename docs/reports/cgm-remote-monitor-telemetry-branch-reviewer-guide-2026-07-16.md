@@ -3,7 +3,7 @@
 Date: 2026-07-16
 
 Branch: `wip/bewest/nightscout-telemetry-emitter`  
-Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+Worktree: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ## Branch commits
 
