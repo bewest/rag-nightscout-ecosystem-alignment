@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-108
+# Review packet — BFQ-108 (PR #8791)
 
 **BF-108 - a list of timestamps under the date field answers 500, so bulk
 deletes by timestamp do nothing**
@@ -21,7 +21,7 @@ deletes by timestamp do nothing**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/date-filter-list` |
 | base | `official/dev@3014f883` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-108` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-108` is the measurement |
 | semver | `patch` |
 | register entries | `BF-108` |
 | operator exposure | **reaches an operator on today's release** |
@@ -32,8 +32,7 @@ lib/server/query.js enforceDateFilter: each element of a list operand ($in,
 $nin) under the date field goes through the single-date rewrite (new
 normalizeDate, the old body unchanged); single operands unchanged. Tests in
 tests/query.test.js (3) and tests/api.entries.test.js (1). Branch bf/date-
-filter-list 350f6f09, one commit on dev 3014f883, local worktree
-externals/work/crm-bf108, not pushed.
+filter-list 350f6f09, one commit on dev 3014f883, open as #8791.
 
 ## Why that semver
 
@@ -78,14 +77,17 @@ merged, measure origin/dev again.
 
 ## Notes carried on the item
 
-2026-09-30: fixed on local branch bf/date-filter-list 350f6f09 (one commit on
-dev 3014f883), not pushed; PR body draft reports/phase0-pr-bodies/date-filter-
-list.md. Whether it goes into 15.0.9 is the maintainer's call (not in RT-0's
-blocks_on). Reproduced 2026-09-23 by the consumer-replay lab on v15.0.8, dev
-ddd9b600 and the candidate, with a one-value control; the gate is red on
-origin/dev 153e5658 (2026-09-24). xdripswift c268542e
-NightscoutSyncManager.swift:794-806 is the client that sends it. Filed by
-session -6a.
+2026-10-01: pushed and opened as #8791 by the maintainer (15:23Z, head
+350f6f09), MERGEABLE, CI 14 passed and 2 skipped. No other PR fixes BF-108:
+the five cut tips and #8348 (Remove Moment, which conflicts with #8791 in
+query.js) fail the gate; no issue or PR mentions it. 2026-09-30: fixed on
+local branch bf/date-filter-list 350f6f09 (one commit on dev 3014f883), not
+pushed; PR body draft reports/phase0-pr-bodies/date-filter-list.md. Whether it
+goes into 15.0.9 is the maintainer's call (not in RT-0's blocks_on).
+Reproduced 2026-09-23 by the consumer-replay lab on v15.0.8, dev ddd9b600 and
+the candidate, with a one-value control; the gate is red on origin/dev
+153e5658 (2026-09-24). xdripswift c268542e NightscoutSyncManager.swift:794-806
+is the client that sends it. Filed by session -6a.
 
 ---
 

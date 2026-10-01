@@ -31,12 +31,12 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BFQ-108` | `in-flight-upstream` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes  | #8791 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-108` | `ready-to-push` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
@@ -72,6 +72,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
+| **#8791** | `BFQ-108` | `bf/date-filter-list` | BF-108 - a list of timestamps under the date field answers 5 | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

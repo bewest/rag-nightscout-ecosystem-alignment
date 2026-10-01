@@ -139,7 +139,7 @@ cover more than one `BF-`:
 | `BFQ-102` | `merged-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
 | `BFQ-103` | `merged-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
 | `BFQ-107` | `merged-upstream` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 |
-| `BFQ-108` | `ready-to-push` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timesta |
+| `BFQ-108` | `in-flight-upstream` | BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timesta |
 | `BFQ-111` | `merged-upstream` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
 | `BFQ-112` | `merged-upstream` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
 | `BFQ-114` | `merged-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
@@ -198,14 +198,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 5 | 12 | 2 | 1 |  |  | 1 | **31** |
-| `register-open` | 27 | 1 | 5 | 1 | 4 | 44 | 4 |  | 2 | 2 |  | **90** |
-| `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 |  | 5 |  | 5 |  | 12 | 2 | 1 |  |  | 1 | **31** |
+| `register-open` | 27 | 1 | 5 |  | 4 | 1 | 44 | 4 |  | 2 | 2 |  | **90** |
+| `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

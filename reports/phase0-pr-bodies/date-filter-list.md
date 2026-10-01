@@ -1,4 +1,4 @@
-<!-- Draft body for branch bf/date-filter-list at 350f6f09 (one commit on dev 3014f883), 2026-09-30. This comment is hidden on GitHub. Not opened; not pushed. -->
+<!-- Body of #8791, branch bf/date-filter-list at 350f6f09 (one commit on dev 3014f883). This comment is hidden on GitHub. -->
 A list of dates under a collection's date field is now read one date at a time, so a v1 request that filters on several dates at once works instead of answering 500 (BF-108). One commit on `dev` `3014f883`. The same code is in `v15.0.8`, so this is not a regression. Found on 2026-09-23 by the 15.0.9 consumer-impact survey, which replays what known clients send.
 
 ## What changes for you

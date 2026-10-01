@@ -326,8 +326,8 @@ branches, which are renumbered when they are rebased. Beside that:
    see [decisions](decisions.md)).
 5. **Whether the BF-108 fix goes in**, by the maintainer. A v1 filter listing two or more dates
    under the date field answers 500, so xDrip4iOS bulk deletes remove nothing (on 15.0.8 too). The
-   fix is one commit on `3014f883`, local branch `bf/date-filter-list` `350f6f09`, not pushed
-   (queue `BFQ-108`; PR body draft `reports/phase0-pr-bodies/date-filter-list.md`). Taking it moves
+   fix is one commit on `3014f883`, branch `bf/date-filter-list` `350f6f09`, PR #8791
+   (opened 2026-10-01, CI 14 passed and 2 skipped; queue `BFQ-108`). Taking it moves
    `dev` once more; it changes `lib/server/query.js` only, server-side, so no browser check.
 6. **The tag**, by the maintainer.
 

@@ -8363,16 +8363,16 @@ items:
     repo: cgm-remote-monitor
     branch: bf/date-filter-list
     base: official/dev@3014f883
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8791]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/query.js enforceDateFilter: each element of a list operand
       ($in, $nin) under the date field goes through the single-date rewrite
       (new normalizeDate, the old body unchanged); single operands unchanged.
       Tests in tests/query.test.js (3) and tests/api.entries.test.js (1).
-      Branch bf/date-filter-list 350f6f09, one commit on dev 3014f883, local
-      worktree externals/work/crm-bf108, not pushed.
+      Branch bf/date-filter-list 350f6f09, one commit on dev 3014f883, open
+      as #8791.
     review: maintainer
     operator_visible: >
       If you use xDrip4iOS, readings it asks Nightscout to delete in bulk
@@ -8404,6 +8404,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-10-01: pushed and opened as #8791 by the maintainer (15:23Z, head
+      350f6f09), MERGEABLE, CI 14 passed and 2 skipped. No other PR fixes
+      BF-108: the five cut tips and #8348 (Remove Moment, which conflicts
+      with #8791 in query.js) fail the gate; no issue or PR mentions it.
       2026-09-30: fixed on local branch bf/date-filter-list 350f6f09 (one
       commit on dev 3014f883), not pushed; PR body draft
       reports/phase0-pr-bodies/date-filter-list.md. Whether it goes into
