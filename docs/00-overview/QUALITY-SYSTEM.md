@@ -142,8 +142,11 @@ and the server layer, which the sponsored-team proposal sizes.
 
 Much of stage 1 and 2 is volunteer-sized: a checklist template, the bug-to-test rule, and vectors
 extracted from tests that already exist. The rest is sustained work on fixed dates set by others, the
-kind the sponsored-team proposal describes. **[To confirm with the author before this is shared: how
-to describe the paid maintenance time that exists in the ecosystem today, and who pays for it.]**
+kind the sponsored-team proposal describes. Some maintainer time is paid today: commercial
+Nightscout hosts pay for part of the time of maintainers who work for them, on terms each host sets,
+and those arrangements differ in scope, availability and the compliance obligations each host
+carries. No organisation pays for maintenance as shared ecosystem work, on published terms, with a
+public report. That shared arrangement is what this page and the sponsored-team proposal describe.
 
 Funding routes found (sources: [histories annex §C](../60-research/programme/stack-census-2026-09-30/histories.md#c-funders-for-maintenance-and-security)):
 
@@ -168,8 +171,8 @@ Zig, the Haskell Foundation, WHATWG, W3C and the PSF are in
 | OpenSSL after Heartbleed (2014) | about US$2,000 a year in donations; two volunteer developers | two developers funded full-time per role, then written release, security and support policies, and review of all code; in 2024 a foundation and a corporation as co-equal entities | money turned into a working project through named roles plus written policies, not money alone |
 | xz-utils (2024) | an "unpaid hobby project" with one maintainer | CISA: "the burden of security shouldn't fall on an individual open source maintainer"; OpenSSF: support for maintainers is "the primary deterrent" | reproducible release artefacts; maintainer rights earned through trust, with review by a second person |
 | curl | one lead, employed by a company that sells curl support | a project-held donation fund spent on named work; time-boxed public grants whose scope the project wrote; a bug bounty ended when paying per report drew noise | the closest match to one commercial host paying a maintainer; add a project-held fund and public grants |
-| Debian and Freexian LTS | a volunteer project that pays none of its own members | paid long-term support run as a separate service, funded outside the project, with monthly public reports | paid work the volunteer project accepts: separate, outside its governance, reported |
-| Debian's Dunc-Tank (2006) | a plan to pay two release managers for a month each, organised with the project leader | the project said it "does not object" but the experiment was not its decision; the lesson drawn in 2019 was "don't let the DPL decide alone who gets paid" | never let one person decide who is paid |
+| Debian and Freexian LTS | a volunteer project that pays none of its own members; 1,030 voting developers in April 2025 ([vote 2025/001](https://www.debian.org/vote/2025/vote_001)) | paid long-term support run as a separate service, funded outside the project, with monthly public reports | paid work the volunteer project accepts: separate, outside its governance, reported |
+| Debian's Dunc-Tank (2006) | a plan to pay two release managers for a month each, organised with the project leader, in a project of 1,000 voting developers ([vote 2006/006](https://www.debian.org/vote/2006/vote_006)) | the project said it "does not object" but the experiment was not its decision; the lesson drawn in 2019 was "don't let the DPL decide alone who gets paid" | never let one person decide who is paid |
 | Home Assistant / Open Home Foundation | a founder-linked company paid the maintainers for years | a foundation with a published profit-share rule for partners, supporting "more than 50 full-time employees"; staff moved to the foundation in 2025 | the closest structural match to Nightscout; it took six years to formalise |
 | KernelCI | a spare-time test lab from 2014 | a member-funded Linux Foundation project from 2019 | pooled device and connector labs |
 | ELISA and Zephyr | open source used where safety evidence is needed | shared tools so a company can certify its own system; a limited certification scope; rules brought in by stages | two labels: the project provides evidence; any certification is the certifier's |
@@ -209,7 +212,31 @@ Some people argue the ecosystem should have no paid maintainers. The strongest f
    development could blur that line.
 
 Each of these protects something every stakeholder wants: independence, fairness, and a community
-that owns its tools.
+that owns its tools. §8.1 asks that every objection get a written answer, so each has one here,
+drawn from the histories in §7 and the [precedents](PRECEDENTS.md):
+
+1. **Independence.** The risk is real, and the answer is structural rather than an absence of money:
+   no payment decided by one person, paid people never approving their own work, and no deciding
+   group with a majority from one employer (§8.3, rules 1, 4 and 5). Unpaid work is not free of
+   outside priorities either; it goes to whatever its volunteers, or their employers, can fund.
+2. **Fairness.** Debian's objection came from a project of about 1,000 voting developers, and
+   Debian later accepted paid long-term support run outside the project (§7). The census counted 219
+   human authors across 63 repositories in the last year, and cgm-remote-monitor had 11 to 18 a year
+   from 2021 to 2025 ([sponsored-team proposal §2](SPONSORED-TEAM-PROPOSAL.md#2-why-now)). At that
+   scale the question is less who is paid than whether the dated work in §6 gets done.
+3. **Motivation is not bought.** Agreed for the work people choose. Paid roles here cover the work
+   that waits: review queues, releases, vendor changes, security response. A maintainer who does not
+   want pay is never asked to take it; that is a reason not to require pay, not to prevent it for
+   others.
+4. **Money is fragile.** So is volunteer time: cgm-remote-monitor's committers fell from 47 in 2019
+   to 11 in 2024 before its releases slowed (sponsored-team proposal §2). Fixed terms, several funding
+   routes (§6) and public records that outlast any one person reduce both risks.
+5. **Money brings noise.** curl ended paying *per report*. Its lead is employed by a company that
+   sells curl support (§7). Nothing here pays per report.
+6. **The line between DIY and regulated.** Tidepool Loop's clearance ran alongside the DIY project,
+   each with its own label, and ELISA and Zephyr supply evidence while certification stays with the
+   certifier (§7). The same releases can serve people who build their own tools and companies that
+   use the evidence in their own quality systems; collaboration rule 6 keeps the labels apart.
 
 ### 8.3 Requirements both views could accept
 
@@ -222,17 +249,19 @@ make a set that a volunteer-only advocate and a proponent of paid maintenance co
 4. Paid people do not approve their own work.
 5. No deciding group has a majority from one employer or host.
 6. A public report every month.
-7. Volunteer maintainers keep the merge decision in every project.
+7. Each project's maintainers, paid or not, keep the merge decision; no payer gains it.
 8. Every proposal records its dissent, and every objection gets a written answer.
 
-That gives the volunteer-only view a standing test that anyone can check in public. If paid work
-ever changes a merge decision, rule 7 has been broken. If paid work goes unreported, rule 6 has been
+That gives the volunteer-only view a standing test that anyone can check in public. If a payer
+ever decides what merges, rule 7 has been broken; if paid people approve their own work, rule 4. If paid work goes unreported, rule 6 has been
 broken.
 
 ### 8.4 A first slate to discuss
 
 These are **candidate** requirements for success, offered as the first records for the process in
-§8.1, not as decisions:
+§8.1, not as decisions. Each is a standing commitment of someone's time on dates set by others, so
+each is read together with its cost (§6): adopting a requirement without funding it assigns the
+work to whoever volunteers.
 
 | id | candidate requirement | who it serves most | evidence it would be measured by |
 |---|---|---|---|

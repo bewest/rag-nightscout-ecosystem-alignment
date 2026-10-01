@@ -72,7 +72,8 @@ Three things follow:
 ## 4. What other open-source organisations do
 
 Each rule in §5 comes from one of these. Every figure and quote below was read from the
-organisation's own page on 2026-09-29. More histories (OpenSSL after Heartbleed, xz-utils, curl, Debian's paid
+organisation's own page on 2026-09-29 unless the row gives another date. One table of every
+precedent the overview proposals cite, with each community's size, is in [PRECEDENTS](PRECEDENTS.md). More histories (OpenSSL after Heartbleed, xz-utils, curl, Debian's paid
 long-term support and Dunc-Tank, KernelCI, ELISA and Zephyr, Tidepool Loop) are in the
 [quality-system proposal §7](QUALITY-SYSTEM.md#7-histories-that-map), sourced on 2026-09-30.
 
@@ -83,6 +84,7 @@ long-term support and Dunc-Tank, KernelCI, ELISA and Zephyr, Tidepool Loop) are 
 | Apache | The Incubator "doesn't fear … internal confrontation between projects which overlap in functionality." | [how it works](https://www.apache.org/foundation/how-it-works/) |
 | CNCF | Project websites list support companies "in alphabetical order, or the order can be changed randomly"; "the origin company should not be favored over any other companies offering the same services." | [website guidelines](https://github.com/cncf/foundation/blob/main/policies-guidance/website-guidelines.md) |
 | CNCF | Four maturity levels (Sandbox, Incubation, Graduated, Archived). Graduation asks for maintainers from at least two organisations, a code of conduct and a third-party security review. Projects with maintainers from several organisations at entry graduated at 2.07 times the rate of single-organisation projects (59.1% against 28.6%, 72 projects). | [TOC process](https://github.com/cncf/toc/blob/main/process/README.md), [graduation template](https://github.com/cncf/toc/blob/main/.github/ISSUE_TEMPLATE/template-graduation-application.md), [governance guidance, 2026-08-26](https://www.cncf.io/blog/2026/08/26/governance-guidance-for-cncf-projects-choosing-the-right-structure-for-your-projects-size-and-stage/) |
+| CNCF | Commercial offerings are certified against one upstream: "every vendor's version of Kubernetes supports the required APIs", using "the identical open source conformance application" that any end user can run; results go to a public GitHub repository and must be renewed at least yearly; "over 90 Certified Kubernetes offerings". Certified service providers must be CNCF members with three or more certified engineers. Read 2026-10-01. | [conformance](https://www.cncf.io/training/certification/software-conformance/), [KCSP](https://www.cncf.io/training/certification/kcsp/) |
 | CNCF | More than $3 million "over the past few years" on security audits and tooling. | [2025 annual report](https://www.cncf.io/wp-content/uploads/2026/03/cncf_ar25_033126a.pdf) |
 | Open Home Foundation (Home Assistant) | A nonprofit owns the projects; commercial partners sell products and services and are "contractually required to contribute a majority of its profit from selling licensed products." In 2025 the staff working on foundation projects moved to the foundation. | [structure](https://www.openhomefoundation.org/structure/), [second partner, 2025-12-17](https://newsletter.openhomefoundation.org/meet-our-new-partner-apollo-automation/) |
 | OpenStreetMap Foundation | Responsible "for needs that require an organization, and gaps that can not be filled by OSM's volunteer driven community." "Given that volunteer work has not proven to be sufficient in the past, support through paid development is necessary." It offers no commercial services and endorses no company. | [mission](https://osmfoundation.org/wiki/Mission_Statement), [strategic plan](https://osmfoundation.org/wiki/Strategic_Plan), [FAQ](https://osmfoundation.org/wiki/FAQ) |
@@ -167,7 +169,11 @@ What transfers, and what does not:
 5. **One contract, several implementations.** The foundation stewards the API description and the
    conformance tests; servers and apps compete on implementation (openEHR, WHATWG in the
    sponsored-team proposal §6, Apache on overlap). A change to the contract goes through a recorded
-   problem-report and change-request process (openEHR).
+   problem-report and change-request process (openEHR). Stewarding means hosting the description and
+   tests and running that process. The change requests are decided by the maintainers of the
+   implementations they affect, with no majority from one employer or host (QUALITY-SYSTEM §8.3),
+   so the body that holds the money (rule 2) does not also decide the contract. Any server or
+   hosted offering can publish its conformance results from the same public suite (CNCF).
 6. **Two labels, never one.** If projects adopt maturity levels, each project's maintainers propose
    their own level against published criteria (CNCF). A maturity level describes the project's
    organisation and engineering. It says nothing about clinical safety or regulatory status, which
@@ -177,7 +183,9 @@ What transfers, and what does not:
 8. **Assurance can be paid for; the evidence stays public.** Companies may pay for release
    evidence packaged for their own quality systems, fixes on the release line they run, and test
    runs in their configuration (SQLite). The tests and results that decide a public release stay
-   public, fixes land in the public branches, and the money goes to maintenance.
+   public, fixes land in the public branches, and the money goes to maintenance. There is one
+   codebase: no separate commercial edition, and no feature held back from people who build and run
+   the software themselves.
 9. **Everyone discloses.** Anyone who decides, reviews or is paid under these rules discloses their
    commercial ties and any interest in the outcome, and steps back from decisions that affect their
    own organisation.
@@ -185,6 +193,8 @@ What transfers, and what does not:
 ## 6. What would break consensus
 
 - The foundation choosing a winning server or app.
+- A commercial edition that differs from the public one, or evidence that decides a public release
+  kept private.
 - Influence in proportion to money given.
 - Payment decided by one person (Debian's lesson from 2006, [QUALITY-SYSTEM §7](QUALITY-SYSTEM.md#7-histories-that-map)).
 - Decisions that exist only in private channels.

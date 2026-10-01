@@ -22,6 +22,8 @@ sections:
       - DOCUMENT-CONTROL.md
       - SPONSORED-TEAM-PROPOSAL.md
       - COLLABORATION-MODEL.md
+      - QUALITY-SYSTEM.md
+      - PRECEDENTS.md
   - title: Releases
     dir: releases
     pages:

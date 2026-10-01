@@ -15,7 +15,9 @@ programme as a whole: what it is for, where it stands, and what comes next.
 Process and proposals: [Definition of done](DEFINITION-OF-DONE.md),
 [Document control](DOCUMENT-CONTROL.md),
 [Sponsored team proposal](SPONSORED-TEAM-PROPOSAL.md),
-[Collaboration model](COLLABORATION-MODEL.md).
+[Collaboration model](COLLABORATION-MODEL.md),
+[Quality system](QUALITY-SYSTEM.md),
+[Precedents](PRECEDENTS.md).
 
 Release drafts live under [Releases](../../releases/README.md); the single work
 queue lives under [Queue](../../queue/README.md).
