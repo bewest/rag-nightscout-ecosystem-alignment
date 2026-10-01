@@ -3,7 +3,7 @@
 > **Created**: 2026-01-30  
 > **Purpose**: Reduce token usage by loading only task-relevant repos  
 > **Status**: Proposal  
-> **Companion**: [REFCAT Caching Proposal](refcat-caching-proposal.md)
+> **Companion**: [REFCAT Caching Proposal](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/90ef52ab00cc93eec1499d4b416a61a179292a01/docs/sdqctl-proposals/refcat-caching-proposal.md)
 
 ---
 
@@ -321,6 +321,6 @@ SYSTEM:
 
 ## Cross-References
 
-- [REFCAT Caching Proposal](refcat-caching-proposal.md) - Companion optimization
+- [REFCAT Caching Proposal](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/90ef52ab00cc93eec1499d4b416a61a179292a01/docs/sdqctl-proposals/refcat-caching-proposal.md) - Companion optimization
 - [iterate-effectiveness-report.md](iterate-effectiveness-report.md) - Token analysis
 - [tooling.md](backlogs/tooling.md) - Backlog item #10

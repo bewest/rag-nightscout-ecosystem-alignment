@@ -291,7 +291,7 @@ Comprehensive analysis of Effect Bundle architecture for cross-project algorithm
 - `docs/architecture/EFFECT-BUNDLE-PRIVACY-MODEL.md` - Privacy model
 - `docs/proposals/effect-bundle-crd.yaml` - CRD definition
 
-**Cross-Reference**: [EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md](../../../t1pal-mobile-workspace/docs/architecture/EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md)
+**Cross-Reference**: EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md (not in the repository)
 
 ---
 
@@ -323,7 +323,7 @@ Comprehensive analysis of CGM vs Pump device architecture, addressing the "Conne
 - `externals/LibreTransmitter/` - Libre sensor protocols
 - Loop/AAPS/xDrip+ source code (via explore agents)
 
-**Cross-Reference**: [STATE-ARCHITECTURE-AUDIT.md](../../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+**Cross-Reference**: STATE-ARCHITECTURE-AUDIT.md (not in the repository)
 
 ---
 

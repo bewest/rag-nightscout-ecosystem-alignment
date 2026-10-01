@@ -419,7 +419,7 @@ struct DexcomG7PairingState: CGMPairingState {
 - Cannot validate state transitions properly
 - Code maintainability issues
 
-**Status**: Documented in [STATE-ARCHITECTURE-AUDIT.md](../../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+**Status**: Documented in STATE-ARCHITECTURE-AUDIT.md (not in the repository)
 
 ### GAP-ARCH-003: Vendor Capability Variations Undocumented
 
@@ -504,5 +504,5 @@ Per STATE-ARCHITECTURE-AUDIT.md, implement:
 - [CGM Data Sources Deep Dive](cgm-data-sources-deep-dive.md)
 - [Dexcom BLE Protocol Deep Dive](dexcom-ble-protocol-deep-dive.md)
 - [Libre Protocol Deep Dive](libre-protocol-deep-dive.md)
-- [STATE-ARCHITECTURE-AUDIT.md](../../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+- STATE-ARCHITECTURE-AUDIT.md (not in the repository)
 - [Pump Protocols Spec](../../specs/pump-protocols-spec.md)

@@ -338,6 +338,6 @@ Updates MongoDB driver for 5.x compatibility.
 ## References
 
 - [cgm-remote-monitor PR Analysis](cgm-remote-monitor-pr-analysis.md)
-- [PR Adoption Sequencing](../sdqctl-proposals/pr-adoption-sequencing.md)
+- [PR Adoption Sequencing](pr-adoption-sequencing-proposal.md)
 - [Nightscout Maintainer Recommendations](nightscout-maintainer-recommendations.md)
 - [Gap Tracking](../../traceability/gaps.md)

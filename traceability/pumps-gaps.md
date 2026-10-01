@@ -259,7 +259,7 @@ See [gaps.md](gaps.md) for the index.
 **Status**: Documented
 
 **Related**:
-- [Pump Protocols Spec - Medtronic History](../specs/pump-protocols-spec.md#34-history-entry-types)
+- [Pump Protocols Spec - Medtronic History](../specs/pump-protocols-spec.md#33-history-entry-types)
 
 ---
 
@@ -305,7 +305,7 @@ rT.predBGs = {
 - AAPS and Trio already upload these arrays to Nightscout `devicestatus.openaps`
 
 **Related**:
-- [GAP-SYNC-002](#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
+- [GAP-SYNC-002](sync-identity-gaps.md#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
 - [oref0 Algorithm](../mapping/oref0/algorithm.md)
 
 ---
@@ -405,7 +405,7 @@ Requires Tandem to open BLE protocol or provide control API. Unlikely due to:
 3. Protocol-oriented design with shared base for common fields
 4. State machine validation per device type
 
-**Status**: Documented in [STATE-ARCHITECTURE-AUDIT.md](../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+**Status**: Documented in STATE-ARCHITECTURE-AUDIT.md (not in the repository)
 
 **Related**:
 - [Device Capability Architecture Deep Dive](../docs/10-domain/device-capability-architecture-deep-dive.md)

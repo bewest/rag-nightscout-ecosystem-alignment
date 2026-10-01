@@ -3,7 +3,7 @@
 **Status:** Draft  
 **Author:** Agent  
 **Date:** 2026-01-17  
-**Related:** [GAP-002](../../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch), [Profile Comparison](profile-therapy-settings-comparison.md), [Controller Registration Proposal](controller-registration-protocol-proposal.md)
+**Related:** [GAP-002](../../traceability/gaps.md), [Profile Comparison](profile-therapy-settings-comparison.md), [Controller Registration Proposal](controller-registration-protocol-proposal.md)
 
 ---
 
@@ -78,7 +78,7 @@ User runs at 110% insulin for exercise recovery:
 - Temporary percentage adjustment
 - Time-shifted schedule
 
-> **GAP-002 Resolution:** This is the core issue documented in [GAP-002](../../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch). The proposed `intent` and `modifiers` fields directly implement GAP-002's "hybrid schema" option—accepting ProfileSwitch as a valid representation while adding semantic fields to distinguish the three scenarios above.
+> **GAP-002 Resolution:** This is the core issue documented in [GAP-002](../../traceability/gaps.md). The proposed `intent` and `modifiers` fields directly implement GAP-002's "hybrid schema" option—accepting ProfileSwitch as a valid representation while adding semantic fields to distinguish the three scenarios above.
 
 **Example 2: Override vs Profile Modification**
 

@@ -29,8 +29,8 @@ Questions that directly block active backlog items.
 
 **Related**: 
 - [ADR-002: Sync Identity Strategy](90-decisions/adr-002-sync-identity-strategy.md)
-- [GAP-003](../traceability/gaps.md#gap-003-no-unified-sync-identity-field-across-controllers)
-- [GAP-API-002](../traceability/gaps.md#gap-api-002-identifier-vs-_id-addressing-inconsistency)
+- [GAP-003](../traceability/gaps.md)
+- [GAP-API-002](../traceability/nightscout-api-gaps.md#gap-api-002-identifier-vs-_id-addressing-inconsistency)
 
 ---
 
@@ -59,8 +59,8 @@ Analysis (2026-01-29) confirmed:
 **Owner**: N/A - verified behavior
 
 **Related**:
-- [REQ-036](../traceability/requirements.md#req-036-batch-response-order-preservation)
-- [GAP-BATCH-002](../traceability/gaps.md#gap-batch-002-response-order-critical-for-loop-syncidentifier-mapping)
+- [REQ-036](../traceability/requirements.md)
+- [GAP-BATCH-002](../traceability/sync-identity-gaps.md#gap-batch-002-response-order-critical-for-loop-syncidentifier-mapping)
 
 ---
 
@@ -82,7 +82,7 @@ Analysis (2026-01-29) confirmed:
 **Owner**: Loop/Trio maintainers
 
 **Related**:
-- [GAP-REMOTE-001](../traceability/gaps.md#gap-remote-001-remote-command-authorization-unverified)
+- [GAP-REMOTE-001](../traceability/treatments-gaps.md#gap-remote-001-remote-command-authorization-unverified)
 - [Authority Model](10-domain/authority-model.md)
 
 ---
@@ -123,7 +123,7 @@ See [Sync Identity Backlog - OQ-010 Extended](sdqctl-proposals/backlogs/sync-ide
 
 **Related**:
 - [ADR-004: ProfileSwitch → Override Mapping](90-decisions/adr-004-profile-override-mapping.md)
-- [GAP-002](../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch)
+- [GAP-002](../traceability/gaps.md)
 - [Sync Identity Backlog](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
 
 ---
@@ -153,7 +153,7 @@ See [Sync Identity Backlog - OQ-010 Extended](sdqctl-proposals/backlogs/sync-ide
 **Needs**: ADR after analysis
 
 **Related**:
-- [GAP-TREAT-004](../traceability/gaps.md#gap-treat-004-splitextended-bolus-representation-mismatch)
+- [GAP-TREAT-004](../traceability/treatments-gaps.md#gap-treat-004-splitextended-bolus-representation-mismatch)
 
 ---
 
@@ -173,8 +173,8 @@ See [Sync Identity Backlog - OQ-010 Extended](sdqctl-proposals/backlogs/sync-ide
 
 **Related**:
 - [ADR-001: Override Supersession](90-decisions/adr-001-override-supersession.md)
-- [GAP-001](../traceability/gaps.md#gap-001-nightscout-lacks-override-supersession-tracking)
-- [GAP-SYNC-004](../traceability/gaps.md#gap-sync-004-override-supersession-not-tracked-in-sync)
+- [GAP-001](../traceability/gaps.md)
+- [GAP-SYNC-004](../traceability/sync-identity-gaps.md#gap-sync-004-override-supersession-not-tracked-in-sync)
 
 ---
 
@@ -235,7 +235,7 @@ Code analysis across Loop, AAPS, Trio, and Nightscout identified the common grou
 **Blocks**: GAP-API-003 resolution, unified sync semantics
 
 **Related**:
-- [GAP-API-003](../traceability/gaps.md#gap-api-003-no-api-v3-adoption-path-for-ios-clients)
+- [GAP-API-003](../traceability/nightscout-api-gaps.md#gap-api-003-no-api-v3-adoption-path-for-ios-clients)
 
 ---
 
@@ -287,8 +287,8 @@ Questions explicitly listed in existing ADRs.
 - Cross-system conversion reliability
 
 **Related**:
-- [GAP-TREAT-001](../traceability/gaps.md#gap-treat-001-absorption-time-unit-mismatch)
-- [GAP-TREAT-002](../traceability/gaps.md#gap-treat-002-duration-unit-inconsistency)
+- [GAP-TREAT-001](../traceability/treatments-gaps.md#gap-treat-001-absorption-time-unit-mismatch)
+- [GAP-TREAT-002](../traceability/treatments-gaps.md#gap-treat-002-duration-unit-inconsistency)
 
 ---
 
@@ -307,7 +307,7 @@ Questions explicitly listed in existing ADRs.
 **Action**: Queue impact analysis (combine with OQ-030 duration analysis)
 
 **Related**:
-- [GAP-TZ-004](../traceability/gaps.md#gap-tz-004-utcoffset-unit-mismatch-between-nightscout-and-aaps)
+- [GAP-TZ-004](../traceability/sync-identity-gaps.md#gap-tz-004-utcoffset-unit-mismatch-between-nightscout-and-aaps)
 
 ---
 

@@ -156,7 +156,7 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 **CRITICAL**: Tests have no safeguards against running on production databases.
 
-See [GAP-SYNC-046](../../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
+See [GAP-SYNC-046](../../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../../PR-8421-reviewers-guide.md#-theme-7-test-database-safety-resolved)
 
 **Status**: ✅ **COMPLETE** (2026-03-12)
 
@@ -283,7 +283,7 @@ function guardDestructiveOperation(ctx, operationName) {
 ### Workflow Per Iteration
 
 1. **Pick a work item** from the tables above (start with P0)
-2. **Read relevant files** from worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+2. **Read relevant files** from worktree: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 3. **Document findings** using the analysis template below
 4. **Update the reviewer's guide** with key review points
 5. **Mark complete** in this backlog and SQL todos
@@ -393,7 +393,7 @@ PROMPT Pick task from `docs/backlogs/pr-8421-review-analysis.md`:
   - Phase 3: DOC-001 to DOC-006 (documentation audit)
 
 # Phase 2: Analysis - use worktree path:
-PROMPT Analyze files in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/`
+PROMPT Analyze files in `<workspace>/worktrees/nightscout/cgm-pr-8447/`
 
 # Phase 4: Update guide - add this:
 PROMPT Update `docs/PR-8421-reviewers-guide.md` with findings.
@@ -442,6 +442,6 @@ git status
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
 - [Reviewer's Guide](../../PR-8421-reviewers-guide.md)
 - [LIVE-BACKLOG.md](../../../LIVE-BACKLOG.md) - Session tracking
-- [Worktree](file:///home/bewest/src/worktrees/nightscout/cgm-pr-8447)
+- Worktree (not in the repository)
 - [GAP-SYNC-045 Test Report](../../test-reports/GAP-SYNC-045-entries-uuid-fix.md)
 - [Client ID Deep Dive](../../10-domain/client-id-handling-deep-dive.md)

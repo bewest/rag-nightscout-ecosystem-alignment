@@ -25,42 +25,38 @@ for publication:
 
 ![
 Fig1 Meal Cr
-](../../visualizations/parameter-recovery/fig1_meal_cr.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/parameter-recovery/fig1_meal_cr.png)
 
 
 #### Dashboard 2
 
-![
-Fig2 Cr Calibration
-](../../visualizations/parameter-recovery/fig2_cr_calibration.png)
+*Fig2 Cr Calibration*
 
 
 #### Dashboard 3
 
-![
-Fig3 Basal Fasting
-](../../visualizations/parameter-recovery/fig3_basal_fasting.png)
+*Fig3 Basal Fasting*
 
 
 #### Dashboard 4
 
 ![
 Fig4 Consistency
-](../../visualizations/parameter-recovery/fig4_consistency.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/parameter-recovery/fig4_consistency.png)
 
 
 #### Dashboard 5
 
 ![
 Fig5 Cross Controller
-](../../visualizations/parameter-recovery/fig5_cross_controller.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/parameter-recovery/fig5_cross_controller.png)
 
 
 #### Dashboard 6
 
 ![
 Fig6 Summary
-](../../visualizations/parameter-recovery/fig6_summary.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/parameter-recovery/fig6_summary.png)
 
 
 ---

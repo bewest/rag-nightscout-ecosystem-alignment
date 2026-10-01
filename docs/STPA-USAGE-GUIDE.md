@@ -380,7 +380,7 @@ If your UCA fits a pattern, reference the existing SCs rather than creating new 
 
 ### Ecosystem STPA Artifacts
 - [Cross-Project Patterns](../traceability/stpa/cross-project-patterns.md) - Shared UCAs and SCs
-- [Severity Scale](../../../sdqctl/docs/stpa-severity-scale.md) - S1-S4 definitions
+- [Severity Scale](https://github.com/bewest/sdqctl/blob/3832ca140f1efbda0983755fecef72b70f7a6897/docs/stpa-severity-scale.md) - S1-S4 definitions
 - [STPA Framework](sdqctl-proposals/STPA-TRACEABILITY-FRAMEWORK.md) - Full methodology
 
 ### External Resources

@@ -226,6 +226,6 @@ See `conformance/results/oref0-results.json` for details.
 
 ## Related Documentation
 
-- [Algorithm Conformance Proposal](../docs/sdqctl-proposals/algorithm-conformance-proposal.md)
-- [oref0 Runner Documentation](runners/README.md)
-- [Test Vector Extraction](../docs/10-domain/algorithm-conformance-deep-dive.md)
+- [Algorithm Conformance Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
+- oref0 Runner Documentation (not in the repository)
+- Test Vector Extraction (not in the repository)

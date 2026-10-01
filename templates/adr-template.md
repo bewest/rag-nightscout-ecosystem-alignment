@@ -25,7 +25,7 @@ YYYY-MM-DD
 - [Constraint 2]
 
 ### Related Gaps
-- [GAP-XXX-NNN](../traceability/gaps.md#gap-xxx-nnn): [Brief description]
+- [GAP-XXX-NNN](../traceability/gaps.md): [Brief description]
 
 ## Decision
 
@@ -97,9 +97,9 @@ YYYY-MM-DD
 
 ## References
 
-- [GAP-XXX-NNN](../traceability/gaps.md#gap-xxx-nnn)
-- [REQ-NNN](../traceability/requirements.md#req-nnn)
-- [Related ADR](./adr-nnn-related.md)
+- [GAP-XXX-NNN](../traceability/gaps.md)
+- [REQ-NNN](../traceability/requirements.md)
+- Related ADR (not in the repository)
 - [External Reference](https://example.com)
 
 ---

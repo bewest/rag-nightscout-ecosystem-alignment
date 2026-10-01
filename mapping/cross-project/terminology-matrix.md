@@ -871,7 +871,7 @@ This uses `secondsFromGMT(for: date)` which **does** account for DST at the spec
 | **GAP-TZ-006** | Loop non-standard TZ format | `ETC/GMT` vs `Etc/GMT` case mismatch | Loop → NS |
 | **GAP-TZ-007** | Missing TZ fallback | Server local time used if missing | All clients |
 
-**Full Gap Details**: See [Timezone and DST Gaps](../../traceability/gaps.md#timezone-and-dst-gaps)
+**Full Gap Details**: See [Timezone and DST Gaps](../../traceability/cgm-sources-gaps.md#timezone-and-dst-gaps)
 
 ### Profile Sync Direction
 
@@ -1969,7 +1969,7 @@ oref0's core innovation is deviation analysis:
 | Override | N/A (encrypted) | **Not Required** ⚠️ | N/A |
 | Cancel Override | N/A (encrypted) | **Not Required** ⚠️ | N/A |
 
-**Security Gap**: Loop does not require OTP for override commands. See [GAP-REMOTE-001](../../traceability/gaps.md#gap-remote-001-remote-command-authorization-unverified).
+**Security Gap**: Loop does not require OTP for override commands. See [GAP-REMOTE-001](../../traceability/treatments-gaps.md#gap-remote-001-remote-command-authorization-unverified).
 
 ### Safety Enforcement
 

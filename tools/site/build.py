@@ -34,6 +34,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pseudonym import Pseudonymizer  # noqa: E402
 from labels import Labeller, label_generated  # noqa: E402
+from searchpolicy import SearchPolicy  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 BUILD = REPO / "build"
@@ -246,6 +247,9 @@ class Site:
         self.nav_groups = (yaml.safe_load((SITE_TOOLS / "nav-groups.yaml").read_text()) or {}).get("groups") or {}
         self.group_counts: dict[str, dict[str, int]] = {}
         self.labeller = Labeller(REPO, SITE_TOOLS / "page-kinds.yaml")
+        # SITE_SEARCH_POLICY=off disables the search policy (for its negative control)
+        self.search = SearchPolicy(SITE_TOOLS / "search.yaml",
+                                   enabled=os.environ.get("SITE_SEARCH_POLICY", "on") != "off")
 
         self.excluded: dict[str, dict] = {}
         self.match_counts = collections.Counter()
@@ -435,8 +439,13 @@ class Site:
                 edits.append((ts, te, new))
         # reference definitions
         pos = 0
+        prev_line = ""
+        prev_blank = True  # a reference definition cannot interrupt a paragraph (CommonMark)
         for line in text.splitlines(keepends=True):
-            if pos < len(mask) and not mask[pos]:
+            starts_def = prev_blank or bool(REFDEF_RE.match(prev_line)) if pos else True
+            prev_line = line.rstrip("\n")
+            prev_blank = not line.strip()
+            if pos < len(mask) and not mask[pos] and starts_def:
                 m = REFDEF_RE.match(line.rstrip("\n"))
                 if m:
                     tgt = m.group(2)
@@ -530,7 +539,8 @@ class Site:
         L = self.labeller
         head_date, head_sha = git("log", "-1", "--format=%cs %h").split()
         for p in self.pages:
-            write(p, L.label(p, self.rewrite_markdown(p, raw[p])))
+            sp = self.stage_as.get(p, p)
+            write(p, self.search.apply(sp, L.label(p, self.rewrite_markdown(p, raw[p])), L.kind_of(p)))
         for p in self.passthrough:
             html = raw[p]
             if 'name="robots"' not in html:
@@ -549,13 +559,15 @@ class Site:
                     for k, v in {"@@SOURCE_SHA_FULL@@": full, "@@SOURCE_SHA@@": full[:8], "@@BRANCH@@": branch,
                                  "@@SOURCE_DATE@@": head_date}.items():
                         text = text.replace(k, v)
-                body = L.label(d, self.rewrite_markdown(d, text), date_source=src)
+                body = self.search.apply(d, L.label(d, self.rewrite_markdown(d, text), date_source=src), "living")
             else:
-                body = label_generated(L, self.render_index(dirpath), head_date, head_sha)
+                body = self.search.apply(d, label_generated(L, self.render_index(dirpath), head_date, head_sha),
+                                         "living", generated=True)
             write(d, body)
         for d in self.gallery_dirs:
-            write(posixpath.join(d, GALLERY_NAME),
-                  label_generated(L, self.render_gallery(d), head_date, head_sha))
+            g = posixpath.join(d, GALLERY_NAME)
+            write(g, self.search.apply(g, label_generated(L, self.render_gallery(d), head_date, head_sha),
+                                       "living", generated=True))
         (SRC / "robots.txt").write_text("User-agent: *\nDisallow: /\n")
         NAV_FILE.write_text(P.text(yaml.safe_dump(self.nav(), sort_keys=False, allow_unicode=True),
                                    where="build/site-nav.yaml"))
@@ -811,6 +823,7 @@ def main():
         "participant_ids": site.pseudo.stats(),
         "page_labels": dict(site.labeller.counts),
         "rich_pages": pages_manifest,
+        "search_policy": {"enabled": site.search.enabled, **dict(site.search.counts)},
         "record_candidates_for_living": sorted(site.labeller.candidates),
     }
     # fail closed: the content scan over the staged tree must pass before MkDocs runs
@@ -832,6 +845,8 @@ def main():
             "warnings": len(warnings),
             "warning_kinds": dict(kinds.most_common()),
             "output_bytes": dir_size(OUT) if OUT.exists() else 0,
+            "search_index_bytes": (OUT / "search" / "search_index.json").stat().st_size
+            if (OUT / "search" / "search_index.json").exists() else 0,
         })
     report["build_seconds"] = round(time.time() - site.t0, 2)
     # the report names files and link targets: never let a raw participant ID into it
@@ -852,7 +867,8 @@ def main():
         print(f"  mkdocs: exit {rc}, {report['warnings']} warnings, {report['mkdocs_seconds']} s")
         for k, v in list(report["warning_kinds"].items())[:5]:
             print(f"    {v:6d}  {k}")
-        print(f"  output: {report['output_bytes'] / 1e6:.1f} MB in {OUT.relative_to(REPO)}/")
+        print(f"  output: {report['output_bytes'] / 1e6:.1f} MB in {OUT.relative_to(REPO)}/; "
+              f"search index {report['search_index_bytes'] / 1e6:.2f} MB; policy {report['search_policy']}")
     print(f"  total: {report['build_seconds']} s")
     return rc
 

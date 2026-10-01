@@ -228,7 +228,7 @@ Each sync gap is classified by the state category it primarily affects:
 **Status**: Under discussion
 
 **Related**:
-- [GAP-AUTH-002](#gap-auth-002-no-authority-hierarchy-in-nightscout)
+- [GAP-AUTH-002](nightscout-api-gaps.md#gap-auth-002-no-authority-hierarchy-in-nightscout)
 - [Controller Registration Protocol Proposal](../docs/60-research/controller-registration-protocol-proposal.md)
 
 ---
@@ -296,8 +296,8 @@ Each sync gap is classified by the state category it primarily affects:
 **Status**: Under discussion
 
 **Related**:
-- [GAP-AUTH-001](#gap-auth-001-enteredby-field-is-unverified)
-- [GAP-AUTH-002](#gap-auth-002-no-authority-hierarchy-in-nightscout)
+- [GAP-AUTH-001](nightscout-api-gaps.md#gap-auth-001-enteredby-field-is-unverified)
+- [GAP-AUTH-002](nightscout-api-gaps.md#gap-auth-002-no-authority-hierarchy-in-nightscout)
 
 ---
 
@@ -397,7 +397,7 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 **Status**: Under discussion
 
 **Related**:
-- [GAP-001](#gap-001-nightscout-lacks-override-supersession-tracking)
+- GAP-001
 - [AID Controller Sync Patterns](../mapping/cross-project/aid-controller-sync-patterns.md)
 
 ---
@@ -1930,7 +1930,7 @@ MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
 **Impact**: This was a pre-existing architectural gap. Now resolved with hard failure if NODE_ENV !== 'test'.
 
 **Related**:
-- [PR #8421 Reviewer's Guide - Theme 7](../docs/PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
+- [PR #8421 Reviewer's Guide - Theme 7](../docs/PR-8421-reviewers-guide.md#-theme-7-test-database-safety-resolved)
 
 **Resolution (2026-03-12)**:
 

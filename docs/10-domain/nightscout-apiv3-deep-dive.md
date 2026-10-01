@@ -324,6 +324,6 @@ Real-time alarm notifications.
 
 ## Related Documents
 
-- [API Layer Audit](../sdqctl-proposals/cgm-remote-monitor-api-layer-audit.md)
+- API Layer Audit (not in the repository)
 - [Authentication Flows Deep Dive](./authentication-flows-deep-dive.md)
 - [OpenAPI Spec](../../specs/openapi)

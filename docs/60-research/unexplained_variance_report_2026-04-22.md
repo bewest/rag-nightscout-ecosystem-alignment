@@ -25,28 +25,28 @@ for publication:
 
 ![
 Fig1 Glucose Roc
-](../../visualizations/unexplained-variance/fig1_glucose_roc.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/unexplained-variance/fig1_glucose_roc.png)
 
 
 #### Dashboard 2
 
 ![
 Fig2 Carb Contamination
-](../../visualizations/unexplained-variance/fig2_carb_contamination.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/unexplained-variance/fig2_carb_contamination.png)
 
 
 #### Dashboard 3
 
 ![
 Fig3 Regression To Mean
-](../../visualizations/unexplained-variance/fig3_regression_to_mean.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/unexplained-variance/fig3_regression_to_mean.png)
 
 
 #### Dashboard 4
 
 ![
 Fig4 Random Effects
-](../../visualizations/unexplained-variance/fig4_random_effects.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/unexplained-variance/fig4_random_effects.png)
 
 
 #### Dashboard 5

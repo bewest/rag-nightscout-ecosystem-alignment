@@ -508,7 +508,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-37-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-40-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
