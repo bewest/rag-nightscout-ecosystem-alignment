@@ -174,6 +174,6 @@ None recommended - all requirements have value for future reference.
 
 ## Cross-References
 
-- [coverage-analysis.md](coverage-analysis.md) - Full coverage report
+- [coverage-analysis.md](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5cfbe5fb6e786a023c9cb07f0b68ceb835bf233f/traceability/coverage-analysis.md) - Full coverage report
 - [conformance/assertions/](../conformance/assertions) - Existing assertion files
 - [requirements.md](requirements.md) - Requirements index

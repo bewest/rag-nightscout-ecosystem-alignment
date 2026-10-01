@@ -286,7 +286,7 @@ See [`conformance/assertions/cross-controller-dedup.yaml`](../../conformance/ass
 ## Cross-References
 
 - [Sync & Identity Gaps](../../traceability/sync-identity-gaps.md)
-- [Treatment Sync Scenarios](../../conformance/scenarios/treatment-sync.yaml)
+- [Treatment Sync Scenarios](../../conformance/assertions/treatment-sync.yaml)
 - [Cross-Controller Dedup Assertions](../../conformance/assertions/cross-controller-dedup.yaml)
 - [DeviceStatus Deep Dive](devicestatus-deep-dive.md)
 - [Gaps Index](../../traceability/gaps.md)

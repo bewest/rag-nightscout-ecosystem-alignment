@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
-Prose revised 2026-09-27 against cgm-remote-monitor `origin/dev` `295f1177` and
+Prose revised 2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -28,22 +28,26 @@ current and the prose is stale.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `295f1177` (2026-09-27).
+**Remedial** — finding and fixing defects that already ship. `dev` is at `7000eb18` (merged 2026-09-27 20:40Z, unchanged on 2026-09-30).
 Every cgm-remote-monitor PR decided for 15.0.9 is merged into it, except Crowdin #8730, which the
 maintainer held out (BF-132). That includes #8758 (records keep their own `_id`), the fixes decided on
 2026-09-25 (#8766 BF-118, #8767 BF-119, #8768 BF-120, #8769 BF-126, #8770 BF-134), the ten merged on
 2026-09-26 (#8771–#8780: BF-80, BF-106, BF-121, BF-122 with BF-135, BF-123, BF-125, BF-128 with
 BF-138 and BF-139, BF-129, BF-136, and Andy Low's #8778, BF-140) Andy Low's #8781 (BF-141,
-BF-143, BF-144), #8783 (BF-142), #8784 (BF-146 with BF-133) and #8785 (a test-only clock fix).
+BF-143, BF-144), #8783 (BF-142), #8784 (BF-146 with BF-133), #8785 (a test-only clock fix) and #8786 (BF-147, two dependency
+overrides and nine locked versions).
 None is released. The PR-by-PR list is in
 [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Every programme
 connector fix is in `nightscout-connect` `0.1.0`, released to npm `latest` on 2026-09-24 (`P0-TAG`,
 tag `v0.1.0` on connector `main` `4dde1ec`), and `dev` pins it exactly (#8762). The last full run is
-run 020 on `ce30a94d`, one merge (#8785) before today's `dev`: 3473/0/3 in all six cells (Node 20,
+run 020 on `ce30a94d`, two merges (#8785, #8786) before today's `dev`: 3473/0/3 in all six cells (Node 20,
 22 and 24 against MongoDB 4.4.24 and 7.0.43), with the A/B soak against 15.0.8
 ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). #8785 changes
-one test file and no file a site runs, so run 020 stands for `295f1177`. Release PR #8598 was
-approved at `e3adc91d` and needs re-approval at its final head. The
+one test file and no file a site runs, so run 020 stands for `295f1177`; #8786 is covered by its own
+nine-cell CI and a production bundle byte-identical to `295f1177`'s. The real-time soak (`RT-SOAK`) is
+done: the maintainer decided on 2026-09-30 that real sites running the candidate count for it, and
+reported that they have shown no visible regression so far; the lab's 72 h soak was not run. Release PR #8598 was approved at `e3adc91d` and
+needs re-approval at its final head. The
 [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
 
@@ -54,15 +58,15 @@ then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed w
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
 been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-09-27 against `official/dev` `295f1177`:
+the train has shipped. Measured 2026-09-30 against `official/dev` `7000eb18`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 330 | 11 |
-| 2 | `chore/build-runtime-separation` | 330 | 17 |
-| 3 | `chore/compose-mongodb6` | 330 | 20 |
-| 4 | `chore/mime-exposure-review` | 330 | 35 |
-| 5 | `chore/nightscout-modernization` | 206 | 26 |
+| 1 | `chore/retire-jsdom` | 332 | 11 |
+| 2 | `chore/build-runtime-separation` | 332 | 17 |
+| 3 | `chore/compose-mongodb6` | 332 | 20 |
+| 4 | `chore/mime-exposure-review` | 332 | 35 |
+| 5 | `chore/nightscout-modernization` | 208 | 26 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 origin/chore/<branch>..origin/dev` and `git merge-tree --write-tree --name-only
@@ -87,11 +91,11 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `origin/master` is 505 commits behind `dev`
+run, and no programme fix is released: `origin/master` is 507 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count origin/master..origin/dev`,
-2026-09-27) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
+2026-09-30) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this.
-Release PR #8598 is at `295f1177`, 27 checks passing and 3 skipped, and approved (at `e3adc91d`); what it still
+Release PR #8598 is at `7000eb18`, 27 checks passing and 3 skipped, and approved (at `e3adc91d`); what it still
 waits on is on [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
 
 For somebody running Nightscout today:
@@ -103,8 +107,8 @@ For somebody running Nightscout today:
 > team.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators) on
-2026-09-27 at `295f1177`: **102 defects** (BF-12, invalid, and BF-41, closed, excluded) — 27 `open`,
-74 `merged`, 1 `fixed`. On 2026-09-26, 97 of the then 100 were present for every self-hoster on
+2026-09-30 at `7000eb18`: **103 defects** (BF-12, invalid, and BF-41, closed, excluded) — 26 `open`,
+75 `merged`, 1 `partly merged`, 1 `fixed`. On 2026-09-26, 97 of the then 100 were present for every self-hoster on
 15.0.8, and BF-80, BF-106 and BF-142 existed only on `dev`; that split has not been re-derived
 since. Re-derive with
 `node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
@@ -195,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 | 1 | 5 |  | 5 | 11 | 2 |  |  |  | 1 | **30** |
+| `release-train` | 5 |  | 5 |  | 5 | 11 | 2 | 1 |  |  | 1 | **30** |
 | `register-open` | 27 | 1 | 5 | 1 | 4 | 44 | 4 |  | 2 | 2 |  | **90** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
@@ -265,7 +269,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `295f1177`, approved at `e3adc91d`). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: `RT-VERSION`, the browser hand checks, the 24 to 72 h real-time soak, re-approval of #8598 at its final head, the semver decision, the `npm audit` triage, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `7000eb18`, approved at `e3adc91d`). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: `RT-VERSION`, the browser hand checks, re-approval of #8598 at its final head, the semver decision, the release notes and the tag ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 

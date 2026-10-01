@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-27 against cgm-remote-monitor `origin/dev` `295f1177` and nightscout-connect
+2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -75,13 +75,16 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`295f1177`, 2026-09-27), and
+Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`7000eb18`, 2026-09-27, unchanged on 2026-09-30), and
 none is released. The one exception is Crowdin #8730, which the maintainer held out because its sync
 reverts translations `dev` corrected (BF-132). The PR-by-PR list is in
 [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). `dev` itself is the
 candidate. Run 020 on `ce30a94d` gave 3473/0/3 on Node 20, 22 and 24 against MongoDB 4.4.24 and
-7.0.43, and it stands for `295f1177`, whose one further merge (#8785) changes only a test file
-([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). Browser hand
+7.0.43. It stands for `295f1177`, whose one further merge (#8785) changes only a test file; #8786
+(BF-147, dependency overrides) is covered by its own nine-cell CI and a byte-identical production
+bundle ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The
+real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running the
+candidate count for it, and reported no visible regression so far. Browser hand
 checks are still owed at the final candidate: files they covered have changed since the hand check
 at `8d797ba4` (`client-unchanged-since-hand-check.js` names 14; RT-0). The 2026-09-26 walk on
 `ff93fa94` covered part of them, and [ROADMAP §1](ROADMAP.md#1-the-next-release-1509) lists the rest.
@@ -108,13 +111,13 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 85 first-parent merges
-(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-27); `master` is 505 commits
+The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 86 first-parent merges
+(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-30); `master` is 507 commits
 behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
 include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is at `dev` `295f1177`. It was approved at `e3adc91d`
+still exposed to all of them. Release PR #8598 is at `dev` `7000eb18`. It was approved at `e3adc91d`
 (two approvals by the maintainer; the PR's author is Andy), and re-approval at its final head is
 owed. What 15.0.9 still waits on is generated from the queue in
 [ROADMAP §1](ROADMAP.md#1-the-next-release-1509); what it contains and leaves broken is in

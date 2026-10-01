@@ -78,7 +78,7 @@ Should ONLY handle UUID values sent to `_id` field.
 
 **Problem**: Food API would crash if client sends array input (like other APIs support).
 
-**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-1c-array-handling---remaining-endpoints)
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-1c-array-handling---all-endpoints--complete)
 
 | ID | Task | Status |
 |----|------|--------|
@@ -179,7 +179,7 @@ Kotlin (AAPS) ─┼──▶ cgm-pr-8447 (localhost:1337) ──▶ MongoDB
 JavaScript ────┘
 ```
 
-**Proposals Under Test**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) (Option G - **Recommended**), [REQ-SYNC-070](../../traceability/sync-identity-requirements.md#req-sync-070-identifier-first-architecture) (Identifier-First), [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) (Server-Controlled ID)
+**Proposals Under Test**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-server-controlled-id-with-transparent-promotion-option-g) (Option G - **Recommended**), [REQ-SYNC-070](../../traceability/sync-identity-requirements.md#req-sync-070-identifier-first-architecture) (Identifier-First), [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) (Server-Controlled ID)
 
 ---
 

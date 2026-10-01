@@ -427,7 +427,7 @@ public struct RequestWatchConfigurationDeepLink: DeepLink {
 ## Cross-References
 
 - [Remote Commands Protocol](remote-commands.md) - How OTP is used in commands
-- [Loop OTPManager](../loop/otp.md) - Loop-side OTP validation (if exists)
+- Loop OTPManager (not in the repository) - Loop-side OTP validation (if exists)
 - [Remote Commands Comparison](../../docs/10-domain/remote-commands-comparison.md) - Cross-system auth comparison
 - [Terminology Matrix](../cross-project/terminology-matrix.md) - Authentication field mapping
 

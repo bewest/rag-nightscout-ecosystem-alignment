@@ -352,7 +352,7 @@ VERIFY: refs
 
 - [audit-verification-tooling-proposal.md](../audit-verification-tooling-proposal.md) - Tool designs
 - [VERIFICATION-DIRECTIVES.md](../VERIFICATION-DIRECTIVES.md) - sdqctl verify commands
-- [traceability/refs-validation.md](../../../traceability/refs-validation.md) - Latest validation report
+- [traceability/refs-validation.md](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5cfbe5fb6e786a023c9cb07f0b68ceb835bf233f/traceability/refs-validation.md) - Latest validation report
 
 ### Level 7: Proposal Enhancement (Experience-Based)
 

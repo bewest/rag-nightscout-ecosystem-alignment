@@ -523,7 +523,7 @@ it creates under `$TMPDIR`.
 **No credential is stored anywhere.** The harness exits `2` with instructions if `PGPASSWORD` is
 unset. The superuser password is read from the environment and never written. The unprivileged role
 the run connects as is created per run by
-[`tests/support/postgres.js`](../../../externals/work/crm-seam/tests/support/postgres.js) with a
+`tests/support/postgres.js` (not in the repository) with a
 password that exists only in the process's memory — reused rather than reimplemented, because RLS is
 silently not enforced for a superuser and a run that connected as one would have measured nothing.
 pgbouncer needs that password in a `userlist.txt`; the harness writes it at `0600` into a `mkdtemp`

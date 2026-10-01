@@ -23,23 +23,21 @@ for publication:
 
 #### Dashboard 1
 
-![
-Fig1 Safety Frontier
-](../../visualizations/safety-analysis/fig1_safety_frontier.png)
+*Fig1 Safety Frontier*
 
 
 #### Dashboard 2
 
 ![
 Fig2 Hypo Characterization
-](../../visualizations/safety-analysis/fig2_hypo_characterization.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/safety-analysis/fig2_hypo_characterization.png)
 
 
 #### Dashboard 3
 
 ![
 Fig3 Hypo Temporal
-](../../visualizations/safety-analysis/fig3_hypo_temporal.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/safety-analysis/fig3_hypo_temporal.png)
 
 
 #### Dashboard 4
@@ -60,7 +58,7 @@ Fig5 Iob At Hypo
 
 ![
 Fig6 Dynisf Formula
-](../../visualizations/safety-analysis/fig6_dynisf_formula.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/safety-analysis/fig6_dynisf_formula.png)
 
 
 ---

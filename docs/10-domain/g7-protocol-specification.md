@@ -10,8 +10,8 @@ This document provides a comprehensive specification of the Dexcom G7 Bluetooth 
 - [Authentication Protocol](#authentication-protocol)
 - [Message Formats](#message-formats)
 - [State Machine](#state-machine)
-- [Glucose Data](#glucose-data)
-- [Backfill Protocol](#backfill-protocol)
+- Glucose Data
+- Backfill Protocol
 - [Implementation Status](#implementation-status)
 
 ---

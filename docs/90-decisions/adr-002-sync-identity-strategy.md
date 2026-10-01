@@ -3,7 +3,7 @@
 **Status:** Proposed  
 **Date:** 2026-01-17  
 **Deciders:** Nightscout Foundation, AID Controller Maintainers  
-**Related:** [GAP-003](../../traceability/gaps.md#gap-003-no-unified-sync-identity-field-across-controllers), [Controller Registration Proposal](../60-research/controller-registration-protocol-proposal.md)
+**Related:** [GAP-003](../../traceability/gaps.md), [Controller Registration Proposal](../60-research/controller-registration-protocol-proposal.md)
 
 ---
 

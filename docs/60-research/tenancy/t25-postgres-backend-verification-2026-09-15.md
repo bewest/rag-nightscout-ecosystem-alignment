@@ -617,5 +617,5 @@ PGPASSWORD=… WORKTREE=<crm-verify> node --expose-gc pg-backend-arm.js
 `--expose-gc` is required by the materialisation section, which refuses to run without it.
 The harness exits `2` with instructions if `PGPASSWORD` is unset and stores no credential anywhere:
 the unprivileged role it connects as is created per run by
-[`tests/support/postgres.js`](../../externals/work/crm-verify/tests/support/postgres.js) with a
+`tests/support/postgres.js` (not in the repository) with a
 password that exists only in the process's memory.

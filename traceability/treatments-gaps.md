@@ -267,7 +267,7 @@ return NightscoutExercise(
 **Status**: Under discussion
 
 **Related**:
-- [GAP-AUTH-001](#gap-auth-001-enteredby-field-is-unverified)
+- [GAP-AUTH-001](nightscout-api-gaps.md#gap-auth-001-enteredby-field-is-unverified)
 - [Authority Model](../docs/10-domain/authority-model.md)
 - [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
 
@@ -672,7 +672,7 @@ This was recorded as an ecosystem issue, not a backfix-register defect (maintain
 **Status**: Under discussion
 
 **Related**:
-- [GAP-003](#gap-003-no-unified-sync-identity-field-across-controllers)
+- GAP-003
 - [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md)
 
 ---

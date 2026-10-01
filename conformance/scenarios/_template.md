@@ -49,7 +49,7 @@
 
 ## Assertions
 
-See [assertions/scenario-name.yaml](../../assertions/scenario-name.yaml)
+See assertions/scenario-name.yaml (not in the repository)
 
 ## Coverage
 

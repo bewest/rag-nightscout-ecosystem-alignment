@@ -23,44 +23,42 @@ for publication:
 
 #### Dashboard 1
 
-![
-Fig1 Data Quality Audit
-](../../visualizations/predictive-validation/fig1_data_quality_audit.png)
+*Fig1 Data Quality Audit*
 
 
 #### Dashboard 2
 
 ![
 Fig2 Pipeline Replication
-](../../visualizations/predictive-validation/fig2_pipeline_replication.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/predictive-validation/fig2_pipeline_replication.png)
 
 
 #### Dashboard 3
 
 ![
 Fig3 Parameter Consistency
-](../../visualizations/predictive-validation/fig3_parameter_consistency.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/predictive-validation/fig3_parameter_consistency.png)
 
 
 #### Dashboard 4
 
 ![
 Fig4 Predictive Validation
-](../../visualizations/predictive-validation/fig4_predictive_validation.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/predictive-validation/fig4_predictive_validation.png)
 
 
 #### Dashboard 5
 
 ![
 Fig5 Correction Predictions
-](../../visualizations/predictive-validation/fig5_correction_predictions.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/predictive-validation/fig5_correction_predictions.png)
 
 
 #### Dashboard 6
 
 ![
 Fig6 Summary
-](../../visualizations/predictive-validation/fig6_summary.png)
+](https://raw.githubusercontent.com/bewest/rag-nightscout-ecosystem-alignment/4cd33c741c03890d925f9806cbacc60cf9853211/visualizations/predictive-validation/fig6_summary.png)
 
 
 ---

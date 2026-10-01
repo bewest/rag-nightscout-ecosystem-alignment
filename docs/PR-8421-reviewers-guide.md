@@ -67,7 +67,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 | [4. Test Coverage](#theme-4-test-coverage) | Are edge cases tested? | test files | 30 min |
 | [5. Documentation](#theme-5-documentation) | Is it accurate? | docs/ | 10 min |
 | [6. Undocumented Changes](#theme-6-undocumented-changes) | What else changed? | lib/*.js diff | 20 min |
-| [7. Test Database Safety](#️-theme-7-test-database-safety) | Could tests destroy production data? | tests/*.js | 15 min |
+| [7. Test Database Safety](#-theme-7-test-database-safety-resolved) | Could tests destroy production data? | tests/*.js | 15 min |
 
 ---
 
