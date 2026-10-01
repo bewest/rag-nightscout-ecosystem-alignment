@@ -2891,13 +2891,24 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch scrolling) and
+      #8791 (BF-108) merged into dev (73c9528b, 50bc1084); dev is 50bc1084,
+      515 commits and 89 first-parent merges ahead of master. Release PR
+      #8598 at 50bc1084, mergeable, 27 passed and 3 skipped, APPROVED
+      (approvals at e3adc91d). Decided the same day (maintainer): BF-151
+      (GHSA-phrf) and BF-73 (GHSA-2m9c) are fixed for 15.0.9 (BFQ-151,
+      BFQ-73 added to blocks_on); the BF-153 dependency refresh is prepared
+      and decided on its result; moment stays at 2.30.1. BF-152 (GHSA-25pr)
+      is after 15.0.9 (AndroidAPS contract question). GHSA-cg6f duplicates
+      GHSA-r3gv, fixed on dev by #8743. The 15.0.9 records are re-anchored
+      once these merge.
       2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) merged into dev
       as 3014f883 (22:38Z, tree 3549306b = head bbc6e75e); RT-PR-8788 added
       to blocks_on. dev is 3014f883: 509 commits and 87 first-parent merges
@@ -5574,6 +5585,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-01: API v3's re filter operator is the same class (reported
+      privately 2026-09-28); measured directly on mongod 7.0.43, one count
+      over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on
+      short text. Any fix here (for example a server-side time limit on
+      find queries) should cover both APIs. After 15.0.9.
       Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on
       origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure
       disposition was decided by the maintainer on 2026-09-23 and its
@@ -8363,9 +8379,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/date-filter-list
     base: official/dev@3014f883
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8791]
-    ships_to_operators_today: true
+    ships_to_operators_today: false
     blast_radius: >
       lib/server/query.js enforceDateFilter: each element of a list operand
       ($in, $nin) under the date field goes through the single-date rewrite
@@ -8382,7 +8398,7 @@ items:
     semver_reason: a bug fix; the request answers 500 today
     register: [BF-108]
     gates:
-      - run: node tools/queue/gates/bf108-date-in-list.js --ref bf/date-filter-list
+      - run: node tools/queue/gates/bf108-date-in-list.js
         kind: static
         describe: >
           Builds the entries query from the fix branch's own query.js with a
@@ -8404,6 +8420,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-10-01: merged into dev by the maintainer as 50bc1084 (11:08 PDT);
+      the gate, which measures origin/dev, is green.
       2026-10-01: pushed and opened as #8791 by the maintainer (15:23Z, head
       350f6f09), MERGEABLE, CI 14 passed and 2 skipped. No other PR fixes
       BF-108: the five cut tips and #8348 (Remove Moment, which conflicts
@@ -10908,6 +10926,238 @@ items:
       Filed 2026-09-30 from the review of #8788 (RT-PR-8788). Present on
       15.0.8; #8788 does not cause it but makes the extra length visible on
       the next day's chart. Could be asked of #8788's author or done after.
+  - id: RT-PR-8790
+    title: "#8790 - the Food Editor's food list and quick picks scroll by touch on phones (awss1i; BF-150, fixes #8192), merged for 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: awss1i:wip/food-editor-touch-scroll
+    base: origin/dev@3014f883
+    state: merged-upstream
+    pr: [8790]
+    ships_to_operators_today: false
+    blast_radius: >
+      static/css/food.css only in code (+9): touch-action auto on
+      #fe_data .draggablefood and #fe_picklist .sortablequickpick; plus
+      tests/food-editor-touch-scroll.test.js, CHANGELOG.md and the manual
+      smoke checklist. Browser-side, the /food page only.
+    review: maintainer
+    operator_visible: >
+      On a phone, the Food Editor's list of foods can be scrolled again by
+      swiping. Dragging a food into a quick pick still needs a mouse, as
+      before.
+    semver: patch
+    semver_reason: a page that could not be scrolled on touch screens now can; nothing else changes
+    register: [BF-150]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed origin/dev
+        kind: static
+        describe: >
+          #8790's head 1298c9ed is contained in origin/dev (merged 2026-10-01
+          as 73c9528b).
+      - no-gate: >
+          Measured 2026-10-01 on 1298c9ed (Node 22.23.2): its test 4/4, and
+          2/4 with 3014f883's food.css; CI 13 passed, 2 skipped. The author's
+          full suite 3485/0/3. Browser check: the smoke checklist's new
+          Food Editor section.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Opened 2026-10-01 by awss1i, merged the same day by the maintainer
+      (73c9528b). static/css/food.css joins the files the browser-check gate
+      names.
+  - id: BFQ-151
+    title: "BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/braces-expansion-cap
+    base: official/dev@50bc1084
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js prep_patterns: refuse a prefix or pattern
+      whose expansion exceeds a fixed number of results, before expanding
+      it, with a 400; under the limit, unchanged. Tests beside the existing
+      times/slice tests.
+    review: maintainer
+    operator_visible: >
+      A kind of request to two little-used API addresses could make
+      Nightscout stop responding for several seconds. It is now refused.
+      Nothing you see on your site changes.
+    semver: patch
+    semver_reason: an unbounded request is refused; every request within the limit answers as before
+    register: [BF-151]
+    gates:
+      - no-gate: >
+          The measurement needs a booted server and is held outside version
+          control while the defect is live on 15.0.8 (the report is
+          private). 2026-10-01 on v15.0.8 and dev 3014f883, NODE_ENV=
+          production: one request at 10^6 results blocked the event loop
+          2.1 s; anonymous on readable, any read token under denied. The
+          branch's own tests decide.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Decided 2026-10-01 (maintainer): fix for 15.0.9. Branch being built
+      in externals/work/crm-bf151 by a background agent; not pushed. In
+      RT-0's blocks_on.
+  - id: BFQ-73
+    title: "BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/production-error-handler
+    base: official/dev@50bc1084
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/app.js: errorhandler only when NODE_ENV is development;
+      otherwise a final handler that keeps the status, sends a short
+      message without stack or paths, and logs the full error. Tests that
+      boot the app.
+    review: maintainer
+    operator_visible: >
+      When a request fails, Nightscout's error reply no longer includes
+      technical details about where it is installed. The details are still
+      written to the server log.
+    semver: patch
+    semver_reason: error replies keep their status and message and lose the stack trace
+    register: [BF-73]
+    gates:
+      - no-gate: >
+          Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV=
+          production, readable and denied): a malformed body answers 400
+          with 11 stack frames and the install path, before any auth check.
+          The branch's own tests decide.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the
+      BF-73 half of ADV-XSS-META's decision. Branch being built in
+      externals/work/crm-bf73 by a background agent; not pushed. In RT-0's
+      blocks_on.
+  - id: BFQ-153
+    title: "BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/dependency-refresh-2026-10
+    base: official/dev@50bc1084
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      package.json overrides (ip-address, fast-uri, brace-expansion, the
+      axios entries under minimed-connect-to-nightscout), the axios
+      devDependency, and package-lock.json (webpack-dev-middleware,
+      dompurify); tests/dependency-overrides.test.js. moment is left at
+      2.30.1 by decision.
+    review: maintainer
+    operator_visible: >
+      No change in how Nightscout works. Updated libraries clear published
+      security notices; most of them are build and test tools.
+    semver: patch
+    semver_reason: patch and minor dependency versions; no behaviour change intended
+    register: [BF-153]
+    gates:
+      - no-gate: >
+          npm audit depends on the advisory database on the day it runs, so
+          it is a measurement, not a gate. 2026-10-01, npm 11.12.1, scratch
+          trial on dev's lockfile: 20 findings (4 high) -> 7 (0 high),
+          --omit=dev 17 -> 5; the 7 left are the 2026-09-27 set.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is
+      decided on the measured result. moment stays at 2.30.1 (2026-10-01):
+      no request input reaches moment.locale on dev (BF-31), and 2.31.0
+      changes parsing and locale display output. Not in RT-0's blocks_on
+      until decided. Branch being built in externals/work/crm-bf153 by a
+      background agent; not pushed.
+  - id: BFQ-152
+    title: "BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@50bc1084
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/read/operation.js (or a per-collection permission
+      map shared by search, history and read), if the decision is to gate.
+    review: maintainer
+    operator_visible: >
+      Not yet decided. If changed, apps that read their own saved settings
+      from Nightscout may need a token with more permissions.
+    semver: n/a
+    semver_reason: undecided until the contract question is answered; gating read behind admin would break AAPSClient followers that use read-only tokens
+    register: [BF-152]
+    gates:
+      - no-gate: >
+          A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883:
+          search and history 403, read by identifier 200, readable and
+          denied. AndroidAPS's AAPSClient reads its running configuration
+          by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      After 15.0.9. The question for the AndroidAPS developers: is
+      settings meant to be readable by a follower's read token (then search
+      and history are the inconsistent side), or admin-only (then AAPSClient
+      needs a token change first)?
+  - id: DEPENDABOT-CONFIG
+    title: "Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@50bc1084
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      .github/dependabot.yml (new) and repository settings; no product code.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: repository configuration
+    register: []
+    gates:
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:.github/dependabot.yml'
+        kind: static
+        describe: >
+          PASSES while dev has no .github/dependabot.yml (measured
+          2026-10-01); it goes red once a configuration is added, at which
+          point this item is done or replaced by a gate on its contents.
+      - no-gate: >
+          Measured 2026-10-01 with gh api: Dependabot security updates
+          enabled, no dependabot.yml on dev or master, default branch
+          master. Of the Dependabot PRs: 45 closed unmerged and 1 merged
+          against master, 21 merged and 1 closed against dev, 2 open against
+          master (#8787, #8789). 85 open alerts, all measured against master
+          (15.0.8): 61 in runtime scope and 23 in development scope by
+          Dependabot's own classification, which records where a package is
+          declared, not whether its vulnerable code is reached.
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Raised by the maintainer 2026-10-01 ("I wonder if dependabot is
+      configured correctly; it produces a lot of noise that gets taken out
+      of context"). Options, none decided: (1) a dependabot.yml with
+      version updates targeting dev, grouped, on a schedule, so routine
+      bumps arrive where work happens; (2) keep alerts, and dismiss each
+      one that is fixed on dev or not reachable, with GitHub's dismissal
+      reason and a comment linking the triage, so the alert list shows the
+      project's assessment; (3) release more often, since alerts close only
+      when master moves. Security-update PRs follow the default branch and
+      dependabot.yml's target-branch does not change that, so turning them
+      off and relying on (1) and (2) is the way to stop PRs against master.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
