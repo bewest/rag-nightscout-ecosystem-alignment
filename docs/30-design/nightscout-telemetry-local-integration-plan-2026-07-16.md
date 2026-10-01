@@ -23,7 +23,7 @@ Implemented pieces:
   - `5e7a54d4`: explicit scheduled-send gate and manual `runDue()` path
   - `a6825185`: scheduled telemetry wired to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND`
   - `5969531e`: Mongo-backed telemetry state with file fallback for local/dev
-- backend repo `/home/bewest/src/crm-telemetry`
+- backend repo `<workspace>/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
   - `GET /healthz`
@@ -46,7 +46,7 @@ Scheduling model is documented separately in `docs/30-design/nightscout-telemetr
 
 ## Local backend
 
-From `/home/bewest/src/crm-telemetry`:
+From `<workspace>/crm-telemetry`:
 
 ```bash
 python3 -m unittest discover -s tests
@@ -75,7 +75,7 @@ Expected: `400` with schema validation failure.
 
 ## Local cgm-remote-monitor configuration
 
-From `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` on branch `wip/bewest/nightscout-telemetry-emitter`:
+From `<workspace>/worktrees/nightscout/cgm-pr-8447` on branch `wip/bewest/nightscout-telemetry-emitter`:
 
 ```text
 NIGHTSCOUT_TELEMETRY=aggregate

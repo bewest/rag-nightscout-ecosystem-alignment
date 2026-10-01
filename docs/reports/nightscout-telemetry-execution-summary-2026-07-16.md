@@ -108,8 +108,8 @@ Vendor/technology posture:
 
 | Repo | Branch/commits | Purpose |
 |------|----------------|---------|
-| cgm-remote-monitor | PR `https://github.com/nightscout/cgm-remote-monitor/pull/8564`; local worktree `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`, branch `wip/bewest/nightscout-telemetry-emitter` | cgm emitter, preview, counters, manual send, scheduling gate |
-| crm-telemetry | private repo `https://github.com/nightscout/crm-telemetry`; local repo `/home/bewest/src/crm-telemetry`, branch `main` | receiver, validation, storage, aggregation, export, dashboard |
+| cgm-remote-monitor | PR `https://github.com/nightscout/cgm-remote-monitor/pull/8564`; local worktree `<workspace>/worktrees/nightscout/cgm-pr-8447`, branch `wip/bewest/nightscout-telemetry-emitter` | cgm emitter, preview, counters, manual send, scheduling gate |
+| crm-telemetry | private repo `https://github.com/nightscout/crm-telemetry`; local repo `<workspace>/crm-telemetry`, branch `main` | receiver, validation, storage, aggregation, export, dashboard |
 | alignment workspace | current branch `workspace/clinical-decision-report` | docs, schema, fixtures, planning, traceability |
 
 ## cgm branch commit stack

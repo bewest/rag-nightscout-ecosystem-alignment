@@ -15,7 +15,7 @@ Simulate AAPS's upload behavior against a local cgm-remote-monitor instance.
 
 ```bash
 # Start Nightscout server (if not running)
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 export $(cat my.test.env | xargs) && node server.js &
 
 # Run tests

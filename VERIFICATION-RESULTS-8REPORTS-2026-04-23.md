@@ -26,7 +26,7 @@
 
 ### EXP-2969: Per-patient SMB-velocity-coupling at PP
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2969-per-patient-smb-velocity-pp-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2969-per-patient-smb-velocity-pp-2026-04-23.md`
 
 **Key Claims**:
 - 18 qualifying patients with ≥30 PP events ✅
@@ -42,7 +42,7 @@
 
 ### EXP-2970: SMB-vs-basal decomposition at sustained-high
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2970-smb-basal-decomp-sustained-high-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2970-smb-basal-decomp-sustained-high-2026-04-23.md`
 
 **Key Claims**:
 - 3,375 sustained-high events ✅
@@ -59,7 +59,7 @@
 
 ### EXP-2971: Per-patient SMB-channel slope at 70-100 no-carb sweet spot
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2971-per-patient-sweet-spot-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2971-per-patient-sweet-spot-2026-04-23.md`
 
 **Key Claims**:
 - 139,050 qualifying cells ✅
@@ -80,7 +80,7 @@
 
 ### EXP-2972: Trigger frequency vs per-event magnitude decomposition
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2972-emission-decomposition-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2972-emission-decomposition-2026-04-23.md`
 
 **Key Claims**:
 - **Pooled per-design**:
@@ -100,7 +100,7 @@
 
 ### EXP-2973: 70-100 no-carb stratified by velocity sign
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2973-velocity-stratified-sweet-spot-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2973-velocity-stratified-sweet-spot-2026-04-23.md`
 
 **Key Claims**:
 - **Loop_AB_ON** (rising/stable/falling):
@@ -120,7 +120,7 @@
 
 ### EXP-2974: Code-side SMB emission policy mapping (marker)
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2974-code-mapping-marker-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2974-code-mapping-marker-2026-04-23.md`
 
 **Key Claim**:
 - Points to deep-dive at `docs/10-domain/smb-emission-policy-deep-dive-2026-04-23.md` ✅
@@ -131,7 +131,7 @@
 
 ### EXP-2975: Formal U-shape test of SMB-slope vs BG band
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2975-u-shape-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2975-u-shape-2026-04-23.md`
 
 **Key Claims**:
 - **Per-band slopes** (6 bands, 2 designs = 12 measurements):
@@ -161,7 +161,7 @@
 
 ### EXP-2977: Per-patient implicit `partialApplicationFactor` calibration (Loop)
 
-**Location**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2977-loop-paf-calibration-2026-04-23.md`
+**Location**: `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2977-loop-paf-calibration-2026-04-23.md`
 
 **Key Claims**:
 - **Patient c**: 6,813 events, factor median=0.113, factor-vs-BG slope p=2e-95 ✅

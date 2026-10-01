@@ -11,7 +11,7 @@ Active work streams for the Nightscout ecosystem alignment project.
 **Problem**: MongoDB driver migration broke array handling for Profile API. NightscoutKit (Loop) sends `[profile]` arrays but `insertOne()` rejects them.
 
 **Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md)  
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`  
 **NightscoutKit**: `externals/NightscoutKit/`
 
 | ID | Task | Status |
@@ -62,7 +62,7 @@ ctx.collection.createMany(data, callback);
 Should ONLY handle UUID values sent to `_id` field.
 
 **Backlog**: [uuid-identifier-lookup.md](uuid-identifier-lookup.md)  
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 | ID | Task | Commit | Status |
 |----|------|--------|--------|
@@ -141,13 +141,13 @@ if (!Array.isArray(data)) { data = [data]; }
 
 | | |
 |---|---|
-| **Location** | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` |
+| **Location** | `<workspace>/worktrees/nightscout/cgm-pr-8447` |
 | **URL** | `http://localhost:1337` |
 | **Start** | See commands below |
 
 **Start the server:**
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 source my.test.env   # Sets INSECURE_USE_HTTP, API_SECRET, MONGO_CONNECTION
 npm start
 ```
@@ -227,7 +227,7 @@ grep -E "📋 Ready" docs/backlogs/mongodb-upgrade-report.md
 
 | Location | Branch | Purpose |
 |----------|--------|---------|
-| `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` | wip/test-improvements | Active development |
+| `<workspace>/worktrees/nightscout/cgm-pr-8447` | wip/test-improvements | Active development |
 
 ### Archived Work
 

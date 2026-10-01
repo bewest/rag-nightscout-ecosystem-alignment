@@ -3,7 +3,7 @@
 **Status**: ✅ Complete  
 **Priority**: High  
 **Affected Version**: v15.0.0+ (after MongoDB driver migration)  
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ## Summary
 

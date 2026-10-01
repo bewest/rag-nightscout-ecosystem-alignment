@@ -217,14 +217,14 @@ For each report:
 ## Appendix: File Locations
 
 ### Reports Verified
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2969-per-patient-smb-velocity-pp-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2970-smb-basal-decomp-sustained-high-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2971-per-patient-sweet-spot-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2972-emission-decomposition-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2973-velocity-stratified-sweet-spot-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2974-code-mapping-marker-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2975-u-shape-2026-04-23.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2977-loop-paf-calibration-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2969-per-patient-smb-velocity-pp-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2970-smb-basal-decomp-sustained-high-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2971-per-patient-sweet-spot-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2972-emission-decomposition-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2973-velocity-stratified-sweet-spot-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2974-code-mapping-marker-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2975-u-shape-2026-04-23.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/docs/60-research/exp-2977-loop-paf-calibration-2026-04-23.md`
 
 ### JSON Source Data
 - `externals/experiments/exp-2969_summary.json`

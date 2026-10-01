@@ -167,7 +167,7 @@ find . -name "*.json" | xargs grep -l "2555\|2556"
 
 ## Artifact Location
 
-**Results**: `/home/bewest/src/rag-nightscout-ecosystem-alignment/VERIFICATION_RESULTS_32_REPORTS.json`
+**Results**: `<workspace>/rag-nightscout-ecosystem-alignment/VERIFICATION_RESULTS_32_REPORTS.json`
 
 **Full report metadata including**:
 - EXP ID counts per report

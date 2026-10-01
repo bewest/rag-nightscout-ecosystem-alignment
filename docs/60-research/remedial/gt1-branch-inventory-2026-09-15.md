@@ -34,7 +34,7 @@ Audience: contributor-facing. Nothing here is operator- or user-facing.
 | `externals/cgm-remote-monitor-official` | **the real cgm-remote-monitor.** `origin` = `nightscout/cgm-remote-monitor`, `official` = same over SSH, `bewest` = `bewest/cgm-remote-monitor` fork | detached `a8888f0d` (= `origin/dev`) | yes |
 | `externals/cgm-remote-monitor` | **a 2014-era unrelated fork.** `origin` = `bewest/cgm-remote-monitor-1`. Not used by any Phase 0 work | detached `6893781f` (2014-11-06) | yes |
 | `externals/nightscout-connect` | `origin` = `nightscout/nightscout-connect`. **No fork remote configured** | `649a7de` on **`release/v0.0.14`** | yes |
-| `/home/bewest/src/rag-nightscout-ecosystem-alignment` | this repo (D12) | `8c379476` on `main` | **no** — see §6 |
+| `<workspace>/rag-nightscout-ecosystem-alignment` | this repo (D12) | `8c379476` on `main` | **no** — see §6 |
 
 Reference points: `origin/dev` = **`a8888f0d`**, `origin/master` = `92d08342`,
 `origin/chore/nightscout-modernization` = **`0a4109f6`**. Connect: `origin/main` = `b394411`

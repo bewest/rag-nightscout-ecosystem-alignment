@@ -38,7 +38,7 @@ Server returns:    { _id: "24-char-hex", identifier: "UUID-STRING", ... }
 ### Implementation Location
 
 ```
-/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/treatments/index.js
+<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/treatments/index.js
 ```
 
 Lines ~85-110: UUID detection and promotion logic.
@@ -185,7 +185,7 @@ db.treatments.updateMany(
 
 ```bash
 # Start server (from cgm-pr-8447 worktree)
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 source my.test.env && npm start
 
 # Run Swift tests

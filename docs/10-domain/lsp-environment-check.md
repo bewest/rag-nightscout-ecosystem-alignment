@@ -57,7 +57,7 @@ source ~/.local/share/swiftly/env.sh
 ```
 Node.js: v20.20.0
 npm: 10.8.2
-tsserver: /home/bewest/n/bin/tsserver
+tsserver: ~/n/bin/tsserver
 ```
 
 **Targets**:

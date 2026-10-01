@@ -7,7 +7,7 @@
 **Affects**: Treatments AND Entries (both collections)  
 **Scope**: ONLY the `_id` field when value is a valid UUID
 
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`  
 **Commit**: `8fc155aa`
 
 ---
@@ -313,7 +313,7 @@ UUID_HANDLING=true
 ## Verification Commands
 
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 
 # Test with flag OFF (default)
 unset UUID_HANDLING

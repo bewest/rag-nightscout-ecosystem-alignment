@@ -7,7 +7,7 @@ Date: 2026-07-16
 Local end-to-end telemetry testing passed across both components:
 
 - cgm-remote-monitor branch `wip/bewest/nightscout-telemetry-emitter`
-- crm-telemetry receiver repo `/home/bewest/src/crm-telemetry`
+- crm-telemetry receiver repo `<workspace>/crm-telemetry`
 
 The test booted cgm-remote-monitor in-process, started a real local `crm-telemetry` HTTP receiver, exercised allowlisted cgm routes, called the admin-only manual send endpoint, stored the accepted backend payload, exported monthly aggregates, and rendered a static dashboard.
 

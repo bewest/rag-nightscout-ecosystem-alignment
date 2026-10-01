@@ -2,14 +2,14 @@
 
 ## Scope
 
-This triage covers the `cgm-remote-monitor` dev candidate PR #8482 at `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` and open `nightscout-connect` work for Dexcom Share, Glooko, and Nightscout source or output support.
+This triage covers the `cgm-remote-monitor` dev candidate PR #8482 at `<workspace>/worktrees/nightscout/cgm-pr-8447` and open `nightscout-connect` work for Dexcom Share, Glooko, and Nightscout source or output support.
 
 ## Local Worktrees
 
 | Repository | Worktree | Branch | Notes |
 |------------|----------|--------|-------|
-| cgm-remote-monitor | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` | `candidates/inspect/dev` | PR #8482 head `17283fee`; local untracked `.nyc_output/` exists |
-| nightscout-connect | `/home/bewest/src/worktrees/nightscout-connect` | `candidates/inspect/nightscout-connect` | Created from `origin/main` to avoid dirty `/home/bewest/src/nightscout-connect` checkout |
+| cgm-remote-monitor | `<workspace>/worktrees/nightscout/cgm-pr-8447` | `candidates/inspect/dev` | PR #8482 head `17283fee`; local untracked `.nyc_output/` exists |
+| nightscout-connect | `<workspace>/worktrees/nightscout-connect` | `candidates/inspect/nightscout-connect` | Created from `origin/main` to avoid dirty `<workspace>/nightscout-connect` checkout |
 
 ## cgm-remote-monitor PR #8482 Connector Impact
 
@@ -17,9 +17,9 @@ PR #8482 is a large dev branch staging the next cgm-remote-monitor release. GitH
 
 `package.json` still depends on `nightscout-connect` `^0.0.12`, and `package-lock.json` still resolves `node_modules/nightscout-connect` to version `0.0.12`. See:
 
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json:138`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json:57`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json:7375`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json:138`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json:57`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json:7375`
 
 Release implication: Dexcom, Glooko, or Nightscout connector fixes must first land and publish in `nightscout-connect`, then cgm-remote-monitor needs a dependency bump before the candidate release can include those fixes.
 
@@ -29,9 +29,9 @@ Release implication: Dexcom, Glooko, or Nightscout connector fixes must first la
 
 The current `nightscout-connect` Dexcom Share adapter has several directly reproducible error-path problems:
 
-- It returns the caught authentication error as a resolved value, which lets the state machine treat failed auth as success: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js:153`.
-- It references `error.response.data` from catch blocks where the variable is named `err`: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js:169` and `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js:190`.
-- It maps any truthy glucose payload, including non-array error shapes: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js:199`.
+- It returns the caught authentication error as a resolved value, which lets the state machine treat failed auth as success: `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js:153`.
+- It references `error.response.data` from catch blocks where the variable is named `err`: `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js:169` and `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js:190`.
+- It maps any truthy glucose payload, including non-array error shapes: `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js:199`.
 
 ### PR Triage
 
@@ -47,11 +47,11 @@ Recommendation: merge PR #55 after review, then add follow-up tests for bare UUI
 
 The Glooko adapter currently logs in through JSON API `/api/v2/users/sign_in` and uses v2 pump plus CGM endpoints:
 
-- Login endpoint: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js:26`
-- Device metadata shape: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js:53`
-- v2 reads: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js:135` through `:139`
-- Transform returns treatments only: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js:167` and `:171`
-- Fixed offset configuration: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js:224` and `:232`
+- Login endpoint: `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js:26`
+- Device metadata shape: `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js:53`
+- v2 reads: `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js:135` through `:139`
+- Transform returns treatments only: `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js:167` and `:171`
+- Fixed offset configuration: `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js:224` and `:232`
 
 ### Issue Triage
 
@@ -82,15 +82,15 @@ Recommendation: do not block the cgm-remote-monitor candidate release on Glooko.
 
 The Nightscout source uses v1 entries reads with v2 token acquisition:
 
-- Verify auth: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js:40`
-- Authorization subjects: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js:55`
-- Token request: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js:92`
-- v1 entries read: `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js:132` and `:133`
+- Verify auth: `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js:40`
+- Authorization subjects: `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js:55`
+- Token request: `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js:92`
+- v1 entries read: `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js:132` and `:133`
 
 The Nightscout output still posts v1 entries and treatments:
 
-- Entries output: `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js:35`
-- Treatments output: `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js:48`
+- Entries output: `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js:35`
+- Treatments output: `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js:48`
 
 ### PR Triage
 

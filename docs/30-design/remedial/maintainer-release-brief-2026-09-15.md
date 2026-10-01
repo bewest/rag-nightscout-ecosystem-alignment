@@ -138,7 +138,7 @@ Everything below leaves this machine. Nothing above this line does.
 #   bewest    https://github.com/bewest/cgm-remote-monitor.git       <- the fork
 # `origin` here is UPSTREAM, not a fork. If you would rather use SSH, substitute `official`.
 # If you push to `bewest` instead, read §6 first — one workflow can auto-close a fork PR.
-cd /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/cgm-remote-monitor-official
+cd <workspace>/rag-nightscout-ecosystem-alignment/externals/cgm-remote-monitor-official
 for b in bf/alarms bf/cache bf/auth bf/food bf/merge bf/parms bf/coercion bf/reads; do
   git push origin "$b"
 done
@@ -154,22 +154,22 @@ done
 # (A stale check cannot cause damage — git refuses a non-fast-forward push — but it can give
 # false confidence.)  Also note the LOCAL branch `main` in that checkout is 28 commits behind
 # `origin/main`; do not push it, and do not use it in this check.
-git -C /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nightscout-connect fetch origin
+git -C <workspace>/rag-nightscout-ecosystem-alignment/externals/nightscout-connect fetch origin
 
 # VERIFY THE FAST-FORWARD — this should print "fast-forward OK" and exit 0:
-git -C /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
+git -C <workspace>/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
     merge-base --is-ancestor origin/main release/v0.0.14 && echo "fast-forward OK"
 
-git -C /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
+git -C <workspace>/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
     push origin release/v0.0.14:main
-git -C /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
+git -C <workspace>/rag-nightscout-ecosystem-alignment/externals/nightscout-connect \
     push origin v0.0.14
 
 # ── DECISION 3: publish the package (optional for this batch — see above) ─────
 npm publish      # run from externals/nightscout-connect, and only if you want it on npm
 
 # ── AFTER the tag exists, and not one second before: regenerate the lock ──────
-cd /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-connect-pin
+cd <workspace>/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-connect-pin
 npm install                         # regenerates package-lock.json against the real tarball
 git commit -am "Regenerate the lock against connect v0.0.14"
 git push origin bf/connect-pin      # then open the bf/connect-pin PR against dev
