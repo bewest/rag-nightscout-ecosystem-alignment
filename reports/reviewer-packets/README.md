@@ -28,6 +28,7 @@ repository.
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
 | [`BFQ-153`](bfq-153-bf-dependency-refresh-2026-10.md) | &mdash; | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| [`BFQ-73`](bfq-73-bf-production-error-handler.md) | &mdash; | `ready-to-push` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |

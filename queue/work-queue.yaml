@@ -11028,7 +11028,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/production-error-handler
     base: official/dev@50bc1084
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -11045,19 +11045,37 @@ items:
     semver_reason: error replies keep their status and message and lose the stack trace
     register: [BF-73]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e bf/production-error-handler:lib/server/error-handler.js
+        kind: static
+        describe: >
+          The branch carries the production error handler (a presence check;
+          RED on origin/dev 50bc1084). The tests decide.
       - no-gate: >
           Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV=
           production, readable and denied): a malformed body answers 400
-          with 11 stack frames and the install path, before any auth check.
-          The branch's own tests decide.
+          with 10 stack frames and the install path, before any auth check.
+          The branch's own tests decide: on dc64e82d (Node 22.23.2, MongoDB
+          7.0.43) tests/error-handler.test.js 13 cases; the 4 that boot the
+          app fail with 50bc1084's lib/server/app.js (stack in JSON, HTML and
+          text); full suite 3502/0/3 on a fresh database (dev 3489/0/3). Live,
+          NODE_ENV=production and AUTH_DEFAULT_ROLES=denied: a malformed body
+          answers 400 {"error":{"message":"Unexpected end of JSON input",
+          "status":400}}, no stack.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the
-      BF-73 half of ADV-XSS-META's decision. Branch being built in
-      externals/work/crm-bf73 by a background agent; not pushed. In RT-0's
-      blocks_on.
+      BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch
+      bf/production-error-handler dc64e82d, one commit on dev 50bc1084 (new
+      lib/server/error-handler.js, app.js -5/+3, tests), not pushed. PR
+      body: reports/phase0-pr-bodies/production-error-handler.md.
+      Operator-visible for the release notes: with NODE_ENV unset (some
+      hosts), error pages also stop showing the stack; it is in the server
+      log. A 4xx an app path raises without err.expose now answers with the
+      standard reason phrase instead of its own message. Follow-up, not in
+      this branch: the v1 'Mongo Error' / 'Query Error' replies carry the
+      driver's error text (database host and port when unreachable).
   - id: BFQ-153
     title: "BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)"
     parcel: register-open

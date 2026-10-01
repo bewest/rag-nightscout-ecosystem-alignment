@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 180 |
-| runnable gates | 246 |
+| runnable gates | 247 |
 | explicit `no-gate:` markers | 235 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 235 of the 481 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 235 of the 482 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 2 | BFQ-73, OID-LAB |
+| `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-151, BFQ-153 |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-151, BFQ-73, BFQ-153 |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
 | `merged-upstream` | 77 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
@@ -2193,7 +2193,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `merged-upstream` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-149` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `ready-to-push` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
-| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `in-progress` | `bf/production-error-handler` | patch | 0 run + 1 no-gate |
+| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `ready-to-push` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `ready-to-push` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
@@ -4699,7 +4699,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/production-error-handler` |
 | base | `official/dev@50bc1084` |
@@ -4717,13 +4717,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV= production, readable and denied): a malformed body answers 400 with 11 stack frames and the install path, before any auth check. The branch's own tests decide.
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf/production-error-handler:lib/server/error-handler.js`
+  - The branch carries the production error handler (a presence check; RED on origin/dev 50bc1084). The tests decide.
+- **NO GATE** &mdash; Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV= production, readable and denied): a malformed body answers 400 with 10 stack frames and the install path, before any auth check. The branch's own tests decide: on dc64e82d (Node 22.23.2, MongoDB 7.0.43) tests/error-handler.test.js 13 cases; the 4 that boot the app fail with 50bc1084's lib/server/app.js (stack in JSON, HTML and text); full suite 3502/0/3 on a fresh database (dev 3489/0/3). Live, NODE_ENV=production and AUTH_DEFAULT_ROLES=denied: a malformed body answers 400 {"error":{"message":"Unexpected end of JSON input", "status":400}}, no stack.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the BF-73 half of ADV-XSS-META's decision. Branch being built in externals/work/crm-bf73 by a background agent; not pushed. In RT-0's blocks_on.
+**Notes.** Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch bf/production-error- handler dc64e82d, one commit on dev 50bc1084 (new lib/server/error-handler.js, app.js -5/+3, tests), not pushed. PR body: reports/phase0-pr- bodies/production-error-handler.md. Operator-visible for the release notes: with NODE_ENV unset (some hosts), error pages also stop showing the stack; it is in the server log. A 4xx an app path raises without err.expose now answers with the standard reason phrase instead of its own message. Follow-up, not in this branch: the v1 'Mongo Error' / 'Query Error' replies carry the driver's error text (database host and port when unreachable).
 
 ### `BFQ-153` &mdash; BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)
 

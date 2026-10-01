@@ -27,7 +27,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 14 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -40,6 +40,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | &mdash; |
 | `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 sty | &mdash; |
+| `BFQ-73` | `ready-to-push` | BF-73 - error responses carry a stack trace and server paths in production, for  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |

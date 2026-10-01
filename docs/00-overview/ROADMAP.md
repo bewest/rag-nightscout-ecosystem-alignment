@@ -45,7 +45,7 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 |---|---|---|---|---|
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | `ready-to-push` | Maintainer | &mdash; |
-| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for  | `in-progress` | Maintainer | &mdash; |
+| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for  | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 
