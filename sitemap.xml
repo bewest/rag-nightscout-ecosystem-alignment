@@ -229,10 +229,6 @@
          <lastmod>2026-10-02</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/PRECEDENTS.html</loc>
-         <lastmod>2026-10-02</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/PROGRAMME-STATUS.html</loc>
          <lastmod>2026-10-02</lastmod>
     </url>
@@ -254,6 +250,34 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/mission.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/observations/index.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/observations/ECOSYSTEM-EVIDENCE.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/observations/GOVERNANCE-TODAY.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/observations/HISTORY.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/perspective/index.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/perspective/INFRASTRUCTURE-TRANSITION.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/00-overview/perspective/PRECEDENTS.html</loc>
          <lastmod>2026-10-02</lastmod>
     </url>
     <url>
@@ -4833,11 +4857,19 @@
          <lastmod>2026-10-02</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/phase0-pr-bodies/socket-dedup-zero.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/phase0-pr-bodies/v1-writes-v3-history.html</loc>
          <lastmod>2026-10-02</lastmod>
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/index.html</loc>
+         <lastmod>2026-10-02</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-09-bf-socket-dedup-zero.html</loc>
          <lastmod>2026-10-02</lastmod>
     </url>
     <url>

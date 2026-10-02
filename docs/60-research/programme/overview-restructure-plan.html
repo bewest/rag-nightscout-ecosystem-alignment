@@ -603,6 +603,8 @@
       
         
       
+        
+      
     
     
     
@@ -6612,7 +6614,7 @@
 
 
 <h1 id="overview-restructure-observations-perspective-recommendations--plan-and-progress">Overview restructure: observations, perspective, recommendations — plan and progress<a class="headerlink" href="#overview-restructure-observations-perspective-recommendations--plan-and-progress" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e3d7b65c</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e502a327</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. </em><em>Living plan</em><em>, started 2026-10-02 against this repository at
 <code>0f3ca59a</code>. It records the plan for reorganising <code>docs/00-overview</code> and the progress of each step.
 The maintainer asked for it on 2026-10-02. Decisions in it are the maintainer's unless a row says
@@ -6750,55 +6752,55 @@ questions:</p>
 <td>1</td>
 <td>This plan</td>
 <td>done</td>
-<td>this commit</td>
+<td><code>e3d7b65c</code></td>
 </tr>
 <tr>
 <td>2</td>
 <td>Draft HISTORY</td>
-<td>in progress</td>
-<td></td>
+<td>drafted: 2012–2026 chronology from <code>git</code> on the stack clones and primary pages read 2026-10-02 (a sample re-run by the session; each external link checked for status); roles, not names; where sources differ and what is not established listed in its §5</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>3</td>
 <td>Draft GOVERNANCE-TODAY</td>
-<td>in progress</td>
-<td></td>
+<td>drafted: per-repository merge and release accounts, licences and branch rules for 20 repositories; written governance files; the foundation's public statements and processes; the provider listing; where we looked and found nothing; what only the foundation can supply. Measured with <code>gh api</code> and the foundation's pages 2026-10-02, a sample re-run by the session. It corrected the provider count used in two pages (nine, not eight, at <code>9b5afad2</code>)</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>4</td>
 <td>Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists</td>
-<td>not started</td>
-<td></td>
+<td>drafted: census, client survey, cross-project releases and contributors, maintenance time (review load links to the generated table), vendor calendar and connector changes, clinical studies</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>5</td>
 <td>Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION</td>
-<td>not started</td>
-<td></td>
+<td>PRECEDENTS moved, and now holds the comparison tables the proposals carried (collaboration §4 rules and §4a SQLite, sponsored-team §6 funding, quality-system §7 histories), each proposal keeping its heading, a pointer and its own reading; INFRASTRUCTURE-TRANSITION drafted; six transitions on the §4 template (OpenSSL, OpenStreetMap, Debian, Home Assistant, the PSF residencies, Tidepool Loop), with "not found in the sources read" where a question has no source</td>
+<td><code>6e4137b4</code>, this commit</td>
 </tr>
 <tr>
 <td>6</td>
 <td>Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home</td>
-<td>not started</td>
-<td></td>
+<td>all four labelled part 3; SPONSORED-TEAM-PROPOSAL 359 → 249 lines, COLLABORATION-MODEL 246 → 196 (§3 calendar and §4 tables), QUALITY-SYSTEM 317 → 307 (§7 table); ECOSYSTEM-PROGRAMME's 63 and 138-of-172 now cite the evidence page and the generated table</td>
+<td><code>6e4137b4</code>, this commit</td>
 </tr>
 <tr>
 <td>7</td>
-<td>COLLABORATION-MODEL §7: a range of governance options, from "remain informal" to a cross-project technical council (proposed)</td>
-<td>not started</td>
-<td></td>
+<td>COLLABORATION-MODEL §6a: four options from "remain informal" to a cross-project body for the shared contract, each with what it costs and leaves open; board decision 0 is which to start from; CNCF's sizing guidance quoted from the post (re-read 2026-10-02)</td>
+<td>done</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>8</td>
 <td>Landing page and site nav in three parts</td>
-<td>not started</td>
-<td></td>
+<td><code>docs/00-overview/README.md</code> is the section index in three parts, and <code>observations/</code> and <code>perspective/</code> each have a README index; the hand-written landing file it replaces is removed; nav lists the operational pages, then the proposals, then the two subdirectories</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>9</td>
 <td>Gates: <code>make docs-links</code> (with a restored dead link shown red), <code>make views-check</code>, <code>make site</code>; contradiction sweep across the overview</td>
-<td>not started</td>
-<td></td>
+<td>done: links green after a planted dead link went red; 94 overview anchors resolve (a wrong anchor is caught); views current; <code>make site</code> 0 warnings, 0 unresolved links, after re-rendering the ecosystem-programme rich page (<code>site/pages</code>) from its changed source; sweep retargeted five links whose content moved and found no stale 172/144/138/63/eight figures; observation pages scanned for assessment words (only quotations and a reviewer note remain)</td>
+<td>this commit</td>
 </tr>
 <tr>
 <td>10</td>
@@ -6818,10 +6820,15 @@ questions:</p>
    rather than guessing.</li>
 <li><strong>Whether HISTORY names founders and early authors</strong> where primary sources name them, or uses
    roles throughout.</li>
+<li><strong>Financial filings in GOVERNANCE-TODAY.</strong> ProPublica has no Form 990 data for the foundation, and
+   the page says so. The IRS master file also lists a 990-N filing requirement (code 02); it is left
+   out of the page until you decide whether the foundation should state its own filing position.</li>
+<li><strong>GOVERNANCE-TODAY §7</strong> lists five facts only the foundation can supply (bylaws and
+   conflict-of-interest policy access, the request committee, spending approval, holdings,
+   sponsorship records); a board member could fill them.</li>
 </ol>
 <h2 id="7-figures-found-stale-while-planning">7. Figures found stale while planning<a class="headerlink" href="#7-figures-found-stale-while-planning" title="Permanent link">&para;</a></h2>
-<p>These are corrected in step 6 by pointing at the one home of each figure, not by copying the new
-value:</p>
+<p>Corrected in step 6 by pointing at the one home of each figure, not by copying the new value:</p>
 <ul>
 <li>SPONSORED-TEAM-PROPOSAL §3: "144 of the 172 items … route review to the maintainer" (measured
   2026-09-27); PROGRAMME-STATUS's generated table now reads 149 of 183.</li>

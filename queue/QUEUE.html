@@ -603,6 +603,8 @@
       
         
       
+        
+      
     
     
     
@@ -2837,7 +2839,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-02 at <code>4763b304</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>12837cc7</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2906,13 +2908,13 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>1</td>
-<td>OID-LAB</td>
+<td>3</td>
+<td>BFQ-46, BFQ-ENV, OID-LAB</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
-<td>11</td>
-<td>RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730</td>
+<td>9</td>
+<td>RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730</td>
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
@@ -2923,6 +2925,11 @@
 <td><code>blocked</code></td>
 <td>18</td>
 <td>RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154</td>
+</tr>
+<tr>
+<td><code>in-flight-upstream</code></td>
+<td>1</td>
+<td>BFQ-09</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -2941,8 +2948,8 @@
 </tr>
 <tr>
 <td><code>unsettled</code></td>
-<td>3</td>
-<td>BFQ-09, A7A-7, BFQ-94</td>
+<td>2</td>
+<td>A7A-7, BFQ-94</td>
 </tr>
 <tr>
 <td><code>closed</code></td>
@@ -5523,7 +5530,7 @@ that costs.</p>
 </tr>
 <tr>
 <td>blocks on</td>
-<td><code>BFQ-102</code>, <code>BFQ-114</code>, <code>BFQ-118</code>, <code>BFQ-119</code>, <code>RT-PR-8419</code>, <code>RT-PR-8530</code>, <code>BFQ-120</code>, <code>BFQ-126</code>, <code>BFQ-134</code>, <code>BFQ-106</code>, <code>BFQ-129</code>, <code>BFQ-125</code>, <code>BFQ-123</code>, <code>BFQ-122</code>, <code>BFQ-136</code>, <code>BFQ-128</code>, <code>RT-PR-8778</code>, <code>BFQ-80</code>, <code>BFQ-121</code>, <code>RT-PR-8781</code>, <code>BFQ-142</code>, <code>BFQ-146</code>, <code>RT-PR-8788</code>, <code>BFQ-108</code>, <code>RT-PR-8790</code>, <code>BFQ-151</code>, <code>BFQ-73</code>, <code>BFQ-153</code>, <code>BFQ-155</code></td>
+<td><code>BFQ-102</code>, <code>BFQ-114</code>, <code>BFQ-118</code>, <code>BFQ-119</code>, <code>RT-PR-8419</code>, <code>RT-PR-8530</code>, <code>BFQ-120</code>, <code>BFQ-126</code>, <code>BFQ-134</code>, <code>BFQ-106</code>, <code>BFQ-129</code>, <code>BFQ-125</code>, <code>BFQ-123</code>, <code>BFQ-122</code>, <code>BFQ-136</code>, <code>BFQ-128</code>, <code>RT-PR-8778</code>, <code>BFQ-80</code>, <code>BFQ-121</code>, <code>RT-PR-8781</code>, <code>BFQ-142</code>, <code>BFQ-146</code>, <code>RT-PR-8788</code>, <code>BFQ-108</code>, <code>RT-PR-8790</code>, <code>BFQ-151</code>, <code>BFQ-73</code>, <code>BFQ-153</code>, <code>BFQ-155</code>, <code>BFQ-09</code></td>
 </tr>
 </tbody>
 </table>
@@ -6859,8 +6866,8 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-09</code></td>
 <td>BF-09 - socket dedup truthiness skips a falsy value</td>
-<td><code>unsettled</code></td>
-<td><code>-</code></td>
+<td><code>in-flight-upstream</code></td>
+<td><code>bf/socket-dedup-zero</code></td>
 <td>patch</td>
 <td>1 run + 2 no-gate</td>
 </tr>
@@ -7035,7 +7042,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-46</code></td>
 <td>BF-46 - eleven API v3 variables bypass env.js, one family deletes data</td>
-<td><code>gate-not-met</code></td>
+<td><code>in-progress</code></td>
 <td><code>-</code></td>
 <td>minor</td>
 <td>1 run + 1 no-gate</td>
@@ -7051,7 +7058,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-ENV</code></td>
 <td>BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies</td>
-<td><code>gate-not-met</code></td>
+<td><code>in-progress</code></td>
 <td><code>-</code></td>
 <td>minor</td>
 <td>4 run + 2 no-gate</td>
@@ -7708,7 +7715,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>unsettled</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -7716,15 +7723,15 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>bf/socket-dedup-zero</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>origin/dev@a8888f0d</code></td>
+<td><code>official/dev@ca6fcfaf</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-bf-alarms</code></td>
+<td><code>externals/work/crm-bf09</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -7732,7 +7739,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>review</td>
-<td>maintainer - this needs a decision on intent before it needs code</td>
+<td>maintainer (intent decided 2026-10-02)</td>
 </tr>
 <tr>
 <td>ships to operators today</td>
@@ -7744,7 +7751,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> lib/server/websocket.js:538-566 (the register cites 535-568).</p>
+<p><strong>Blast radius.</strong> lib/server/websocket.js:618-638 on dev ca6fcfaf (538-566 on v15.0.8): the socket's 2 s similar match; tests/websocket.dedup-zero.test.js.</p>
 <p><strong>What an operator sees.</strong> When two treatment records arrive within two seconds of each other, Nightscout decides whether they are the same one. That check ignores a value of zero. A zero temporary basal rate - the suspend an automated insulin delivery system sends - is exactly such a value. It is not settled whether this ever discards a real record.</p>
 <p><strong>Why <code>patch</code>.</strong> if it is a defect at all, the fix is a bug fix</p>
 <p><strong>Gates.</strong></p>
@@ -7760,7 +7767,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/60-research/remedial/gt3-register-truth-2026-09-15.md</code></li>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued <code>insulin</code> (0 of 107,732) and zero zero-valued <code>carbs</code> (0 of 12,394); the field that carries falsy values is <code>absolute</code>, 67,521 of 153,315 (44%), the zero temp basal, and <code>duration:0</code> adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus- divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.</p>
+<p><strong>Notes.</strong> 2026-10-02: opened as #8797 by the maintainer (head 7dff9f38, MERGEABLE, base dev). 2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new tests/websocket.dedup-zero.test.js), not pushed. percent, absolute and duration treat 0 as a value matched exactly; insulin and carbs treat 0 as none ({$in: [0, null]}); '', false and null are still not keys. 22 new tests; reverting websocket.js fails 9 with the record dropped; an exact zero key on all five fields fails the 2 xDrip filler re-sends, zero-or-absent on all five fails the 2 cross-temp cases. Full suite 3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one cell). PR body: reports/phase0-pr-bodies/socket- dedup-zero.md. 2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge is needed before the push. 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued <code>insulin</code> (0 of 107,732) and zero zero-valued <code>carbs</code> (0 of 12,394); the field that carries falsy values is <code>absolute</code>, 67,521 of 153,315 (44%), the zero temp basal, and <code>duration:0</code> adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus- divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.</p>
 <h3 id="bfq-10--bf-10---mongod-fatal-asserts-at-dockers-default-nofile1024"><code>BFQ-10</code> &mdash; BF-10 - mongod fatal-asserts at Docker's default nofile=1024<a class="headerlink" href="#bfq-10--bf-10---mongod-fatal-asserts-at-dockers-default-nofile1024" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9073,7 +9080,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>gate-not-met</code></td>
+<td><code>in-progress</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -9085,11 +9092,11 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>base</td>
-<td><code>origin/dev@a8888f0d</code></td>
+<td><code>official/dev@ca6fcfaf</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/cgm-remote-monitor-official</code></td>
+<td><code>externals/work/crm-bf46-env</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -9122,7 +9129,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.</p>
+<p><strong>Notes.</strong> 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.</p>
 <h3 id="bfq-47--bf-47---an-ordinary-subject-edit-destroys-stored-fields-on-todays-release"><code>BFQ-47</code> &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release<a class="headerlink" href="#bfq-47--bf-47---an-ordinary-subject-edit-destroys-stored-fields-on-todays-release" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9204,7 +9211,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>gate-not-met</code></td>
+<td><code>in-progress</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -9216,11 +9223,11 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>base</td>
-<td><code>origin/dev@a8888f0d</code></td>
+<td><code>official/dev@ca6fcfaf</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/cgm-remote-monitor-official</code></td>
+<td><code>externals/work/crm-bf46-env</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -9260,7 +9267,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.</p>
+<p><strong>Notes.</strong> 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.</p>
 <h3 id="bfq-52--bf-52---an-age-reminder-whose-20-minute-window-passed-without-a-check-was-never-sent"><code>BFQ-52</code> &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent<a class="headerlink" href="#bfq-52--bf-52---an-age-reminder-whose-20-minute-window-passed-without-a-check-was-never-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

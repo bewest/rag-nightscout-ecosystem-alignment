@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -705,34 +707,6 @@
     
   
     Mission
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="ECOSYSTEM-PROGRAMME.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    The Nightscout ecosystem programme — one page for the whole
   
 
     
@@ -951,6 +925,34 @@
   
   
     <li class="md-nav__item">
+      <a href="ECOSYSTEM-PROGRAMME.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Nightscout ecosystem programme — one page for the whole
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="SPONSORED-TEAM-PROPOSAL.html" class="md-nav__link">
         
   
@@ -1034,15 +1036,45 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="PRECEDENTS.html" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="observations/index.html" class="md-nav__link">
+      
   
   
   <span class="md-ellipsis">
     
   
-    Precedents the overview proposals cite
+    observations/
   
 
     
@@ -1050,7 +1082,75 @@
   
   
 
-      </a>
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="perspective/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perspective/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -2076,7 +2176,7 @@
 
 
 <h1 id="roadmap--what-comes-next-and-in-what-order">Roadmap — what comes next, and in what order<a class="headerlink" href="#roadmap--what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>12837cc7</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
 2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>ca6fcfaf</code> and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
@@ -2151,11 +2251,11 @@ release.</p>
 </thead>
 <tbody>
 <tr>
-<td>&mdash;</td>
-<td>nothing open blocks <code>RT-0</code></td>
-<td></td>
-<td></td>
-<td></td>
+<td><code>BFQ-09</code></td>
+<td>BF-09 - socket dedup truthiness skips a falsy value</td>
+<td><code>in-flight-upstream</code></td>
+<td>Maintainer</td>
+<td>#8797</td>
 </tr>
 </tbody>
 </table>
@@ -2291,13 +2391,6 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>RT-0</code></td>
-<td>Release 15.0.9</td>
-<td><code>needs-decision</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
 <td><code>RT-BOOTERROR</code></td>
 <td>BF-63 - the page that reports a boot error crashes on cut 4's boot errors</td>
 <td><code>gate-not-met</code></td>
@@ -2347,41 +2440,48 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>RT-0</code></td>
+<td>Release 15.0.9</td>
+<td><code>needs-decision</code></td>
+<td><code>BFQ-09</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
 <td><code>RT-1</code></td>
 <td>Cut 1 - chore/retire-jsdom</td>
 <td><code>blocked</code></td>
 <td><code>RT-0</code>, <code>RT-REBASE</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
 <td><code>RT-2</code></td>
 <td>Cut 2 - chore/build-runtime-separation</td>
 <td><code>blocked</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
 <td><code>RT-D3-SUITE</code></td>
 <td>The treatment-drag clamps get a regression test in cut 1's real-browser suite</td>
 <td><code>blocked</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
 <td><code>RT-NODE-FLOOR-TESTED</code></td>
 <td>BF-58, BF-59 - the enforced Node floor is not the Node anything exercises</td>
 <td><code>gate-not-met</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
 <td><code>RT-3</code></td>
 <td>Cuts 3+5 combined - dependency release</td>
 <td><code>blocked</code></td>
 <td><code>RT-2</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
 <td><code>RT-5</code></td>
 <td>Cut 4 - chore/mime-exposure-review, the one to slow down on</td>
 <td><code>blocked</code></td>
@@ -2473,17 +2573,17 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>SEAM-REFRESH</code></td>
-<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
-<td><code>blocked</code></td>
-<td><code>RT-0</code>, <code>RT-PROPAGATION</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
 <td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
 <td><code>not-started</code></td>
 <td><code>T30-RESEARCH</code>, <code>T30-ORY-PROOF</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>SEAM-REFRESH</code></td>
+<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
+<td><code>blocked</code></td>
+<td><code>RT-0</code>, <code>RT-PROPAGATION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2498,20 +2598,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>WRITE-CONTRACT</code></td>
-<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>BFQ-CAP02</code></td>
-<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
-<td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -2535,6 +2621,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>T30-WIRING</code></td>
 </tr>
 <tr>
+<td style="text-align: right;">4</td>
+<td><code>WRITE-CONTRACT</code></td>
+<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
 <td style="text-align: right;">5</td>
 <td><code>A7A-3</code></td>
 <td>§7a item 3 - a per-tenant error boundary</td>
@@ -2554,6 +2647,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td>BF-66 - the deployment's own tokens fail its own tenant check</td>
 <td><code>blocked</code></td>
 <td><code>T30-WIRING</code>, <code>T31-REM</code>, <code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>BFQ-CAP02</code></td>
+<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>not-started</code></td>
+<td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>
