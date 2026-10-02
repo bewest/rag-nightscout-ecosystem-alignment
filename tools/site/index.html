@@ -2756,10 +2756,10 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-30 at <code>b547f562</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f59547fc</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
-documentation. It is deployed only by the maintainer, from a local build, as an
-orphan <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
+documentation. It is deployed only by the maintainer, from a local build, on the
+<code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
 <code>&lt;meta name="robots" content="noindex, nofollow"&gt;</code> and the site root serves a
 <code>robots.txt</code> with <code>Disallow: /</code>.</p>
 <h2 id="build-and-serve">Build and serve<a class="headerlink" href="#build-and-serve" title="Permanent link">&para;</a></h2>
@@ -2903,13 +2903,22 @@ for private drafts. Every page needs an entry in <code>site/pages/pages.yaml</co
 <h2 id="publishing">Publishing<a class="headerlink" href="#publishing" title="Permanent link">&para;</a></h2>
 <p><code>make site-publish</code> refuses unless the working tree is clean, <code>HEAD</code> is on a
 remote branch (<code>git branch -r --contains HEAD</code>), <code>SITE_PSEUDONYM_KEY</code> is set
-and <code>make site-check</code> passes. It then copies <code>build/site/</code> plus <code>.nojekyll</code>
-into the worktree <code>../rag-alignment-gh-pages</code> (created on first use) and makes
-the ONLY commit of a fresh orphan <code>gh-pages</code> branch, with the source sha and
-build date in its message. It prints the force-push command; it never pushes.</p>
+and <code>make site-check</code> passes. It then fetches <code>origin/gh-pages</code>, copies
+<code>build/site/</code> plus <code>.nojekyll</code> into the worktree <code>../rag-alignment-gh-pages</code>
+(created on first use), and commits it as one new commit whose parent is
+<code>origin/gh-pages</code>, with the source sha and build date in its message. It prints
+a plain <code>git push</code>, which is a fast-forward; if someone published in between,
+the push is rejected rather than overwriting their build, and re-running
+<code>make site-publish</code> builds on theirs. A build identical to <code>origin/gh-pages</code>
+is not committed. It never pushes.</p>
 <ul>
 <li><code>make site-publish DRY_RUN=1</code> skips the remote check and stages the files in
   the worktree without committing.</li>
+<li><code>make site-publish PURGE=1</code> makes the build the only commit of a fresh orphan
+  <code>gh-pages</code> instead, so earlier builds leave the branch's history (for removing
+  something that should not have been published; copies may already exist
+  elsewhere). It prints <code>git push --force-with-lease</code> against the <code>gh-pages</code> it
+  fetched.</li>
 <li>One-time repository setting: <strong>Settings → Pages → Build and deployment →
   Deploy from a branch → <code>gh-pages</code> / <code>(root)</code></strong>.</li>
 </ul>
