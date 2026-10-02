@@ -8,7 +8,7 @@ of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
 
 | Directory | Describes | Status |
 |---|---|---|
-| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `ca6fcfaf` (93 merged PRs, 2026-10-02); unreleased | draft; version 15.0.9 decided; connector pinned exactly to the released `0.1.0` (#8762); what remains is in [ROADMAP §1](../docs/00-overview/ROADMAP.md#1-the-next-release-1509) |
+| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `ca6fcfaf` (93 merged PRs, 2026-10-02); unreleased | draft; version 15.0.9 decided; connector pinned exactly to the released `0.1.0` (#8762); what remains is in [ROADMAP §1](../docs/00-overview/ROADMAP.md#1-the-next-release-1509); how it was made: [colophon](cgm-remote-monitor-15.0.9/colophon.md) |
 | [`nightscout-connect-v0.0.14/`](nightscout-connect-v0.0.14/) | the retired local tag `v0.0.14` (`649a7de`) | **superseded**: no 0.0.14 will be published; the line is `0.1.0` (queue P0-TAG) |
 | [`_template/`](_template/) | copy to start a new release directory | — |
 

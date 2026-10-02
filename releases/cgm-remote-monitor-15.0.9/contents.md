@@ -683,6 +683,7 @@ the user-facing form. Facts the notes must not lose:
 
 ## Evidence
 
+- Release-cycle statistics, method and materials: [How 15.0.9 was made](colophon.md).
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
 - **The candidate, `dev` `ca6fcfaf`** (tree `0e38a5a7`, the same tree as #8796's head

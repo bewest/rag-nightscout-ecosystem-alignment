@@ -10,6 +10,8 @@ test runs live in the [integration record](../../30-design/remedial/rc-15.0.9-in
 record measures the candidate and does not restate those files. Published view:
 <https://claude.ai/artifact/QgCm2hpc9KFugXu5c6v4wE> (private until shared).*
 
+Current figures: [How 15.0.9 was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) (living, re-measured on `ca6fcfaf`).
+
 ## 1. Readiness
 
 | question | answer on 2026-09-27 |
