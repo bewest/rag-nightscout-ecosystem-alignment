@@ -1009,10 +1009,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programme-backfix-prs-45-plus-8741" class="md-nav__link">
+  <a href="#programme-backfix-prs-46-plus-8741" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Programme backfix PRs (45), plus #8741
+        Programme backfix PRs (46), plus #8741
       
     </span>
   </a>
@@ -2200,10 +2200,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#programme-backfix-prs-45-plus-8741" class="md-nav__link">
+  <a href="#programme-backfix-prs-46-plus-8741" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Programme backfix PRs (45), plus #8741
+        Programme backfix PRs (46), plus #8741
       
     </span>
   </a>
@@ -2249,17 +2249,17 @@
 
 
 <h1 id="cgm-remote-monitor-1509--contents">cgm-remote-monitor 15.0.9 — contents<a class="headerlink" href="#cgm-remote-monitor-1509--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
 <p><strong>Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.</strong>
-Nothing here is tagged or released. Measured 2026-10-02 against <code>official/dev</code> <code>25fc41d9</code>
-(merge of #8795) and <code>official/master</code> <code>92d08342</code> (= tag <code>15.0.8</code>, the shipping release), in
+Nothing here is tagged or released. Measured 2026-10-02 against <code>official/dev</code> <code>ca6fcfaf</code>
+(merge of #8796) and <code>official/master</code> <code>92d08342</code> (= tag <code>15.0.8</code>, the shipping release), in
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>.</p>
 <blockquote>
 <p>Complements the generated changelog. The changelog is authoritative for <em>what merged</em>;
 this file records what the release is made of, how each figure was measured, and what is
 unsettled.</p>
 </blockquote>
-<p>15.0.9 is <strong>everything on <code>dev</code> at <code>25fc41d9</code></strong>. Every PR the maintainer decided ships in it
+<p>15.0.9 is <strong>everything on <code>dev</code> at <code>ca6fcfaf</code></strong>. Every PR the maintainer decided ships in it
 (<a href="decisions.html">decisions</a>) is merged. Crowdin #8730 is held out because its sync reverts translations <code>dev</code>
 corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; none is <code>released</code>.</p>
 <h2 id="identity">Identity<a class="headerlink" href="#identity" title="Permanent link">&para;</a></h2>
@@ -2281,19 +2281,19 @@ corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; 
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>25fc41d9</code> (merge of #8795, 2026-10-02 17:33Z), tree <code>e5c8ea6b</code>, the same tree as #8795's head <code>fdf88f4e</code></td>
+<td><code>ca6fcfaf</code> (merge of #8796, 2026-10-02 18:09Z), tree <code>0e38a5a7</code>, the same tree as #8796's head <code>e20b66ba</code></td>
 </tr>
 <tr>
 <td>Commits on <code>dev</code></td>
-<td>523 — <code>git rev-list --count official/master..official/dev</code></td>
+<td>525 — <code>git rev-list --count official/master..official/dev</code></td>
 </tr>
 <tr>
 <td>First-parent merges on <code>dev</code></td>
-<td><strong>92</strong> — <code>git rev-list --first-parent --count official/master..official/dev</code>; every first-parent commit in the range is a PR merge (<code>git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'</code> prints 0)</td>
+<td><strong>93</strong> — <code>git rev-list --first-parent --count official/master..official/dev</code>; every first-parent commit in the range is a PR merge (<code>git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'</code> prints 0)</td>
 </tr>
 <tr>
 <td>Diff on <code>dev</code></td>
-<td>302 files, +29531/−1874 — <code>git diff --shortstat official/master official/dev</code></td>
+<td>303 files, +29620/−1875 — <code>git diff --shortstat official/master official/dev</code></td>
 </tr>
 <tr>
 <td><code>package.json</code> version</td>
@@ -2309,7 +2309,7 @@ corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; 
 </tr>
 <tr>
 <td>Release PR</td>
-<td>#8598 (<code>dev</code> → <code>master</code>, head <code>25fc41d9</code>, author AndyLow91): open, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>; re-approval at its final head is owed. CI on <code>25fc41d9</code>: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z) — <code>gh pr view 8598 --json state,reviewDecision,reviews</code>, <code>gh pr checks 8598</code></td>
+<td>#8598 (<code>dev</code> → <code>master</code>, head <code>ca6fcfaf</code>, author AndyLow91): open, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>; re-approval at <code>ca6fcfaf</code> is owed. CI on <code>ca6fcfaf</code>: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z) — <code>gh pr view 8598 --json state,reviewDecision,reviews</code>, <code>gh pr checks 8598</code></td>
 </tr>
 <tr>
 <td>Tag</td>
@@ -2346,7 +2346,7 @@ corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; 
 Register ids refer to
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html"><code>docs/30-design/remedial/nightscout-backfix-register.md</code></a>,
 which is the home of every defect fact; these tables do not restate them.</p>
-<h4 id="programme-backfix-prs-45-plus-8741">Programme backfix PRs (45), plus #8741<a class="headerlink" href="#programme-backfix-prs-45-plus-8741" title="Permanent link">&para;</a></h4>
+<h4 id="programme-backfix-prs-46-plus-8741">Programme backfix PRs (46), plus #8741<a class="headerlink" href="#programme-backfix-prs-46-plus-8741" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -2672,6 +2672,13 @@ which is the home of every defect fact; these tables do not restate them.</p>
 <td>2026-10-02</td>
 <td>BF-151</td>
 <td>an unbounded request to two little-used API addresses (<code>/api/v1/times</code>, <code>/api/v1/slice</code>) could stop the server responding for seconds; such a request is now refused with a 400 before any work is done, and ordinary requests are unchanged. <code>lib/api/entries/index.js</code> (server only) and <code>tests/api.entries.test.js</code>. Live on 15.0.8, so described by mechanism only. Its own CI: 14 passed, 2 skipped. Head <code>fdf88f4e</code></td>
+</tr>
+<tr>
+<td>#8796</td>
+<td><code>ca6fcfaf</code></td>
+<td>2026-10-02</td>
+<td>BF-155</td>
+<td>a failed database read on <code>GET /api/v1/activity</code> or <code>/api/v1/profile/current</code> ended the server process; it is now answered with a 500 and the server keeps running. <code>lib/api/activity/index.js</code> and <code>lib/api/profile/index.js</code> (server only) and the new <code>tests/api.read-storage-failure.test.js</code>. Live on 15.0.8, so described by mechanism and outcome only. Its own CI: 14 passed, 2 skipped. Head <code>e20b66ba</code></td>
 </tr>
 <tr>
 <td>#8741</td>
@@ -3170,6 +3177,11 @@ in a future release.</p>
 <td>as described under #8758</td>
 </tr>
 <tr>
+<td>BF-155's other half — a failed database read on <code>/api/v1/food</code> or <code>/api/v1/profile</code> is answered with <code>null</code> and a 200 (the server keeps running)</td>
+<td>left for a later change</td>
+<td>unchanged from 15.0.8</td>
+</tr>
+<tr>
 <td><code>TRUST_PROXY</code> planned flip</td>
 <td>none planned (<a href="../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#57-compatibility-flags">versioning policy §5.7</a>)</td>
 <td>unset is a permanent, documented setting; BF-30 is closed only where an operator sets it</td>
@@ -3182,16 +3194,13 @@ items for everything present on 15.0.8 are in the operator-exposure table on
 this file does not copy them.</p>
 <h2 id="open-items-a-releaser-must-settle">Open items a releaser must settle<a class="headerlink" href="#open-items-a-releaser-must-settle" title="Permanent link">&para;</a></h2>
 <p>What the queue tracks is generated, and current, in
-<a href="../../docs/00-overview/ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>. As of <code>dev</code> <code>25fc41d9</code> (2026-10-02), 15.0.9 waits on:</p>
+<a href="../../docs/00-overview/ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>. As of <code>dev</code> <code>ca6fcfaf</code> (2026-10-02), 15.0.9 waits on:</p>
 <ol>
-<li><strong>The BF-155 fix</strong> (queue <code>BFQ-155</code>, decided 2026-10-02): a failed database read on one API v1
-   request ends the server process, on 15.0.8 too; the fix answers with an error and keeps running.
-   Merging it moves <code>dev</code> past <code>25fc41d9</code>.</li>
-<li><strong>One full six-cell run on the final head (after BF-155's fix merges)</strong> (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+<li><strong>One full six-cell run on <code>ca6fcfaf</code></strong> (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on <code>ce30a94d</code>). What has run since run 020 is
    under <a href="#evidence">Evidence</a>.</li>
 <li><strong>The browser hand checks still owed.</strong>
-   <code>node tools/queue/gates/client-unchanged-since-hand-check.js --base 25fc41d9 --with ''</code> names
+   <code>node tools/queue/gates/client-unchanged-since-hand-check.js --base ca6fcfaf --with ''</code> names
    16 paths that differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.gitignore</code> and
    <code>.nycrc.json</code> (tooling), <code>lib/api2/index.js</code>, <code>lib/api2/notifications-v2.js</code>,
    <code>lib/client/clock-client.js</code>, <code>lib/data/calcdelta.js</code>, <code>lib/data/dataloader.js</code>,
@@ -3216,22 +3225,22 @@ this file does not copy them.</p>
    COB count them); that was not checked in a browser.</li>
 <li><strong>The version class of #8772, #8775 and #8780</strong>, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed (<a href="decisions.html">decisions</a>).</li>
-<li><strong>Re-approval of #8598 at its final head.</strong> Both approvals were given on
-   <code>e3adc91d</code>. CI on <code>25fc41d9</code>: 27 checks passed, 3 skipped (2026-10-02).</li>
+<li><strong>Re-approval of #8598 at its final head</strong> (<code>ca6fcfaf</code> unless <code>dev</code> moves). Both approvals were
+   given on <code>e3adc91d</code>. CI on <code>ca6fcfaf</code>: 27 checks passed, 3 skipped (2026-10-02).</li>
 <li><strong>The <code>CHANGELOG.md</code> question.</strong> <code>dev</code> carries a hand-written <code>## [Unreleased]</code> section (lines
-   5–87 of <code>git show official/dev:CHANGELOG.md</code> at <code>25fc41d9</code>, from 14 commits —
+   5–87 of <code>git show official/dev:CHANGELOG.md</code> at <code>ca6fcfaf</code>, from 14 commits —
    <code>git log --no-merges official/master..official/dev -- CHANGELOG.md</code>), against the rule in
    <a href="../index.html#open-item-changelog-on-dev"><code>../README.md</code></a> that the changelog is generated at
    release time. No decision on it is recorded.</li>
 <li><strong>BF-154 is named in the release notes</strong> (decided 2026-10-02, maintainer), under Known issues:
-   the <code>node-forge</code> advisory behind the 2 high among <code>npm audit</code>'s 10 findings on <code>25fc41d9</code>, filed
-   as low because Nightscout does not call the affected function (<a href="#node-forge-ghsa-86w9-cpqp-85rv">below</a>).
+   the <code>node-forge</code> advisory behind the 2 high among <code>npm audit</code>'s 10 findings on <code>25fc41d9</code> (#8796 changes no
+   package file, so the figures stand for <code>ca6fcfaf</code>), filed as low because Nightscout does not call the affected function (<a href="#node-forge-ghsa-86w9-cpqp-85rv">below</a>).
    It is not a release blocker: no fixed version exists, and <code>@parse/node-apn</code> 8.1.0 (the
    modernization line's version, and the latest) still depends on <code>node-forge</code> 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.</li>
 <li><strong>The tag</strong>, by the maintainer.</li>
 </ol>
-<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>25fc41d9</code>.</p>
+<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>ca6fcfaf</code>.</p>
 <p>The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
 (<code>lab.sh soak --hours 72</code>) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
@@ -3245,7 +3254,7 @@ decided.</p>
 <h2 id="npm-audit-and-dependabot-triage"><code>npm audit</code> and Dependabot triage<a class="headerlink" href="#npm-audit-and-dependabot-triage" title="Permanent link">&para;</a></h2>
 <p><strong>Summary.</strong> 15.0.8 (the release operators run today) had 49 <code>npm audit</code> findings (19 high) on
 2026-09-27. On <code>dev</code> <code>25fc41d9</code> (2026-10-02 17:31Z, npm 11.12.1, <code>--package-lock-only</code>), <code>npm audit</code>
-reports 10 findings (2 high). The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
+reports 10 findings (2 high); #8796 changes no package file, so the figures stand for <code>ca6fcfaf</code>. The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
 whose advisories need elements the sanitizer does not allow (tested), the legacy <code>request</code> chain,
 loaded only when a legacy bridge is switched on (read from <code>lib/server/bootevent.js</code>), and two
 test-only packages — plus <code>moment</code>, held at 2.30.1 by decision. The 2 high are one advisory,
@@ -3294,7 +3303,7 @@ version in cut 5's lockfile. The work that gets there was planned in the open:</
 </tbody>
 </table>
 <p>Since 15.0.7, 39 merges to <code>dev</code> changed the lockfile, 20 of them Dependabot's
-(<code>git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json</code>, <code>25fc41d9</code>). Alerts on the
+(<code>git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json</code>, <code>ca6fcfaf</code>). Alerts on the
 default branch fall only when a release merges to <code>master</code>; on 2026-09-27, 74 of the 80 open were
 already fixed on <code>dev</code> (below).</p>
 <p>Measured with <code>npm audit --package-lock-only</code> (npm 11.12.1), advisory data as of the date given:
@@ -3356,7 +3365,7 @@ so <code>--omit=dev</code> does not separate build-time from run-time packages.<
 <td style="text-align: right;">—</td>
 </tr>
 <tr>
-<td><code>dev</code> <code>25fc41d9</code> (2026-10-02 17:31Z; the lockfile #8794 left, #8795 changes no package file)</td>
+<td><code>dev</code> <code>25fc41d9</code> (2026-10-02 17:31Z; the lockfile #8794 left; #8795 and #8796 change no package file, so it stands for <code>ca6fcfaf</code>)</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">8</td>
@@ -3531,7 +3540,7 @@ against every version of that package in both lockfiles:</p>
 <h2 id="known-test-gaps">Known test gaps<a class="headerlink" href="#known-test-gaps" title="Permanent link">&para;</a></h2>
 <p>Not blockers by decision; recorded so a green suite is not read as covering them.</p>
 <ul>
-<li><strong>Test-script coverage.</strong> 77 of the 223 <code>tests/*.test.js</code> files on <code>dev</code> <code>25fc41d9</code> match neither
+<li><strong>Test-script coverage.</strong> 77 of the 224 <code>tests/*.test.js</code> files on <code>dev</code> <code>ca6fcfaf</code> match neither
   <code>npm run test:unit</code> nor <code>test:integration</code> (compare the files against the two globs in
   <code>git show official/dev:package.json</code>). Among
   them: <code>dependency-overrides</code> (#8786), <code>report-daytoday-durations</code> (#8788),
@@ -3594,7 +3603,7 @@ the user-facing form. Facts the notes must not lose:</p>
   values; <code>notes: ""</code> clears; <code>roles</code> is not filled in from storage, so removing the last role
   still works.</li>
 <li><strong>BF-17 and BF-30 / <code>TRUST_PROXY</code> (#8754).</strong> As described under
-  <a href="#programme-backfix-prs-45-plus-8741">#8754</a>, including the Loop remote-command sender address
+  <a href="#programme-backfix-prs-46-plus-8741">#8754</a>, including the Loop remote-command sender address
   that is now stored on remote overrides.</li>
 <li><strong>Docker Compose (BF-10, #8753).</strong> <code>mongo</code> service gains <code>ulimits nofile 64000</code>; without it mongod
   aborted with <code>Too many open files</code> (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).</li>
@@ -3730,17 +3739,22 @@ the user-facing form. Facts the notes must not lose:</p>
 <ul>
 <li>Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.</li>
-<li><strong>The candidate, <code>dev</code> <code>25fc41d9</code></strong> (tree <code>e5c8ea6b</code>, the same tree as #8795's head
-  <code>fdf88f4e</code>). After a fresh <code>npm ci</code> on <code>fdf88f4e</code>: full suite 3532 passing, 0 failing, 4 pending
-  (Node 22.23.2, MongoDB 7.0.43, one cell), and #8795's 5 refusal tests fail with <code>a143d507</code>'s
-  <code>lib/api/entries/index.js</code>. The last full RC run is run 020 on <code>ce30a94d</code> (below); it has not been
-  repeated on a later head, and one full six-cell run on <code>25fc41d9</code> is owed. Since run 020: #8785 is
+<li><strong>The candidate, <code>dev</code> <code>ca6fcfaf</code></strong> (tree <code>0e38a5a7</code>, the same tree as #8796's head
+  <code>e20b66ba</code>). Full suite on <code>e20b66ba</code>: 3534 passing, 0 failing, 4 pending (Node 22.23.2,
+  MongoDB 7.0.43, one cell). #8796 (BF-155) changes <code>lib/api/activity/index.js</code> and
+  <code>lib/api/profile/index.js</code> (server only, no browser-side file) and adds
+  <code>tests/api.read-storage-failure.test.js</code>; its own CI: 14 passed, 2 skipped. The last full RC run
+  is run 020 on <code>ce30a94d</code> (below); it has not been repeated on a later head, and one full six-cell
+  run on <code>ca6fcfaf</code> is owed.</li>
+<li><strong><code>dev</code> <code>25fc41d9</code></strong> (tree <code>e5c8ea6b</code>, the same tree as #8795's head <code>fdf88f4e</code>). After a fresh
+  <code>npm ci</code> on <code>fdf88f4e</code>: full suite 3532 passing, 0 failing, 4 pending (Node 22.23.2, MongoDB
+  7.0.43, one cell), and #8795's 5 refusal tests fail with <code>a143d507</code>'s <code>lib/api/entries/index.js</code>. Since run 020: #8785 is
   test-only; #8786 ran its own nine-cell CI with a byte-identical bundle; #8788 local full suite
   3481/0/3; #8791's branch 3485/0/3; #8793's branch 3502/0/3; #8794's branch 3512/0/4 (the added
   pending is the connector's own axios copy, outside the advisory range, which the floor check
   skips), with <code>npm ci</code> on Node 20.20.0, 22.23.2 and 24.20.0 and the npm 12 job, and a
   byte-identical bundle. Each PR's own CI on GitHub passed (nine cells for the dependency PRs;
-  14 passed and 2 skipped for #8791, #8794 and #8795).</li>
+  14 passed and 2 skipped for #8791, #8794, #8795 and #8796).</li>
 <li><strong><code>dev</code> <code>3014f883</code></strong>: <code>7000eb18</code> plus #8788 (BF-148), which changes only
   <code>lib/report_plugins/daytoday.js</code> among files a site runs (browser-side, the Day to Day report), adds
   <code>tests/report-daytoday-durations.test.js</code> and edits <code>CHANGELOG.md</code> and the manual smoke checklist.
@@ -3775,8 +3789,8 @@ the user-facing form. Facts the notes must not lose:</p>
   fails only on BF-135's intended page-load change.</li>
 <li>The previous candidate, <code>dev</code> <code>699eb5fa</code> (tree <code>0b727dc5</code>, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.</li>
-<li>CI on #8598 at <code>25fc41d9</code>: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z); at <code>a143d507</code>, <code>3014f883</code>,
-  <code>7000eb18</code> and <code>295f1177</code>, 27 checks passed, 3 skipped. At <code>e3adc91d</code>, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).</li>
+<li>CI on #8598 at <code>ca6fcfaf</code>: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at <code>25fc41d9</code>,
+  <code>a143d507</code>, <code>3014f883</code>, <code>7000eb18</code> and <code>295f1177</code>, 27 checks passed, 3 skipped. At <code>e3adc91d</code>, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).</li>
 <li>Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. A local
   <code>test:unit</code> pass does not cover every test file (<a href="#known-test-gaps">Known test gaps</a>).</li>
 </ul>

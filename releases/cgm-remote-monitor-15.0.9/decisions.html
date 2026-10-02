@@ -2181,9 +2181,9 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-01, as of <code>dev</code> <code>25fc41d9</code> (2026-10-02). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-02, as of <code>dev</code> <code>ca6fcfaf</code> (2026-10-02). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>.
@@ -2207,7 +2207,7 @@ shipping release, and this repository is public.</em></p>
 <tr>
 <td><strong>The release goes out through #8598</strong> (<code>dev</code> → <code>master</code>, opened by AndyLow91)</td>
 <td><code>RT-0</code></td>
-<td>open, head <code>25fc41d9</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and re-approval at its final head is owed; CI on <code>25fc41d9</code>: 27 checks passed, 3 skipped (2026-10-02)</td>
+<td>open, head <code>ca6fcfaf</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and re-approval at <code>ca6fcfaf</code> is owed; CI on <code>ca6fcfaf</code>: 27 checks passed, 3 skipped (2026-10-02)</td>
 </tr>
 <tr>
 <td><strong>Backfix 2 ships inside 15.0.9</strong>: <code>bf2/ops</code>, <code>bf2/backports</code> and <code>bf2/auth-hardening</code>, with the subject-edit fix folded into the last (2026-09-23)</td>
@@ -2298,6 +2298,11 @@ shipping release, and this repository is public.</em></p>
 <td><strong>BF-151 and BF-73 are fixed for 15.0.9</strong> (2026-10-01): an unbounded request to two little-used API addresses could stop the server responding for seconds, and is now refused (BF-151); error replies outside development mode no longer carry a stack trace or server paths (BF-73). Both are live on 15.0.8 and described by mechanism only</td>
 <td><code>BFQ-151</code>, <code>BFQ-73</code></td>
 <td>#8795 merged (<code>25fc41d9</code>), #8793 merged (<code>839a1565</code>)</td>
+</tr>
+<tr>
+<td><strong>BF-155 is fixed for 15.0.9</strong> (2026-10-02): a failed database read on <code>GET /api/v1/activity</code> or <code>/api/v1/profile/current</code> ended the server process, and is now answered with a 500 while the server keeps running. Live on 15.0.8 and described by mechanism only. The same read failure on <code>/api/v1/food</code> and <code>/api/v1/profile</code>, answered with <code>null</code> and a 200 without ending the process, is left for a later change</td>
+<td><code>BFQ-155</code></td>
+<td>#8796 merged (<code>ca6fcfaf</code>)</td>
 </tr>
 <tr>
 <td><strong>BF-153's dependency refresh is taken in on its measured result</strong> (<code>npm audit</code> 20 → 8, no highs, production bundle byte-identical); <strong><code>moment</code> stays at 2.30.1</strong>, because no request input reaches <code>moment.locale</code> on <code>dev</code> and 2.31.0 changes parsing and locale display output (2026-10-01)</td>

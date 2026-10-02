@@ -3365,7 +3365,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -4320,8 +4320,9 @@ they got an error before.</p>
 2026. Later Crowdin updates are not in this release.</p>
 <h3 id="other-fixes">Other fixes<a class="headerlink" href="#other-fixes" title="Permanent link">&para;</a></h3>
 <p>Faster data loading on sites with many treatments; deleted records no longer reappear; failed
-treatment searches no longer crash the server; a problem reading from the database no longer stops
-Nightscout until it is restarted (it answers that request with an error and keeps running); clearer error messages when a Loop remote
+treatment searches no longer crash the server; a problem reading from the database while answering a
+request for the activity log or the current profile no longer stops Nightscout until it is
+restarted (it answers that request with an error and keeps running); clearer error messages when a Loop remote
 command fails (the form keeps what you entered); profile switches and unnamed profiles handled
 correctly; a site with no profile no longer shows an alert that cannot be dismissed; the clock
 view shows the worried face for low and falling readings; voice assistants (Alexa, Google Home)
@@ -4554,7 +4555,7 @@ corrections of behaviour that was never intended, not as new features, and nothi
 depends on the number. Sites that follow the development channel may already report <code>15.0.9</code>;
 a report from "15.0.9" made before this release is from that channel.</p>
 <hr />
-<p><em>Draft, 2026-10-02, on the development version 25fc41d9; not yet released.</em></p>
+<p><em>Draft, 2026-10-02, on the development version ca6fcfaf; not yet released.</em></p>
 
 
 

@@ -2072,9 +2072,9 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
-Prose revised 2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>25fc41d9</code> and
+Prose revised 2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>ca6fcfaf</code> and
 <code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>). The tables are generated from
 <code>queue/work-queue.yaml</code>; see <a href="#how-to-check-any-of-this-yourself">How to check any of this yourself</a>.</em></p>
 <p>This page answers "where is the work, and what is it waiting for" across the three
@@ -2130,30 +2130,29 @@ current and the prose is stale.</p>
 </table>
 <!-- END GENERATED: horizons -->
 
-<p><strong>Remedial</strong> — finding and fixing defects that already ship. <code>dev</code> is at <code>25fc41d9</code> (the merge of</p>
-<h1 id="8795-2026-10-02-92-first-parent-merges-and-523-commits-since-1508">8795, 2026-10-02): 92 first-parent merges and 523 commits since 15.0.8<a class="headerlink" href="#8795-2026-10-02-92-first-parent-merges-and-523-commits-since-1508" title="Permanent link">&para;</a></h1>
+<p><strong>Remedial</strong> — finding and fixing defects that already ship. <code>dev</code> is at <code>ca6fcfaf</code> (the merge of</p>
+<h1 id="8796-2026-10-02-93-first-parent-merges-and-525-commits-since-1508">8796, 2026-10-02): 93 first-parent merges and 525 commits since 15.0.8<a class="headerlink" href="#8796-2026-10-02-93-first-parent-merges-and-525-commits-since-1508" title="Permanent link">&para;</a></h1>
 <p>(<code>git rev-list [--first-parent] --count official/master..official/dev</code>). None of it is released.</p>
 <ul>
-<li><strong>Merged.</strong> Every cgm-remote-monitor PR opened for 15.0.9; the PR-by-PR list is in
+<li><strong>Merged.</strong> Every PR decided for 15.0.9; the PR-by-PR list is in
   <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">the release contents</a>. Crowdin #8730 is
   held out (BF-132). The connector fixes are in <code>nightscout-connect</code> <code>0.1.0</code>, released 2026-09-24,
-  which <code>dev</code> pins exactly (#8762). The last one in, #8795 (BF-151), stops an unbounded request to
-  two little-used API addresses from making the server unresponsive for seconds.</li>
+  which <code>dev</code> pins exactly (#8762). The last one in, #8796 (BF-155): a failed database read on two API
+  v1 requests ended the server process, and now it answers with an error and the server keeps running.</li>
 <li><strong>Tests.</strong> The last full run is run 020 on <code>ce30a94d</code> (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8795's head
-  <code>fdf88f4e</code> has the same tree as <code>25fc41d9</code>, and passes the full suite, 3532/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on the final head (after BF-155's fix merges) comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8796's head
+  <code>e20b66ba</code> has the same tree as <code>ca6fcfaf</code>, and passes the full suite, 3534/0/4, on one cell
+  (Node 22, MongoDB 7.0.43). A full six-cell run on <code>ca6fcfaf</code> comes next
   (<a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>).</li>
 <li><strong>Real-site soak.</strong> <code>RT-SOAK</code> is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on <code>dev</code>. The lab's 72 h soak was not run.</li>
-<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>25fc41d9</code> and mergeable; its CI on <code>25fc41d9</code>:
-  27 checks passed, 3 skipped (2026-10-02). It was approved at <code>e3adc91d</code>; re-approval at its final head is owed.</li>
+<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>ca6fcfaf</code> and mergeable; its CI on <code>ca6fcfaf</code>:
+  27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
+  It was approved at <code>e3adc91d</code>; re-approval at <code>ca6fcfaf</code> is owed.</li>
 <li><strong>Version.</strong> Decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.</li>
-<li><strong>Still to merge.</strong> BF-155, decided for 15.0.9 on 2026-10-02: a failed database read on one API v1
-  request ends the server process (15.0.8 too); the fix answers with an error and keeps running.</li>
 <li><strong>What remains</strong> before the tag, including the queue's open <code>RT-0</code> blockers, is listed once, in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</li>
 </ul>
 <p>The <a href="../30-design/remedial/nightscout-backfix-register.html">backfix register</a> holds the defect facts;
@@ -2165,7 +2164,7 @@ then cut 4. The separate deprecation release was dropped (<code>RT-4</code>): th
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom <code>BRIDGE_*</code> settings have
 been served by <code>nightscout-connect</code> since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-10-02 against <code>official/dev</code> <code>25fc41d9</code>:</p>
+the train has shipped. Measured 2026-10-02 against <code>official/dev</code> <code>ca6fcfaf</code>:</p>
 <table>
 <thead>
 <tr>
@@ -2179,31 +2178,31 @@ the train has shipped. Measured 2026-10-02 against <code>official/dev</code> <co
 <tr>
 <td>1</td>
 <td><code>chore/retire-jsdom</code></td>
-<td style="text-align: right;">348</td>
+<td style="text-align: right;">350</td>
 <td style="text-align: right;">11</td>
 </tr>
 <tr>
 <td>2</td>
 <td><code>chore/build-runtime-separation</code></td>
-<td style="text-align: right;">348</td>
+<td style="text-align: right;">350</td>
 <td style="text-align: right;">18</td>
 </tr>
 <tr>
 <td>3</td>
 <td><code>chore/compose-mongodb6</code></td>
-<td style="text-align: right;">348</td>
+<td style="text-align: right;">350</td>
 <td style="text-align: right;">21</td>
 </tr>
 <tr>
 <td>4</td>
 <td><code>chore/mime-exposure-review</code></td>
-<td style="text-align: right;">348</td>
+<td style="text-align: right;">350</td>
 <td style="text-align: right;">35</td>
 </tr>
 <tr>
 <td>5</td>
 <td><code>chore/nightscout-modernization</code></td>
-<td style="text-align: right;">224</td>
+<td style="text-align: right;">226</td>
 <td style="text-align: right;">26</td>
 </tr>
 </tbody>
@@ -2234,7 +2233,7 @@ image; that is not a release. <code>RT-0</code> (release 15.0.9) is the item tha
 If a defect marked <code>fixed</code> or <code>merged</code> exists in 15.0.8, anyone running 15.0.8 still has it.</p>
 <p>The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with <code>node tools/queue/gates/register-exposure-legend.js</code>: <strong>111 defects</strong>
-(BF-12, invalid, and BF-41, closed, excluded) — 28 <code>open</code>, 81 <code>merged</code>, 1 <code>partly merged</code>,
+(BF-12, invalid, and BF-41, closed, excluded) — 27 <code>open</code>, 82 <code>merged</code>, 1 <code>partly merged</code>,
 1 <code>fixed</code> (BF-52). A few were introduced and repaired on <code>dev</code> before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.</p>
@@ -2456,11 +2455,6 @@ cover more than one <code>BF-</code>:</p>
 <td>BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed</td>
 </tr>
 <tr>
-<td><code>BFQ-155</code></td>
-<td><code>in-progress</code></td>
-<td>BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9</td>
-</tr>
-<tr>
 <td><code>BFQ-40</code></td>
 <td><code>merged-upstream</code></td>
 <td>BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion</td>
@@ -2626,11 +2620,11 @@ cover more than one <code>BF-</code>:</p>
 <tr>
 <td><code>register-open</code></td>
 <td>27</td>
-<td>2</td>
+<td>1</td>
 <td>5</td>
 <td>1</td>
 <td>6</td>
-<td>48</td>
+<td>49</td>
 <td>5</td>
 <td></td>
 <td>2</td>
@@ -2787,7 +2781,7 @@ expanded in <a href="NEEDS-A-HUMAN.html">NEEDS-A-HUMAN.md</a>.</p>
 <tbody>
 <tr>
 <td><code>RT-0</code></td>
-<td>Release 15.0.9 (PR #8598 at <code>dev</code> <code>25fc41d9</code>).</td>
+<td>Release 15.0.9 (PR #8598 at <code>dev</code> <code>ca6fcfaf</code>).</td>
 <td>Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</td>
 </tr>
 <tr>

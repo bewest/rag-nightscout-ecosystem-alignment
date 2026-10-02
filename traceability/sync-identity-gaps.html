@@ -5062,7 +5062,7 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 <hr />
 <h3 id="gap-sync-004-override-supersession-not-tracked-in-sync">GAP-SYNC-004: Override supersession not tracked in sync<a class="headerlink" href="#gap-sync-004-override-supersession-not-tracked-in-sync" title="Permanent link">&para;</a></h3>
 <p><strong>Ontology</strong>: Desired (user intent (overrides))</p>
-<p><strong>Scenario</strong>: <a href="../conformance/scenarios/override-supersede/index.html">Override Supersede</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/conformance/assertions/sync-deduplication.yaml">Sync Deduplication</a></p>
+<p><strong>Scenario</strong>: <a href="../conformance/scenarios/override-supersede/index.html">Override Supersede</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/conformance/assertions/sync-deduplication.yaml">Sync Deduplication</a></p>
 <p><strong>Description</strong>: When an override is superseded by a new override, the lifecycle change is not synced to Nightscout. Loop and Trio only upload the initial override creation, not subsequent status changes.</p>
 <p><strong>Source</strong>: <a href="../mapping/cross-project/aid-controller-sync-patterns.html">AID Controller Sync Patterns - Gaps and Recommendations</a></p>
 <p><strong>Impact</strong>:
@@ -5559,8 +5559,8 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 <p><strong>Impact</strong>: V4 features for profile activation history and override tracking are not portable across ecosystem. Clients cannot consume or produce compatible data when switching between Nocturne and cgm-remote-monitor.</p>
 <p><strong>Remediation</strong>: Propose StateSpan as RFC for Nightscout v4 API standard.</p>
 <p><strong>Specifications</strong>:
-- V3 Extension (reference): <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/specs/openapi/aid-statespan-2025.yaml"><code>specs/openapi/aid-statespan-2025.yaml</code></a>
-- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/specs/openapi/nocturne-v4-extension.yaml"><code>specs/openapi/nocturne-v4-extension.yaml</code></a></p>
+- V3 Extension (reference): <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/specs/openapi/aid-statespan-2025.yaml"><code>specs/openapi/aid-statespan-2025.yaml</code></a>
+- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/specs/openapi/nocturne-v4-extension.yaml"><code>specs/openapi/nocturne-v4-extension.yaml</code></a></p>
 <p><strong>Source</strong>: <a href="../docs/10-domain/nocturne-v4-profile-extensions.html">Nocturne V4 ProfileSwitch Extensions</a></p>
 <p><strong>Status</strong>: Open</p>
 <hr />
@@ -5574,8 +5574,8 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 <p><strong>Impact</strong>: Cannot build profile timeline or retrospectively analyze which profile was active at any point without using V4 StateSpan API (Nocturne-specific).</p>
 <p><strong>Remediation</strong>: Add profile activation events to V3 treatments collection or migrate to V4 with StateSpan.</p>
 <p><strong>Specifications</strong>:
-- V3 Extension (reference): <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/specs/openapi/aid-statespan-2025.yaml"><code>specs/openapi/aid-statespan-2025.yaml</code></a> - <code>/state-spans/active</code> endpoint
-- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/specs/openapi/nocturne-v4-extension.yaml"><code>specs/openapi/nocturne-v4-extension.yaml</code></a></p>
+- V3 Extension (reference): <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/specs/openapi/aid-statespan-2025.yaml"><code>specs/openapi/aid-statespan-2025.yaml</code></a> - <code>/state-spans/active</code> endpoint
+- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4a85fd154c310dbf4b381e4d10b7c1c73b6e7be/specs/openapi/nocturne-v4-extension.yaml"><code>specs/openapi/nocturne-v4-extension.yaml</code></a></p>
 <p><strong>Source</strong>: <a href="../docs/10-domain/nocturne-v4-profile-extensions.html">Nocturne V4 ProfileSwitch Extensions</a></p>
 <p><strong>Status</strong>: Open</p>
 <hr />

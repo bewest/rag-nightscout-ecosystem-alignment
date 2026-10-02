@@ -2272,10 +2272,10 @@
 
 
 <h1 id="needs-a-human">Needs a human<a class="headerlink" href="#needs-a-human" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
 <p><em>Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>25fc41d9</code> and nightscout-connect
+2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>ca6fcfaf</code> and nightscout-connect
 <code>official/main</code> <code>4dde1ec</code> (tag <code>v0.1.0</code>); tables generated.</em></p>
 <p>This page lists only the items whose claimed state means <strong>the next move belongs to
 a person</strong>, grouped by the kind of person, so that "what is blocked on me" is one
@@ -2465,7 +2465,7 @@ they need is a release, and that is one item — <code>RT-0</code> — which is 
 </table>
 <!-- END GENERATED: open-prs -->
 
-<p>Every PR decided for 15.0.9 is merged, and the BF-155 fix (decided 2026-10-02) is in progress; <code>RT-0</code> below gives the release's state.</p>
+<p>Every PR decided for 15.0.9 is merged; <code>RT-0</code> below gives the release's state.</p>
 <p>The connector half is released. On 2026-09-24 the maintainer merged <code>nightscout-connect</code> #70
 (<code>dev</code> → <code>main</code>, <code>4dde1ec</code>) and tagged <code>main</code> <code>v0.1.0</code>. npm's <code>latest</code> is <code>0.1.0</code>, with
 provenance. Its code is the same as <code>0.1.0-dev.3</code>'s (<code>977da8a</code>): the only difference is
@@ -2481,8 +2481,8 @@ passed on 2026-09-23 in automation and by hand: mouse in mg/dL and mmol/L, and t
 15.0.8. The hand check found BF-103 (a split drag keeps the old time, so IOB and COB ignore the move),
 which is on 15.0.8 as well and is tracked as <code>BFQ-103</code>.</p>
 <h3 id="rt-0--release-1509"><code>RT-0</code> — release 15.0.9<a class="headerlink" href="#rt-0--release-1509" title="Permanent link">&para;</a></h3>
-<p>The most consequential row on this page. <code>dev</code> is at <code>25fc41d9</code> (the merge of #8795, 2026-10-02):
-92 first-parent merges and 523 commits since 15.0.8
+<p>The most consequential row on this page. <code>dev</code> is at <code>ca6fcfaf</code> (the merge of #8796, 2026-10-02):
+93 first-parent merges and 525 commits since 15.0.8
 (<code>git rev-list [--first-parent] --count official/master..official/dev</code>). Until 15.0.9 ships, every
 one of those fixes exists in code and protects nobody. They include the fixes for two
 published-advisory defects that survive <code>AUTH_DEFAULT_ROLES=denied</code>, GHSA-gjhc (BF-79, #8744) and
@@ -2490,25 +2490,24 @@ GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), a
 backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
 of them.</p>
 <ul>
-<li><strong>Merged.</strong> Every cgm-remote-monitor PR opened for 15.0.9, the last being #8795 (BF-151); the list is in
+<li><strong>Merged.</strong> Every PR decided for 15.0.9, the last being #8796 (BF-155); the list is in
   <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">contents.md</a>, which also says what the
   release leaves broken. Crowdin #8730 is held out because its sync reverts translations <code>dev</code>
   corrected (BF-132).</li>
 <li><strong>Tests.</strong> The last full run is run 020 on <code>ce30a94d</code> (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8795's head
-  <code>fdf88f4e</code> has the same tree as <code>25fc41d9</code>, and passes the full suite, 3532/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on the final head (after BF-155's fix merges) comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8796's head
+  <code>e20b66ba</code> has the same tree as <code>ca6fcfaf</code>, and passes the full suite, 3534/0/4, on one cell
+  (Node 22, MongoDB 7.0.43). A full six-cell run on <code>ca6fcfaf</code> comes next
   (<a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>).</li>
 <li><strong>Real-site soak.</strong> <code>RT-SOAK</code> is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on <code>dev</code>. The lab's 72 h soak was not run.</li>
-<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>25fc41d9</code> and mergeable; its CI on <code>25fc41d9</code>:
-  27 checks passed, 3 skipped (2026-10-02). It was approved at <code>e3adc91d</code>; re-approval at its final head is owed.</li>
+<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>ca6fcfaf</code> and mergeable; its CI on <code>ca6fcfaf</code>:
+  27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
+  It was approved at <code>e3adc91d</code>; re-approval at <code>ca6fcfaf</code> is owed.</li>
 <li><strong>Version.</strong> Decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.</li>
-<li><strong>Still to merge.</strong> BF-155, decided for 15.0.9 on 2026-10-02: a failed database read on one API v1
-  request ends the server process (15.0.8 too); the fix answers with an error and keeps running.</li>
 <li><strong>What remains</strong> before the tag, including the queue's open <code>RT-0</code> blockers, is listed once, in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</li>
 </ul>
 <h3 id="p0-tag--done-nightscout-connect-010-is-released"><code>P0-TAG</code> — done: <code>nightscout-connect</code> 0.1.0 is released<a class="headerlink" href="#p0-tag--done-nightscout-connect-010-is-released" title="Permanent link">&para;</a></h3>
