@@ -31,7 +31,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
+| `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
@@ -68,6 +68,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
+| **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

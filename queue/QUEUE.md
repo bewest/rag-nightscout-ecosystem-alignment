@@ -2260,11 +2260,11 @@ distinction is the only thing that makes the register mean anything - widening
 | base | `official/dev@ca6fcfaf` |
 | worktree | `externals/work/crm-bf09` |
 | semver | `patch` |
-| review | maintainer - this needs a decision on intent before it needs code |
+| review | maintainer (intent decided 2026-10-02) |
 | ships to operators today | **yes** |
 | register | `BF-09` |
 
-**Blast radius.** lib/server/websocket.js:538-566 (the register cites 535-568).
+**Blast radius.** lib/server/websocket.js:618-638 on dev ca6fcfaf (538-566 on v15.0.8): the socket's 2 s similar match; tests/websocket.dedup-zero.test.js.
 
 **What an operator sees.** When two treatment records arrive within two seconds of each other, Nightscout decides whether they are the same one. That check ignores a value of zero. A zero temporary basal rate - the suspend an automated insulin delivery system sends - is exactly such a value. It is not settled whether this ever discards a real record.
 

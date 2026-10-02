@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-09
+# Review packet — BFQ-09 (PR #8797)
 
 **BF-09 - socket dedup truthiness skips a falsy value**
 
@@ -27,7 +27,8 @@
 
 ## What this changes
 
-lib/server/websocket.js:538-566 (the register cites 535-568).
+lib/server/websocket.js:618-638 on dev ca6fcfaf (538-566 on v15.0.8): the
+socket's 2 s similar match; tests/websocket.dedup-zero.test.js.
 
 ## Why that semver
 
@@ -43,7 +44,7 @@ if it is a defect at all, the fix is a bug fix
 
 ## Who should review this, and why
 
-maintainer - this needs a decision on intent before it needs code
+maintainer (intent decided 2026-10-02)
 
 ## What was measured
 
