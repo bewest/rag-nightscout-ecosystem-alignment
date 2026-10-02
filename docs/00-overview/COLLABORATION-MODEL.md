@@ -103,7 +103,7 @@ What SQLite sells, and what stays constant across every tier, is in
 
    Both servers' documentation already does part of this:
 
-   - Nightscout's lists eight hosted providers, each linking to its own site for pricing, with no
+   - Nightscout's lists nine hosted providers, each linking to its own site for pricing, with no
      purchase on the documentation domain ([docs home](https://nightscout.github.io/), `docs/index.md`
      at `9b5afad2`, 2026-08-07). It publishes no listing criteria, and its order follows no stated
      rule; T1Pal, the author's company, is listed first.
@@ -151,10 +151,31 @@ What SQLite sells, and what stays constant across every tier, is in
 - A maturity level read as a statement that software is safe for dosing decisions.
 - Any account of past disagreements in place of measured needs.
 
+## 6a. How much structure: the options
+
+The rules in §5 are one point on a range. The board and the maintainers can choose less or more
+structure, and the rules can be adopted one at a time. Each option keeps every project's merge
+decision with its own maintainers.
+
+| option | what changes | what it costs | what it leaves open | where it is used |
+|---|---|---|---|---|
+| **0. Remain informal** | nothing: proposals, sponsorship and listings are handled case by case, as today ([GOVERNANCE-TODAY](observations/GOVERNANCE-TODAY.md)) | no new process | outcomes are not on a public record, so readers cannot see how a proposal was handled; no shared rule for companies or for a second server | most small open-source projects |
+| **1. A transparency layer** | rule 1 (public proposal record with a named reviewer and a response date) and rule 9 (disclosure); nothing else | a public register and someone to keep it; a response for every proposal | who decides the shared contract, and on what terms companies take part | Apache's "if it isn't on the mailing list, it didn't happen" ([PRECEDENTS](perspective/PRECEDENTS.md#rules-other-organisations-use)) |
+| **2. Rules for money and listings** | option 1, plus rules 2–4 and 8: work not control, neutral listings, recognition by organisation, paid assurance with public evidence | written policies and a conflict-of-interest policy (counsel, §8) | how the shared contract changes | OpenStreetMap, CNCF website guidelines, OpenMRS levels, SQLite |
+| **3. A cross-project body for the shared contract** | option 2, plus rule 5: the API description and conformance tests change through a recorded change process, decided by maintainers of the affected implementations with no majority from one employer or host | maintainers' time on a standing body; a change-request record | maturity labels (rule 6) and research rules (rule 7) can still be added later | openEHR change requests, WHATWG, CNCF's technical oversight committee, Python's cap on any one employer |
+
+Choosing a lower option now does not rule out a higher one later. CNCF's governance guidance
+recommends structure by size, from a maintainer council for a single repository with 3–10
+maintainers from 1–3 organisations to an elected steering committee or federated subprojects for
+several repositories with 20 or more maintainers from five or more, and says "Governance should not
+be more complex than the project" ([CNCF blog, 2026-08-26](https://www.cncf.io/blog/2026/08/26/governance-guidance-for-cncf-projects-choosing-the-right-structure-for-your-projects-size-and-stage/),
+read 2026-10-02).
+
 ## 7. Decisions requested
 
 **For the board:**
 
+0. Which option in §6a to start from. Decisions 1–4 assume option 1 or above.
 1. Adopt rule 1: where proposals are submitted, the response time, and where outcomes are published.
 2. Adopt rules 2, 3 and 9 as policy, with a conflict-of-interest policy that covers board members,
    maintainers, paid staff and partners (counsel, §8).

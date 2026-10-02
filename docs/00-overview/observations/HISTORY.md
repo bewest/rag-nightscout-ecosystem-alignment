@@ -16,9 +16,10 @@ could not be established that way is listed in §5 rather than given a date.*
 | 2013 | the foundation's homepage: "a father … developed a DIY project called Nightscout" | [nightscoutfoundation.org](https://www.nightscoutfoundation.org/) |
 | 2013-10-01 | cgm-remote-monitor's first commits: "First commit of basic index.html that mimics a cgm display" | `git log --reverse`, `nightscout/cgm-remote-monitor` (`90e2a11c`, `4f0c939b`) |
 | 2013-12 | DIYPS, a do-it-yourself pancreas system, is created | [diyps.org](https://diyps.org/dana-lewis/) |
-| 2014 | "The Nightscout Foundation was formed in 2014 as a direct and natural off-shoot of the CGM in the Cloud movement." | [foundation, about](https://www.nightscoutfoundation.org/about) |
+| 2014-04 | the CGM in the Cloud Facebook group starts, by the foundation's account: "a spin off from the CGM in the Cloud Facebook group started in April of 2014" | [foundation, FAQ](https://www.nightscoutfoundation.org/faqs) |
 | 2014-05-22 | the `nightscout/cgm-remote-monitor` GitHub repository is created, carrying the earlier history | `gh api repos/nightscout/cgm-remote-monitor` |
 | 2014-07-29 | cgm-remote-monitor's first tag, 0.3.0 | `git for-each-ref --sort=creatordate refs/tags` |
+| 2014-10 | the Nightscout Foundation is "incorporated in October of 2014"; "formed in 2014 as a direct and natural off-shoot of the CGM in the Cloud movement" | [FAQ](https://www.nightscoutfoundation.org/faqs), [about](https://www.nightscoutfoundation.org/about) |
 | 2014-11-15 | xDrip's first commit | `git log --reverse`, `NightscoutFoundation/xDrip` (`ee3ece5a9`) |
 
 ## 2. The ecosystem grows, 2015–2019
@@ -92,9 +93,9 @@ The cross-project release and contributor record for these years is in
 
 **Sources that differ.**
 
-- **When the foundation began.** Its about page says "formed in 2014"; the IRS exemption is dated
-  April 2015. They may be different events (formation and the IRS ruling); the incorporation date
-  was not found.
+- **When the foundation began.** Its FAQ gives incorporation in October 2014; the IRS exemption is
+  dated April 2015. These are different events, incorporation and the IRS ruling; no state filing
+  was read.
 - **First commit and repository date.** Several repositories carry history older than the
   repository itself: cgm-remote-monitor (code from 2013, repository 2014), AndroidAPS (code 2016,
   `nightscout` repository 2020), minimed-connect-to-nightscout (code 2015, `nightscout` repository
@@ -106,9 +107,8 @@ The cross-project release and contributor record for these years is in
   foundation's homepage describes the foundation as the movement's beginning. This is a difference in
   characterisation, not in dates.
 
-**Not established from a primary source**, so not dated above: when the "CGM in the Cloud" Facebook
-group began; the origin of the name Nightscout and its first public announcement; the foundation's
-incorporation date; when Dexcom Share and Abbott LibreLinkUp launched; when mLab shut down
+**Not established from a primary source**, so not dated above: the origin of the name Nightscout and
+its first public announcement; when Dexcom Share and Abbott LibreLinkUp launched; when mLab shut down
 entirely (only the Heroku add-on removal is sourced); Azure's free-tier history for Nightscout.
 
 ## 6. How to check

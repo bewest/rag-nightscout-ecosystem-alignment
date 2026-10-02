@@ -64,11 +64,11 @@ questions:
 | 0 | Fixes found by the 2026-10-02 source check: BFQ-72's withheld disposition, the census repository count, unsupported precedent claims | done | `0f3ca59a` |
 | 1 | This plan | done | `e3d7b65c` |
 | 2 | Draft HISTORY | drafted: 2012–2026 chronology from `git` on the stack clones and primary pages read 2026-10-02 (a sample re-run by the session; each external link checked for status); roles, not names; where sources differ and what is not established listed in its §5 | this commit |
-| 3 | Draft GOVERNANCE-TODAY | in progress | |
+| 3 | Draft GOVERNANCE-TODAY | drafted: per-repository merge and release accounts, licences and branch rules for 20 repositories; written governance files; the foundation's public statements and processes; the provider listing; where we looked and found nothing; what only the foundation can supply. Measured with `gh api` and the foundation's pages 2026-10-02, a sample re-run by the session. It corrected the provider count used in two pages (nine, not eight, at `9b5afad2`) | this commit |
 | 4 | Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists | drafted: census, client survey, cross-project releases and contributors, maintenance time (review load links to the generated table), vendor calendar and connector changes, clinical studies | this commit |
 | 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | PRECEDENTS moved, and now holds the comparison tables the proposals carried (collaboration §4 rules and §4a SQLite, sponsored-team §6 funding, quality-system §7 histories), each proposal keeping its heading, a pointer and its own reading; INFRASTRUCTURE-TRANSITION drafted; six transitions on the §4 template (OpenSSL, OpenStreetMap, Debian, Home Assistant, the PSF residencies, Tidepool Loop), with "not found in the sources read" where a question has no source | `6e4137b4`, this commit |
 | 6 | Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home | all four labelled part 3; SPONSORED-TEAM-PROPOSAL 359 → 249 lines, COLLABORATION-MODEL 246 → 196 (§3 calendar and §4 tables), QUALITY-SYSTEM 317 → 307 (§7 table); ECOSYSTEM-PROGRAMME's 63 and 138-of-172 now cite the evidence page and the generated table | `6e4137b4`, this commit |
-| 7 | COLLABORATION-MODEL §7: a range of governance options, from "remain informal" to a cross-project technical council (proposed) | not started | |
+| 7 | COLLABORATION-MODEL §6a: four options from "remain informal" to a cross-project body for the shared contract, each with what it costs and leaves open; board decision 0 is which to start from; CNCF's sizing guidance quoted from the post (re-read 2026-10-02) | done | this commit |
 | 8 | Landing page and site nav in three parts | `docs/00-overview/README.md` is the section index in three parts; the hand-written landing file it replaces is removed; nav lists the operational pages, then the proposals, then the two subdirectories | this commit |
 | 9 | Gates: `make docs-links` (with a restored dead link shown red), `make views-check`, `make site`; contradiction sweep across the overview | not started | |
 | 10 | Maintainer review points (§6) | open | |
@@ -83,6 +83,12 @@ questions:
    rather than guessing.
 3. **Whether HISTORY names founders and early authors** where primary sources name them, or uses
    roles throughout.
+4. **Financial filings in GOVERNANCE-TODAY.** ProPublica has no Form 990 data for the foundation, and
+   the page says so. The IRS master file also lists a 990-N filing requirement (code 02); it is left
+   out of the page until you decide whether the foundation should state its own filing position.
+5. **GOVERNANCE-TODAY §7** lists five facts only the foundation can supply (bylaws and
+   conflict-of-interest policy access, the request committee, spending approval, holdings,
+   sponsorship records); a board member could fill them.
 
 ## 7. Figures found stale while planning
 
