@@ -31,6 +31,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BFQ-151` | `in-flight-upstream` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | #8795 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
@@ -38,7 +39,6 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -75,6 +75,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
+| **#8795** | `BFQ-151` | `bf/braces-expansion-cap` | BF-151 - one /api/v1/times or /slice request can block the s | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

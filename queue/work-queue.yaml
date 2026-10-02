@@ -10972,8 +10972,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/braces-expansion-cap
     base: official/dev@50bc1084
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8795]
     ships_to_operators_today: true
     blast_radius: >
       lib/api/entries/index.js prep_patterns: refuse a prefix or pattern
@@ -11010,6 +11010,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: pushed and opened as #8795 by the maintainer (head
+      fdf88f4e).
       2026-10-02: dev a143d507 (with #8793 and #8794) merged into the branch
       locally as fdf88f4e, not pushed; fresh npm ci on the new lockfile;
       full suite 3532/0/4 (dev expected 3525 plus these 7); with

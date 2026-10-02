@@ -165,7 +165,7 @@ cover more than one `BF-`:
 | `BFQ-146` | `merged-upstream` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `merged-upstream` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
+| `BFQ-151` | `in-flight-upstream` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -199,14 +199,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 1 | 5 | 2 | 4 | 47 | 6 |  | 2 | 2 |  | **96** |
-| `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
+| `register-open` | 27 | 1 | 5 | 1 | 4 | 1 | 47 | 6 |  | 2 | 2 |  | **96** |
+| `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

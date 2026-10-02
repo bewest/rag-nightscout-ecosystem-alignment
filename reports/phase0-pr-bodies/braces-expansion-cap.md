@@ -1,4 +1,4 @@
-<!-- DRAFT, not opened. Body for branch bf/braces-expansion-cap at 185e003a (one commit on dev 50bc1084). Private advisory GHSA-phrf-gm8g-fmqv: do not open publicly until the maintainer decides the disclosure path. This comment is hidden on GitHub. -->
+<!-- Body of #8795, branch bf/braces-expansion-cap (185e003a, merged with dev a143d507 as fdf88f4e). This comment is hidden on GitHub. -->
 A brace pattern in `/api/v1/times` or `/api/v1/slice` that would expand to more than 2000 patterns is now refused with 400, before anything is expanded (BF-151). One commit on `dev` `50bc1084`. The same code is in `v15.0.8`, so this is not a regression.
 
 ## What changes for you

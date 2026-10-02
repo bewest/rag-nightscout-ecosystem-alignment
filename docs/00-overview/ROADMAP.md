@@ -44,7 +44,7 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
-| `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | `in-flight-upstream` | Maintainer | #8795 |
 
 <!-- END GENERATED: release-waits -->
 

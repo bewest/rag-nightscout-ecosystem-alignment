@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-151
+# Review packet — BFQ-151 (PR #8795)
 
 **BF-151 - one /api/v1/times or /slice request can block the server for seconds
 (brace expansion has no bound), for 15.0.9**
@@ -21,7 +21,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/braces-expansion-cap` |
 | base | `official/dev@50bc1084` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-151` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-151` is the measurement |
 | semver | `patch` |
 | register entries | `BF-151` |
 | operator exposure | **reaches an operator on today's release** |
@@ -75,6 +75,7 @@ origin/dev 50bc1084). The tests decide.
 
 ## Notes carried on the item
 
+2026-10-02: pushed and opened as #8795 by the maintainer (head fdf88f4e).
 2026-10-02: dev a143d507 (with #8793 and #8794) merged into the branch locally
 as fdf88f4e, not pushed; fresh npm ci on the new lockfile; full suite 3532/0/4
 (dev expected 3525 plus these 7); with a143d507's lib/api/entries/index.js the
